@@ -285,7 +285,7 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
-		  report ("%02x\n", (int)wParam);
+		/*  report ("%02x\n", (int)wParam); */
 		switch (key = (int)wParam) {
 		case VK_SHIFT:
 			key = 0;
