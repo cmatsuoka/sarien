@@ -1,5 +1,5 @@
 #
-# Makefile for Watcom C/C++ v10.6
+# Makefile for DJGPP + Allegro
 #
 
 include $(HOME)/src/graphics/msdos/djgpp.dep
