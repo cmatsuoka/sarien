@@ -178,7 +178,10 @@ struct agi_game {
 	char cursor_char;
 	unsigned int color_fg;
 	unsigned int color_bg;
-	UINT8 sbuf[_WIDTH * _HEIGHT];		/**< 160x168 AGI screen buffer */
+#ifdef USE_HIRES
+	UINT8 hires[_WIDTH * 4 * _HEIGHT * 2];
+#endif
+	UINT8 sbuf[_WIDTH * _HEIGHT];	/**< 160x168 AGI screen buffer */
 
 	/* player command line */
 	struct agi_word ego_words[MAX_WORDS];

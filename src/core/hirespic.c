@@ -8,97 +8,19 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <assert.h>
-#include "sarien.h"
-#include "agi.h"
-#include "graphics.h"
-#include "rand.h"
+#ifdef USE_HIRES
 
-#define next_byte data[foffs++]
-
-static UINT8	*data;
-static UINT32	flen;
-static UINT32	foffs;
-
-static UINT8	patCode;
-static UINT8	patNum;
-static UINT8	pri_on;
-static UINT8	scr_on;
-static UINT8	scr_colour;
-static UINT8	pri_colour;
-
-
-static void put_virt_pixel (int x, int y)
+static void put_hires_pixel (int x, int y)
 {
 	UINT8 *p;
 
-	if (x >= _WIDTH || y >= _HEIGHT)
+	if (x >= (_WIDTH * 4) || y >= (_HEIGHT * 2))
 		return;
 
-	p = &game.sbuf[y * _WIDTH + x];
+	p = &game.hires[y * (_WIDTH * 4) + x];
 
 	if (pri_on) *p = (pri_colour << 4) | (*p & 0x0f);
 	if (scr_on) *p = scr_colour | (*p & 0xf0);
-}
-
-
-/* For the flood fill routines */
-
-#define STACK_SEG_SIZE 0x1000
-
-struct point_xy {
-	struct point_xy *next;
-	unsigned int x, y;
-};
-
-#define MAX_STACK_SEGS 16
-static unsigned int stack_num_segs;
-static unsigned int stack_seg;
-static unsigned int stack_ptr;
-
-static struct point_xy *stack[MAX_STACK_SEGS];
-
-static INLINE void _PUSH (struct point_xy *c)
-{
-	if (stack_ptr >= STACK_SEG_SIZE) {
-		/* Allocate new stack segment */
-
-		assert (stack_num_segs < MAX_STACK_SEGS);
-
-		if (stack_num_segs <= ++stack_seg) {
-			_D ("new stack (#%d)", stack_num_segs);
-			stack[stack_num_segs] = malloc (sizeof (struct point_xy)
-				* STACK_SEG_SIZE);
-			assert (stack[stack_num_segs] != NULL);
-			stack_num_segs++;
-		}
-		stack_ptr = 0;
-	}
-
-	stack[stack_seg][stack_ptr].x = c->x;
-	stack[stack_seg][stack_ptr].y = c->y;
-	stack_ptr++;
-}
-
-
-static INLINE void _POP (struct point_xy *c)
-{
-	if (stack_ptr == 0) {
-		if (stack_seg == 0) {
-			c->x = c->y = 0xffff;
-		} else {
-			stack_seg--;
-			 stack_ptr = STACK_SEG_SIZE - 1;
-		}
-
-		return;
-	}
-
-	stack_ptr--;
-	c->x = stack[stack_seg][stack_ptr].x;
-	c->y = stack[stack_seg][stack_ptr].y;
 }
 
 
@@ -110,16 +32,16 @@ static INLINE void _POP (struct point_xy *c)
 ** modified by stuart george, fixed >>2 to >>1 and some other bugs
 ** like x1 instead of y1, etc
 **************************************************************************/
-static void draw_line (int x1, int y1, int x2, int y2)
+static void draw_hires_line (int x1, int y1, int x2, int y2)
 {
 	int i, x, y, deltaX, deltaY, stepX, stepY, errorX, errorY, detdelta;
 
 	/* CM: Do clipping */
 #define clip(x, y) if((x)>=(y)) (x)=(y)
-	clip (x1, _WIDTH-1);
-	clip (x2, _WIDTH-1);
-	clip (y1, _HEIGHT-1);
-	clip (y2, _HEIGHT-1);
+	clip (x1, (_WIDTH * 4) - 1);
+	clip (x2, (_WIDTH * 4) - 1);
+	clip (y1, (_HEIGHT * 2) - 1);
+	clip (y2, (_HEIGHT * 2) - 1);
 
 	/* Vertical line */
 
@@ -131,7 +53,7 @@ static void draw_line (int x1, int y1, int x2, int y2)
 		}
 
 		for ( ; y1 <= y2; y1++)
-			put_virt_pixel (x1, y1);
+			put_hires_pixel (x1, y1);
 
 		return;
 	}
@@ -146,7 +68,7 @@ static void draw_line (int x1, int y1, int x2, int y2)
 		}
 
    		for( ; x1 <= x2; x1++)
-   			put_virt_pixel (x1, y1);
+   			put_hires_pixel (x1, y1);
 
 		return;
 	}
@@ -180,7 +102,7 @@ static void draw_line (int x1, int y1, int x2, int y2)
 		errorY=deltaX/2;
 	}
 
-	put_virt_pixel (x, y);
+	put_hires_pixel (x, y);
 
 	do {
 		errorY += deltaY;
@@ -195,11 +117,11 @@ static void draw_line (int x1, int y1, int x2, int y2)
 			x += stepX;
 		}
 
-		put_virt_pixel(x, y);
+		put_hires_pixel(x, y);
 		i--;
 	} while (i > 0);
 
-	/* put_virt_pixel (x, y); */
+	put_hires_pixel (x, y);
 }
 
 /**************************************************************************
@@ -207,14 +129,14 @@ static void draw_line (int x1, int y1, int x2, int y2)
 **
 ** Draws short lines relative to last position.  (drawing action 0xF7)
 **************************************************************************/
-static void dynamic_draw_line ()
+static void dynamic_hires_line ()
 {
 	int x1, y1, disp, dx, dy;
 
-	x1 = next_byte;
-	y1 = next_byte;
+	x1 = 4 * next_byte;
+	y1 = 2 * next_byte;
 
-	put_virt_pixel (x1, y1);
+	put_hires_pixel (x1, y1);
 
 	while (42) {
 		if ((disp = next_byte) >= 0xf0)
@@ -229,7 +151,10 @@ static void dynamic_draw_line ()
 	      	if (dy & 0x08)
 			dy = -(dy & 0x07);
 
-		draw_line (x1, y1, x1 + dx, y1 + dy);
+		dx *= 4;
+		dy *= 2;
+
+		draw_hires_line (x1, y1, x1 + dx, y1 + dy);
 		x1 += dx;
 		y1 += dy;
 	}
@@ -241,13 +166,13 @@ static void dynamic_draw_line ()
 **
 ** Draws long lines to actual locations (cf. relative) (drawing action 0xF6)
 **************************************************************************/
-static void absolute_draw_line ()
+static void absolute_hires_line ()
 {
 	int x1, y1, x2, y2;
 
-	x1 = next_byte;
-	y1 = next_byte;
-	put_virt_pixel (x1, y1);
+	x1 = 4 * next_byte;
+	y1 = 2 * next_byte;
+	put_hires_pixel (x1, y1);
 
 	while (42) {
 		if ((x2 = next_byte) >= 0xf0)
@@ -256,7 +181,10 @@ static void absolute_draw_line ()
 		if ((y2 = next_byte) >= 0xf0)
 			break;
 
-		draw_line (x1, y1, x2, y2);
+		x2 *= 4;
+		y2 *= 2;
+
+		draw_hires_line (x1, y1, x2, y2);
 		x1 = x2;
 		y1 = y2;
 	}
@@ -267,30 +195,32 @@ static void absolute_draw_line ()
 /**************************************************************************
 ** okToFill
 **************************************************************************/
-static INLINE int is_ok_fill_here (int x, int y)
+static INLINE int hires_fill_here (int x, int y)
 {
-	unsigned int i;
 	UINT8 p;
 
 	if (!scr_on && !pri_on)
 		return FALSE;
 
-	i = y * _WIDTH + x;
-	p = game.sbuf[i];
+	p = game.hires[(y * 2) * (_WIDTH * 4) + x * 4];
+	if (scr_on && (p & 0x0f) == scr_colour)
+		return FALSE;
+	if (pri_on && (p >> 4) == pri_colour)
+		return FALSE;
 
-	if (!pri_on && scr_on && scr_colour != 15)
-		return (p & 0x0f) == 15;
+	p = game.sbuf[y * _WIDTH + x];
+	if (scr_on && (p & 0x0f) != scr_colour)
+		return FALSE;
+	if (pri_on && (p >> 4) != pri_colour)
+		return FALSE;
 
-	if (pri_on && !scr_on && pri_colour != 4)
-		return (p >> 4) == 4;
-
-	return (scr_on && (p & 0x0f) == 15 && scr_colour != 15);
+	return TRUE;
 }
 
 /**************************************************************************
 ** agiFill
 **************************************************************************/
-static void agiFill (int x, int y)
+static void hiresFill (int x, int y)
 {
 	struct point_xy c;
 
@@ -305,18 +235,26 @@ static void agiFill (int x, int y)
 		if (c.x == 0xffff || c.y == 0xffff)
 			break;
 
-		if (is_ok_fill_here (c.x, c.y)) {
-			put_virt_pixel (c.x, c.y);
-			if (c.x > 0 && is_ok_fill_here (c.x - 1, c.y)) {
+		if (hires_fill_here (c.x, c.y)) {
+			put_hires_pixel (4 * c.x,     2 * c.y);
+			put_hires_pixel (4 * c.x + 1, 2 * c.y);
+			put_hires_pixel (4 * c.x + 2, 2 * c.y);
+			put_hires_pixel (4 * c.x + 3, 2 * c.y);
+			put_hires_pixel (4 * c.x,     2 * c.y + 1);
+			put_hires_pixel (4 * c.x + 1, 2 * c.y + 1);
+			put_hires_pixel (4 * c.x + 2, 2 * c.y + 1);
+			put_hires_pixel (4 * c.x + 3, 2 * c.y + 1);
+
+			if (c.x > 0 && hires_fill_here (c.x - 1, c.y)) {
 				c.x--; _PUSH (&c); c.x++;
     			}
-			if (c.x < _WIDTH - 1 && is_ok_fill_here (c.x + 1, c.y)) {
+			if (c.x < _WIDTH - 1 && hires_fill_here (c.x + 1, c.y)) {
 				c.x++; _PUSH (&c); c.x--;
  			}
-			if (c.y < _HEIGHT - 1 && is_ok_fill_here (c.x, c.y + 1)) {
+			if (c.y < _HEIGHT - 1 && hires_fill_here (c.x, c.y + 1)) {
 				c.y++; _PUSH (&c); c.y--;
     			}
-			if (c.y > 0 && is_ok_fill_here (c.x, c.y - 1)) {
+			if (c.y > 0 && hires_fill_here (c.x, c.y - 1)) {
 				c.y--; _PUSH (&c); c.y++;
     			}
 		}
@@ -331,13 +269,13 @@ static void agiFill (int x, int y)
 **
 ** Draws an xCorner  (drawing action 0xF5)
 **************************************************************************/
-static void x_corner ()
+static void hires_x_corner ()
 {
 	int x1, x2, y1, y2;
 
-	x1 = next_byte;
-	y1 = next_byte;
-   	put_virt_pixel (x1, y1);
+	x1 = 4 * next_byte;
+	y1 = 2 * next_byte;
+   	put_hires_pixel (x1, y1);
 
 	while (42) {
 		x2=next_byte;
@@ -345,14 +283,18 @@ static void x_corner ()
 		if (x2 >= 0xf0)
 			break;
 
-		draw_line (x1, y1, x2, y1);
+		x2 *= 4;
+
+		draw_hires_line (x1, y1, x2, y1);
 		x1 = x2;
 		y2 = next_byte;
 
 		if (y2 >= 0xF0)
 			break;
 
-		draw_line (x1, y1, x1, y2);
+		y2 *= 2;
+
+		draw_hires_line (x1, y1, x1, y2);
 		y1 = y2;
 	}
 	foffs--;
@@ -364,13 +306,13 @@ static void x_corner ()
 **
 ** Draws an yCorner  (drawing action 0xF4)
 **************************************************************************/
-static void y_corner ()
+static void hires_y_corner ()
 {
 	int x1, x2, y1, y2;
 
-	x1 = next_byte;
-	y1 = next_byte;
-	put_virt_pixel (x1, y1);
+	x1 = 4 * next_byte;
+	y1 = 2 * next_byte;
+	put_hires_pixel (x1, y1);
 
 	while (42) {
 		y2 = next_byte;
@@ -378,14 +320,18 @@ static void y_corner ()
 		if (y2 >= 0xF0)
 			break;
 
-		draw_line (x1, y1, x1, y2);
+		y2 *= 2;
+
+		draw_hires_line (x1, y1, x1, y2);
 		y1 = y2;
 		x2 = next_byte;
 
 		if (x2 >= 0xF0)
 			break;
 
-		draw_line (x1, y1, x2, y1);
+		x2 *= 4;
+
+		draw_hires_line (x1, y1, x2, y1);
 		x1 = x2;
 	}
 
@@ -397,12 +343,12 @@ static void y_corner ()
 **
 ** AGI flood fill.  (drawing action 0xF8)
 **************************************************************************/
-static void fill ()
+static void hires_fill ()
 {
 	int x1, y1;
 
 	while ((x1 = next_byte) < 0xF0 && (y1 = next_byte) < 0xF0)
-		agiFill (x1, y1);
+		hiresFill (x1, y1);
 
 	foffs--;
 }
@@ -424,8 +370,9 @@ static void fill ()
 ** Draws pixels, circles, squares, or splatter brush patterns depending
 ** on the pattern code.
 **************************************************************************/
-void plotPattern(int x, int y)
+void plot_hires_Pattern(UINT8 x, UINT8 y)
 {
+#if 0
 	static UINT8 circles[][15] = {		/* agi circle bitmaps */
 		{ 0x80 },
 		{ 0xfc },
@@ -485,6 +432,7 @@ void plotPattern(int x, int y)
 			}
 		}
 	}
+#endif
 }
 
 /**************************************************************************
@@ -492,7 +440,7 @@ void plotPattern(int x, int y)
 **
 ** Plots points and various brush patterns.
 **************************************************************************/
-static void plot_brush ()
+static void plot_hires_brush ()
 {
 	int x1, y1;
 
@@ -509,13 +457,13 @@ static void plot_brush ()
 		if ((y1 = next_byte) >= 0xf0)
 			break;
 
-		plotPattern (x1, y1);
+		//plotPattern (x1, y1);
    	}
 
    	foffs--;
 }
 
-static void draw_picture ()
+static void draw_hires_picture ()
 {
 	UINT8 act;
 	unsigned int i;
@@ -554,25 +502,25 @@ static void draw_picture ()
 			pri_on = FALSE;
 			break;
 		case 0xf4:			/* y-corner */
-			y_corner ();
+			hires_y_corner ();
 			break;
 		case 0xf5:			/* x-corner */
-			x_corner ();
+			hires_x_corner ();
 			break;
 		case 0xf6:			/* absolute draw lines */
-			absolute_draw_line ();
+			absolute_hires_line ();
 			break;
 		case 0xf7:			/* dynamic draw lines */
-			dynamic_draw_line ();
+			dynamic_hires_line ();
 			break;
 		case 0xf8:			/* fill */
-			fill ();
+			hires_fill ();
 			break;
 		case 0xf9:			/* set pattern */
 			patCode = next_byte;
 			break;
 		case 0xfA:			/* plot brush */
-			plot_brush ();
+			plot_hires_brush ();
 			break;
 		case 0xFF:			/* end of pic data */
 		default:
@@ -585,154 +533,25 @@ static void draw_picture ()
 		free (stack[i]);
 }
 
-#ifdef USE_HIRES
-#include "hirespic.c"
-#endif
-
-/*
- * Public functions
- */
-
-/**
- *
- */
-UINT8* convert_v3_pic (UINT8 *data, UINT32 len)
-{
-	UINT8	d, old = 0, x, *in, *xdata, *out, mode = 0;
-	UINT32	i, ulen;
-
-	xdata = malloc (len + len / 2);
-
-	out = xdata;
-	in = data;
-
-	for (i = ulen = 0; i < len; i++, ulen++) {
-		d = *in++;
-
-		*out++ = x = mode ? ((d & 0xF0) >> 4) + ((old & 0x0F) << 4) : d;
-
-		if (x == 0xFF) {
-			ulen++;
-			break;
-		}
-
-		if (x == 0xf0 || x == 0xf2) {
-			if (mode) {
-				*out++ = d & 0x0F;
-				ulen++;
-			} else {
-				d = *in++;
-				*out++ = (d & 0xF0) >> 4;
-				i++, ulen++;
-			}
-
-			mode = !mode;
-		}
-
-		old = d;
-	}
-
-	free (data);
-	xdata = realloc (xdata, ulen);
-
-	return xdata;
-}
-
-/**
- * Decode an AGI picture resource.
- * This function decodes an AGI picture resource into the correct slot
- * and draws it on the AGI screen, optionally cleaning the screen before
- * drawing.
- * @param n      AGI picture resource number
- * @param clear  clear AGI screen before drawing
- */
-int decode_picture (int n, int clear)
-{
-	_D (_D_WARN "(%d)", n);
-
-	patCode = 0;
-	patNum = 0;
-	pri_on = scr_on = FALSE;
-	scr_colour = 0xF;
-	pri_colour = 0x4;
-
-	data = game.pictures[n].rdata;
-	flen = game.dir_pic[n].len;
-	foffs = 0;
-
-	if (clear)
-		memset (game.sbuf, 0x4f, _WIDTH * _HEIGHT);
-
-	draw_picture ();
-
-#ifdef USE_HIRES
-	patCode = 0;
-	patNum = 0;
-	pri_on = scr_on = FALSE;
-	scr_colour = 0xF;
-	pri_colour = 0x4;
-
-	data = game.pictures[n].rdata;
-	flen = game.dir_pic[n].len;
-	foffs = 0;
-
-	if (clear)
-		memset (game.hires, 0x4f, _WIDTH * 4 * _HEIGHT * 2);
-
-	draw_hires_picture ();
-#endif
-
-	return err_OK;
-}
-
-
-/**
- * Unload an AGI picture resource.
- * This function unloads an AGI picture resource and deallocates
- * resource data.
- * @param n AGI picture resource number
- */
-int unload_picture (int n)
-{
-	/* remove visual buffer & priority buffer if they exist */
-	if (game.dir_pic[n].flags & RES_LOADED) {
-		free (game.pictures[n].rdata);	
-		game.dir_pic[n].flags &= ~RES_LOADED;
-	}
-
-	return err_OK;
-}
 
 /**
  * Show AGI picture.
  * This function copies a ``hidden'' AGI picture to the output device.
  */
-void show_pic ()
+void show_hires_pic ()
 {
 	int i, y;
 
 	i = 0;
 	for (y = 0; y < _HEIGHT; y++) {
-		put_pixels_a (0, y, _WIDTH, &game.sbuf[i]);
-		i += _WIDTH;
+		put_pixels_hires (0, y, _WIDTH * 2, &game.hires[i]);
+		i += (_WIDTH * 4);
 	}
-
-#if 0
-	/* Amiga/IIgs transitions. Too slow, and annoying after a few rooms.
-	 * Also doesn't work well with console.
-	 */
-#define BRICK_W 4
-#define BRICK_H 2
-	for (i = 0; i < 20000; i++) {
-		int bx = rnd (GFX_WIDTH / BRICK_W) * BRICK_W;
-		int by = rnd (GFX_HEIGHT / BRICK_H) * BRICK_H;
-		flush_block (bx, by, bx + BRICK_W - 1, by + BRICK_H - 1);
-		do_update ();
-	}
-#endif
 
 	flush_screen ();
 }
 
+#endif /* USE_HIRES */
 
-/* end: picture.c */
+/* end: hirespic.c */
+

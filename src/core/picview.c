@@ -74,7 +74,11 @@ int view_pictures ()
 
 		/* decodes the raw data to useable form */
 		decode_picture (pic, TRUE);
+#ifdef USE_HIRES
+		show_hires_pic ();
+#else
 		show_pic ();
+#endif
 		put_screen ();
 		
 update_statusline:
@@ -93,7 +97,11 @@ update_statusline:
 				goto end_view;
     			case 'v':
 				debug.priority = 0;
+#ifdef USE_HIRES
+				show_hires_pic ();
+#else
 				show_pic ();
+#endif
 				put_screen ();
     				break;
     			case 'p':

@@ -396,6 +396,20 @@ void put_pixels_a (int x, int y, int n, UINT8 *p)
 #endif
 }
 
+#ifdef USE_HIRES
+
+void put_pixels_hires (int x, int y, int n, UINT8 *p)
+{
+	y += CHAR_LINES;
+	for (; n--; p++, x++) {
+		UINT8 q = *p;
+		if (debug.priority) q >>= 4;
+		sarien_screen[x + y * GFX_WIDTH] = q & 0x0f;
+	}
+}
+
+#endif
+
 
 /**
  * Schedule blocks for blitting on the output device.
