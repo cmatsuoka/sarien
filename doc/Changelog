@@ -10,6 +10,7 @@ Revision History
 	- added "crc" command to the interpreter console
 	- sprite blitting algorithm changed to work with hidden screens
 	- fixed add.to.pic to erase and re-blit all sprites
+	- enabled picture viewer
 
 0.6.1 (20010722)
 	- fixed QNX build and Photon driver

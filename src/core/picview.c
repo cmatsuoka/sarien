@@ -8,17 +8,35 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
+#include "sarien.h"
+
 #ifdef OPT_PICTURE_VIEWER
 
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include "sarien.h"
 #include "agi.h"
 #include "graphics.h"
 #include "keyboard.h"
 #include "console.h"
 #include "text.h"
+
+
+static int picviewer_get_key ()
+{
+	int key;
+
+	/* clear key queue */
+	while (keypress ()) { get_key (); }
+
+	_D (_D_WARN "waiting...");
+	while (42) {
+		key = do_poll_keyboard ();
+		if (key) break;
+	}
+
+	return key;
+}
 
 
 int view_pictures ()
@@ -46,40 +64,42 @@ int view_pictures ()
 			}
 		}
 		
+		_D ("picture = %d", pic);
 		if ((ec = agi_load_resource (rPICTURE, pic)) != err_OK)
 			continue;
 
-		sprintf (x, "Picture:%3i     [drawing]     Show: %3s",
+		sprintf (x, "Picture:%3i     [drawing]      Show: %3s",
 			pic, 0 /*opt.showscreendraw*/ ? " on" : "off");
-		print_text (x, 0, 4, 190, strlen (x) + 1, 15, 0);
+		print_text (x, 0, 0, 0, strlen (x) + 1, 0, 15);
 
 		/* decodes the raw data to useable form */
 		decode_picture (pic, TRUE);
 		show_pic ();
+		put_screen ();
 		
 update_statusline:
-		sprintf (x, "V:Visible   P:Priority   +:Next  -:Prev");
-		print_text (x, 0, 4, 170, strlen (x) + 1, 15, 0);
-		sprintf (x, "R:Redraw      D:Show toggle      Q:Quit");
-		print_text (x, 0, 4, 180, strlen (x) + 1, 15, 0);
-		sprintf (x, "Picture:%3i                   Show: %3s",
+		sprintf (x, "Picture:%3i                    Show: %3s",
 			pic, opt.showscreendraw ? " on" : "off");
-		print_text (x, 0, 4, 190, strlen (x) + 1, 15, 0);
-
-		flush_screen ();
+		print_text (x, 0, 0, 0, strlen (x) + 1, 0, 15);
+		sprintf (x, "V:Visible    P:Priority    +:Next -:Prev");
+		print_text (x, 0, 0, 23, strlen (x) + 1, 15, 0);
+		sprintf (x, "R:Redraw     D:Show drawing       Q:Quit");
+		print_text (x, 0, 0, 24, strlen (x) + 1, 15, 0);
 
 		while (42) {
 			decode_picture (pic, TRUE);
-    			switch (tolower (get_key() & 0xff)) {
+    			switch (tolower (picviewer_get_key() & 0xff)) {
     			case 'q':
 				goto end_view;
     			case 'v':
 				debug.priority = 0;
 				show_pic ();
+				put_screen ();
     				break;
     			case 'p':
 				debug.priority = 1;
 				show_pic ();
+				put_screen ();
     				break;
 			case 'd':
 				opt.showscreendraw = !opt.showscreendraw;

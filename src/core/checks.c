@@ -22,7 +22,7 @@ static int dir_table_y[9] = {
 
 static int check_position (struct vt_entry *v)
 {
-	_D ("check position @ %d, %d", v->x_pos, v->y_pos);
+	/* _D ("check position @ %d, %d", v->x_pos, v->y_pos); */
 
 	if (	v->x_pos < 0 ||
 		v->x_pos + v->x_size > _WIDTH ||
@@ -245,7 +245,12 @@ void update_position ()
 }
 
 /**
- * The Budin-Sonneveld offset
+ * Adjust position of a sprite
+ * This function adjusts the position of a sprite moving it until
+ * certain criteria is matched. According to priority and control line
+ * data, a sprite may not always appear at the location we specified.
+ * This behaviour is also known as the "Budin-Sonneveld effect".
+ *
  * @param n view table entry number
  */
 void fix_position (int n)
@@ -253,8 +258,8 @@ void fix_position (int n)
 	struct vt_entry *v = &game.view_table[n];
 	int count, dir, tries;
 
-	_D (_D_WARN "adjusting view table entry #%d (%d,%d)",
-		n, v->x_pos, v->y_pos);
+	/* _D (_D_WARN "adjusting view table entry #%d (%d,%d)",
+		n, v->x_pos, v->y_pos); */
 
 	/* test horizon */
 
@@ -290,8 +295,8 @@ void fix_position (int n)
 		count = tries;
 	}
 
-	_D (_D_WARN "view table entry #%d position adjusted to (%d,%d)",
-		n, v->x_pos, v->y_pos);
+	/* _D (_D_WARN "view table entry #%d position adjusted to (%d,%d)",
+		n, v->x_pos, v->y_pos); */
 }
 
 /* end: checks.c */

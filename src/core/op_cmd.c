@@ -179,10 +179,6 @@ cmd(call) {
 	int old_cIP;
 	int old_lognum;
 
-#ifndef NO_DEBUG
-	if (opt.debug == 4) opt.debug = TRUE;
-#endif
-
 	/* CM: we don't save sIP because set.scan.start can be
 	 *     used in a called script (fixes xmas demo)
 	 */

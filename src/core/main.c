@@ -86,6 +86,20 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 		ec = err_Unk;
 		goto bail_out;
 	}
+
+#ifdef OPT_PICTURE_VIEWER
+	if (opt.picview) {
+		if (agi_detect_game (argc > 1 ? argv[optind] :
+			get_current_directory ()) == err_OK)
+		{
+			agi_init ();
+			view_pictures ();
+		} 
+
+		goto bail_out;
+	}
+#endif
+
 	report ("Enabling interpreter console\n");
 	console_init ();
 	report ("--- Starting console ---\n\n");

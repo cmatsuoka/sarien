@@ -370,8 +370,8 @@ struct sarien_options {
 	int showscreendraw;	/**< show screen drawing */
 	int showkeypress;
 	int emuversion;
-#ifndef NO_DEBUG
-	int debug;
+#ifdef OPT_PICTURE_VIEWER
+	int picview;		/**< run in picture viewer mode */
 #endif
 	int scale;		/**< window scale factor */
 	int fixratio;		/**< fix aspect ratio */

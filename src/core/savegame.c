@@ -449,6 +449,7 @@ int loadgame_dialog ()
 		new_room (game.vars[0]);
 		setflag (F_new_room_exec, TRUE);
 		game.input_mode = INPUT_NORMAL;
+		write_status ();
 #endif
 	} else {
 		message_box ("Error loading game.");

@@ -39,9 +39,6 @@ static void help (int argc, char **argv)
 "  -d --list-dictionary\n"
 "                     List dictionary words.\n"
 #endif
-#ifndef NO_DEBUG
-"  -D --debug         Turn on debugging.\n"
-#endif
 "  -E --emulate-sound {type}\n"
 "                     Emulate the sound of Sierra AGI running in different\n"
 "                     computers. Valid emulations are pc and mac\n"
@@ -194,11 +191,6 @@ int parse_cli (int argc, char **argv)
 		case 'C':
 			opt.gamerun=gCRC;
 			break;
-#ifndef NO_DEBUG
-		case 'D':
-			opt.debug = TRUE;
-			break;
-#endif
 		case 'E':
 			if (!strcmp (optarg, "pc"))
 				opt.soundemu = SOUND_EMU_PC;
@@ -227,6 +219,11 @@ int parse_cli (int argc, char **argv)
 #ifdef OPT_LIST_OBJECTS
 		case 'o':
 			opt.gamerun = gSHOW_OBJECTS;
+			break;
+#endif
+#ifdef OPT_PICTURE_VIEWER
+		case 'p':
+			opt.picview = TRUE;
 			break;
 #endif
 		case 'n':

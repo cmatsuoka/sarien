@@ -324,6 +324,10 @@ void put_block (int x1, int y1, int x2, int y2)
 	gfx->put_block (x1, y1, x2, y2);
 }
 
+void put_screen ()
+{
+	put_block (0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
+}
 
 void poll_timer ()
 {
