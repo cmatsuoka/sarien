@@ -1011,8 +1011,12 @@ int run_logic (int n)
 			test_if_code (n);
 			break;
 		case 0xfe:			/* goto */
-			ip += 2 + ((SINT16)lohi_getword (code + ip));
 			/* +2 covers goto size */
+			ip += 2 + ((SINT16)lohi_getword (code + ip));
+			/* timer must keep running even in goto loops */
+			poll_timer ();
+			update_timer ();
+			console_cycle ();
 			break;
 		case 0x00:			/* return */
 			return 1;
