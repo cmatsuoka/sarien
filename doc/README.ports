@@ -29,7 +29,7 @@ Tested ports:
 ---------+-------+---------+---------+---------+---------+---------+
 
 The Linux/X11 driver is known to work in the following architectures:
-i386, PowerPC, IA64, S/390.
+IA32 (i386), PowerPC, IA64, S/390.
 
 
 Not integrated to the main tree:
@@ -56,13 +56,15 @@ Untested, expected to work:
 ---------+-------+---------+---------+---------+---------+---------+
 
 
-In development:
+In progress:
 
                   Graphics   Sound    Windowed  Fullscreen
          Compiler  Driver    Driver   Graphics  Graphics    Sound
 ---------+-------+---------+---------+---------+---------+---------+
  MS-DOS  | DJGPP | allegro | allegro |    no   |   yes   |   yes   |
  MS-DOS  |Turbo C|   Raw   |  dummy  |    no   |   yes   |    no   |
+---------+-------+---------+---------+---------+---------+---------+
+ OS/2    |   ?   |  DIVE   |  DART   |   yes   |    no   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
  Linux   |  gcc  |XF86 DGA |OSS,ALSA |    no   |   yes   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
