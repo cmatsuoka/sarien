@@ -17,21 +17,30 @@
 
 static void _set_cel (struct vt_entry *v, int n)
 {
+        struct view_loop *current_vl;
+        struct view_cel *current_vc;
+			
 	v->current_cel = n;
-
+	current_vl = &game.views[v->current_view].loop[v->current_loop];
+	
 	/* Added by Amit Vainsencher <amitv@subdimension.com> to prevent
 	 * crash in KQ1 -- not in the Sierra interpreter
 	 */
-	if(v->loop_data->num_cels == 0)
+	if(current_vl->num_cels == 0)
 		return;
 
-	v->cel_data = &v->loop_data->cel[n];
-	v->x_size = v->cel_data->width;
-	v->y_size = v->cel_data->height;
+	if (!(v->flags & UPDATE)&&(agi_get_release() >= 0x3000))
+		return;
+	
+	current_vc = &current_vl->cel[n];
+        v->cel_data = current_vc;
+        v->x_size = current_vc->width;
+        v->y_size = current_vc->height;
 }
 
 static void _set_loop (struct vt_entry *v, int n)
 {
+        struct view_loop *current_vl;
 	/* _D ("vt entry #%d, loop = %d", v->entry, n); */
 
 	/* Added to avoid crash when leaving the arcade machine in MH1
@@ -41,10 +50,16 @@ static void _set_loop (struct vt_entry *v, int n)
 		n = 0;
 
 	v->current_loop = n;
-	v->loop_data = &game.views[v->current_view].loop[n];
-	v->num_cels = v->loop_data->num_cels;
+	current_vl = &game.views[v->current_view].loop[v->current_loop];
+	
+	v->num_cels = current_vl->num_cels;
 	if (v->current_cel >= v->num_cels)
 		v->current_cel = 0;
+	
+	if (!(v->flags & UPDATE)&&(agi_get_release() >= 0x3000))
+		return;
+		
+	v->loop_data = &game.views[v->current_view].loop[n];
 }
 
 static void update_view (struct vt_entry *v)

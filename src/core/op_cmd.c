@@ -273,6 +273,10 @@ cmd(draw) {
 	_D("draw entry %d", vt.entry);
 
 	vt.flags |= UPDATE;
+	if (agi_get_release() >= 0x3000){
+		set_loop(&vt,vt.current_loop);
+		set_cel(&vt,vt.current_cel);
+	}
 	fix_position (p0);
 	vt.x_pos2 = vt.x_pos;
 	vt.y_pos2 = vt.y_pos;
