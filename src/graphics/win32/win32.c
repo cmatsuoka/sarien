@@ -60,7 +60,7 @@ enum {
 static UINT16 g_err = err_OK;
 static HPALETTE g_hPalette = NULL;
 static const char g_szMainWndClass[] = "SarienWin";
-static int  scale = 2;
+static int scale = 2;
 
 static struct{
 	HBITMAP    screen_bmp;
@@ -80,7 +80,6 @@ static struct{
 static int	init_vidmode		(void);
 static int	deinit_vidmode		(void);
 static void	win32_put_block		(int, int, int, int);
-static void	win32_put_pixels	(int, int, int, BYTE *);
 static int	win32_keypress		(void);
 static int	win32_get_key		(void);
 static void	win32_new_timer		(void);
@@ -93,7 +92,7 @@ static struct gfx_driver gfx_win32 = {
 	init_vidmode,
 	deinit_vidmode,
 	win32_put_block,
-	win32_put_pixels,
+	NULL,
 	win32_new_timer,
 	win32_keypress,
 	win32_get_key
@@ -108,9 +107,100 @@ static HDC  hDC;
 static WNDCLASS wndclass;
 
 
+#define ASPECT_RATIO(x) ((x) * 6 / 5)
+
+/* ====================================================================*/
+
+/* Some optimized put_pixel routines for the most common cases */
+
+static void _putpixels_scale1 (int x, int y, int w, BYTE *p)
+{
+        BYTE *p0 = g_screen.screen_pixels; /* Word aligned! */
+	EnterCriticalSection(&g_screen.cs);
+
+        y = GFX_HEIGHT - y - 1;
+
+	p0 += x + y * GFX_WIDTH;
+	while (w--) { *p0++ = *p++; }
+
+	LeaveCriticalSection(&g_screen.cs);
+}
+
+static void _putpixels_scale2 (int x, int y, int w, BYTE *p)
+{
+        BYTE *p0 = g_screen.screen_pixels, *p1; /* Word aligned! */
+
+	EnterCriticalSection(&g_screen.cs);
+
+        y = GFX_HEIGHT - y - 1;
+	x <<= 1; y <<= 1;
+	if (y < ((GFX_WIDTH - 1) << 2) &&
+		ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2)) 
+	{
+		extra = w;
+	}
+
+	y = ASPECT_RATIO(y);
+
+	p0 += x + y * GFX_WIDTH;
+	p1 = p0 + GFX_WIDTH * scale;
+	while (w--) {
+		*p0++ = *p1++ = *p;
+		*p0++ = *p1++ = *p++;
+	}
+
+	LeaveCriticalSection(&g_screen.cs);
+}
+
+
+/* ====================================================================*/
+
+/* Aspect ratio correcting put pixels handlers */
+
+static void _putpixels_fixratio_scale1 (int x, int y, int w, UINT8 *p)
+{
+	if (y > 0 && ASPECT_RATIO (y) - 1 != ASPECT_RATIO (y - 1))
+		_putpixels_scale1 (x, ASPECT_RATIO(y) - 1, w, p);
+	_putpixels_scale1 (x, ASPECT_RATIO(y), w, p);
+}
+
+static void _putpixels_fixratio_scale2 (int x, int y, int w, BYTE *p)
+{
+        BYTE *p0 = g_screen.screen_pixels, *p1, *p2, *_p; /* Word aligned! */
+	int extra = 0;
+
+	EnterCriticalSection(&g_screen.cs);
+
+        y = GFX_HEIGHT - y - 1;
+	x <<= 1; y <<= 1;
+	if (y < ((GFX_WIDTH - 1) << 2) &&
+		ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2))
+	{
+		extra = w;
+	}
+
+	y = ASPECT_RATIO(y);
+
+	p0 += x + y * GFX_WIDTH;
+	p1 = p0 + GFX_WIDTH * scale;
+	p2 = p1 + GFX_WIDTH * scale;
+
+	for (_p = p; w--; p++) {
+		*p0++ = *p1++ = *p;
+		*p0++ = *p1++ = *p;
+	}
+
+	for (p = _p; extra--;) { *p2++ = *p++; }
+
+	LeaveCriticalSection(&g_screen.cs);
+}
+
+/* ====================================================================*/
+
 static void INLINE gui_put_block (int x1, int y1, int x2, int y2)
 {
 	HDC hDC;
+	int h, w;
 
 	if (x1 >= GFX_WIDTH)
 		x1 = GFX_WIDTH - 1;
@@ -124,19 +214,26 @@ static void INLINE gui_put_block (int x1, int y1, int x2, int y2)
 	if (y2 >= GFX_HEIGHT)
 		y2 = GFX_HEIGHT - 1;
 
-	hDC = GetDC( hwndMain );
+	if (scale > 1) {
+		 x1 *= scale;
+		 y1 *= scale;
+		 x2 = (x2 + 1) * scale - 1;
+		 y2 = (y2 + 1) * scale - 1;
+	}
+
+	hDC = GetDC (hwndMain);
 
 	EnterCriticalSection (&g_screen.cs);
-	StretchDIBits(
+	StretchDIBits (
 		hDC,
-		x1 * scale,
-		y1 * scale,
-		(x2 - x1 + 1) * scale,
-                (y2 - y1 + 1) * scale,
 		x1,
-                GFX_HEIGHT - y2 - 1,
+		y1,
 		x2 - x1 + 1,
-                y2 - y1 + 1,
+		y2 - y1 + 1,
+		x1,
+		(GFX_HEIGHT * scale - 1) - y2,
+		x2 - x1 + 1,
+		(GFX_HEIGHT * scale - y1 - 1) - (GFX_HEIGHT * scale - y2 - 1) + 1,
 		g_screen.screen_pixels,
 		g_screen.binfo,
 		DIB_RGB_COLORS,
@@ -372,8 +469,7 @@ int init_machine (int argc, char **argv)
 	InitializeCriticalSection (&g_key_queue.cs);
 
 	gfx = &gfx_win32;
-
-	//scale = opt.scale;
+	scale = opt.scale;
 
 	return err_OK;
 }
@@ -439,8 +535,8 @@ static int init_vidmode ()
 	}
 
 	g_screen.binfo->bmiHeader.biSize          = sizeof(BITMAPINFOHEADER);
-	g_screen.binfo->bmiHeader.biWidth         = GFX_WIDTH;
-	g_screen.binfo->bmiHeader.biHeight        = GFX_HEIGHT;
+	g_screen.binfo->bmiHeader.biWidth         = GFX_WIDTH * scale;
+	g_screen.binfo->bmiHeader.biHeight        = GFX_HEIGHT * scale;
 	g_screen.binfo->bmiHeader.biPlanes        = 1;
 	g_screen.binfo->bmiHeader.biBitCount      = 8;   /* should be fine */
 	g_screen.binfo->bmiHeader.biCompression   = BI_RGB;
@@ -472,6 +568,25 @@ static int init_vidmode ()
 		g_err = err_OK;
 	}
 
+	if (!opt.fixratio) {
+		switch (scale) {
+		case 1:
+			gfx_win32.put_pixels = _putpixels_scale1;
+			break;
+		case 2:
+			gfx_win32.put_pixels = _putpixels_scale2;
+			break;
+		}
+	} else {
+		switch (scale) {
+		case 1:
+			gfx_win32.put_pixels = _putpixels_fixratio_scale1;
+			break;
+		case 2:
+			gfx_win32.put_pixels = _putpixels_fixratio_scale2;
+			break;
+		}
+	}
 exx:
 
 	return g_err;	
@@ -504,30 +619,23 @@ static void win32_put_block (int x1, int y1, int x2, int y2)
 	if ((p = malloc (sizeof(xyxy))) == NULL)
 		return;
 
-	p->x1 = x1;
-	p->y1 = y1;
-	p->x2 = x2;
-	p->y2 = y2;
+	if (x1 >= GFX_WIDTH)
+		x1 = GFX_WIDTH - 1;
+	if (y1 >= GFX_HEIGHT)
+		y1 = GFX_HEIGHT - 1;
+	if (x2 >= GFX_WIDTH)
+		x2 = GFX_WIDTH - 1;
+	if (y2 >= GFX_HEIGHT)
+		y2 = GFX_HEIGHT - 1;
+
+	p->x1 = x1 * scale;
+	p->y1 = y1 * scale;
+	p->x2 = x2 * scale;
+	p->y2 = y2 * scale;
 
 	PostMessage (hwndMain, WM_PUT_BLOCK, 0, (LPARAM)p);
 }
 
-/* put pixel routine */
-/* Some errors! Handle color depth */
-static void win32_put_pixels (int x, int y, int w, BYTE *p)
-{
-        BYTE *p0 = g_screen.screen_pixels; /* Word aligned! */
-	EnterCriticalSection(&g_screen.cs);
-
-        y = GFX_HEIGHT - y - 1;
-
-	p0 += x + y * GFX_WIDTH;
-	while (w--) { *p0++ = *p++; }
-
-	LeaveCriticalSection(&g_screen.cs);
-
-}
- 
 static int win32_keypress (void)
 {
 	int b;
@@ -547,7 +655,7 @@ static int win32_get_key (void)
 	while (!win32_keypress())
 		win32_new_timer ();
 
-	key_dequeue(k);
+	key_dequeue (k);
 
 	return k;
 }
