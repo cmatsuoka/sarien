@@ -42,6 +42,7 @@ static void init_pri_table ()
 	}
 }
 
+
 int agi_init ()
 {
 	int ec, i;
@@ -61,7 +62,6 @@ int agi_init ()
 		memset (&game.pictures[i], 0, sizeof (struct agi_picture));
 		memset (&game.logics[i],   0, sizeof (struct agi_logic));
 		memset (&game.sounds[i],   0, sizeof (struct agi_sound));
-		memset (&game.ev_keyp[i],  0, sizeof (struct agi_event));
 	}
 
 	/* clear view table */
