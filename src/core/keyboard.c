@@ -155,7 +155,7 @@ int handle_controller (int key)
 		case KEY_DOWN_LEFT:  d = 6; break;
 		}
 
-		if (d) {
+		if (d || key == KEY_STATIONARY) {
 			game.view_table[0].direction = 
 				game.view_table[0].direction == d ? 0 : d;
 			return TRUE;

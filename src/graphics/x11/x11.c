@@ -317,6 +317,10 @@ static void process_events ()
 			case XK_KP_2:
 				key = KEY_DOWN;
 				break;
+			case XK_KP_5:
+			case XK_KP_Begin:
+				key = KEY_STATIONARY;
+				break;
 			case XK_Right:
 			case XK_KP_Right:
 			case XK_KP_6:

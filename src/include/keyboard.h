@@ -21,6 +21,7 @@ extern "C"{
 #define KEY_UP		0x4800
 #define	KEY_DOWN	0x5000
 #define KEY_LEFT	0x4B00
+#define KEY_STATIONARY	0x4C00
 #define KEY_RIGHT	0x4D00
 
 #define KEY_DOWN_LEFT	0x4F00
