@@ -15,6 +15,7 @@ start: .symbolic
 
 driver.lib: $(OBJS)
 	wlib -q -n -b driver.lib $(OBJS)
+	@copy driver.lib $(HOME)\lib
 
 clean: .symbolic
 	@if exist *.bak @del *.bak

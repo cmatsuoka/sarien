@@ -38,6 +38,10 @@ clean: .symbolic
 	cd src\fileglob\msdos
 	wmake -h -f makefile.wat clean HOME=..\..\..
 	cd ..\..\..
+	@echo Cleaning Libs
+	cd lib
+	@del *.lib
+	cd ..
 
 sarien: .symbolic
 	@echo Creating binary
@@ -45,10 +49,10 @@ sarien: .symbolic
 	%append test.lnk system $(sys)
 	%append test.lnk $(lflags)
 	%append test.lnk name bin\sarien.exe
-	%append test.lnk library src\core\agi_core.lib
-	%append test.lnk library src\graphics\msdos\driver.lib
-	%append test.lnk library src\sound\dummy\sound.lib
-	%append test.lnk library src\fileglob\msdos\fileglob.lib
+	%append test.lnk library lib\agi_core.lib
+	%append test.lnk library lib\driver.lib
+	%append test.lnk library lib\sound.lib
+	%append test.lnk library lib\fileglob.lib
 	%append test.lnk file src\core\main.obj
 	wlink @test.lnk
 

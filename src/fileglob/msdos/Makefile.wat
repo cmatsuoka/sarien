@@ -16,6 +16,7 @@ fileglob.lib: $(OBJS)
 	@%create wlib.lnk
 	for %i in ($(OBJS)) do @%append wlib.lnk +%i
 	wlib -n -q -q fileglob @wlib.lnk
+	@copy fileglob.lib $(HOME)\lib
 
 clean: .symbolic
 	@if exist *.lib @del *.lib

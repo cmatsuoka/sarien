@@ -245,7 +245,7 @@ void dictionary_words (char *msg)
 	}
 }
 
-
+#ifdef OPT_LIST_DICT
 int show_words ()
 {
 	int i, uid, sid, lid;
@@ -274,4 +274,4 @@ int show_words ()
 
 	return err_OK;
 }
-
+#endif

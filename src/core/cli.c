@@ -34,8 +34,10 @@ static void help (int argc, char **argv)
 "  -c --cache-loading Cache loading, static resources remain cached in memory\n"
 "                     but are only loaded as needed.\n"
 #endif
+#ifdef OPT_LIST_DICT
 "  -d --list-dictionary\n"
 "                     List dictionary words.\n"
+#endif
 #ifndef NO_DEBUG
 "  -D --debug         Turn on debugging.\n"
 #endif
@@ -47,19 +49,27 @@ static void help (int argc, char **argv)
 "                     game which will give you faster play, this also implies\n"
 "                     the caching.\n"
 #endif
+#if 0
 "  -L --list-games    List all the games in the ID file\n"
+#endif
 "  -F --full-screen   Run in full-screen mode if allowed by the graphics device\n"
 #if 0
 "  -g --dga           Use XFree86 DGA extension (if available).\n"
 #endif
 "  -h --help          Display this help screen.\n"
 "  -n --no-sound      Disable sound output.\n"
+#ifdef OPT_LIST_OBJECTS
 "  -o --list-objects  List objects.\n"
+#endif
+#ifdef OPT_PICTURE_VIEWER
 "  -p --picture-viewer\n"
 "                     Interactive picture viewer.\n"
 "  -ps --show-drawing Show screen as it's drawn.\n"
 "  -pk --wait-key     Wait for keypress on each action. (forces -ps)\n"
+#endif
+#ifndef _M_MSDOS
 "  -S --scale {num}   Window size scale (only for windowed graphics).\n"
+#endif
 "  -v --emulate-version {version}\n"
 "                     Force version to emulate. Valid v2 game versions are:\n"
 "                     2.089, 2.272, 2.440, 2.917, 2.936. Valid v3 games are:\n"
@@ -106,14 +116,20 @@ int parse_cli (int argc, char **argv)
 #endif
 		{ "crc",		0, 0, 'C'},
 		{ "list-games",		0, 0, 'L'},
+#ifdef OPT_LIST_DICT
 		{ "list-dictionary",	0, 0, 'd' },
+#endif
 		{ "debug",		0, 0, 'D' },
 		{ "full-screen",	0, 0, 'F' },
 		{ "no-sound",		0, 0, 'n' },
+#ifdef OPT_LIST_OBJECTS
 		{ "list-objects",	0, 0, 'o' },
+#endif
 		{ "emulate-sound",	1, 0, 'E' },
+#ifdef OPT_PICTURE_VIEWER
 		{ "picture-viewer",	0, 0, 'p' },
 		{ "show-drawing",	0, 0, 's' },
+#endif
 		{ "wait-key",		0, 0, 'k' },
 		{ "no-x-shm",		0, 0, 'x' },
 		{ "scale",		1, 0, 'S' }
@@ -149,6 +165,24 @@ int parse_cli (int argc, char **argv)
 #else
 			printf("not supported\n");
 #endif
+			printf("Listing Objects is ");
+#ifdef OPT_LIST_OBJECTS
+			printf("supported\n");
+#else
+			printf("not supported\n");
+#endif
+			printf("Builtin Picture Viewer is ");
+#ifdef OPT_PICTURE_VIEWER
+			printf("supported\n");
+#else
+			printf("not supported\n");
+#endif
+			printf("Dictionary Listing is ");
+#ifdef OPT_LIST_DICT
+			printf("enabled\n");
+#else
+			printf("disabled\n");
+#endif
 			exit (0);
 		case 'A':
 			opt.amiga = TRUE;
@@ -178,12 +212,16 @@ int parse_cli (int argc, char **argv)
 		case 'L':
 			opt.gamerun = gLIST_GAMES;
 			break;
+#ifdef OPT_LIST_DICT
 		case 'd':
 			opt.gamerun = gSHOW_WORDS;
 			break;
+#endif
+#ifdef OPT_LIST_OBJECTS
 		case 'o':
 			opt.gamerun = gSHOW_OBJECTS;
 			break;
+#endif
 		case 'n':
 			opt.nosound = TRUE;
 			break;
@@ -210,6 +248,7 @@ int parse_cli (int argc, char **argv)
 			opt.forceload = TRUE;
 			opt.cache = TRUE;
 			break;
+#ifndef _M_MSDOS
 		case 'S':
 			opt.scale = strtoul (optarg, NULL, 0);
 			if (opt.scale < 1)
@@ -217,6 +256,8 @@ int parse_cli (int argc, char **argv)
 			if (opt.scale > 4)
 				opt.scale = 4;
 			break;
+#endif
+#ifdef OPT_PICTURE_VIEWER
 		case 'k':
 			opt.showkeypress = TRUE;
 			/* fall through */
@@ -226,6 +267,7 @@ int parse_cli (int argc, char **argv)
 		case 'p':
 			opt.gamerun = gVIEW_PICTURES;
 			break;
+#endif
 #ifdef MITSHM
 		case 'x':
 			opt.mitshm = FALSE;

@@ -43,7 +43,7 @@ struct game_id_list game_info;
 INLINE void _D (char *s, ...) { }
 #endif
 
-
+#ifdef OPT_PICTURE_VIEWER
 static int view_pictures ()
 {
 	int ec = err_OK;
@@ -152,7 +152,7 @@ next_pic:
 end_view:
 	return ec;
 }
-
+#endif
 
 static int run_game ()
 {
@@ -166,15 +166,21 @@ static int run_game ()
 	case gRUN_GAME:
 		ec = run_game2 ();
 		break;
+#ifdef OPT_PICTURE_VIEWER
 	case gVIEW_PICTURES:
 		ec = view_pictures ();
 		break;
+#endif
+#ifdef OPT_LIST_DICT
 	case gSHOW_WORDS:
 		ec = show_words ();
 		break;
+#endif
+#ifdef OPT_LIST_OBJECTS
 	case gSHOW_OBJECTS:
 		ec = show_objects ();
 		break;
+#endif
 	}
 
 	return ec;

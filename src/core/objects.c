@@ -123,7 +123,7 @@ void unload_objects ()
 	}
 }
 
-
+#ifdef OPT_LIST_OBJECTS
 int show_objects ()
 {
 	int i;
@@ -136,7 +136,7 @@ int show_objects ()
 
 	return err_OK;
 }
-
+#endif
 
 void object_set_location (int n, int i)
 {

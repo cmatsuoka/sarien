@@ -16,6 +16,7 @@ sound.lib: $(OBJS)
 	@%create wlib.lnk
 	for %i in ($(OBJS)) do @%append wlib.lnk +%i
 	wlib -n -q -q sound @wlib.lnk
+	@copy sound.lib $(HOME)\lib
 
 .error:
 #	@cd $(HOME)

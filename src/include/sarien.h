@@ -1,6 +1,6 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
  *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
- *  
+ *
  *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,7 @@ typedef signed long	SINT32;
 #ifdef NATIVE_WIN32
 #define VERSION "Win32 native experimental version"
 #endif
+
 
 #define DIR_		"dir."
 
@@ -76,6 +77,11 @@ typedef signed long	SINT32;
 
 #define AGDS_SUPPORT			/* enable support for AGDS games */
 #define	DISABLE_COPYPROTECTION		/* only works on some games */
+#define OPT_LIST_OBJECTS
+#define OPT_PICTURE_VIEWER
+#define OPT_LIST_DICT
+
+
 #define EGO_VIEW_TABLE	0
 #define	HORIZON		36
 #define _WIDTH		160

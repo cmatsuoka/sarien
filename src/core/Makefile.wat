@@ -25,6 +25,7 @@ agi_core.lib: $(OBJS)
 	@%create wlib.lnk
 	@for %i in ($(OBJS)) do @%append wlib.lnk +%i
 	wlib -n -b -q agi_core @wlib.lnk
+	@copy agi_core.lib $(HOME)\lib
 
 clean: .symbolic
 	@if exist *.bak @del *.bak
