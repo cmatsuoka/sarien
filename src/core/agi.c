@@ -128,32 +128,15 @@ int agi_init ()
 		}
 	}
 
-#if 0
 	/* if forced, load all cacheable objects */
 	if (opt.forceload && ec == err_OK) {
 		for(i = 0; i < MAX_DIRS; i++) {
-			printf ("Force loading cached resource: Logic %4i\r", i);
-			fflush (stdout);
 			loader->load_resource (rLOGIC, i);
-		}
-		printf ("\n");
-
-		for(i = 0; i < MAX_DIRS; i++) {
-			printf ("Force loading cached resource: Picture %4i\r", i);
-			fflush (stdout);
 			loader->load_resource (rPICTURE, i);
-		}
-		printf ("\n");
-
-		for(i = 0; i < MAX_DIRS; i++) {
-			printf ("Force loading cached resource: View %4i\r", i);
-			fflush(stdout);
 			loader->load_resource (rVIEW, i);
 		}
 		printf("\n");
 	}
-#endif
-
 
 	return ec;
 }

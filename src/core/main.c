@@ -37,6 +37,9 @@ struct agi_game game;
 INLINE void _D (char *s, ...) { s = s; }
 #endif
 
+#ifdef NATIVE_MACOSX
+#define main gamemain
+#endif
 
 int main (int argc, char *argv[])
 {

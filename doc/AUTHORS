@@ -1,5 +1,5 @@
 
-- Dark Fiber <dfiber@mega-tokyo.com>
+- Stuart George <dfiber@mega-tokyo.com>
   * Main code
   * DOS port
 
@@ -62,6 +62,12 @@
 - Ziv Barber <ZivB@siliquent.com>
   * Scancode fixes
   * Inventory selection fixes
+
+- Richard Houle <richard.houle@sandtechnology.com>
+  * MacOS X Cocoa port
+
+- Paul Hill <paul@lagernet.clara.co.uk>
+  * Amiga port
 
 Special thanks to:
 

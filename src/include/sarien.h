@@ -158,6 +158,8 @@ extern "C"{
 
 #ifdef NATIVE_WIN32
 #  define VERSION __TIMESTAMP__
+#elif NATIVE_MACOSX
+#  define VERSION "MacOS X native experimental version"
 #endif
 
 

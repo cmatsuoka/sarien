@@ -326,7 +326,6 @@ static int agi_v4_load_dir (struct agi_dir *agid, int intDirType)
 	UINT16 xd[4];
 	int	i;
 
-	fflush(stdout);
 	if ((fp = fopen (pdb_file, "rb")) == NULL) {
 		return err_BadFileOpen;
 	}

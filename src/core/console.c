@@ -526,7 +526,9 @@ void report (char *message, ...)
 	va_end (args);
 
 	if (!has_console) {
+#ifndef NATIVE_MACOSX
 		fprintf (stderr, "%s", y);
+#endif
 		return;
 	}
 
