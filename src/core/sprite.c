@@ -254,9 +254,10 @@ static void free_list (struct list_head *head)
 }
 
 /**
- * Check if sprites of the given list have moved.
+ * Copy sprites from the pic buffer to the screen buffer, and check if
+ * sprites of the given list have moved.
  */
-static void checkmove_sprites (struct list_head *head)
+static void commit_sprites (struct list_head *head)
 {
 	struct list_head *h;
 
@@ -339,21 +340,21 @@ static void blit_sprites (struct list_head *head)
  */
 
 
-void checkmove_upd_sprites ()
+void commit_upd_sprites ()
 {
-	checkmove_sprites (&spr_upd_head);
+	commit_sprites (&spr_upd_head);
 }
 
-void checkmove_nonupd_sprites ()
+void commit_nonupd_sprites ()
 {
-	checkmove_sprites (&spr_nonupd_head);
+	commit_sprites (&spr_nonupd_head);
 }
 
 /* check moves in both lists */
-void checkmove_both ()
+void commit_both ()
 {
-	checkmove_upd_sprites ();
-	checkmove_nonupd_sprites ();
+	commit_upd_sprites ();
+	commit_nonupd_sprites ();
 }
 
 /**
@@ -464,14 +465,17 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 
 	c = &game.views[view].loop[loop].cel[cel];
 
-	if (y - c->height + 1 > 0)
-		y -= c->height - 1;
-	else
+	/* Adjust reference to upper-left corner and do clipping */
+	_D ("y = %d, height = %d", y, c->height);
+	y = y - c->height + 1;
+	if (y < 0)
 		y = 0;
-
 	if (x + c->width >= _WIDTH)
 		x = _WIDTH - c->width;
 
+	erase_both ();
+
+	_D (_D_WARN "blit_cel (%d, %d, %d, c)", x, y, pri);
 	blit_cel (x, y, pri, c);
 
 	/* If margin is 0, 1, 2, or 3, the base of the cel is
@@ -491,6 +495,8 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 			}
 		}
 	}
+
+	blit_both ();
 
 	commit_block (x, y, x + c->width - 1, y + c->height - 1);
 }
@@ -549,6 +555,8 @@ void commit_block (int x1, int y1, int x2, int y2)
 	if (x2 >= _WIDTH) x2 = _WIDTH - 1;
 	if (y1 >= _HEIGHT) y1 = _HEIGHT - 1;
 	if (y2 >= _HEIGHT) y2 = _HEIGHT - 1;
+
+	_D ("%d, %d, %d, %d", x1, y1, x2, y2);
 
 	w = x2 - x1 + 1;
 	q = &game.sbuf[x1 + _WIDTH * y1];

@@ -28,6 +28,7 @@
 #include <stdarg.h>
 #include "agi.h"
 #include "graphics.h"
+#include "sprite.h"
 #include "text.h"
 #include "keyboard.h"
 #include "opcodes.h"
@@ -591,6 +592,7 @@ void console_cycle ()
 			/* going up */
 			y = old_y;
 		} 
+		commit_both(); /* XXX */
 		flush_block (0, 0, GFX_WIDTH - 1, y);
 		old_y = console.y;
 	}
@@ -739,7 +741,7 @@ int console_keyhandler (int k)
 			sprintf (l, "%s%c",
 				console.line[CONSOLE_LINES_BUFFER-1],k);
 			free (console.line[CONSOLE_LINES_BUFFER-1]);
-			console.line[CONSOLE_LINES_BUFFER-1]=strdup(l);
+			console.line[CONSOLE_LINES_BUFFER-1] = strdup(l);
 
 			buffer[console.index] = 0;
 			print_text_console (m, console.index, 19, 2,

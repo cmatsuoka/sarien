@@ -181,6 +181,7 @@ int main_cycle ()
 		debug.priority = !debug.priority;
 		show_pic ();
 		blit_both ();
+		commit_both ();
 		key = 0;
 	}
 #endif
@@ -223,7 +224,6 @@ int main_cycle ()
 
 	return TRUE;
 }
-
 
 int run_game ()
 {

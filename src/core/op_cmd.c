@@ -235,7 +235,7 @@ cmd(overlay_pic) {
 	decode_picture (_v[p0], FALSE);
 	blit_both ();
 	game.picture_shown = 0;
-	checkmove_both ();
+	commit_both ();
 }
 
 cmd(show_pri_screen) {
@@ -363,7 +363,7 @@ cmd(add_to_pic_v) {
 cmd(force_update) {
 	erase_both ();
 	blit_both ();
-	checkmove_both ();
+	commit_both ();
 }
 
 cmd(reverse_loop) {

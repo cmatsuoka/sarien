@@ -400,7 +400,7 @@ void update_viewtable ()
 		erase_upd_sprites ();
 		update_position ();
 		blit_upd_sprites ();
-		checkmove_upd_sprites ();
+		commit_upd_sprites ();
 		game.view_table[0].flags &= ~(ON_WATER|ON_LAND);
 	}
 }
