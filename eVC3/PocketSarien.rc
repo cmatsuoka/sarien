@@ -83,7 +83,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_SARIEN              ICON    DISCARDABLE     "..\bin\sarien.ico"
+IDI_SARIEN              ICON    DISCARDABLE     "..\src\core\win32\sarien.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

@@ -19,4 +19,7 @@ typedef signed int		SINT32;
 #  define snprintf _snprintf
    char* getenv (char* name);
    void mkdir (char* dirname, int mode);
+
+#  define assert(a) ;
+
 #endif

@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include "sarien.h"
 #include "agi.h"
+#include "sprite.h"
 #include "text.h"
 #include "graphics.h"
 #include "browse.h"
@@ -86,6 +87,18 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPWSTR lpszArgs, in
 	game.clock_enabled = FALSE;
 	game.state = STATE_INIT;
 
+	/* Set defaults */
+	/* FIXME: make these selectable in the launcher window */
+	memset (&opt, 0, sizeof (struct sarien_options));
+	opt.gamerun = GAMERUN_RUNGAME;
+	opt.scale = 1;
+	opt.fixratio = TRUE;
+	opt.gfxhacks = TRUE;
+#ifdef USE_HIRES
+	opt.hires = TRUE;
+#endif
+	opt.soundemu = SOUND_EMU_NONE;
+
 	c_unc = GetCommandLine();
 	WideCharToMultiByte(CP_ACP, 0, c_unc, -1, c_asc, 1024, NULL, NULL);
 
@@ -133,31 +146,40 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPWSTR lpszArgs, in
 	game.color_fg = 15;
 	game.color_bg = 0;
 
-//	font = font_english;
-
-	if (init_video () != err_OK) {
-		ec = err_Unk;
+	if ((game.sbuf = (UINT8*)malloc (_WIDTH * _HEIGHT)) == NULL)
 		goto bail_out;
-	}
+#ifdef USE_HIRES
+	if ((game.hires = (UINT8*)malloc (_WIDTH * _HEIGHT * 2)) == NULL)
+		goto bail_out2;
+#endif
+	if (init_sprites () != err_OK)
+		goto bail_out3;
+
+	if (init_video () != err_OK)
+		goto bail_out4;
+
 	console_init ();
 	report ("--- Starting console ---\n\n");
 	if (!opt.gfxhacks)
 		report ("Graphics driver hacks disabled (if any)\n");
 
+	_D ("Detect game");
 	if (	agi_detect_game (filename) == err_OK ||
 		agi_detect_game (get_current_directory ()) == err_OK)
 	{
 		game.state = STATE_LOADED;
 	}
 	else
-		goto bail_out;
+		game.ver = -1;	/* Don't display the conf file warning */
 
+	_D ("Init sound");
 	init_sound ();
 
 	report (" \nSarien " VERSION " is ready.\n");
 	if (game.state < STATE_LOADED) {
        		console_prompt ();
 		do { main_cycle (); } while (game.state < STATE_RUNNING);
+		game.ver = 0;	/* Display the conf file warning */
 	}
 
 	ec = run_game ();
@@ -165,12 +187,15 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPWSTR lpszArgs, in
 	deinit_sound ();
 	deinit_video ();
 
+bail_out4:
+	deinit_sprites ();
+bail_out3:
+#ifdef USE_HIRES
+	free (game.hires);
+#endif
+bail_out2:
+	free (game.sbuf);
 bail_out:
-	if (ec == err_OK || ec == err_DoNothing) {
-		deinit_machine ();
-		exit (ec);
-	}
-
 	deinit_machine ();
 
 	return ec;
