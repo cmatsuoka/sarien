@@ -80,7 +80,7 @@ static int freebsd_init_sound (SINT16 *b)
 	if (ioctl (audio_fd, SNDCTL_DSP_SETBLKSIZE, &arg) == -1)
 		return err_Unk;
 
-	fprintf (stderr,"sound_freebsd: FreeBSD sound support by joep@di.nl\n");
+	report ("FreeBSD sound support written by joep@di.nl\n");
 
 	pthread_create (&thread, NULL, sound_thread, NULL);
 	pthread_detach (thread);

@@ -80,7 +80,7 @@ static int sgi_init_sound (SINT16 *sbuf)
 	old_sample_rate = sgi_get_sample_rate();
 	conf = alNewConfig();
 	if (!conf) {
-		fprintf(stderr, "[sound_sgi] alNewConfig: %s\n",
+		report ("[sound_sgi] alNewConfig: %s\n",
 			strerror(oserror()));
 		return -1;
 	}
@@ -89,18 +89,18 @@ static int sgi_init_sound (SINT16 *sbuf)
 	al_port = alOpenPort("Sarien Sound", "w", conf);
 	alFreeConfig(conf);
 	if (!al_port) {
-		fprintf(stderr, "[sound_sgi] alOpenPort: %s\n",
+		report ("[sound_sgi] alOpenPort: %s\n",
 			strerror(oserror()));
 		return -1;
 	}
 	sgi_set_sample_rate((double)22050);
 	sound_buffer = sbuf;
 	if (pthread_create(&sound_thread, 0, sgi_sound_handler, 0)) {
-		fprintf(stderr, "[sound_sgi] pthread_create: %s\n",
+		report ("[sound_sgi] pthread_create: %s\n",
 			strerror(errno));
 	}
 	pthread_detach(sound_thread);
-	fprintf(stderr, "[sound_sgi] Sound init successful.\n");
+	report ("[sound_sgi] Sound init successful.\n");
 
 	return 0;
 }
@@ -120,3 +120,4 @@ static void sgi_dump_buffer (void)
 	if (al_port && sound_buffer)
 		alWriteFrames(al_port, sound_buffer, BUFFER_SIZE);
 }
+

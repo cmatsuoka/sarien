@@ -72,7 +72,7 @@ int agi_init ()
 	/* setup emulation */
 
 	report ("Emulating Sierra AGI v");
-	switch (loader->int_version>>12) {
+	switch (loader->int_version >> 12) {
 	case 2:
 		report ("%x.%03x\n",
 			(int)(loader->int_version >> 12) & 0xF,
@@ -89,10 +89,10 @@ int agi_init ()
 	game.game_flags |= opt.agds ? ID_AGDS : 0;
 
 	if (game.game_flags & ID_AMIGA)
-		printf ("Amiga padded game detected\n");
+		report ("Amiga padded game detected.\n");
 
 	if (game.game_flags & ID_AGDS)
-		printf ("AGDS mode enabled\n");
+		report ("AGDS mode enabled.\n");
 
 #if 0
 	screen_mode=GFX_MODE;

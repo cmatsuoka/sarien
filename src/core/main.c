@@ -74,25 +74,24 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 
 	font = font_english;
 
-	if (agi_detect_game (argc > 1 ? argv[optind] :
-		get_current_directory ()) == err_OK)
-	{
-		game.state = STATE_LOADED;
-	} else if (argc > optind) {
-		ec = err_BadFileOpen;
-		goto bail_out;
-	}
-
 	if (init_video () != err_OK) {
 		ec = err_Unk;
 		goto bail_out;
 	}
-
 	report ("Enabling interpreter console\n");
 	console_init ();
 	report ("--- Starting console ---\n\n");
 	if (!opt.gfxhacks)
 		report ("Graphics driver hacks disabled (if any)\n");
+
+	if (agi_detect_game (argc > 1 ? argv[optind] :
+		get_current_directory ()) == err_OK)
+	{
+		game.state = STATE_LOADED;
+	} else if (argc > optind) {
+		report ("Could not open AGI game \"%s\".\n\n", argv[optind]);
+	}
+
 	init_sound ();
 
 	report (" \nSarien " VERSION " is ready.\n");

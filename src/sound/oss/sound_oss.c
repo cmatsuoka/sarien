@@ -71,7 +71,7 @@ static int oss_init_sound (SINT16 *b)
 	if ((audio_fd = open ("/dev/dsp", O_WRONLY)) == -1)
 		return -1;
 
-	report ("sound_oss: OSS support by claudio@helllabs.org\n");
+	report ("OSS driver by claudio@helllabs.org.\n");
 
 	/* Set sound device to 16 bit, 22 kHz mono */
 
@@ -79,7 +79,7 @@ static int oss_init_sound (SINT16 *b)
 	ioctl (audio_fd, SNDCTL_DSP_SETFRAGMENT, &i);
 
 	ioctl (audio_fd, SNDCTL_DSP_GETOSPACE, &info);
-	report ("sound_oss: %d fragments of %d bytes\n",
+	report ("Using %d fragments of %d bytes.\n",
 		info.fragstotal, info.fragsize);
 
 	i = AFMT_S16_LE;

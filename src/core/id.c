@@ -15,7 +15,7 @@
 #include "opcodes.h"
 
 /*
- * Determine what AGI v2 system to emulate, these are the "majour" version
+ * Determine what AGI v2 system to emulate, these are the major version
  * to emulate, thus 2.915 comes under 2.917, 2.4xxx is 2.440, etc.
  *
  * 0x2089
@@ -84,7 +84,7 @@ static UINT32 match_crc (UINT32 crc, char *path)
 				for (; *t == ' ' || *t == '\t'; t++);
 			}
 
-			printf ("AGI game detected: %s\n", t);
+			report ("AGI game detected: %s\n\n", t);
 			fclose (f);
 			return ver;
 		}
@@ -96,7 +96,7 @@ static UINT32 match_crc (UINT32 crc, char *path)
 }
 
 
-/* This is UNIX-specific code and will break DOS/windows implementations
+/* FIXME: use registry read function from savegame.c
  * DF, Rosinha or Igor, please fix it accordingly
  */
 static UINT32 match_version (UINT32 crc)
@@ -162,6 +162,7 @@ int v2id_game ()
 	char *fn[] = { "viewdir", "logdir", "picdir", "snddir",
 		"words.tok", "object", "" };
 
+	_D (_D_WARN "");
 	buff = malloc (8192);
 
 	for (crc = y = 0; fn[y][0]; y++) {
@@ -180,7 +181,7 @@ int v2id_game ()
 
 	ver = match_version (crc);
 	agi_set_release (ver);
-	ec=setup_v2_game(ver, crc);
+	ec = setup_v2_game(ver, crc);
 	
 	return ec;
 }
@@ -236,7 +237,7 @@ int v3id_game ()
 	ver = match_version (crc);
 	agi_set_release (ver);
 
-	ec=setup_v3_game(ver, crc);
+	ec = setup_v3_game(ver, crc);
 
 	
 	return ec;
@@ -261,12 +262,12 @@ int v4id_game (UINT32 crc)
 	return ec;
 }
 
-int setup_v2_game(int ver, UINT32 crc)
+int setup_v2_game (int ver, UINT32 crc)
 {
 	int ec=err_OK;
 	
 	if (ver == 0) {
-		printf("Unknown Sierra Game Version: %08x\n", crc);
+		report ("Unknown v2 Sierra game: %08x\n\n", crc);
 		agi_set_release (0x2917);
 	}
 
@@ -294,7 +295,7 @@ int setup_v2_game(int ver, UINT32 crc)
 		break;
 	default:
 		printf("** Cannot setup for unknown version\n");
-		ec=err_UnknownAGIVersion;
+		ec = err_UnknownAGIVersion;
 		break;
 	}
 
@@ -306,7 +307,7 @@ int setup_v3_game(int ver, UINT32 crc)
 	int ec=err_OK;
 	
 	if (ver == 0) {
-		printf("Unknown Sierra game version: %08x\n", crc);
+		printf("Unknown v3 Sierra game: %08x\n\n", crc);
 		agi_set_release (ver = 0x3149);
 	}
 

@@ -60,8 +60,7 @@ static int sdl_init_sound (SINT16 *b)
 {
 	SDL_AudioSpec a;
 
-	fprintf (stderr, "sound_sdl: SDL sound support by "
-		"claudio@helllabs.org\n");
+	report ("SDL sound driver written by claudio@helllabs.org.\n");
 
 	buffer = b;
 
@@ -74,13 +73,13 @@ static int sdl_init_sound (SINT16 *b)
 
 	if (SDL_OpenAudio (&a, NULL) < 0)
 	{
-		fprintf (stderr, "sound_sdl: %s\n", SDL_GetError());
+		report ("%s\n", SDL_GetError());
 		return -1;
 	}
 
 	SDL_PauseAudio (0);
 
-	fprintf (stderr, "sound_sdl: SDL sound initialized\n");
+	report ("SDL sound initialized.\n");
 
 	return 0;
 }

@@ -113,8 +113,8 @@ static int solaris_init_sound (SINT16 *b)
 	if (ioctl (audio_fd, AUDIO_SETINFO, &ainfo) < 0)
 		return err_Unk;
 
-	report ("sound_solaris: Solaris sound support by "
-		"claudio@helllabs.org\n");
+	report ("Solaris sound driver written by claudio@helllabs.org, "
+		"fixed by Keith Hargrove.\n");
 
 	pthread_create (&thread, NULL, sound_thread, NULL);
 	pthread_detach (thread);

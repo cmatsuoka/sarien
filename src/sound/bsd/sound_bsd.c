@@ -78,7 +78,7 @@ static int bsd_init_sound (SINT16 *b)
 	if (ioctl (audio_fd, AUDIO_SETINFO, &ainfo) == -1)
 		return err_Unk;
 
-	report (sound_bsd: BSD sound support by claudio@helllabs.org\n");
+	report ("BSD sound driver written by claudio@helllabs.org.\n");
 
 	/* Set sound device to 16 bit, 22 kHz mono */
 

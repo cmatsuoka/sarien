@@ -81,8 +81,7 @@ static int alsa_init_sound (SINT16 *b)
 	if (snd_pcm_open (&pcm_handle, 0, 0, SND_PCM_OPEN_PLAYBACK) < 0)
 		return -1;
 
-	report ("sound_alsa: ALSA sound support written by "
-		"claudio@helllabs.org\n");
+	report ("ALSA driver written by claudio@helllabs.org.\n");
 
 	/* Set sound device to 16 bit, 22 kHz mono */
 
@@ -100,7 +99,7 @@ static int alsa_init_sound (SINT16 *b)
 	snd_pcm_playback_params (pcm_handle, &pp);
 	snd_pcm_playback_status (pcm_handle, &ps);
 
-	report ("sound_alsa: %d fragments of %d bytes\n",
+	report ("Using %d fragments of %d bytes\n",
 		ps.fragments, ps.fragment_size);
 
 	pthread_create (&thread, NULL, sound_thread, NULL);

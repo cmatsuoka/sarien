@@ -55,7 +55,7 @@ static void blit_cel (int x, int y, int spr, struct view_cel *c)
 			if ((pr = *p & 0xf0) < 0x30) {
 				UINT8 *p1;
 				/* Yes, get effective priority going down */
-				for (p1 = p; (epr = *p1 & 0xf0) < 0x40; p1 += _WIDTH) {
+				for (p1 = p; (epr = *p1 & 0xf0) < 0x30; p1 += _WIDTH) {
 					if (p1 >= game.sbuf + _WIDTH * _HEIGHT) {
 						epr = 0x40;
 						break;
