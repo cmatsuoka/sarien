@@ -33,8 +33,8 @@ extern "C"{
 #define KEY_UP_LEFT	0x4700
 #define KEY_UP_RIGHT	0x4900
 
-#define KEY_STATUSLN	0xff61		/* F11 */
-#define KEY_PRIORITY	0xffc8		/* F12 */
+#define KEY_STATUSLN	0xd900		/* F11 */
+#define KEY_PRIORITY	0xda00		/* F12 */
 
 #define KEY_PGUP	0x4900		/* Page Up (fixed by Ziv Barber) */
 #define KEY_PGDN	0x5100  	/* Page Down */

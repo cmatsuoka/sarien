@@ -507,11 +507,15 @@ int init_video ()
  */
 int deinit_video ()
 {
-	return gfx->deinit_video_mode ();
+	int rc;
+
+	rc = gfx->deinit_video_mode ();
 	free (sarien_screen);
 #ifdef USE_CONSOLE
 	free (console_screen);
 #endif
+
+	return rc;
 }
 
 

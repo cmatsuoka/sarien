@@ -188,21 +188,12 @@ static int pc_get_key ()
 	memset (&r, 0, sizeof(union REGS));
 #ifdef __WATCOMC__
 	int386 (0x16, &r, &r);
-	switch (key = r.w.ax)
 #endif
 #ifdef __TURBOC__
 	int86 (0x16, &r, &r);
-	switch (key = r.x.ax)
 #endif
 
-	{
-		default:
-			if(r.h.al == 0)
-				key = r.h.ah << 8;
-			else
-				key = r.h.al;
-			break;
-	}
+	key = r.h.al == 0 ? (r.h.ah << 8) : r.h.al;
 
 	return key;
 }
