@@ -114,7 +114,6 @@ cmd(put_f)		{ object_set_location (_v[p0], _v[p1]); }
 cmd(drop)		{ object_set_location (p0, 0); }
 cmd(get)		{ object_set_location (p0, EGO_OWNED); }
 cmd(get_f)		{ object_set_location (_v[p0], EGO_OWNED); }
-cmd(set_text_attribute)	{ game.color_fg = p0; game.color_bg = p1; }
 cmd(word_to_string)	{ strcpy (game.strings[p0], game.ego_words[p1].word); }
 cmd(open_dialogue)	{ _D ("p0 = %d", p0); game.has_window = TRUE; }
 cmd(close_dialogue)	{ _D ("p0 = %d", p0); game.has_window = FALSE; }
@@ -576,6 +575,18 @@ cmd(graphics) {
 	}
 }
 
+cmd(set_text_attribute)	{
+	game.color_fg = p0;
+	game.color_bg = p1;
+
+	if (game.gfx_mode) {
+		if (game.color_bg != 0) {
+			game.color_fg = 0;
+			game.color_bg = 15;
+		}
+	}
+}
+
 cmd(status) {
 	inventory();
 }
@@ -710,11 +721,6 @@ cmd(set_string) {
 }
 
 cmd(display) {
-	/* If status line is active, don't overwrite it. Fixes blue
-	 * status bar in Escape Quest (bug #457623)
-	 */
-	if (game.status_line && p0 == game.line_status)
-		return;
 	print_text (cur_logic->texts[p2 - 1], p1, 0, p0, 40,
 		game.color_fg, game.color_bg);
 }

@@ -602,7 +602,6 @@ void clear_lines (int l1, int l2, int c)
 	 * ie, from 22 to 24 is 3 lines, not 2 lines.
 	 */
 
-	/* if (c) c = 15; */
 	l1 *= CHAR_LINES;
 	l2 *= CHAR_LINES;
 	l2 += CHAR_LINES - 1;
