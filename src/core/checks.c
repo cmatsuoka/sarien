@@ -19,13 +19,18 @@ static int check_position (struct vt_entry *v)
 	if (v->x_pos < 0 ||
 	    v->x_pos + v->x_size > _WIDTH ||
 	    v->y_pos - v->y_size + 1 < 0 ||
-	    v->y_pos < v->y_size || /* not in AGI 2.917, but MH1 needs it */
 	    v->y_pos >= _HEIGHT ||
 	    ((~v->flags & IGNORE_HORIZON) && v->y_pos <= game.horizon))
 	{
 		_D (_D_WARN "check position failed: x=%d, y=%d, h=%d, w=%d",
 			v->x_pos, v->y_pos, v->x_size, v->y_size);
 		return 0;
+	}
+
+	/* MH1 needs this, but it breaks LSL1 */
+	if (agi_get_release() >= 0x3000) {
+		if (v->y_pos < v->y_size)
+			return 0;
 	}
 
 	return 1;
