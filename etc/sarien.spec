@@ -37,6 +37,10 @@ rm -rf %{buildroot}
 %{_sysconfdir}/sarien.conf
 
 %changelog
+* Thu Nov 22 2001 Claudio Matsuoka <claudio@helllabs.org>
++ sarien-0.7.0-1cm
+- new upstream release
+
 * Sun Aug 26 2001 Claudio Matsuoka <claudio@helllabs.org>
 + sarien-0.6.2-1cm
 - new upstream release
