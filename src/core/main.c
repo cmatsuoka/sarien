@@ -98,7 +98,7 @@ int main (int argc, char *argv[])
 	}
 #endif
 
-#ifndef __MSDOS__
+#if !defined (__MSDOS__) && !defined (__MPW__)
 	/* printf() breaks GCC 3.0 build */
 	fprintf (stdout,
 TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
