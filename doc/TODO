@@ -5,8 +5,8 @@ Things noted to be fixed
  - Nicer save/load functions
 
 SGEO:
- - PalmDB v4 driver needs to be cleaned up. Right now its an amalgen of
-   agi_v2 + agi_v3.c source code. Its quite ugly. agi2pdb should do this
+ - PalmDB v4 driver needs to be cleaned up. Right now its an amalgam of
+   agi_v2 + agi_v3.c source code. It's quite ugly. agi2pdb should do this
    kind of conversion for us.
  - AGI2PDB needs to convert a v3 game 'down' to v2 (ie: decompress it all)
 
@@ -16,7 +16,7 @@ Sound:
  - add DOS drivers
 
 General:
- - Add error messages for unknown display and sound drivers, etc
+ - Add error messages for unknown display and sound drivers, etc.
 
 Graphics:
  - Drop root privileges when running svgalib binary and not
