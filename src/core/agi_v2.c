@@ -208,6 +208,7 @@ static UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 			if (data != NULL) {
 				fread (data, 1, agid->len, fp);
 			} else {
+				message_box ("Oops.");
 				abort ();
 			}
 		} else {

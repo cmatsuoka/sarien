@@ -18,6 +18,7 @@ extern "C"{
 /* Features */
 #define USE_CONSOLE
 #define USE_PCM_SOUND
+#define USE_IIGS_SOUND
 #define AGDS_SUPPORT
 
 #ifdef PALMOS
@@ -67,6 +68,11 @@ extern "C"{
 #  define malloc(x)	((void *)NewPtr (x))
 #  define calloc(x,s)	((void *)NewPtrClear ((x) * (s)))
 #  define free(x)	DisposePtr ((Ptr)(x))
+#endif
+
+
+#ifndef USE_PCM_SOUND
+#  undef USE_IIGS_SOUND
 #endif
 
 #include "console.h"

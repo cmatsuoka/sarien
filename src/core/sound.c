@@ -399,6 +399,10 @@ int init_sound ()
 		report ("disabled\n");
 	}
 
+#ifdef USE_IIGS_SOUND
+	load_instruments ("demo.sys");
+#endif
+
 	return r;
 }
 
@@ -627,15 +631,15 @@ UINT32 mix_sound (void)
 int load_instruments (char *fname)
 {
 	FILE *fp;
-	int j, k;
+	int i, j, k;
 	struct sound_instrument ai;
 	int num_wav;
 	char *path;
 
-	path = fixpath (NO_GAMEDIR, "sierrastandard");
+	path = fixpath (NO_GAMEDIR, "sierrast");
 	report ("Loading samples: %s\n", path);
 
-	if ((fp = fopen ((char*)path, "rb")) == NULL)
+	if ((fp = fopen (path, "rb")) == NULL)
 		return err_BadFileOpen;
 
 	if ((wave = malloc (0x10000)) == NULL)
@@ -647,7 +651,7 @@ int load_instruments (char *fname)
 	fixpath (NO_GAMEDIR, fname);
 	report ("Loading instruments: %s\n", path);
 
-	if ((fp = fopen ((char*)path, "rb")) == NULL)
+	if ((fp = fopen (path, "rb")) == NULL)
 		return err_BadFileOpen;
 
 	fseek (fp, 0x8469, SEEK_SET);
@@ -658,7 +662,7 @@ for (num_wav = j = 0; j < 40; j++) {
 	if (ai.env[0].bp > 0x7f)
 		break;
 
-#if 0
+#if 1
 	printf ("Instrument %d loaded ----------------\n", j);
 	printf ("Envelope:\n");
 	for (i = 0; i < 8; i++)
@@ -673,7 +677,7 @@ for (num_wav = j = 0; j < 40; j++) {
 
 	for (k = 0; k < ai.wac; k++, num_wav++) {
 		fread (&ai.wal[k], 1, 6, fp);
-#if 0
+#if 1
 		printf ("[A %d of %d] top: %02x, wave address: %02x, "
 			"size: %02x, mode: %02x, relPitch: %04x\n",
 			k + 1, ai.wac, ai.wal[k].top, ai.wal[k].addr,
@@ -684,7 +688,7 @@ for (num_wav = j = 0; j < 40; j++) {
 
 	for (k = 0; k < ai.wbc; k++, num_wav++) {
 		fread (&ai.wbl[k], 1, 6, fp);
-#if 0
+#if 1
 		printf ("[B %d of %d] top: %02x, wave address: %02x, "
 			"size: %02x, mode: %02x, relPitch: %04x\n",
 			k + 1, ai.wbc, ai.wbl[k].top, ai.wbl[k].addr,

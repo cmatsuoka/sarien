@@ -14,6 +14,7 @@
 #include "sarien.h"
 #include "agi.h"
 #include "graphics.h"
+#include "rand.h"
 
 #define next_byte data[foffs++]
 
@@ -699,6 +700,16 @@ void show_pic ()
 		put_pixels_a (0, y, _WIDTH, &game.sbuf[i]);
 		i += _WIDTH;
 	}
+
+#if 0
+	/* IIgs-style transitions. Too slow, and annoying after a few rooms */
+	for (i = 0; i < 4000; i++) {
+		int bx = rnd (GFX_WIDTH / 8) * 8;
+		int by = rnd (GFX_HEIGHT / 4) * 4;
+		flush_block (bx, by, bx + 8 - 1, by + 4 - 1);
+		do_update ();
+	}
+#endif
 
 	flush_screen ();
 }

@@ -3,10 +3,30 @@ Revision History
 ================
 
 0.7.0 (cvs)
-	- fixed pixel dust in object viewing
-	- fixed QNX Photon driver
-	- fixed SVGAlib driver
-	- added QNX Neutrino sound driver
+	- added QNX native sound driver (untested)
+	- ported to DOS 16-bit using Turbo C++
+	- partial port to MacOS using MPW
+	- changed palette to use Amiga-ish colors instead of PC EGA
+
+0.6.1 (20010722)
+	- fixed QNX build and Photon driver
+	- updated ALSA driver to work in QNX
+	- fixed SVGAlib driver compile errors
+	- enabled sound support with SVGAlib driver
+	- fixed game crashes on quit/restart
+	- fixed screen corruption in item view
+	- fixed game crashes in menu operation
+	- cosmetic changes in status bar/inventory screen
+	- added missing fix_position() call to reposition.to and
+	  reposition.to.v implementations
+	- decoupled x and y-axis test in update_position()
+	- keypad '5' stops ego movement
+	- spacebar can be used to dismiss dialog boxes
+	- always assume that sprites with priority 15 are on land
+	- disabling player control when stop.motion is called
+	- added missing indirection in cmd_put() (fixed by Nick Sonneveld)
+	- removed v25 setting from cmd_status() (fixed by Nick Sonneveld)
+	- fixed y coordinate of ego when entering room from south
 
 0.6.0 (20010625)
 	- file layout changes

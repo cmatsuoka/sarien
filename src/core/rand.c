@@ -40,11 +40,17 @@ static SINT32 xrnd(void)
  * Public functions
  */
 
+/**
+ * Set the random number generator seed.
+ */
 void set_rnd_seed ()
 {
 	set_xrnd_seed(time(NULL));
 }
 
+/**
+ * Read the random number generator seed.
+ */
 SINT32 get_rnd_seed ()
 {
 	return rnd_seed;
