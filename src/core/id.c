@@ -36,8 +36,8 @@ void list_games ()
 	UINT32 id, ver;
 	int min, maj, i = 0;
 
-	/* FIXME: shouldn't be hard-coded, of course. */
-	f = fopen ("/etc/sarien.conf", "r");
+	/**/
+	f = fopen (get_config_file(), "r");
 
 	printf (
 "Game#  AGI ver.   Title                                    CRC\n"
@@ -148,63 +148,21 @@ static UINT32 match_crc (UINT32 crc, char *path)
 }
 
 
-/* FIXME: use registry read function
- */
 static UINT32 match_version (UINT32 crc)
 {
-#ifdef WIN32
-	char buf[256];
-	int ver;
+	int	ver;
+	char *fname;
 
-	strcpy(buf, "./");
+	fname=get_config_file();
+	ver = match_crc(crc, fname);
 
-	if(getenv("SARIEN")!=NULL)
-	{
-		sprintf(buf, "%s/%s", getenv("SARIEN"), "sarien.ini");
-	}
-	strcat(buf, "/sarien.ini");
-	ver = match_crc (crc, buf);
-#else
-#ifdef __MSDOS__
-	char buf[256];
-	int ver;
-	char *q;
-
-	if (getenv ("SARIEN") != NULL) {
-		sprintf(buf, "%s/%s", getenv("SARIEN"), "sarien.ini");
-	}
-
-	/* FIXME -- set policy for pathnames, etc */
-	else
-	{
-		strcpy (buf, exec_name);
-		q = strchr(buf, 0x0);
-		q--;
-
-		while((*q!='\\' && *q!='/') && q>buf)
-			q--;
-
-		if(q!=buf)
-			*q=0x0;
-
-		strcat(buf, "/sarien.ini");
-	}
-	ver = match_crc (crc, buf);
-#else
-	char buf[256];
-	int ver;
-
-#ifdef HAVE_SNPRINTF
-	snprintf (buf, 256, "%s/.sarienrc", getenv ("HOME"));
-#else
-	sprintf (buf, "%s/.sarienrc", getenv ("HOME"));
-#endif
-
-	ver = match_crc (crc, buf);
+#if 0
+	/* FIXME */
+	/*  unix special case! */
 	if (!ver)
 		ver = match_crc (crc, "/etc/sarien.conf");
 #endif
-#endif
+
 	return ver;
 }
 

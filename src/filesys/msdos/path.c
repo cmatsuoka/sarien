@@ -1,6 +1,6 @@
 /* Sarien - A Sierra AGI resource interpreter engine
  * Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
- *  
+ *
  * $Id$
  *
  * This program is free software; you can redistribute it and/or modify
@@ -8,9 +8,13 @@
  * the Free Software Foundation; see docs/COPYING for further details.
  */
 
+#include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include "sarien.h"
 #include "agi.h"
+
+char ini_path[MAX_PATH];
 
 
 int get_app_dir (char *app_dir, unsigned int size)
@@ -31,5 +35,31 @@ int get_app_dir (char *app_dir, unsigned int size)
 	_D ("app_dir = %s", app_dir);
 	
 	return x ? 0 : -1;
+}
+
+char* get_config_file(void)
+{
+	char *q;
+
+	if (getenv ("SARIEN") != NULL)
+	{
+		sprintf(ini_path, "%s/%s", getenv("SARIEN"), "sarien.ini");
+	}
+	else
+	{
+		strcpy (ini_path, exec_name);
+		q = strchr(ini_path, 0x0);
+		q--;
+
+		while((*q!='\\' && *q!='/') && q>ini_path)
+			q--;
+
+		if(q!=ini_path)
+			*q=0x0;
+
+		strcat(ini_path, "/sarien.ini");
+	}
+
+	return (char*)ini_path;
 }
 
