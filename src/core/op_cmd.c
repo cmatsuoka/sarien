@@ -94,6 +94,9 @@ extern struct agi_menu *menu;
 extern struct sarien_options opt;
 extern struct sarien_debug debug;
 
+/* FIXME: Hmm... should this be here? */
+extern struct gfx_driver *gfx;
+
 
 void cmd_position (UINT8 entry, UINT8 x, UINT8 y)
 {
@@ -796,6 +799,7 @@ void cmd_clear_lines (UINT8 sl, UINT8 el, UINT8 c)
 
 	_D ((": blit (%d, %d, %d, %d)", 0, sl * 8,
 		GFX_WIDTH - 1, z - 1));
+
 	gfx->put_block (0, sl * 8, GFX_WIDTH - 1, sl * 8 + z - 1);
 }
 

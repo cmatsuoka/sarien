@@ -32,6 +32,7 @@ static XShmSegmentInfo shminfo;
 #include "keyboard.h"
 
 extern struct sarien_options opt;
+extern struct gfx_driver *gfx;
 
 static Display *display;
 static Visual *visual;
@@ -65,17 +66,17 @@ static int key_queue_end = 0;
 	key_queue_start %= KEY_QUEUE_SIZE; } while (0)
 
 static void kill_mode ();
-static UINT16 init_vidmode (void);
-static UINT16 deinit_vidmode (void);
-static UINT16 set_palette (UINT8 *, UINT16, UINT16);
-static void put_block (UINT16, UINT16, UINT16, UINT16);
-static void _put_pixel (UINT16, UINT16, UINT16);
-static UINT8 keypress (void);
-static UINT16 get_key (void);
+static int init_vidmode (void);
+static int deinit_vidmode (void);
+static int set_palette (UINT8 *, int, int);
+static void put_block (int, int, int, int);
+static void _put_pixel (int, int, int);
+static int keypress (void);
+static int get_key (void);
 
 static void new_timer (void);
 
-static __GFX_DRIVER GFX_x11 = {
+static struct gfx_driver GFX_x11 = {
 	init_vidmode,
 	deinit_vidmode,
 	put_block,
@@ -278,7 +279,7 @@ int deinit_machine (void)
 }
 
 
-static UINT16 set_palette (UINT8 *pal, UINT16 scol, UINT16 numcols)
+static int set_palette (UINT8 *pal, int scol, int numcols)
 {
 	int i;
 
@@ -349,7 +350,7 @@ static void kill_mode (int i)
 }
 
 
-static UINT16 init_vidmode (void)
+static int init_vidmode ()
 {
 	/*Pixmap icon; */
 	XWMHints hints;
@@ -484,7 +485,7 @@ init_done:
 }
 
 
-static UINT16 deinit_vidmode (void)
+static int deinit_vidmode ()
 {
 	_D (("()"));
 
@@ -512,7 +513,7 @@ static UINT16 deinit_vidmode (void)
 
 
 /* put a block onto the screen */
-static void put_block (UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
+static void put_block (int x1, int y1, int x2, int y2)
 {
 	if (x1 >= GFX_WIDTH)
 		x1 = GFX_WIDTH - 1;
@@ -548,7 +549,7 @@ static void put_block (UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
 
 /* put pixel routine */
 /* will optimize this later */
-static void _put_pixel (UINT16 x, UINT16 y, UINT16 c)
+static void _put_pixel (int x, int y, int c)
 {
 	register int cp = rgb_palette[c];
 	register int i, j;
@@ -572,14 +573,14 @@ static void _put_pixel (UINT16 x, UINT16 y, UINT16 c)
 }
 
 
-static UINT8 keypress (void)
+static int keypress ()
 {
 	process_events ();
 	return key_queue_start != key_queue_end;
 }
 
 
-static UINT16 get_key (void)
+static int get_key ()
 {
 	UINT16 k;
 

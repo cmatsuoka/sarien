@@ -30,6 +30,7 @@
 extern struct agi_object *objects;
 extern int num_objects;
 
+extern struct gfx_driver *gfx;
 
 void inventory ()
 {

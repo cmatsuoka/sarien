@@ -437,8 +437,7 @@ void report (char *message, ...)
 {
 	char x[512], y[512], z[64], *m, *n;
 	va_list	args;
-	int i, s;
-	UINT16 len;
+	int i, s, len;
 
 	va_start (args, message);
 

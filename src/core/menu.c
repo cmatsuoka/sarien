@@ -23,6 +23,7 @@ struct agi_menu *menu;
 
 extern struct sarien_console console;
 extern UINT8 clock_enabled;
+extern struct gfx_driver *gfx;
 
 
 static void draw_horizontal_menu_bar (int cur_menu, int max_menu)

@@ -36,6 +36,7 @@ extern struct sarien_console console;
 extern struct agi_logic logics[];
 extern struct agi_view_table view_table[];
 
+extern struct gfx_driver *gfx;
 
 /* FIXME: kludge */
 //UINT8 blocking_window;

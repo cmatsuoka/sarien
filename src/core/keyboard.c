@@ -39,6 +39,9 @@ UINT16  xInput, yInput;
 extern struct sarien_console console;
 extern struct agi_view_table view_table[];
 
+/* FIXME */
+extern struct gfx_driver *gfx;
+
 
 /*
  * IBM-PC keyboard scancodes

@@ -22,12 +22,12 @@ static int bytes_per_pixel;
 
 
 static int	dga_init_vidmode	(void);
-static UINT16	dga_deinit_vidmode	(void);
-static void	dga_put_block		(UINT16, UINT16, UINT16, UINT16);
-static void	dga_put_pixel8		(UINT16, UINT16, UINT16);
-static void	dga_put_pixel15		(UINT16, UINT16, UINT16);
-static void	dga_put_pixel16		(UINT16, UINT16, UINT16);
-static void	dga_put_pixel24		(UINT16, UINT16, UINT16);
+static int	dga_deinit_vidmode	(void);
+static void	dga_put_block		(int, int, int, int);
+static void	dga_put_pixel8		(int, int, int);
+static void	dga_put_pixel15		(int, int, int);
+static void	dga_put_pixel16		(int, int, int);
+static void	dga_put_pixel24		(int, int, int);
 
 
 static int dga_init_vidmode ()
@@ -172,7 +172,7 @@ static int dga_init_vidmode ()
 }
 
 
-static UINT16 dga_deinit_vidmode ()
+static int dga_deinit_vidmode ()
 {
 	XF86DGADirectVideo (display, window, 0);
 
@@ -196,7 +196,7 @@ static UINT16 dga_deinit_vidmode ()
 
 
 /* put a block onto the screen */
-static void dga_put_block (UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
+static void dga_put_block (int x1, int y1, int x2, int y2)
 {
 	int i, h;
 
@@ -219,26 +219,26 @@ static void dga_put_block (UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
 }
 
 
-static void dga_put_pixel8 (UINT16 x, UINT16 y, UINT16 c)
+static void dga_put_pixel8 (int x, int y, int c)
 {
 	/*video_buffer[y * 320 + x] = (c & 0xFF);*/
 }
 
 
-static void dga_put_pixel15 (UINT16 x, UINT16 y, UINT16 c)
+static void dga_put_pixel15 (int x, int y, int c)
 {
 	/*video_buffer[y * 320 + x] = (c & 0xFF);*/
 }
 
 
-static void dga_put_pixel16 (UINT16 x, UINT16 y, UINT16 c)
+static void dga_put_pixel16 (int x, int y, int c)
 {
 	*(UINT16 *)(buffer + bytes_per_pixel * (320 * y + x)) =
 		rgb_palette[c];
 }
 
 
-static void dga_put_pixel24 (UINT16 x, UINT16 y, UINT16 c)
+static void dga_put_pixel24 (int x, int y, int c)
 {
 	/*video_buffer[y * 320 + x] = (c & 0xFF);*/
 }

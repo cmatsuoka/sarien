@@ -54,6 +54,7 @@ UINT8	pic_clear_flag = TRUE;
 extern UINT8 old_prio;		/* Used in add_to_pic() */
 
 extern struct sarien_options opt;
+extern struct gfx_driver *gfx;
 
 
 void dump_screen (int resnum)

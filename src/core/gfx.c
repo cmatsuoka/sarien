@@ -1,20 +1,11 @@
-/*
- *  Sarien AGI :: Copyright (C) 1999 Dark Fiber 
- *
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999 Dark Fiber, (C) 1999,2001 Claudio Matsuoka
+ *  
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
 #include <stdio.h>
@@ -53,7 +44,7 @@ UINT8 palette[32 * 3]= {
 	0x3F, 0x3F, 0x3F
 };
 
-__GFX_DRIVER	*gfx;			/* graphics driver */
+struct gfx_driver *gfx;			/* graphics driver */
 UINT8		screen_mode;		/* 0=gfx mode, 1=text mode */
 UINT8		txt_fg;			/* fg colour */
 UINT8		txt_bg;			/* bg colour */
@@ -91,16 +82,16 @@ int greatest_kludge_of_all_time = 0;
 }
 
 
-void put_pixel (UINT16 x, UINT16 y, UINT16 c)
+void put_pixel (int x, int y, int c)
 {
 	layer1_data[y * 320 + x] = c;
 	put_pixel2 (x, y, c);
 }
 
 
-void flush_block (UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
+void flush_block (int x1, int y1, int x2, int y2)
 {
-	UINT32 x, y;
+	int x, y;
 
 	for (y = y1; y <= y2; y++)
 		for (x = x1; x <= x2; x++)
@@ -124,6 +115,7 @@ void put_screen ()
 
 
 static UINT8 back_buffer[320 * 200];
+
 void save_screen ()
 {
 	memcpy (back_buffer, layer1_data, 320 * 200);
@@ -156,7 +148,7 @@ void restore_screen_area ()	/* Yuck! */
 
 
 /* Based on LAGII 0.1.5 by XoXus */
-void shake_screen (UINT8 n)
+void shake_screen (int n)
 {
 #define MAG 3
 	int i;
@@ -178,7 +170,7 @@ void shake_screen (UINT8 n)
 }
 
 
-void put_pixel_buffer (UINT16 x, UINT16 y, UINT16 c)
+void put_pixel_buffer (int x, int y, int c)
 {
 	if (line_min_print > 0)
 		y += 8;
@@ -188,7 +180,7 @@ void put_pixel_buffer (UINT16 x, UINT16 y, UINT16 c)
 }
 
 
-UINT16 init_video ()
+int init_video ()
 {
 	int i;
 
@@ -207,7 +199,7 @@ UINT16 init_video ()
 }
 
 
-UINT16 deinit_video ()
+int deinit_video ()
 {
 	return gfx->deinit_video_mode ();
 }
@@ -226,7 +218,7 @@ void set_block (int x1, int y1, int x2, int y2)
 }
 
 
-void message_box (UINT8 *message, ...)
+void message_box (char *message, ...)
 {
 	char	x[512];
 	va_list	args;
@@ -234,11 +226,11 @@ void message_box (UINT8 *message, ...)
 	_D (("(message, ...)"));
 	va_start (args, message);
 
-	#ifdef HAVE_VSNPRINTF
-	vsnprintf (x, 510, (char*)message, args);
-	#else
-	vsprintf (x, (char*)message, args);
-	#endif
+#ifdef HAVE_VSNPRINTF
+	vsnprintf (x, 510, message, args);
+#else
+	vsprintf (x, message, args);
+#endif
 
 	va_end (args);
 
@@ -250,7 +242,7 @@ void message_box (UINT8 *message, ...)
 	 */
 	allow_kyb_input = FALSE;
 
-	textbox((UINT8*)x, -1, -1, -1);
+	textbox (x, -1, -1, -1);
 	message_box_key = wait_key();
 
 	allow_kyb_input = TRUE;
@@ -260,12 +252,12 @@ void message_box (UINT8 *message, ...)
 }
 
 
-/* len = len in characters, not pixels!!
+/* len is in characters, not pixels!!
  */
-void textbox(UINT8 *message, SINT16 x, SINT16 y, SINT16 len)
+void textbox(char *message, int x, int y, int len)
 {
 	/* if x | y = -1, then centre the box */
-	SINT16	xoff, yoff, lin;
+	int	xoff, yoff, lin;
 	UINT8	*msg, *m;
 
 	_D (("(\"%s\", %d, %d, %d)", message, x, y, len));
@@ -278,7 +270,7 @@ void textbox(UINT8 *message, SINT16 x, SINT16 y, SINT16 len)
 	yoff = y;
 	len--;
 
-	m = msg = word_wrap_string (message, (UINT16*)&len);
+	m = msg = word_wrap_string (message, &len);
 
 	for (lin = 1; *m; m++)
 		if (*m == '\n')
@@ -297,32 +289,35 @@ void textbox(UINT8 *message, SINT16 x, SINT16 y, SINT16 len)
 
 	draw_box (xoff, yoff, xoff + ((len + 2) * 8), yoff + ((lin + 2) * 8),
 		MSG_BOX_COLOUR, MSG_BOX_LINE, LINES);
+
 	print_text2 (2, msg, 0, 8 + xoff, 8 + yoff, len + 1,
 		MSG_BOX_TEXT, MSG_BOX_COLOUR);
-	gfx->put_block (xoff, yoff, xoff + ((len + 2) * 8), yoff + ((lin + 2) * 8));
+
+	gfx->put_block (xoff, yoff, xoff + ((len + 2) * 8),
+		yoff + ((lin + 2) * 8));
 
 	free (msg);
 }
 
 
-void print_text (UINT8 *msg, UINT16 foff, UINT16 xoff, UINT16 yoff, UINT16 len, UINT8 fg, UINT8 bg)
+void print_text (char *msg, int foff, int xoff, int yoff, int len, int fg, int bg)
 {
 	print_text2 (0, msg, foff, xoff, yoff, len, fg, bg);
 }
 
 
-void print_text_layer (UINT8 *msg, UINT16 foff, UINT16 xoff, UINT16 yoff, UINT16 len, UINT8 fg, UINT8 bg)
+void print_text_layer (char *msg, int foff, int xoff, int yoff, int len, int fg, int bg)
 {
 	print_text2 (1, msg, foff, xoff, yoff, len, fg, bg);
 }
 
 
-void print_text2 (UINT8 l, UINT8 *msg, UINT16 foff, UINT16 xoff, UINT16 yoff, UINT16 len, UINT8 fg, UINT8 bg)
+void print_text2 (int l, char *msg, int foff, int xoff, int yoff, int len, int fg, int bg)
 {
-	UINT8  *m;
-	UINT8  x1, y1;
-	UINT16 maxx, minx, ofoff;
-	UINT8 update;
+	char *m;
+	int x1, y1;
+	int maxx, minx, ofoff;
+	int update;
 
 	/* kludge! */
 	update = 1;
@@ -337,21 +332,17 @@ void print_text2 (UINT8 l, UINT8 *msg, UINT16 foff, UINT16 xoff, UINT16 yoff, UI
 	 * Changed here
 	 * The string with len == 1 wasn't being printed...
 	 */
-	if (len == 1)
-	{
+	if (len == 1) {
 		put_text_character (l, xoff + foff,	yoff, *msg, fg, bg);
 		maxx  = 1;
 		minx  = 0;
 		ofoff = foff;
 		y1 = 0;		/* Check this */
-	}
-	else
-	{
+	} else {
 		maxx  = 0;
 		minx  = 320;
 		ofoff = foff;
-		for (m = msg, x1 = y1 = 0; *m; m++)
-		{
+		for (m = msg, x1 = y1 = 0; *m; m++) {
 			if (*m >= 0x20 || *m == 1 || *m == 2 || *m == 3) {
 				/* FIXME */
 
@@ -383,6 +374,7 @@ void print_text2 (UINT8 l, UINT8 *msg, UINT16 foff, UINT16 xoff, UINT16 yoff, UI
 
 	maxx <<= 3;
 	minx <<= 3;
+
 	if (update)
 		gfx->put_block (foff+xoff+minx, yoff, ofoff+xoff+maxx+7, yoff+y1*8+9);
 }
@@ -391,20 +383,18 @@ void print_text2 (UINT8 l, UINT8 *msg, UINT16 foff, UINT16 xoff, UINT16 yoff, UI
 /* CM: Ok, this is my attempt to make a good line wrapping algorithm.
  *     Sierra like, that is.
  */
-UINT8* word_wrap_string(UINT8 *mesg, UINT16 *len)
+char* word_wrap_string (char *mesg, int *len)
 {
 	char *msg, *v, *e;
-	UINT16 maxc, c, l = *len;
+	int maxc, c, l = *len;
 
 	_D (("(\"%s\", %d)", mesg, *len));
 	v = msg = strdup ((char*)mesg);
 	e = msg + strlen ((char*)msg);
 	maxc = 0;
 
-	while (42)
-	{
-		while ((c = strcspn (v, "\n")) <= l)
-		{
+	while (42) {
+		while ((c = strcspn (v, "\n")) <= l) {
 			if (c > maxc)
 				maxc = c;
 			if ((v += c + 1) >= e)
@@ -425,14 +415,13 @@ end:
 }
 
 
-void put_text_character (UINT8 l, UINT16 x, UINT16 y, UINT8 c, UINT8 fg, UINT8 bg)
+void put_text_character (int l, int x, int y, int c, int fg, int bg)
 {
-	UINT16	x1, y1, xx, yy, cc;
+	int x1, y1, xx, yy, cc;
 	UINT8	*p;
 
 	p = font + (c << 3);
-	for (y1 = 0; y1 < 8; y1++)
-	{
+	for (y1 = 0; y1 < 8; y1++) {
 		for(x1 = 0; x1 < 8; x1 ++) {
 			xx = x + x1;
 			yy = y + y1;
@@ -449,9 +438,9 @@ void put_text_character (UINT8 l, UINT16 x, UINT16 y, UINT8 c, UINT8 fg, UINT8 b
 }
 
 
-void draw_box(UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2, UINT8 colour1, UINT8 colour2, UINT8 f)
+void draw_box (int x1, int y1, int x2, int y2, int colour1, int colour2, int f)
 {
-	UINT16	x, y;
+	int x, y;
 
 	if (x1 > 319)
 		x1 = 319;
@@ -465,26 +454,22 @@ void draw_box(UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2, UINT8 colour1, UINT8 c
 	k_x1 = x1; k_y1 = y1;	/* Yuck! Someone fix this */
 	k_x2 = x2; k_y2 = y2;
 
-	for(y=y1; y<y2; y++)
+	for (y=y1; y<y2; y++)
 		for(x=x1; x<x2; x++)
 			put_pixel(x, y, colour1);
 
-	if((f&LINES)==LINES)
-	{
+	if (f & LINES) {
 		/* draw lines */
-		for(x=x1; x<x2-4; x++)
-		{
-			put_pixel(x+2, y1+2, colour2);
-			put_pixel(x+2, y2-3, colour2);
+		for (x = x1; x < x2 - 4; x++) {
+			put_pixel (x+2, y1+2, colour2);
+			put_pixel (x+2, y2-3, colour2);
 		}
 
-		for(y=y1; y<=y2-5; y++)
-		{
-			put_pixel(x1+2, y+2, colour2);
-			put_pixel(x1+3, y+2, colour2);
-
-			put_pixel(x2-3, y+2, colour2);
-			put_pixel(x2-4, y+2, colour2);
+		for (y = y1; y <= y2 - 5; y++) {
+			put_pixel (x1+2, y+2, colour2);
+			put_pixel (x1+3, y+2, colour2);
+			put_pixel (x2-3, y+2, colour2);
+			put_pixel (x2-4, y+2, colour2);
 		}
 	}
 
@@ -493,14 +478,12 @@ void draw_box(UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2, UINT8 colour1, UINT8 c
 }
 
 
-void get_bitmap(UINT8 *dst, UINT8 *src, UINT16 x1, UINT16 y1, UINT16 w, UINT16 h)
+void get_bitmap (UINT8 *dst, UINT8 *src, int x1, int y1, int w, int h)
 {
 	UINT16	y, x;
 
-	for(y1++, y=0; y<h; y++)
-	{
-		for(x=0; x<w; x++)
-		{
+	for(y1++, y=0; y<h; y++) {
+		for(x=0; x<w; x++) {
 			if(y1+y<_HEIGHT && x1+x<_WIDTH)
 				dst[(y*w)+x]=src[((y1+y)*_WIDTH)+(x1+x)];
 		}
@@ -508,10 +491,10 @@ void get_bitmap(UINT8 *dst, UINT8 *src, UINT16 x1, UINT16 y1, UINT16 w, UINT16 h
 }
 
 
-void put_bitmap(UINT8 *dst, UINT8 *src, UINT16 x1, UINT16 y1, UINT16 w, UINT16 h, UINT16 trans, UINT16 prio)
+void put_bitmap (UINT8 *dst, UINT8 *src, int x1, int y1, int w, int h, int trans, int prio)
 {
-	UINT32 x, y, xx, yy;
-	UINT8 c;
+	int x, y, xx, yy;
+	int c;
 
 	/* _D (("(%p, %p, %d, %d, %d, %d, %d, %d)",
 		dst, src, x1, y1, w, h, trans, prio)); */
@@ -519,10 +502,8 @@ void put_bitmap(UINT8 *dst, UINT8 *src, UINT16 x1, UINT16 y1, UINT16 w, UINT16 h
 	if (prio < 4)
 		prio = 4;
 
-	for (y1++, y=0; y<h; y++)
-	{
-		for (yy = (y1 + y) * _WIDTH, x=0; x<w; x++)
-		{
+	for (y1++, y=0; y<h; y++) {
+		for (yy = (y1 + y) * _WIDTH, x=0; x<w; x++) {
 			if ((c=src[x + y*w]) == trans)
 				continue;
 
@@ -542,10 +523,10 @@ void put_bitmap(UINT8 *dst, UINT8 *src, UINT16 x1, UINT16 y1, UINT16 w, UINT16 h
 }
 
 
-void agi_put_bitmap(UINT8 *src, UINT16 x1, UINT16 y1, UINT16 w, UINT16 h, UINT16 trans, UINT16 prio)
+void agi_put_bitmap (UINT8 *src, int x1, int y1, int w, int h, int trans, int prio)
 {
-	UINT32 x, y, xx, yy;
-	UINT8	c;
+	int x, y, xx, yy;
+	int c;
 
 	/* _D (("(%p, %d, %d, %d, %d, %d, %d)",
 		src, x1, y1, w, h, trans, prio)); */
@@ -602,7 +583,7 @@ void do_blit ()
 }
 
 
-static void release_sprite (UINT16 i)
+static void release_sprite (int i)
 {
 	if (view_table[i].bg_scr) {
 		agi_put_bitmap (view_table[i].bg_scr, view_table[i].bg_x,

@@ -20,6 +20,7 @@
 
 extern struct agi_loader *loader;
 extern struct sarien_options opt;
+extern struct gfx_driver *gfx;
 
 
 UINT8 hilo_getbyte (UINT8 *mem)

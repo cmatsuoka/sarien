@@ -38,6 +38,8 @@ extern int optind;
 extern UINT8 o_status;
 extern UINT8 *font, font_english[];
 
+extern struct gfx_driver *gfx;
+
 void interpret_cycle(void);
 void update_objects (void);
 void calc_obj_motion(void);
