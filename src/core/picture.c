@@ -631,6 +631,7 @@ static void draw_picture ()
  * Public functions
  */
 
+#if !defined(PALMOS) && !defined(FAKE_PALMOS)
 /**
  *
  */
@@ -675,6 +676,7 @@ UINT8* convert_v3_pic (UINT8 *data, UINT32 len)
 
 	return xdata;
 }
+#endif /* !PALMOS && !FAKE_PALMOS */
 
 /**
  * Decode an AGI picture resource.

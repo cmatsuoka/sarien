@@ -165,10 +165,12 @@ int agi_detect_game (char *gn)
 	loader = &agi_v2;
 	ec = loader->detect_game (gn);
 
+#ifndef FAKE_PALMOS
 	if (ec != err_OK) {
 		loader = &agi_v3;
 		ec = loader->detect_game (gn);
 	}
+#endif
 
 #else
 	loader = &agi_v4;

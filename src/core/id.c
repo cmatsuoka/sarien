@@ -31,6 +31,8 @@ int setup_v2_game(int ver, UINT32 crc);
 int setup_v3_game(int ver, UINT32 crc);
 int v4id_game (UINT32 crc);
 
+#ifdef USE_COMMAND_LINE
+
 void list_games ()
 {
 	FILE *f;
@@ -83,6 +85,8 @@ void list_games ()
 
 	fclose (f);
 }
+
+#endif
 
 static UINT32 match_crc (UINT32 crc, char *path)
 {
