@@ -1,7 +1,7 @@
 
 XCFLAGS	= -I../../include
 OBJS	= SarienAudio.o
-DFILES	= Makefile $(OBJS:.o=.m)
+DFILES	= Makefile $(OBJS:.o=.c)
 CFILES	=
 DDIRS	=
 XDFILES	=
