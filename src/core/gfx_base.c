@@ -265,9 +265,12 @@ void put_text_character (int l, int x, int y, int c, int fg, int bg)
 			xx = x + x1;
 			yy = y + y1;
 			cc = (*p & (1 << (7 - x1))) ? fg : bg;
+#ifdef USE_CONSOLE
 			if (l) {
 				layer2_data[yy * GFX_WIDTH + xx] = cc;
-			} else {
+			} else
+#endif
+			{
 				put_pixel (xx, yy, cc);
 			}
 		}

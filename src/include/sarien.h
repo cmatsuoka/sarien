@@ -358,6 +358,9 @@ struct sarien_options {
 };
 
 extern struct sarien_options opt;
+
+#ifdef USE_CONSOLE
 extern struct sarien_debug debug;
+#endif
 
 #endif

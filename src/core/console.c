@@ -404,8 +404,10 @@ static void build_console_lines (int n)
 {
 	int i, j, y1;
 
+#ifdef USE_CONSOLE
 	memset (layer2_data + (200 - n * 10) * GFX_WIDTH, 0,
 		n * 10 * GFX_WIDTH);
+#endif
 
 	for (j = CONSOLE_LINES_ONSCREEN - n; j < CONSOLE_LINES_ONSCREEN; j++) {
 		i = console.first_line + j;

@@ -25,7 +25,7 @@
 #define ip	(logics[lognum].cIP)
 #define code	(logics[lognum].data)
 
-#if 1 /* ifndef NO_DEBUG */
+#ifdef USE_CONSOLE
 #define _L(a,b,c) { a, b, c }
 #else
 #define _L(a,b,c) { b, c }

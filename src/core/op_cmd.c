@@ -2150,6 +2150,7 @@ void run_logic (int lognum)
 	last_ip = ip;
 
 	while (ip < logics[lognum].size && !game.quit_prog_now) {
+#ifdef USE_CONSOLE
 		if (debug.enabled) {
 			if (debug.steps > 0) {
 				if (debug.logic0 || lognum) {
@@ -2167,6 +2168,7 @@ void run_logic (int lognum)
 				release_sprites ();
 			}
 		}
+#endif
 
 		last_ip = ip;
 		op = *(code + ip++);

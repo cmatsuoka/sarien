@@ -183,8 +183,10 @@ int test_if_code (int lognum)
 	UINT8	p[16];
 
 	while (retval && !game.quit_prog_now) {
+#ifdef USE_CONSOLE
 		if (debug.enabled && (debug.logic0 || lognum))
 			debug_console (lognum, lTEST_MODE, NULL);
+#endif
 
 		last_ip = ip;
 		op = *(code + ip++);
@@ -351,8 +353,10 @@ end_test:
 		ip += lohi_getword (code + ip) + 2;
 	}
 
+#ifdef USE_CONSOLE
 	if (debug.enabled && (debug.logic0 || lognum))
 		debug_console (lognum, 0xFF, retval ? "=TRUE" : "=FALSE");
+#endif
 
 	return retval;
 }

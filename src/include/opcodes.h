@@ -176,15 +176,17 @@ void	cmd_word_to_string	(UINT8, UINT8);
 extern "C" {
 #endif
 
+#ifdef USE_CONSOLE
 struct sarien_debug {
 	int enabled;
 	int opcodes;
 	int logic0;
 	int steps;
 };
+#endif
 
 struct agi_logicnames {
-#if 1 /* ifndef NO_DEBUG */
+#ifdef USE_CONSOLE /* ifndef NO_DEBUG */
 	UINT8	*name;
 #endif
 	UINT16	num_args;

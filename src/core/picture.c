@@ -46,7 +46,10 @@ UINT8	control_data[_WIDTH * _HEIGHT];
 UINT8	xdata_data[_WIDTH * _HEIGHT];
 
 UINT8	layer1_data[GFX_WIDTH * GFX_HEIGHT];
+
+#ifdef USE_CONSOLE
 UINT8	layer2_data[GFX_WIDTH * GFX_HEIGHT];
+#endif
 
 UINT8	pic_clear_flag = TRUE;
 
