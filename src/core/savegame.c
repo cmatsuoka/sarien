@@ -8,6 +8,9 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
+/*
+ * Savegame support by Vasyl Tsvirkunov <vasyl@pacbell.net>
+ */
 
 #ifndef PALMOS
 
@@ -522,6 +525,9 @@ int load_game(char* s)
 
 		if(game.dir_view[v->current_view].offset == _EMPTY)
 			continue;
+
+		if(!(game.dir_view[v->current_view].flags & RES_LOADED))
+			agi_load_resource(rVIEW, v->current_view);
 
 		set_view(v, v->current_view); /* Fix v->view_data */
 		set_loop(v, v->current_loop); /* Fix v->loop_data */
