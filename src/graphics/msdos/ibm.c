@@ -12,7 +12,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dos.h>
-//#include <conio.h>
 
 #ifdef __WATCOMC__
 #include <i86.h>
@@ -26,7 +25,13 @@
 #define KEY_HOME	0x352F  /* keypad / */
 #define KEY_END		0x372A  /* keypad * */
 
+#ifdef __WATCOMC__
 #define __outp(a, b)	outp(a, b)
+#endif
+#ifdef __TURBOC__
+#define __outp(a, b)	outportb(a, b)
+#fi
+
 #define move_memory(a, b, c) memmove((char*)a, (char*)b, (UINT32)c)
 
 #ifdef __WATCOMC__
@@ -38,16 +43,15 @@ void DebugBreak(void);
 extern struct gfx_driver *gfx;
 extern struct sarien_options opt;
 
-UINT8	*exec_name;
 UINT8	*screen_buffer;
 
 void	(__interrupt __far *prev_08)	(void);
-void	__interrupt __far new_timer	(void);
+void	__interrupt __far tick_increment	(void);
 static int	pc_init_vidmode	(void);
 static int	pc_deinit_vidmode	(void);
 static void	pc_put_block		(int, int, int, int);
 static void	pc_put_pixels		(int, int, int, UINT8 *);
-static void	pc_dummy		(void);
+static void	pc_timer		(void);
 static int	pc_get_key		(void);
 static int	pc_keypress		(void);
 
@@ -59,17 +63,16 @@ static struct gfx_driver GFX_ibm = {
 	pc_deinit_vidmode,
 	pc_put_block,
 	pc_put_pixels,
-	pc_dummy,
+	pc_timer,
 	pc_keypress,
 	pc_get_key
 };
 
-static void pc_dummy ()
+static void pc_timer ()
 {
-	/* dummy */
-	static UINT32 cticks = (SINT32)-1;
+	static UINT32 cticks = 0;
 
-	while(cticks==clock_ticks);
+	while (cticks == clock_ticks);
 	cticks=clock_ticks;
 }
 
@@ -78,27 +81,26 @@ int init_machine (int argc, char **argv)
 {
 	gfx = &GFX_ibm;
 
-	exec_name = (UINT8*)strdup(argv[0]);
+	screen_buffer = (UINT8*)malloc (GFX_WIDTH * GFX_HEIGHT);
 
-	screen_buffer = (UINT8*)malloc (GFX_WIDTH*GFX_HEIGHT);
+	clock_count = 0;
+	clock_ticks = 0;
 
-	clock_count=0;
-	clock_ticks=0;
-
-	prev_08 = _dos_getvect(0x08);
-	_dos_setvect(0x08, new_timer);
+	prev_08 = _dos_getvect (0x08);
+	_dos_setvect (0x08, tick_increment);
 
 	return err_OK;
 }
 
+
 int deinit_machine ()
 {
-	free (exec_name);
 	free (screen_buffer);
 	_dos_setvect (0x08, prev_08);
 
 	return err_OK;
 }
+
 
 static int pc_init_vidmode ()
 {
@@ -109,21 +111,16 @@ static int pc_init_vidmode ()
 #ifdef __WATCOMC__
 	r.w.ax = 0x13;
 	int386 (0x10, &r, &r);
-	__outp(0x3C8, 0l);
-	for (i = 0; i < 16 * 3; i++)
-		__outp (0x3c9, palette[i]);
 #endif
 	
 #ifdef __TURBOC__
 	r.x.ax = 0x13;
 	int86 (0x10, &r, &r);
-	outportb (0x3c8, 0);
-	for (i = 0; i < 16 * 3; i++)
-		outportb (0x3c9, palette[i]);
 #endif
 
-
-
+	__outp (0x3c8, 0);
+	for (i = 0; i < 16 * 3; i++)
+		__outp (0x3c9, palette[i]);
 
 	return err_OK;
 }
@@ -165,7 +162,7 @@ static void pc_put_block (int x1, int y1, int x2, int y2)
 
 	h = y2 - y1 + 1;
 	for (i = 0; i < h; i++) {
-		memcpy ((UINT8*)0xA0000 + 320 * (y1 + i) + x1,
+		memcpy ((UINT8*)0xa0000 + 320 * (y1 + i) + x1,
 			screen_buffer + 320 * (y1 + i) + x1, x2 - x1 + 1);
 	}
 }
@@ -220,13 +217,8 @@ static int pc_get_key ()
 /* lucky we call no other routines inside our timer */
 /* coz SS!=DS and watcom wants SS==DS but it aint inside a timer! */
 
-void __interrupt __far new_timer (void)
+void __interrupt __far tick_increment (void)
 {
-//	union REGS	r;
-//	UINT16		key;
-	static UINT32 msg_box_ticks = 0;
-
 	clock_ticks++;
-
 	_chain_intr(prev_08);
 }
