@@ -357,7 +357,6 @@ void update_viewtable ()
 
 		loop = 4;
 		if (~v->flags & FIX_LOOP) {
-if (v->entry == 2) printf ("dir = %d (num = %d)\n", v->direction, v->num_loops);
 			switch (v->num_loops) {
 			case 2:
 			case 3:

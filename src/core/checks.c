@@ -103,6 +103,10 @@ static int check_priority (struct vt_entry *v)
 		pri = *p0 >> 4;
 
 		if (pri == 0) {		/* unconditional black. no go at all! */
+
+			if (v->entry != 0)
+				return 0;
+
 			pass = 0;
 			break;
 		}
@@ -112,15 +116,12 @@ static int check_priority (struct vt_entry *v)
 
 		water = 0;
 
-		/* This test fixes oprecon but breaks the Gold Rush! demo.
-		 * I'll leave it here because AGI 2.917 also implements it.
-		 */
-		if (v->entry != 0)	/* test if ego */
-			break;
-
 		if (pri == 1) {		/* conditional blue */
 			if (v->flags & IGNORE_BLOCKS)
 				continue;
+
+			if (v->entry != 0)
+				return 0;
 
 			_D (_D_WARN "Blocks observed!");
 			pass = 0;
@@ -146,7 +147,7 @@ static int check_priority (struct vt_entry *v)
 		setflag (F_ego_water, water ? TRUE : FALSE);
 	}
 
-	return pass ? 0 : 1;
+	return pass;
 }
 
 /*
@@ -212,7 +213,7 @@ void update_position ()
 		v->x_pos = x;
 		v->y_pos = y;
 		
-		if (check_clutter (v) || check_priority (v)) {
+		if (check_clutter (v) || !check_priority (v)) {
 			v->x_pos = x2;
 			v->y_pos = y2;
 			border = 0;
@@ -251,7 +252,7 @@ void fix_position (int n)
 	dir = 0;
 	count = tries = 1;
 
-	while (!check_position (v) || check_clutter (v) || check_priority (v)) {
+	while (!check_position(v) || check_clutter(v) || !check_priority(v)) {
 		//_D (_D_WARN "from %d, %d", v->x_pos, v->y_pos);
 		switch (dir) {
 		case 0:			/* west */

@@ -63,12 +63,6 @@ static void blit_cel (int x, int y, int spr, struct view_cel *c)
 				}
 			} else {
 				epr = pr;
-
-				/* Set water surface as priority 0x40.
-				 * Must check if it's correct...
-				 */
-				if (epr < 0x40)
-					epr = 0x40;
 			}
 			if (*q != t && spr >= epr) {
 				/* Keep control line information visible,
