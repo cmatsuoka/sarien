@@ -150,14 +150,15 @@ static void interpret_cycle ()
  */
 void update_timer ()
 {
-	if (!game.clock_enabled)
-		return;
-
 	clock_count++;
 	if (clock_count <= TICK_SECONDS)
 		return;
 
 	clock_count -= TICK_SECONDS;
+
+	if (!game.clock_enabled)
+		return;
+
 	setvar (V_seconds, getvar (V_seconds) + 1);
 	if (getvar (V_seconds) < 60)
 		return;
