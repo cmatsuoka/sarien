@@ -37,6 +37,10 @@ struct sprite {
 #endif
 };
 
+
+/*
+ * Sprite pool replaces dynamic allocation
+ */
 #define POOL_SIZE MAX_VIEWTABLE
 static struct sprite sprite_pool[POOL_SIZE];
 
@@ -321,7 +325,6 @@ static struct sprite *new_sprite (struct vt_entry *v)
 {
 	struct sprite *s;
 
-	/* s = malloc (sizeof (struct sprite)); */
 	s = get_from_pool ();
 	if (s == NULL)
 		abort ();
@@ -440,11 +443,11 @@ static void free_list (struct list_head *head)
 		 */
 
 		if (doomed)
-			return_to_pool /*free*/(doomed);
+			return_to_pool (doomed);
 		doomed = s;
 	}
 	if (doomed)
-		return_to_pool /*free*/ (doomed);
+		return_to_pool (doomed);
 }
 
 /**
