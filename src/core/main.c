@@ -312,7 +312,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
     				setvar (V_monitor, 0x3); /* EGA monitor */
 
     				game.horizon = HORIZON;
-    				game.control_mode = program_control;
+    				game.control_mode = CONTROL_PROGRAM;
     				o_status = 5;	/* FIXME */
 
     				ec = run_game();

@@ -24,8 +24,8 @@
 extern "C"{
 #endif
 
-extern UINT16	new_room_num;
-extern UINT8	exit_all_logics;
+//extern UINT16	new_room_num;
+//extern UINT8	exit_all_logics;
 
 int	run_logic (int);
 

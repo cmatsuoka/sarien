@@ -368,9 +368,9 @@ int load_game (char *s)
 
 	cmd_draw_pic (getvar (V_cur_room));
 	redraw_sprites ();
-	new_room_num = getvar (V_cur_room);
+	game.new_room_num = getvar (V_cur_room);
 	game.ego_in_new_room = TRUE;
-	exit_all_logics = TRUE;
+	game.exit_all_logics = TRUE;
 
 	return loading_ok ? err_OK : err_BadFileOpen;
 }

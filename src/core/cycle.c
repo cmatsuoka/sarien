@@ -1,20 +1,11 @@
-/*
- *  Sarien AGI :: Copyright (C) 1999 Dark Fiber 
- *
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
 #include "sarien.h"
@@ -37,11 +28,6 @@ extern struct agi_logic logics[];
 extern struct agi_view_table view_table[];
 
 extern struct gfx_driver *gfx;
-
-/* FIXME: kludge */
-//UINT8 blocking_window;
-//UINT8 timed_window;
-
 
 
 static void update_objects ()
@@ -72,10 +58,9 @@ static void update_objects ()
 			ccel = VT.cur_cel;
 
 			switch (VT.cycle_status) {
-			case CYCLE_NORMAL:		/* normal cycle status */
+			case CYCLE_NORMAL:
 				if(++ccel >= VT.num_cels) 
 					ccel = 0;
-
 				set_cel (i, ccel);
 				break;
  			case CYCLE_END_OF_LOOP:		
@@ -146,8 +131,7 @@ static void adj_direction (int entry, int h, int w)
 
 static void normal_motion (int em, int x, int y)
 {
-	int dir, i, w = 0;
-	UINT8	v, e, z;
+	int dir, v, i, e, w;
 	struct agi_view_table *vt_obj;
 
 	vt_obj = &view_table[em];
@@ -195,6 +179,7 @@ static void normal_motion (int em, int x, int y)
 
 	/* do control lines n shit in here */
 
+	w = 0;
 	for (i = x + vt_obj->x_size - 1; i >= x; i--) {
 		switch (control_data[y * _WIDTH + i]) {
 		case 0:	/* unconditional black. no go at all! */
@@ -229,14 +214,10 @@ static void normal_motion (int em, int x, int y)
 	}
 
 	for (i = x + vt_obj->x_size - 1; i >= x; i--) {
+		int z;
+
 		if (y < game.horizon || y >= _HEIGHT || i < 0 || i >= _WIDTH)
 			return;
-
-		/* Whats this? nobody crosses conditionals?
-		 *
-		 * if (control_data[y * _WIDTH + i] < 3)
-		 *	return;
-		 */
 
 		z = control_data[y * _WIDTH + i];
 
@@ -272,7 +253,7 @@ static void set_motion (int em)
 static void adj_pos (int em, int x2, int y2)
 {
 	int x1, y1, z;
-	static UINT16 frac = 0;
+	static int frac = 0;
 	struct agi_view_table *vt_obj;
 
 	vt_obj = &view_table[em];
@@ -288,8 +269,9 @@ static void adj_pos (int em, int x2, int y2)
 			frac -= 4;
 			z++;
 		}
-	} else
+	} else {
 		z = vt_obj->step_size;
+	}
 
 	/* adjust the direction */
 	adj_direction (em, y2 - y1, x2 - x1);
@@ -381,7 +363,7 @@ static void calc_obj_motion ()
 }
 
 
-static void interpret_cycle (void)
+static void interpret_cycle ()
 {
 	int line_prompt = FALSE;
 
@@ -414,7 +396,6 @@ static void interpret_cycle (void)
 		setflag (F_restart_game, FALSE);		/* 6 */
 		setflag (F_status_selects_items, FALSE);	/* 12? */
 
-
 		if (game.control_mode == CONTROL_PROGRAM) {
 			view_table[EGO_VIEW_TABLE].direction =
 				getvar (V_ego_dir);
@@ -437,12 +418,10 @@ static void interpret_cycle (void)
 		update_status_line (FALSE);
 
 		if (game.ego_in_new_room) {
-			new_room (new_room_num);
-//			--exit_all_logics = FALSE;
-//			--ego_in_new_room = TRUE;
+			new_room (game.new_room_num);
 			update_status_line (TRUE);
 			game.ego_in_new_room = FALSE;
-			line_prompt     = TRUE;
+			line_prompt = TRUE;
 		} else {
 			if (screen_mode == GFX_MODE) {
 				calc_obj_motion ();
@@ -451,8 +430,9 @@ static void interpret_cycle (void)
 			break;
 		}
 
-		exit_all_logics = FALSE;
-	} while (!exit_all_logics);
+		/* CM: hmm... it looks strange :\ */
+		game.exit_all_logics = FALSE;
+	} while (!game.exit_all_logics);
 
 	redraw_sprites ();
 
@@ -532,11 +512,11 @@ int run_game2 ()
 	setvar (V_time_delay, 2);		/* "normal" speed */
 
 	game.allow_kyb_input = FALSE;
-	new_room_num = 0;
+	game.new_room_num = 0;
 	game.quit_prog_now = FALSE;
 	game.clock_enabled = TRUE;
 	game.ego_in_new_room = FALSE;
-	exit_all_logics = FALSE;
+	game.exit_all_logics = FALSE;
 
 	report (" \nSarien " VERSION " is ready.\n");
 	report ("Running AGI script.\n");

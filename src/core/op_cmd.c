@@ -84,8 +84,8 @@
 
 static int window_nonblocking = 0;	/* Yuck! Remove it later! */
 
-UINT16	new_room_num;
-UINT8	exit_all_logics;
+//UINT16	new_room_num;
+//UINT8	exit_all_logics;
 
 extern struct agi_loader *loader;
 extern struct agi_object *objects;
@@ -160,11 +160,11 @@ void cmd_load_logic (UINT8 log)
 void cmd_new_room (UINT8 room)
 {
 	_D (("(%d) -------------------------- ", room));
-	new_room_num = room;
+	game.new_room_num = room;
 	game.ego_in_new_room = TRUE;
 	clear_buffer ();
 	window_nonblocking = 0;	/***************************/
-	exit_all_logics = TRUE;
+	game.exit_all_logics = TRUE;
 }
 
 
@@ -2283,7 +2283,7 @@ int run_logic (int lognum)
 			ip += logic_names_cmd[op].num_args;
 		}
 
-		if (exit_all_logics)
+		if (game.exit_all_logics)
 			break;
 	}
 

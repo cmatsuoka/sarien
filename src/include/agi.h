@@ -48,6 +48,7 @@ struct agi_game {
 	int line_user_input;	/* line to put user input on */
 	int line_min_print;	/* num lines to print on */
 	int message_box_key;	/* message box keypress */
+	int new_room_num;
 
 	/* internal flags */
 	int ego_in_new_room;	/* new room flag */
@@ -56,6 +57,7 @@ struct agi_game {
 	int status_line;	/* status line on/off */
 	int allow_kyb_input;	/* allow keyboard input */
 	int clock_enabled;	/* clock is on/off */
+	int exit_all_logics;
 #define ID_AGDS		0x00000001
 #define ID_AMIGA	0x00000002
 	int game_flags;		/* game flags!! (important) */
