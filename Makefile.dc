@@ -1,5 +1,7 @@
 # SarienDC/Makefile
 # (c)2002 Ganksoft Entertainment
+#
+# $Id$
 
 TOPDIR=.
 
@@ -30,7 +32,7 @@ OBJS = src/core/global.o src/core/agi_v2.o src/core/agi_v3.o src/core/agi_v4.o s
 		src/core/inv.o src/core/text.o src/core/graphics.o src/core/sprite.o src/core/checks.o src/core/motion.o \
 		src/filesys/dc/fileglob.o src/graphics/dc/dc.o src/sound/dc/dc.o \
 		src/core/dc/gsi.o  src/core/dc/gslogo.o src/core/dc/pvrutils.o src/core/dc/font.o \
-		src/core/dc/dcui.o src/core/dc/slideshow.o src/core/dc/dcwrapper.o
+		src/core/dc/dcui.o src/core/dc/util.o src/core/dc/dcwrapper.o
 
 all: rm-elf sarien.elf sarien.bin 1st_read.bin
 
@@ -52,4 +54,4 @@ run: sarien.elf
 	$(KOS_LOADER) sarien.elf
 
 %.o: %.c
-	$(KOS_CC) $(KOS_CFLAGS) $(KOS_LOCAL_CFLAGS) $(DEFS) -D_arch_$(KOS_ARCH) -I$(PWD)/src/include -I$(PWD)/src/core/dc -I$(KOS_INCS) -I$(KOS_BASE)/kernel/arch/$(KOS_ARCH)/include -I$(KOS_BASE)/libc/include -c $< -o $@
+	$(KOS_CC) $(KOS_CFLAGS) $(KOS_LOCAL_CFLAGS) $(DEFS) -D_arch_$(KOS_ARCH) -I$(PWD)/src/core/dc -I$(PWD)/src/include -I$(KOS_INCS) -I$(KOS_BASE)/kernel/arch/$(KOS_ARCH)/include -I$(KOS_BASE)/libc/include -c $< -o $@

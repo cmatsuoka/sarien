@@ -180,6 +180,10 @@ int save_game (char* s, char* d)
 	if(!f)
 		return err_BadFileOpen;
 
+#ifdef DREAMCAST
+	write_vmu_header(f, d);
+#endif
+
 	write_bytes (f, strSig, 8);
 	write_string (f, d);
 
@@ -338,6 +342,10 @@ int load_game(char* s)
 
 	if(!f)
 		return err_BadFileOpen;
+
+#ifdef DREAMCAST
+	read_vmu_header(f);
+#endif
 
 	read_bytes(f, sig, 8);
 	if (strncmp (sig, strSig, 8)) {
@@ -534,10 +542,13 @@ int load_game(char* s)
 			parm[3], parm[4], parm[5], parm[6]);
 	}
 
+#ifndef DREAMCAST
+	// Why is this here? -- BP
 	if(ferror(f) || feof(f)) {
 		fclose(f);
 		return err_BadFileOpen;
 	}
+#endif
 
 	fclose(f);
 
@@ -568,22 +579,30 @@ static int select_slot (char *path)
 		char name[MAX_PATH];
 		FILE *f;
 		char sig[8];
+#ifdef DREAMCAST
+		sprintf(name, VMU_PATH, g_vmu_port, game.id, i);
+#else
 		sprintf (name, "%s/%08d.sav", path, i);
+#endif
 		f = fopen (name, "rb");
 		if (f == NULL) {
 			strcpy (desc[i], "          (empty slot)");
 		} else {
+#ifdef DREAMCAST
+		read_vmu_header(f);
+#endif
 			read_bytes (f, sig, 8);
 			if (strncmp (sig, strSig, 8)) {
 				strcpy (desc[i], "(corrupt file)");
 			} else {
 				read_string (f, desc[i]);
 			}
+			fclose(f);
 		}
 	}
 
 	while (42) {
-		char dstr[32];
+		char dstr[64];
 		for (i = 0; i < NUM_SLOTS; i++) {
 			sprintf (dstr, "[%-32.32s]", desc[i]);
 			draw_text (dstr,
@@ -591,6 +610,7 @@ static int select_slot (char *path)
 				(GFX_WIDTH - 2 * hm) / CHAR_COLS - 1,
 				i == active ? MSG_BOX_COLOUR : MSG_BOX_TEXT,
 				i == active ? MSG_BOX_TEXT : MSG_BOX_COLOUR);
+
 		}
 
 		poll_timer ();		/* msdos driver -> does nothing */
@@ -627,7 +647,6 @@ press:
 
 getout:
 	close_window ();
-
 	return rc;
 }
 
@@ -641,6 +660,23 @@ int savegame_dialog ()
 	int hm = 2 * CHAR_COLS, vm = 3 * CHAR_LINES;	/* box margins */
 	int x, y, w;
 
+#ifdef DREAMCAST
+	uint8 addr, port, unit;
+
+	addr = maple_first_vmu();
+	if(addr)
+	{
+		maple_create_port(addr, &port, &unit);
+		sprintf(g_vmu_port, "%c%d", port + 'a', unit);
+	}
+	else
+	{
+		message_box("No VMU found.");
+		return err_OK;
+	}
+#endif
+
+#ifndef DREAMCAST
 	if (get_app_dir (home, MAX_PATH) < 0) {
 		message_box ("Couldn't save game.");
 		return err_BadFileOpen;
@@ -650,6 +686,7 @@ int savegame_dialog ()
 	MKDIR (path, 0755);
 	sprintf (path, "%s/" DATA_DIR "/%s/", home, game.id);
 	MKDIR (path, 0711);
+#endif
 
 	erase_both ();
 	x = hm + CHAR_COLS;
@@ -688,8 +725,13 @@ int savegame_dialog ()
 		return err_OK;
 	}
 
+#ifdef DREAMCAST
+	sprintf(path, VMU_PATH, g_vmu_port, game.id, slot);
+	fs_unlink(path);
+#else
 	sprintf (path, "%s/" DATA_DIR "/%s/%08d.sav",
 		home, game.id, slot);
+#endif
 	_D (_D_WARN "file is [%s]", path);
 	
 	save_game (path, desc);
@@ -706,12 +748,28 @@ int loadgame_dialog ()
 	int rc, slot = 0;
 	int hm = 2 * CHAR_COLS, vm = 3 * CHAR_LINES;	/* box margins */
 
+#ifdef DREAMCAST
+	uint8 addr, port, unit;
+
+	addr = maple_first_vmu();
+	if(addr)
+	{
+		maple_create_port(addr, &port, &unit);
+		sprintf(g_vmu_port, "%c%d", port + 'a', unit);
+	}
+	else
+	{
+		message_box("No VMU found.");
+		return err_OK;
+	}
+#else
 	if (get_app_dir (home, MAX_PATH) < 0) {
 		message_box ("Error loading game.");
 		return err_BadFileOpen;
 	}
 
 	sprintf (path, "%s/" DATA_DIR "/%s/", home, game.id);
+#endif
 
 	erase_both ();
 	draw_window (hm, vm, GFX_WIDTH - hm, GFX_HEIGHT - vm);
@@ -730,9 +788,13 @@ int loadgame_dialog ()
 		message_box ("Game NOT restored.");
 		return err_OK;
 	}
-	
+
+#ifdef DREAMCAST
+	sprintf(path, VMU_PATH, g_vmu_port, game.id, slot);
+#else	
 	sprintf (path, "%s/" DATA_DIR "/%s/%08d.sav",
 		home, game.id, slot);
+#endif
 
 	stop_sound();
 	if((rc = load_game (path)) == err_OK)
