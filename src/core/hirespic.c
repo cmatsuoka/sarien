@@ -428,6 +428,9 @@ static void hires_fill ()
 	foffs--;
 }
 
+/* Extra randomness added to brush fill, and double width to single
+ * pixels (makes MUMG and others look a lot nicer). 
+ */
 
 #define plotHiresPatternPoint() do {					\
 	if (patCode & 0x20) {						\
@@ -438,7 +441,7 @@ static void hires_fill ()
 		bitPos++;						\
 		if (bitPos == 0xff)					\
 			bitPos=0;					\
-	} else put_hires_pixel(x1*2, y1);				\
+	} else { put_hires_pixel(x1*2,y1); put_hires_pixel(x1*2+1,y1); }\
 } while (0)
 
 /**************************************************************************
