@@ -99,7 +99,7 @@ static int blit_cel (int x, int y, int spr, struct view_cel *c)
 
 #ifdef USE_HIRES
 	if (opt.hires)
-		return blit_hires_cel (x, y, spr, c);
+		blit_hires_cel (x, y, spr, c);
 #endif
 
 	p0 = &game.sbuf[x + y * _WIDTH];

@@ -252,10 +252,10 @@ end:
 void close_window ()
 {
 	_D (_D_WARN "close window");
-	erase_upd_sprites ();
+	erase_both ();
 	erase_textbox ();		/* remove window, if any */
-	blit_upd_sprites ();
-	commit_upd_sprites ();		/* redraw sprites */
+	blit_both ();
+	commit_both ();			/* redraw sprites */
 	game.has_window = FALSE;
 }
 
@@ -269,7 +269,9 @@ int message_box (char *s)
 {
 	int k;
 
+	erase_both ();
 	blit_textbox (s, -1, -1, -1);
+	blit_both ();
 	k = wait_key ();
 	_D (_D_WARN "wait_key returned %02x", k);
 	close_window ();
