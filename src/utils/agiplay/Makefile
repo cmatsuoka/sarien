@@ -9,7 +9,7 @@ DDIRS	=
 all: $(BIN)
 
 $(BIN): $(OBJS)
-	$(LD) $(LDFLAGS) $+ -L../../../lib -lsarien $(LIBS)
+	$(LD) $(LDFLAGS) $+ -L../../../lib -lsarien -lagi $(LIBS)
 
 include ../../../Rules
 
