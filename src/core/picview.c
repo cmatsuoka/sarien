@@ -88,10 +88,11 @@ update_statusline:
 
 		while (42) {
 			decode_picture (pic, TRUE);
-    			switch (tolower (picviewer_get_key() & 0xff)) {
+    			switch (picviewer_get_key()) {
     			case 'q':
 				goto end_view;
 #ifdef USE_HIRES
+			case BUTTON_RIGHT:
     			case 'h':
 				opt.hires = !opt.hires;
 				show_pic ();
@@ -108,7 +109,12 @@ update_statusline:
 				goto update_statusline;
 			case 'r':
 				goto next_pic;
+			case BUTTON_LEFT:
+				if (mouse.x < GFX_WIDTH / 2) 
+					goto previous_pic;
+				/* fall through */
     			case '+':
+				_D ("next pic");
  				if (pic < MAX_DIRS - 1)
     					pic++;
     				else
@@ -116,6 +122,8 @@ update_statusline:
     				dir = 1;
 				goto next_pic;
     			case '-':
+			previous_pic:
+				_D ("previous pic");
     				if (pic > 0)
     					pic--;
     				else
