@@ -69,9 +69,11 @@ static INLINE void _PUSH (struct point_xy *c)
 
 		if (stack_num_segs <= ++stack_seg) {
 			_D ("new stack (#%d)", stack_num_segs);
-			stack[stack_num_segs++] = malloc (sizeof (struct point_xy)
+printf ("%d\n", coreleft());
+			stack[stack_num_segs] = malloc (sizeof (struct point_xy)
 				* STACK_SEG_SIZE);
-			assert (stack[stack_num_segs - 1] != NULL);
+			assert (stack[stack_num_segs] != NULL);
+			stack_num_segs++;
 		}
 		stack_ptr = 0;
 	}
@@ -85,10 +87,12 @@ static INLINE void _PUSH (struct point_xy *c)
 static INLINE void _POP (struct point_xy *c)
 {
 	if (stack_ptr == 0) {
-		if (stack_seg == 0)
+		if (stack_seg == 0) {
 			c->x = c->y = 0xffff;
-		else
-			stack_seg--, stack_ptr = STACK_SEG_SIZE - 1;
+		} else {
+			stack_seg--;
+			 stack_ptr = STACK_SEG_SIZE - 1;
+		}
 
 		return;
 	}
@@ -300,7 +304,7 @@ static void agiFill (int x, int y)
 		_POP(&c);
 
 		/* Exit if stack is empty */
-		if (c.x == 0xFFFF || c.y == 0xFFFF)
+		if (c.x == 0xffff || c.y == 0xffff)
 			break;
 
 		if (is_ok_fill_here (c.x, c.y)) {

@@ -24,6 +24,20 @@ extern "C"{
 #  endif
 #endif
 
+/*
+ * From the Turbo C FAQ:
+ *
+ * Q. I have a working program that dynamically allocates memory
+ *    using malloc() or calloc() in small data models (tiny, small,
+ *    and medium). When I compile this program in large data models
+ *    (compact, large, and huge), my program hangs.
+ * A. Make sure that you have #include <alloc.h> in your program.
+ */
+#ifdef __TURBOC__
+#  include <alloc.h>
+#  undef USE_CONSOLE
+#endif
+
 #include "console.h"
 
 #ifdef DMALLOC
@@ -120,7 +134,7 @@ extern "C"{
 #define STATUS_FG_CLEAN	0x00		/* Black */
 
 
-#if !defined PALMOS && !defined FAKE_PALMOS
+#if !defined PALMOS && !defined FAKE_PALMOS && !defined __TURBOC__
 #  define AGDS_SUPPORT			/* enable support for AGDS games */
 #  define OPT_LIST_OBJECTS
 #  define OPT_PICTURE_VIEWER

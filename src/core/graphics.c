@@ -128,12 +128,8 @@ static void put_pixels (const int x, const int y, const int w, UINT8 *p)
 	gfx->put_pixels (x, y, w, _b);
 }
 
-#endif /* USE_CONSOLE */
-
-
 static void init_console ()
 {
-#ifdef USE_CONSOLE
 	int i;
 
 	/* "Transparent" colors */
@@ -143,8 +139,21 @@ static void init_console ()
 	/* Console */
 	for (i = 0; i < CONSOLE_LINES_BUFFER; i++)
 		console.line[i] = strdup ("\n");
-#endif
 }
+
+#else
+
+static void put_pixels (const int x, const int y, const int w, UINT8 *p)
+{
+	gfx->put_pixels (x, y, w, p);
+}
+
+static void init_console ()
+{
+}
+
+#endif /* USE_CONSOLE */
+
 
 
 

@@ -1,5 +1,5 @@
 #
-# Makefile for Turbo C 1.01
+# Makefile for Turbo C++ 1.01
 #
 # $Id$
 #
@@ -203,9 +203,36 @@ ibm.obj: sarien.cfg src\graphics\msdos\ibm.c
 	$(CC) -c src\graphics\msdos\ibm.c
 
 #		*Compiler Configuration File*
+#
+#Turbo C++  Version 1.01 Copyright (c) 1990 Borland International
+#Syntax is: TCC [ options ] file[s]     * = default; -x- = turn switch x off
+#  -1      80186/286 Instructions    -2      80286 Protected Mode Inst.
+#  -Ax     Disable extensions        -B      Compile via assembly
+#  -C      Allow nested comments     -Dxxx   Define macro
+#  -Exxx   Alternate Assembler name  -G      Generate for speed
+#  -Ixxx   Include files directory   -K      Default char is unsigned
+#  -Lxxx   Libraries directory       -M      Generate link map
+#  -N      Check stack overflow      -O      Optimize jumps
+#  -P      Force C++ compile         -Qxxx   Memory usage control
+#  -S      Produce assembly output   -Txxx   Set assembler option
+#  -Uxxx   Undefine macro            -Vx     Virtual table control
+#  -X      Suppress autodep. output  -Yx     Overlay control
+#  -Z      Optimize register usage   -a      Generate word alignment
+#  -b    * Treat enums as integers   -c      Compile only
+#  -d      Merge duplicate strings   -exxx   Executable file name
+#  -fxx    Floating point options    -gN     Stop after N warnings
+#  -iN     Max. identifier length    -jN     Stop after N errors
+#  -k      Standard stack frame      -lx     Set linker option
+#  -mx     Set Memory Model          -nxxx   Output file directory
+#  -oxxx   Object file name          -p      Pascal calls
+#  -r    * Register variables        -u    * Underscores on externs
+#  -v      Source level debugging    -wxxx   Warning control
+#  -y      Produce line number info  -zxxx   Set segment names
+#
+
 sarien.cfg: makefile.tc
   copy &&|
--ml
+-mc
 -a
 -O
 -Z
@@ -229,8 +256,8 @@ sarien.cfg: makefile.tc
 -I$(INCLUDEPATH)
 -DVERSION="0.7.0"
 -D__interrupt=interrupt
--D__far=far
--L$(LIBPATH)
+-LLIB
+-ls
 #-Ff
 | sarien.cfg
 

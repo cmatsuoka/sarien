@@ -17,6 +17,13 @@
 #include "agi.h"
 
 
+ 
+/*
+ * We want a large stack for recursive flood fills and stuff
+ */
+extern unsigned _stklen = 20000U;
+
+
 int file_isthere (char *fname)
 {
 	struct ffblk fdata;

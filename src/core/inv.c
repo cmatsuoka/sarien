@@ -21,15 +21,15 @@
 
 #define NOTHING_X	15
 #define NOTHING_Y	3
-#define NOTHING_MSG	"Nothing"
+#define NOTHING_MSG	"nothing"
 
 #define ANY_KEY_X	4
 #define ANY_KEY_Y	24
-#define ANY_KEY_MSG	"Press a Key to return to the game."
+#define ANY_KEY_MSG	"Press a key to return to the game."
 
 #define YOUHAVE_X	11
 #define YOUHAVE_Y	0
-#define YOUHAVE_MSG	"You Are Carrying:"
+#define YOUHAVE_MSG	"You are carrying:"
 
 #define SELECT_X	2
 #define SELECT_Y	24

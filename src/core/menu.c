@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include <string.h>
-
+#include <assert.h>
 #include "sarien.h"
 #include "agi.h"
 #include "sprite.h"
@@ -128,6 +128,7 @@ static void draw_vertical_menu (int h_menu, int cur_men, int max_men)
 void init_menus ()
 {
 	menu = calloc (1, sizeof (struct agi_menu));
+	assert (menu != NULL);
 	master_menu = NULL;
 }
 
