@@ -329,6 +329,13 @@ void print_character (int x, int y, char c, int fg, int bg)
 	flush_block (x, y, x + CHAR_COLS - 1, y + CHAR_LINES); 
 }
 
+/**
+ * Draw button
+ * @param x  x coordinate of the button
+ * @param y  y coordinate of the button
+ * @param a  set if the button has focus
+ * @param p  set if the button is pressed
+ */
 void draw_button (int x, int y, char *s, int a, int p)
 {
 	int len = strlen (s);
@@ -339,23 +346,32 @@ void draw_button (int x, int y, char *s, int a, int p)
 	x2 = x + CHAR_COLS * len + 2;
 	y2 = y + CHAR_LINES + 2;
 	
+#ifdef FANCY_BOX
 	if (p)
 		draw_frame (x1, y1, x2, y2, 8, 15);
 	else
 		draw_frame (x1, y1, x2, y2, 15, 8);
+#endif
 
 	while (*s) {
+#ifdef FANCY_BOX
 		put_text_character (0, x + (!!p), y + (!!p), *s++, 0, 7);
+#else
+		put_text_character (0, x + (!!p), y + (!!p), *s++,
+			a ? 15 : 0,
+			a ? 0 : 15);
+#endif
 		x += CHAR_COLS;
 	}
 
 	x1 -= 2; y1 -= 2;
 	x2 += 2; y2 += 2;
-	if (a) {
+#ifdef FANCY_BOX
+	if (a)
 		draw_frame (x1, y1, x2, y2, 8, 15);
-	} else {
+	else
 		draw_frame (x1, y1, x2, y2, 7, 7);
-	}
+#endif
 
 	flush_block (x1, y1, x2, y2);
 }
