@@ -612,7 +612,7 @@ draw (smoke);
 </itemizedlist>
 
 <para>
-  Variables 0 to 26 and flags 0 to 15 are reserved for internal use.
+  Variables 0 to 26 and flags 0 to 16 are reserved for internal use.
   All others are available to be used by the programmer. The variables
   and flags are global to all scripts. Each variable, flag, object,
   string, word, message, etc. has a unique ID number, and numbering of
@@ -807,6 +807,7 @@ draw (smoke);
          the message window is closed when <keycap/ENTER/ or <keycap/ESC/
          are pressed. If <varname/v21/ is not zero, the window is closed
          automatically after <varname/v21/ * 500 milliseconds./
+      <row/ <entry/16/ <entry/(Related to game restart)//
     </tbody>
   </tgroup>
 </table>
@@ -5911,7 +5912,7 @@ R0      R1      R2
 </programlisting>
 </para>
 
-<sect1>
+<sect1 id="sound-iigs">
 <title>Sound in the Apple IIgs</title>
 <para>
   The Apple IIgs uses the Ensoniq 5503 DOC (Digital Oscillator Chip)
@@ -5961,7 +5962,7 @@ R0      R1      R2
     <member>Swap: Only one oscillator of the pair is active at a time. When
        one stops, the other immediately starts.
     <member>Loop: The oscillator simply plays the waveform and if it hits the
-       end without encounter.cgiing a zero, it starts over at the
+       end without encountering a zero, it starts over at the
        beginning.
     <member>Sync/AM: This actually has 2 possible effects: either one
        oscillator of the pair modulates the volume of the other with the
@@ -5998,7 +5999,8 @@ R0      R1      R2
   http://agi.helllabs.org/sound</ulink>.
 </para>
 
-<sect1><title>Sound resource format (PCjr version)</title>
+<sect1>
+<title>Sound resource format (PCjr version)</title>
 <para>
    We now know enough about the PCjr's T1 sound chip to discuss the AGI
    sound format. The sound is stored as four separate units of data, one
@@ -6128,13 +6130,14 @@ NF0  NF1       Noise Frequency
    values.
 </para>
 
-<sect2><title>AGI v1.12 sound format</title>
+<sect2>
+<title>AGI v1.12 sound format</title>
 <para>
-   The sound format used in version 1.12 of the AGI interpreter was quite
-   different from the format described above for AGIv2 and AGIv3. It
-   still uses the PCjr format for the note data but it does not store the
-   duration as a separate field. The best way to describe it is by an
-   example:
+  The sound format used in version 1.12 of the AGI interpreter was quite
+  different from the format described above for AGIv2 and AGIv3. It
+  still uses the PCjr format for the note data but it does not store the
+  duration as a separate field. The best way to describe it is by an
+  example:
 </para><para>
 <programlisting>
 90 80 16 B0 A0 15 D0 C0 0E FF E4 00 80 17 A0 16 C0 11 00
@@ -6142,20 +6145,20 @@ NF0  NF1       Noise Frequency
 </programlisting>
 
 </para><para>
-   The first thing to point out is that the PCjr note data is in the
-   opposite order to AGIv2. Secondly, all four parts are included
-   together rather than in separate sections. Taking the above example,
-   lets look at the first note and show the equivalent AGIv2 notation.
+  The first thing to point out is that the PCjr note data is in the
+  opposite order to AGIv2. Secondly, all four parts are included
+  together rather than in separate sections. Taking the above example,
+  lets look at the first note and show the equivalent AGIv2 notation.
 </para><para>
 <programlisting>
 90 80 16 --> 03 00 16 80 90
 </programlisting>
 
 </para><para>
-   Now, the duration isn't immediately obvious, but we will come to that
-   in a short while. The followint three bytes give the first note for
-   the second part, the third part, and the noise part (at least as far
-   as this example is concerned).
+  Now, the duration isn't immediately obvious, but we will come to that
+  in a short while. The followint three bytes give the first note for
+  the second part, the third part, and the noise part (at least as far
+  as this example is concerned).
 </para><para>
 <programlisting>
 B0 A0 15 --> 03 00 15 A0 B0
@@ -6164,19 +6167,19 @@ FF E4 00 --> 33 00 00 E4 FF
 </programlisting>
 
 </para><para>
-   The data that follows after these initial four starting notes is
-   basically any changes in the note value which each 3 duration step.
-   For example,
+  The data that follows after these initial four starting notes is
+  basically any changes in the note value which each 3 duration step.
+  For example,
 </para><para>
 <programlisting>
 80 17 --> 03 00 17 80 90
 </programlisting>
 
 </para><para>
-   Note that 0x90 doesn't need to be stored because that byte has
-   retained its value. Every 0x00 byte that is encountered is the end of
-   one set of note changes. Each set of note changes is the equivalent of
-   a duration of 3 in the AGIv2 format. Continuing with our example,
+  Note that 0x90 doesn't need to be stored because that byte has
+  retained its value. Every 0x00 byte that is encountered is the end of
+  one set of note changes. Each set of note changes is the equivalent of
+  a duration of 3 in the AGIv2 format. Continuing with our example,
 </para><para>
 <programlisting>
 A0 16 --> 03 00 16 A0 B0
@@ -6184,10 +6187,10 @@ C0 11 --> 03 00 11 C0 D0
 </programlisting>
 
 </para><para>
-   The example now encounters a 0x00 byte which means that the noise
-   voice isn't changed at this point. In fact, from the AGIv2 equivalent
-   note above, you will see that the noise note will not change until 49
-   (or 0x33) sets of note changes have been processed.
+  The example now encounters a 0x00 byte which means that the noise
+  voice isn't changed at this point. In fact, from the AGIv2 equivalent
+  note above, you will see that the noise note will not change until 49
+  (or 0x33) sets of note changes have been processed.
 </para><para>
 <programlisting>
 80 16    --> 03 00 16 80 90
@@ -6196,23 +6199,24 @@ C0 12    --> 03 00 12 C0 D0
 </programlisting>
 
 </para><para>
-   How exactly the AGIv1.12 interpreter knows which voice is having its
-   notes changed, and which bytes of the note are being changed, is not
-   yet certain. On some occassion a sets of changes will contain only one
-   byte which corresponds to one of the bytes which makes up one of the
-   voices note value, but how it knows which one is a mystery to me.
+  How exactly the AGIv1.12 interpreter knows which voice is having its
+  notes changed, and which bytes of the note are being changed, is not
+  yet certain. On some occassion a sets of changes will contain only one
+  byte which corresponds to one of the bytes which makes up one of the
+  voices note value, but how it knows which one is a mystery to me.
 
 </para><para>
-   On other occassions, there could be a whole chain of 0x00 bytes which
-   means that during that whole time, none of the voices are changing
-   their notes value.
+  On other occassions, there could be a whole chain of 0x00 bytes which
+  means that during that whole time, none of the voices are changing
+  their notes value.
 </para>
 
-<sect1><title>Sound resource format (IIgs version)</title>
+<sect1>
+<title>MIDI and PCM sound resource formats</title>
 <para>
-   There are two types of SOUND resources in the IIgs AGI games: PCM
-   samples (used for sound effects) and MIDI sequences. The first
-   two bytes can tell what type of resource we have:
+  There are two types of SOUND resources in the IIgs AGI games: PCM
+  samples (used for sound effects) and MIDI sequences. The first
+  two bytes can tell what type of resource we have:
 
 </para><para>
 <programlisting>
@@ -6223,10 +6227,11 @@ Byte  Meaning
 </programlisting>
 </para>
 
-<sect2><title>Sampled sounds</title>
+<sect2>
+<title>PCM sounds</title>
 <para>
-   Sampled sounds (resource type 01) are stored in 8 bit, unsigned format
-   after a 54 byte header described below.
+  Sampled sounds (resource type 01) are stored in 8 bit, unsigned format
+  after a 54 byte header described below.
 
 </para><para>
 <programlisting>
@@ -6240,14 +6245,15 @@ Byte  Meaning
 </programlisting>
 </para>
 
-<sect2><title>MIDI sequences</title>
+<sect2>
+<title>MIDI sequences</title>
 <para>
    Ian Schmidt, 3 April 1999.
 
 </para><para>
-   MIDI songs have a stram of MIDI data following the resource type.
-   The following dump shows the MIDI data in the King's Quest I opening
-   theme resource:
+  MIDI songs have a stram of MIDI data following the resource type.
+  The following dump shows the MIDI data in the King's Quest I opening
+  theme resource:
 </para><para>
 
 <programlisting>
@@ -6277,15 +6283,15 @@ Byte  Meaning
 </programlisting>
 
 </para><para>
-   The patch number is mapped to a sound sample stored in the
-   <filename/sierrastandard/ file in a more complicated way. The IIgs
-   interpreter uses the patch number as a lookup into a list of
-   instrument definitions, which are stored in a format used by an
-   API called the ``Note Synthesizer''.
+  The patch number is mapped to a sound sample stored in the
+  <filename/sierrastandard/ file in a more complicated way. The IIgs
+  interpreter uses the patch number as a lookup into a list of
+  instrument definitions, which are stored in a format used by an
+  API called the ``Note Synthesizer''.
 
 </para><para>
-   For example, here's instrument 0 from Police Quest, as dumped out of the
-   <filename/pq.sys16/ file:
+  For example, here's instrument 0 from Police Quest, as dumped out of the
+  <filename/pq.sys16/ file:
 </para><para>
 
 <programlisting>
@@ -6306,52 +6312,53 @@ A wave count: 1, B wave count: 1
 </programlisting>
 
 </para><para>
-   Now, that's a bit scary looking, but all the important information is
-   there :-)
-
-</para><para>
-   Basically the Note Synth API groups 2 5503 voices together to make 1 voice,
-   and this has all the data you need to control it. Let me rephrase some
-   info from my dusty old ``IIgs Toolbox Reference, Volume 3''.
-
-</para><para>
-   The envelope is first: for each segment there's a breakpoint (target
-   volume, which is on a logarithmic scale in 6 decibel units) and an
-   Increment (a 8.8 fixed point number telling how much to adjust the volume
-   on each tick).  For instance, if the first segment had BP = 1 and Inc =
-   0x0001, it would take 256 ticks for the volume to reach 1.  The <emphasis/rel seg/
-   tells which segment of the envelope is the final one. Ticks in the Note
-   Synth default to 100 Hz, although the AGI interpreter may well have used a
-   different value -- I'll have to check.
-
-   <emphasis/Bend range/ is the number of semitones the instrument will be bent by if
-   a pitch wheel message at maximum deflection in either direction is
-   encountered.  For this instrument, that's 3 semitones in each direction.
-
-   <emphasis/Vib Dep/ and <emphasis/Vib Spd/ aren't being dumped properly yet (minor
-   bug in my utility), but they specify the depth and speed of an optional
-   vibrato effect.
-
-   <emphasis/A wave count/ and <emphasis/B wave count/ tell how many wavelists there are
-   for each 5503 voice. If there's more than 1 wavelist you compare the note
-   being started with the <emphasis/top/ value in each wavelist and if <emphasis/top/ is
-   greater than or equal to the note you're starting you use that wavelist.
-   In this case there's only 1 possible wavelist so <emphasis/top/ is naturally 0x7f,
-   the highest possible numbered MIDI note.
-
-</para><para>
-   Once you've picked a wavelist using the note, the other information is all
-   there.  Wave address is the offset in 256-byte pages into the 64k
-   <literal/sierrastandard/ image (ie, (Wave Address)&lt;&lt;8 gives a true offset).
-   In this case the wave starts 0x5000 bytes into the image. For size you
-   mask off all but the lowest 3 bits and it gives you the basic wave size as
-   follows:
-
-</para><para>
-   Case the wave starts 0x5000 bytes into the image: For size you mask off
-   all but the lowest 3 bits and it gives you the basic wave size as follows:
-
-</para><para>
+  Now, that's a bit scary looking, but all the important information is
+  there :-)
+</para>
+<para>
+  Basically the Note Synth API groups 2 5503 voices together to make 1 voice,
+  and this has all the data you need to control it. Let me rephrase some
+  info from my dusty old ``IIgs Toolbox Reference, Volume 3''.
+</para>
+<para>
+  The envelope is first: for each segment there's a breakpoint (target
+  volume, which is on a logarithmic scale in 6 decibel units) and an
+  Increment (a 8.8 fixed point number telling how much to adjust the volume
+  on each tick).  For instance, if the first segment had BP = 1 and Inc =
+  0x0001, it would take 256 ticks for the volume to reach 1.
+  The <emphasis/rel seg/ tells which segment of the envelope is the final
+  one. Ticks in the Note Synth default to 100 Hz, although the AGI
+  interpreter may well have used a different value -- I'll have to check.
+</para>
+<para>
+  <emphasis/Bend range/ is the number of semitones the instrument will
+  be bent by if a pitch wheel message at maximum deflection in either
+  direction is encountered. For this instrument, that's 3 semitones in
+  each direction.
+</para>
+<para>
+  <emphasis/Vib Dep/ and <emphasis/Vib Spd/ aren't being dumped properly
+  yet (minor bug in my utility), but they specify the depth and speed of
+  an optional vibrato effect.
+</para>
+<para>
+  <emphasis/A wave count/ and <emphasis/B wave count/ tell how many
+  wavelists there are for each 5503 voice. If there's more than 1 wavelist
+  you compare the note being started with the <emphasis/top/ value in
+  each wavelist and if <emphasis/top/ is greater than or equal to the
+  note you're starting you use that wavelist. In this case there's only
+  1 possible wavelist so <emphasis/top/ is naturally 0x7f, the highest
+  possible numbered MIDI note.
+</para>
+<para>
+  Once you've picked a wavelist using the note, the other information is all
+  there.  Wave address is the offset in 256-byte pages into the 64k
+  <literal/sierrastandard/ image (ie, (Wave Address)&lt;&lt;8 gives a
+  true offset). In this case the wave starts 0x5000 bytes into the image.
+  For size you mask off all but the lowest 3 bits and it gives you the
+  basic wave size as follows:
+</para>
+<para>
    <simplelist>
     <member>%000 = 1 page (256 bytes)
     <member>%001 = 2 pages (512 bytes)
@@ -6364,24 +6371,22 @@ A wave count: 1, B wave count: 1
    </simplelist>
 
 </para><para>
-   Note that if a zero is encountered in the wave before that size you still
-   stop at the zero.
+  Note that if a zero is encountered in the wave before that size you still
+  stop at the zero.
 
 </para><para>
-   <emphasis/Mode/ is the 5503 oscillator mode for the voice in the bits 1 and 2.
-   The lowest bit (bit 0) is a ``halt'' flag.
-   0 is looping, 1 is oneshot (play once), 2 is sync/AM (which nobody uses, but
-   I'll try to explain it if they actually are), and 3 is swap (oscillator 0
-   plays once, generates an IRQ, and oscillator 1 starts automatically.  If
-   oscillator 1 is also in swap mode, it will play once, generate and IRQ, and
-   auto-start oscillator 0 again.  If oscillator 1 is loop mode it will just
-   loop continuously - this setup is often used to have a sampled ``attack'' on
-   an instrument followed by a loop.
-
+  <emphasis/Mode/ is the 5503 oscillator mode for the voice in the bits
+  1 and 2.  The lowest bit (bit 0) is a ``halt'' flag. 0 is looping, 1 is
+  oneshot (play once), 2 is sync/AM (which nobody uses, but I'll try to
+  explain it if they actually are), and 3 is swap (oscillator 0 plays once,
+  generates an IRQ, and oscillator 1 starts automatically. If oscillator 1
+  is also in swap mode, it will play once, generate and IRQ, and auto-start
+  oscillator 0 again. If oscillator 1 is loop mode it will just loop
+  continuously - this setup is often used to have a sampled ``attack'' on
+  an instrument followed by a loop.
 </para><para>
-   The top 4 bits of the mode is the stereo channel where even numbers are
-   right and odd numbers are left, I believe (no real harm in reversing them).
-
+  The top 4 bits of the mode is the stereo channel where even numbers are
+  right and odd numbers are left, I believe (no real harm in reversing them).
 </para><para>
    The full bitmap for the control register is:
 </para><para>

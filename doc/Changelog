@@ -38,6 +38,7 @@ Revision History
 	- fixed command get.num
 	- fixed controller reset (moved to the end of the cycle)
 	- fixed v3 game loading in big-endian machines
+	- sound tuning improved, added chorus and envelope release
 
 0.6.2 (20010826)
 	- fixed cmd_clear_rect() to prevent crash with the IIgs demo

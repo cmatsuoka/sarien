@@ -75,8 +75,9 @@ enum {
 	F_logic_zero_firsttime,
 	F_restore_just_ran,
 	F_status_selects_items,
-	F_menus_work,			/* 14 */
-	F_output_mode
+	F_menus_work,
+	F_output_mode			/* 15 */
+	/* Add F16 used in restart.game */
 };
 
 struct agi_event {

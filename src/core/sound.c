@@ -71,9 +71,11 @@ struct sound_iigs_sample {
 	UINT16 unknown2[13];
 };
 
+#if 0
 static struct sound_instrument *instruments;
 static int num_instruments;
 static UINT8 *wave;
+#endif
 
 #endif
 
@@ -81,7 +83,6 @@ static int playing;
 static struct channel_info chn[NUM_CHANNELS];
 static int endflag = -1;
 static int playing_sound = -1;
-static UINT16 type;
 static UINT8 *song;
 static UINT8 env;
 
@@ -166,8 +167,8 @@ void unload_sound (int resnum)
 			;
 
 		/* Release RAW data for sound */
-		free(game.sounds[resnum].rdata);
-		game.sounds[resnum].rdata=NULL;
+		free (game.sounds[resnum].rdata);
+		game.sounds[resnum].rdata = NULL;
       		game.dir_sound[resnum].flags &= ~RES_LOADED;
 	}
 }
@@ -203,7 +204,7 @@ void decode_sound (int resnum)
 
 void start_sound (int resnum, int flag)
 {
-	int i;
+	int i, type;
 #ifdef USE_IIGS_SOUND
 	struct sound_iigs_sample *smp;
 #endif
@@ -234,6 +235,7 @@ void start_sound (int resnum, int flag)
 		_D (_D_WARN "IIGS sample");
 		smp = (struct sound_iigs_sample *)game.sounds[resnum].rdata;
 		for (i = 0; i < NUM_CHANNELS; i++) {
+			chn[i].type = type;
 			chn[i].flags = 0;
 			chn[i].ins = (SINT16 *)&game.sounds[resnum].rdata[54];
 			chn[i].size = ((int)smp->size_hi << 8) + smp->size_lo;
@@ -247,8 +249,9 @@ void start_sound (int resnum, int flag)
 		_D (_D_WARN "IIGS MIDI sequence");
 
 		for (i = 0; i < NUM_CHANNELS; i++) {
+			chn[i].type = type;
 			chn[i].flags = AGI_SOUND_LOOP | AGI_SOUND_ENVELOPE;
-			chn[i].ins = waveform;	/* FIXME */
+			chn[i].ins = waveform;
 			chn[i].size = WAVEFORM_SIZE;
 			chn[i].vol = 0;
 			chn[i].end = 0;
@@ -261,6 +264,7 @@ void start_sound (int resnum, int flag)
 	case AGI_SOUND_4CHN:
 		/* Initialize channel info */
 		for (i = 0; i < NUM_CHANNELS; i++) {
+			chn[i].type = type;
 			chn[i].flags = AGI_SOUND_LOOP;
 			if (env) {
 				chn[i].flags |= AGI_SOUND_ENVELOPE;
@@ -364,7 +368,7 @@ int init_sound ()
 	}
 
 #ifdef USE_IIGS_SOUND
-	load_instruments ("demo.sys");
+	/*load_instruments ("demo.sys");*/
 #endif
 
 	return r;
@@ -387,8 +391,11 @@ static void stop_note (int i)
 
 #ifdef USE_CHORUS
 	/* Stop chorus ;) */
-	if (opt.soundemu == SOUND_EMU_NONE && i < 3)
+	if (chn[i].type == AGI_SOUND_4CHN &&
+		opt.soundemu == SOUND_EMU_NONE && i < 3)
+	{
 		stop_note (i + 4);
+	}
 #endif
 
 #ifdef __TURBOC__
@@ -416,7 +423,9 @@ static void play_note (int i, int freq, int vol)
 
 #ifdef USE_CHORUS
 	/* Add chorus ;) */
-	if (opt.soundemu == SOUND_EMU_NONE && i < 3) {
+	if (chn[i].type == AGI_SOUND_4CHN &&
+		opt.soundemu == SOUND_EMU_NONE && i < 3)
+	{
 		int newfreq = freq * 1007 / 1000;
 		if (freq == newfreq)
 			newfreq++;
@@ -458,12 +467,14 @@ void play_midi_sound ()
 	case 0x08:
 		parm1 = *p++;
 		parm2 = *p++;
-		stop_note (ch);
+		if (ch < NUM_CHANNELS)
+			stop_note (ch);
 		break;
 	case 0x09:
 		parm1 = *p++;
 		parm2 = *p++;
-		play_note (ch, note_to_period (parm1), 127);
+		if (ch < NUM_CHANNELS)
+			play_note (ch, note_to_period (parm1), 127);
 		break;
 	case 0x0b:
 		parm1 = *p++;
@@ -473,7 +484,14 @@ void play_midi_sound ()
 		break;
 	case 0x0c:
 		parm1 = *p++;
-		_D (_D_WARN "set patch %02x, ch %02x", parm1, ch);
+#if 0
+		if (ch < NUM_CHANNELS) {
+			chn[ch].ins = (UINT16 *)&wave[waveaddr[parm1]];
+			chn[ch].size = wavesize[parm1];
+		}
+		_D (_D_WARN "set patch %02x (%d,%d), ch %02x",
+			parm1, waveaddr[parm1], wavesize[parm1], ch);
+#endif
 		break;
 	}
 
@@ -525,7 +543,10 @@ void play_agi_sound ()
 				chn[i].vol = 0;
 				chn[i].env = 0;
 #ifdef USE_CHORUS
-				if (opt.soundemu == SOUND_EMU_NONE && i < 3) {
+				/* chorus */
+				if (chn[i].type == AGI_SOUND_4CHN &&
+					opt.soundemu == SOUND_EMU_NONE && i < 3)
+				{
 					chn[i + 4].vol = 0;
 					chn[i + 4].env = 0;
 				}
@@ -545,9 +566,10 @@ void play_sound ()
 		return;
 
 #ifdef USE_IIGS_SOUND
-	if (type == AGI_SOUND_MIDI) {
+	if (chn[0].type == AGI_SOUND_MIDI) {
 		/* play_midi_sound (); */
-	} else if (type == AGI_SOUND_SAMPLE) {
+		playing = 0;
+	} else if (chn[0].type == AGI_SOUND_SAMPLE) {
 		play_sample_sound ();
 	} else
 #endif
@@ -585,7 +607,7 @@ UINT32 mix_sound (void)
 			chn[c].vol * chn[c].env >> 16 :
 			chn[c].vol;
 	
-		if (c != 3) {
+		if (chn[c].type != AGI_SOUND_4CHN || c != 3) {
 			src = chn[c].ins;
 	
 			p = chn[c].phase;
@@ -650,6 +672,7 @@ UINT32 mix_sound (void)
 
 #ifdef USE_IIGS_SOUND
 
+#if 0
 int load_instruments (char *fname)
 {
 	FILE *fp;
@@ -664,11 +687,18 @@ int load_instruments (char *fname)
 		return err_BadFileOpen;
 	report ("Loading samples: %s\n", path);
 
-	if ((wave = malloc (0x10000)) == NULL)
+	if ((wave = malloc (0x10000 * 2)) == NULL)
 		return err_NotEnoughMemory;
 
 	fread (wave, 0x10000, 1, fp);
 	fclose (fp);
+	for (i = 0x10000; i--; ) {
+		((SINT16 *)wave)[i] = 2 * ((SINT16)wave[i] - 128);
+	}
+
+fp = fopen ("bla", "w");
+fwrite (wave, 2, 0x10000, fp);
+fclose (fp);
 
 	fixpath (NO_GAMEDIR, fname);
 	report ("Loading instruments: %s\n", path);
@@ -684,7 +714,7 @@ for (num_wav = j = 0; j < 40; j++) {
 	if (ai.env[0].bp > 0x7f)
 		break;
 
-#if 1
+#if 0
 	printf ("Instrument %d loaded ----------------\n", j);
 	printf ("Envelope:\n");
 	for (i = 0; i < 8; i++)
@@ -699,7 +729,7 @@ for (num_wav = j = 0; j < 40; j++) {
 
 	for (k = 0; k < ai.wac; k++, num_wav++) {
 		fread (&ai.wal[k], 1, 6, fp);
-#if 1
+#if 0
 		printf ("[A %d of %d] top: %02x, wave address: %02x, "
 			"size: %02x, mode: %02x, relPitch: %04x\n",
 			k + 1, ai.wac, ai.wal[k].top, ai.wal[k].addr,
@@ -710,7 +740,7 @@ for (num_wav = j = 0; j < 40; j++) {
 
 	for (k = 0; k < ai.wbc; k++, num_wav++) {
 		fread (&ai.wbl[k], 1, 6, fp);
-#if 1
+#if 0
 		printf ("[B %d of %d] top: %02x, wave address: %02x, "
 			"size: %02x, mode: %02x, relPitch: %04x\n",
 			k + 1, ai.wbc, ai.wbl[k].top, ai.wbl[k].addr,
@@ -718,6 +748,12 @@ for (num_wav = j = 0; j < 40; j++) {
 			((int)ai.wbl[k].rel_hi << 8) | ai.wbl[k].rel_lo);
 #endif
 	}
+	waveaddr[j] = 256 * ai.wal[0].addr;
+	wavesize[j] = 256 * (1 << ((ai.wal[0].size) & 0x07));
+#if 1
+	printf ("%d addr = %d\n", j, waveaddr[j]);
+	printf ("   size = %d\n",    wavesize[j]);
+#endif
 }
 
 	num_instruments = j;
@@ -734,6 +770,7 @@ void unload_instruments ()
 {
 	free (instruments);
 }
+#endif
 
 #endif /* USE_IIGS_SOUND */
 

@@ -320,6 +320,52 @@ void print_character (int x, int y, char c, int fg, int bg)
 	flush_block (x, y, x + CHAR_COLS - 1, y + CHAR_LINES); 
 }
 
+void draw_button (int x, int y, char *s, int a, int p)
+{
+	int len = strlen (s);
+	int x1, y1, x2, y2;
+
+	x1 = x - 3;
+	y1 = y - 3;
+	x2 = x + CHAR_COLS * len + 2;
+	y2 = y + CHAR_LINES + 2;
+	
+	if (p)
+		draw_frame (x1, y1, x2, y2, 8, 15);
+	else
+		draw_frame (x1, y1, x2, y2, 15, 8);
+
+	while (*s) {
+		put_text_character (0, x + (!!p), y + (!!p), *s++, 0, 7);
+		x += CHAR_COLS;
+	}
+
+	x1 -= 2; y1 -= 2;
+	x2 += 2; y2 += 2;
+	if (a) {
+		draw_frame (x1, y1, x2, y2, 8, 15);
+	} else {
+		draw_frame (x1, y1, x2, y2, 7, 7);
+	}
+
+	flush_block (x1, y1, x2, y2);
+}
+
+int test_button (int x, int y, char *s)
+{
+	int len = strlen (s);
+	int x1, y1, x2, y2;
+
+	x1 = x - 3;
+	y1 = y - 3;
+	x2 = x + CHAR_COLS * len + 2;
+	y2 = y + CHAR_LINES + 2;
+	
+	if (mouse.x >= x1 && mouse.y >= y1 && mouse.x <= x2 && mouse.y <= y2)
+		return TRUE;
+
+	return FALSE;
+}
 
 void put_block (int x1, int y1, int x2, int y2)
 {

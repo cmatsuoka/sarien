@@ -280,6 +280,90 @@ int message_box (char *s)
 }
 
 /**
+ * Display a message box with buttons.
+ * This function displays the specified message in a text box
+ * centered in the screen and waits until a button is pressed.
+ * @param p The text to be displayed
+ * @param b NULL-terminated list of button labels
+ */
+int selection_box (char *m, char **b)
+{
+	int x, y, i, s;
+	int key, active = 0;
+	int rc = -1;
+
+	erase_both ();
+	blit_textbox (m, -1, -1, -1);
+
+	x = game.window.x1 + 5 * CHAR_COLS / 2;
+	y = game.window.y2 - 5 * CHAR_LINES / 2;
+	s = game.window.x2 - game.window.x1 + 1 - 5 * CHAR_COLS;
+	_D ("s = %d", s);
+
+	/* Get space between buttons */
+	for (i = 0; b[i]; i++) { s -= CHAR_COLS * strlen (b[i]); }
+	if (i > 1) {
+		_D ("s / %d = %d", i - 1, s / (i - 1));
+		s /= (i - 1);
+	} else {
+		x += s / 2;
+	}
+
+	blit_both ();
+
+	/* clear key queue */
+	while (keypress ()) { get_key (); }
+
+	_D (_D_WARN "waiting...");
+	while (42) {
+		int xx = x;
+		for (i = 0; b[i]; i++) {
+			draw_button (xx, y, b[i], i == active, 0);
+			xx += CHAR_COLS * strlen (b[i]) + s;
+		}
+
+		poll_timer ();		/* msdos driver -> does nothing */
+		key = do_poll_keyboard ();
+		if (!console_keyhandler (key)) {
+			switch (key) {
+			case KEY_ENTER:
+				rc = active;
+				goto press;
+			case KEY_ESCAPE:
+				rc = -1;
+				goto getout;
+#ifdef USE_MOUSE
+			case BUTTON_LEFT: {
+				int xx = x;
+				for (i = 0; b[i]; i++) {
+					if (test_button (xx, y, b[i])) {
+						rc = active = i;
+						goto press;
+					}
+					xx += CHAR_COLS * strlen (b[i]) + s;
+				}
+				break; }
+#endif
+			case 0x09:		/* Tab */
+				_D ("Focus change");
+				active++;
+				active %= i;
+				break;
+			}
+		}
+		console_cycle ();
+	}
+
+press:
+	_D (_D_WARN "Button pressed: %d", rc);
+
+getout:
+	close_window ();
+
+	return rc;
+}
+
+/**
  *
  */
 int print (char *p, int lin, int col, int len)

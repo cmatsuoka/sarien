@@ -5,8 +5,8 @@ Tested ports:
                   Graphics   Sound    Windowed  Fullscreen
          Compiler  Driver    Driver   Graphics  Graphics  Aut/Maint.
 ---------+-------+---------+---------+---------+---------+---------+
- MS-DOS  |Watcom |   Raw   |  dummy  |    no   |   yes   | Stuart  |
- MS-DOS  |Turbo C|   Raw   |  dummy  |    no   |   yes   | claudio |
+ MS-DOS  |Watcom | Raw VGA |  dummy  |    no   |   yes   | Stuart  |
+ MS-DOS  |Turbo C| Raw VGA |  dummy  |    no   |   yes   | claudio |
 ---------+-------+---------+---------+---------+---------+---------+
  Linux   |  gcc  |   X11   |OSS,ALSA |   yes   |    no   | claudio |
  Linux   |  gcc  | SVGAlib |OSS,ALSA |    no   |   yes   |  XoXus  |
@@ -37,8 +37,9 @@ Tested ports:
 ---------+-------+---------+---------+---------+---------+---------+
 
 The Linux/X11 driver is known to work in the following architectures:
-IA32 (i386), PowerPC, IA64, S/390. The NetBSD, FreeBSD and BeOS ports
-have been tested on IA32. The Solaris port has been tested on Sparc.
+IA32 (i386), PowerPC, IA64, S/390 and Alpha. The NetBSD, FreeBSD and
+BeOS ports have been tested on IA32. The Solaris port has been tested
+on Sparc.
 
 
 Not integrated to the main tree:

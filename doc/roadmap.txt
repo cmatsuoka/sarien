@@ -22,32 +22,43 @@ Extra features:
 
 0.7.0:
 
-* Demopacks 1-4 100% accurate
-* Main Sierra v2 games finishable (LSL1, KQ1-3, PQ1, SQ1-2)
-* AGDS game finishable
-* Sierra v3 games playable
-* Fix quit/restart crashes
-* Fix hi-res mode problems
+* Demopacks 1-4 100% accurate					90%
+* Main Sierra v2 games finishable (LSL1, KQ1-3, PQ1, SQ1-2)	80%
+* AGDS game finishable						OK
+* Sierra v3 games playable					OK
+* Fix quit/restart crashes					OK
+* Fix hi-res mode problems					OK
+* Amiga port							OK
 
 0.8.0:
 
-* Sierra v3 games finishable
-* Multi-slot savegames
-* Major homemade games finishable
-* Amiga and Mac ports
-* unk commands implemented
+* Sierra v3 games finishable					 0%
+* Sierra v2 games accurate					 0%
+* Multi-slot savegames						 0%
+* Fix quit/restart problems					 0%
+* Major homemade games finishable				 0%
+* Macintosh port						50%
+* unk commands implemented					40%
 
 0.9.0:
 
-* IIgs sound emulation
-* Sierra v2 games 100% accurate
-* Complete documentation
+* IIgs sound emulation						20%
+* Sierra v3 games accurate					 0%
+* Complete documentation					30%
+* Mouse support							90%
 
 1.0:
 
-* All games 100% accurate
+* All games 100% accurate					 0%
+
+1.1+:
+
+* Re-organize support functions layers and APIs:
+  sound, graphics, input, filesystem, timer, AGI
+  resources. Reuse as much as possible in the
+  AGI utilities to make them portable.				 0%
 
 2.0:
 
-* Dynamic palette, higher-res mode, etc.
+* Dynamic palette, higher-res mode, FreeSCI GFX, etc.		 0%
 

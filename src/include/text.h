@@ -16,6 +16,7 @@ extern "C"{
 #endif
 
 int	message_box	(char *);
+int	selection_box	(char *, char **);
 void	close_window	(void);
 void	print_status	(char *, ...);
 void	draw_text	(char *, int, int, int, int, int, int);

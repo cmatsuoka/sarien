@@ -487,8 +487,10 @@ cmd(set_game_id) {
 
 cmd(pause) {
 	int tmp = game.clock_enabled;
+	char *b[] = { "Continue", NULL };
+
 	game.clock_enabled = FALSE;
-	message_box ("    Game is Paused.\nPress ENTER to continue.");
+	selection_box ("  Game is paused.  \n\n\n", b);
 	game.clock_enabled = tmp;
 }
 
@@ -564,31 +566,31 @@ cmd(status) {
 }
 
 cmd(quit) {
+	char *buttons[] = { "Quit", "Continue", NULL };
+
+	stop_sound ();
 	if (p0) {
 		game.quit_prog_now = TRUE;
 	} else {
-		switch (message_box ("   Press ENTER to quit.\n"
-			"Press ESC to keep playing.")) {
-		case 'Y':
-		case 'y':
-		case 0x0d:
-		case 0x0a:
+		if (selection_box (" Quit the game, or continue? \n\n\n",
+			buttons) == 0)
+		{
 			game.quit_prog_now = TRUE;
-			break;
 		}
 	}
 }
 
 cmd(restart_game) {
-	switch (message_box ("Press ENTER to restart the game.\n"
-		"Press ESC to continue this game.")) {
-	case 0x0a:
-	case 0x0d:
+	char *buttons[] = { "Restart", "Continue", NULL };
+	
+	stop_sound ();
+	/* FIXME: Test flag 16 */
+
+	if (selection_box (" Restart game, or continue? \n\n\n",
+		buttons) == 0)
+	{
 		game.quit_prog_now = 0xff;
 		setflag (F_restart_game, TRUE);
-		break;
-	default:
-		break;
 	}
 }
 
