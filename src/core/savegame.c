@@ -1,11 +1,7 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
  *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
-<<<<<<< savegame.c
  *  $Id$
-=======
- *  $Id$
->>>>>>> 1.42
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -523,6 +519,9 @@ int load_game(char* s)
 	for(i=0; i<MAX_VIEWTABLE; i++)
 	{
 		struct vt_entry* v = &game.view_table[i];
+
+		if(game.dir_view[v->current_view].offset == _EMPTY)
+			continue;
 
 		set_view(v, v->current_view); /* Fix v->view_data */
 		set_loop(v, v->current_loop); /* Fix v->loop_data */
