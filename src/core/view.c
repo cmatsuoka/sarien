@@ -191,7 +191,11 @@ void add_view_table (int entry, int vw)
 		view_table[entry].cycle_status = CYCLE_NORMAL;
 		//view_table[entry].num_loops = views[vw].num_loops;
 
-		view_table[entry].current_loop = -1;
+		/* Loop numbers should be retained, this checks if a loop number
+		 * is sane for the given view
+		 */
+		if (view_table[entry].current_loop >= views[vw].num_loops)
+			view_table[entry].current_loop=0;
 
 		/* Hmm... */
 		if (views[vw].num_loops >= 1 && views[vw].num_loops <= 3) {
@@ -199,7 +203,8 @@ void add_view_table (int entry, int vw)
 			case 0:
 			case 1:
 			case 5:
-				set_loop (entry, 0);
+				// set_loop (entry, 0);
+				// In this case the loop number is retained from the previous object
 				break;
 			case 2:
 			case 3:
@@ -216,7 +221,8 @@ void add_view_table (int entry, int vw)
 			if (views[vw].num_loops == 4) {
 				switch(view_table[entry].direction) {
 				case 0:
-					set_loop (entry, 0);
+					// set_loop (entry, 0);
+					// In this case the loop number is retained from the previous object
 					break;
 				case 1:
 					set_loop (entry, 3);
