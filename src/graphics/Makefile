@@ -4,8 +4,8 @@ XCFLAGS = -I../include
 OBJS	=
 DFILES	= Makefile
 CFILES	=
-# XoXus: Modified this to include "svgalib" at end
-DDIRS	= msdos sdl x11 svgalib win32 photon dive macos amiga script dc
+DDIRS	= msdos sdl x11 svgalib win32 photon dive macos amiga script dc \
+	  directx
 XDFILES =
 LIB	=
 

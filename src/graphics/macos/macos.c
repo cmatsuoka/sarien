@@ -87,7 +87,6 @@ int deinit_machine ()
 
 
 /* ===================================================================== */
- 
 /* Optimized wrappers to access the offscreen pixmap directly.
  * From my raster star wars scroller screensaver.
  */
@@ -95,19 +94,19 @@ int deinit_machine ()
 /* In the normal 8/15/16/24/32 bpp cases idx indexes the data item directly.
  * x and y are available for the other depths.
  */
-static INLINE void putpixel_32 (void *img, int idx, int p)
+static INLINE void putpixel_32 (UINT8 *img, int idx, int p)
 {
-	((int *)img)[idx] = p;
+	*(int *)&img[idx] = p;
 }
 
-static INLINE void putpixel_16 (void *img, int idx, int p)
+static INLINE void putpixel_16 (UINT8 *img, int idx, int p)
 {
-	((short *)img)[idx] = p;
+	*(short *)&img[idx] = p;
 }
 
-static INLINE void putpixel_8 (void *img, int idx, int p)
+static INLINE void putpixel_8 (UINT8 *img, int idx, int p)
 {
-	((char *)img)[idx] = p;
+	*(char *)&img[idx] = p;
 }
 
 /* ===================================================================== */
@@ -117,22 +116,25 @@ static INLINE void putpixel_8 (void *img, int idx, int p)
 #define _putpixels_scale1(d) static void \
 _putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
 	if (w == 0) return; \
-	x += y * bpl; \
-	while (w--) { putpixel_##d (screen_buffer, x++, rgb_palette[*p++]); }\
+	x *= ((d) / 8); x += y * bpl; \
+	while (w--) { \
+		putpixel_##d (screen_buffer, x, rgb_palette[*p++]); \
+		x += ((d) / 8); \
+	} \
 }
 
 #define _putpixels_scale2(d) static void \
 _putpixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) { \
 	register int c; if (w == 0) return; \
-	x <<= 1; y <<= 1; \
+	x <<= 1; y <<= 1; x *= ((d) / 8); \
 	x += y * bpl; \
 	y = x + bpl; \
 	while (w--) { \
 		c = rgb_palette[*p++]; \
-		putpixel_##d (screen_buffer, x++, c); \
-		putpixel_##d (screen_buffer, x++, c); \
-		putpixel_##d (screen_buffer, y++, c); \
-		putpixel_##d (screen_buffer, y++, c); \
+		putpixel_##d (screen_buffer, x, c); x += ((d) / 8); \
+		putpixel_##d (screen_buffer, x, c); x += ((d) / 8); \
+		putpixel_##d (screen_buffer, y, c); y += ((d) / 8); \
+		putpixel_##d (screen_buffer, y, c); y += ((d) / 8); \
 	} \
 }
 
@@ -167,15 +169,15 @@ _putpixels_fixratio_##d##bits_scale2 (int x, int y, int w, UINT8 *p0) { \
 	z = y + bpl; \
 	for (p = p0; w--; ) { \
 		c = rgb_palette[*p++]; \
-		putpixel_##d (screen_buffer, x++, c); \
-		putpixel_##d (screen_buffer, x++, c); \
-		putpixel_##d (screen_buffer, y++, c); \
-		putpixel_##d (screen_buffer, y++, c); \
+		putpixel_##d (screen_buffer, x, c); x += ((d) / 8); \
+		putpixel_##d (screen_buffer, x, c); x += ((d) / 8); \
+		putpixel_##d (screen_buffer, y, c); y += ((d) / 8); \
+		putpixel_##d (screen_buffer, y, c); y += ((d) / 8); \
 	} \
 	for (p = p0; extra--; ) { \
 		c = rgb_palette[*p++]; \
-		putpixel_##d (screen_buffer, z++, c); \
-		putpixel_##d (screen_buffer, z++, c); \
+		putpixel_##d (screen_buffer, z, c); z += ((d) / 8); \
+		putpixel_##d (screen_buffer, z, c); z += ((d) / 8); \
 	} \
 }
 
@@ -303,12 +305,43 @@ static unsigned long delta ()
 static void macos_timer ()
 {
 	while (delta () < 42) {
-		/* usleep (5000); */
+		process_events ();
 	}
 
 	process_events ();
 }
 
+static void init_toolbox ()
+{
+	InitGraf (&qd.thePort);
+	InitFonts ();
+	InitWindows ();
+	InitMenus ();
+	TEInit ();
+	InitDialogs (nil);
+	InitCursor ();
+}
+
+#define mApple 128
+#define mFile  129
+
+static void init_menu ()
+{
+	Handle menuBar;
+	MenuHandle menu;
+
+	menuBar = GetNewMBar (128);
+	etMenuBar (menuBar);
+
+	menu = GetMenuHandle (mApple);
+	AppendResMenu (menu, 'DRVR');
+ 
+	menu = NewMenu (mFile, "\pFile");
+	AppendMenu (menu, "\pQuit/Q");
+	InsertMenu (menu, 0);
+
+	DrawMenuBar();
+}
 
 static int macos_init_vidmode ()
 {
@@ -323,14 +356,8 @@ static int macos_init_vidmode ()
 	if (theWorld.hasColorQD == false)
 		return -1;
 	
-	/* Initialize all the needed managers. */
-	InitGraf (&qd.thePort);
-	InitFonts ();
-	InitWindows ();
-	InitMenus ();
-	TEInit ();
-	InitDialogs (nil);
-	InitCursor ();
+	init_toolbox ();
+	init_menus ();
 
 	/* Set palette */
 	set_palette (palette, 0, 32);
@@ -345,7 +372,7 @@ static int macos_init_vidmode ()
 	SetRect (&window_rect, 50, 50, 50 + GFX_WIDTH * scale - 1,
 		50 + GFX_HEIGHT * scale - 1);
 	window = NewCWindow (NULL, &window_rect, "\pSarien", true,
-		noGrowDocProc, (WindowPtr) -1, false, NULL);
+		noGrowDocProc, (WindowPtr) -1, true, NULL);
 		
 	/* Initialize pixmap pointers */
 	pix = GetGWorldPixMap (gworld);
@@ -353,7 +380,6 @@ static int macos_init_vidmode ()
 	wpix = ((CGrafPort *)window)->portPixMap;
 	LockPixels (wpix);
 	bpl = (*pix)->rowBytes & 0x3fff;
-	bpl = GFX_WIDTH * scale + 4 * 32 / depth;
 	screen_buffer = (UINT8 *)GetPixBaseAddr(pix);
 	
 	/* set window to current graf port */
