@@ -48,6 +48,52 @@ int main (int argc, char *argv[])
 	install_keyboard();
 #endif
 
+#ifdef __MSDOS__
+	exec_name = strdup(argv[0]);
+#endif
+
+	game.clock_enabled = FALSE;
+	game.state = STATE_INIT;
+
+#ifndef __MPW__
+	if ((ec = parse_cli (argc, argv)) != err_OK)
+		goto bail_out;
+#endif
+
+	if (opt.gamerun == GAMERUN_CRC) {
+		agi_detect_game (argc > 1 ? argv[optind] :
+			get_current_directory ());
+		exit (0);
+	}
+
+	if (opt.gamerun == GAMERUN_GAMES) {
+		list_games ();
+		exit (0);
+	}
+
+	init_machine (argc, argv);
+
+	game.color_fg = 15;
+	game.color_bg = 0;
+
+	if (init_video () != err_OK) {
+		ec = err_Unk;
+		goto bail_out;
+	}
+
+#ifdef OPT_PICTURE_VIEWER
+	if (opt.gamerun == GAMERUN_PICVIEW) {
+		if (agi_detect_game (argc > 1 ? argv[optind] :
+			get_current_directory ()) == err_OK)
+		{
+			agi_init ();
+			view_pictures ();
+		} 
+
+		goto bail_out;
+	}
+#endif
+
 	printf(
 TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 "Copyright (C) 1999-2001 Stuart George\n"
@@ -61,41 +107,6 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 "under the terms of the GNU General Public License, version 2 or later,\n"
 "as published by the the Free Software Foundation.\n"
 "\n");
-
-#ifdef __MSDOS__
-	exec_name = strdup(argv[0]);
-#endif
-
-	game.clock_enabled = FALSE;
-	game.state = STATE_INIT;
-
-#ifndef __MPW__
-	if ((ec = parse_cli (argc, argv)) != err_OK)
-		goto bail_out;
-#endif
-
-	init_machine (argc, argv);
-
-	game.color_fg = 15;
-	game.color_bg = 0;
-
-	if (init_video () != err_OK) {
-		ec = err_Unk;
-		goto bail_out;
-	}
-
-#ifdef OPT_PICTURE_VIEWER
-	if (opt.picview) {
-		if (agi_detect_game (argc > 1 ? argv[optind] :
-			get_current_directory ()) == err_OK)
-		{
-			agi_init ();
-			view_pictures ();
-		} 
-
-		goto bail_out;
-	}
-#endif
 
 	report ("Enabling interpreter console\n");
 	console_init ();

@@ -313,15 +313,6 @@ enum {
 };
 
 enum {
-	gRUN_GAME = 1,
-	gSHOW_WORDS,
-	gSHOW_OBJECTS,
-	gVIEW_PICTURES,
-	gCRC,
-	gLIST_GAMES
-};
-
-enum {
 	RES_LOADED = 1,
 	RES_CACHED = 2,
 	RES_COMPRESSED = 0x40
@@ -350,8 +341,7 @@ enum {
 
 enum {
 	LINES = 1,
-	NO_LINES,
-	BX_SAVE = 0x10
+	NO_LINES
 };
 
 struct game_id_list {
@@ -368,14 +358,17 @@ struct game_id_list {
 struct sarien_options {
 	int forceload;		/**< force loading of all resources */
 	int cache;		/**< cache loaded resources */
-	int gamerun;		/**< status for game */
+#define GAMERUN_RUNGAME 0
+#define GAMERUN_PICVIEW 1
+#define GAMERUN_WORDS	2
+#define GAMERUN_OBJECTS	3
+#define GAMERUN_GAMES	4
+#define GAMERUN_CRC	5
+	int gamerun;		/**< game run mode*/
 	int pcjrgfx;		/**< PCJr graphics */
 	int showscreendraw;	/**< show screen drawing */
 	int showkeypress;
 	int emuversion;
-#ifdef OPT_PICTURE_VIEWER
-	int picview;		/**< run in picture viewer mode */
-#endif
 	int scale;		/**< window scale factor */
 	int fixratio;		/**< fix aspect ratio */
 	int agds;		/**< enable AGDS mode */

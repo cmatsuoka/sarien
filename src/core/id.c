@@ -31,6 +31,55 @@ int v4id_game (UINT32 crc);
 
 void list_games ()
 {
+	FILE *f;
+	char *c, *t, buf[256];
+	UINT32 id, ver;
+	int min, maj, i = 0;
+
+	/* FIXME: shouldn't be hard-coded, of course. */
+	f = fopen ("/etc/sarien.conf", "r");
+
+	printf (
+"Game#  AGI ver.   Title                                    CRC\n"
+"------ ---------- ---------------------------------------- -------\n"
+	);
+
+	while (!feof (f)) {
+		fgets (buf, 256, f);
+		c = strchr (buf, '#');
+		if (c) *c = 0;
+
+		/* Remove spaces at end of line */
+		if (strlen (buf)) {
+			for (c = buf + strlen (buf) - 1;
+				*c == ' ' || *c == '\t'; *c-- = 0) {}
+		}
+
+
+		t = strtok (buf, " \t\r\n");
+		if (t == NULL)
+			continue;
+		id = strtoul (t, NULL, 0);
+
+		t = strtok (NULL, " \t\r\n");
+		if (t == NULL)
+			continue;
+		ver = strtoul (t, NULL, 0);
+		maj = (ver >> 12) & 0xf;
+		min = ver & 0xfff;
+
+		t = strtok (NULL, "\n\r");
+
+		if (maj == 2) {
+			printf ("[%3d]  %x.%03x      %-40.40s 0x%05x\n",
+				++i, maj, min, t, id);
+		} else {
+			printf ("[%3d]  %x.002.%03x  %-40.40s 0x%05x\n",
+				++i, maj, min, t, id);
+		}
+	}
+
+	fclose (f);
 }
 
 static UINT32 match_crc (UINT32 crc, char *path)

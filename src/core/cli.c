@@ -143,7 +143,7 @@ int parse_cli (int argc, char **argv)
 
 	/* Set defaults */
 	memset (&opt, 0, sizeof (struct sarien_options));
-	opt.gamerun = gRUN_GAME;
+	opt.gamerun = GAMERUN_RUNGAME;
 	opt.scale = 2;
 	opt.gfxhacks = TRUE;
 #ifdef MITSHM
@@ -189,7 +189,7 @@ int parse_cli (int argc, char **argv)
 			opt.amiga = TRUE;
 			break;
 		case 'C':
-			opt.gamerun=gCRC;
+			opt.gamerun = GAMERUN_CRC;
 			break;
 		case 'E':
 			if (!strcmp (optarg, "pc"))
@@ -206,24 +206,24 @@ int parse_cli (int argc, char **argv)
 			opt.fullscreen = TRUE;
 			break;
 		case 'L':
-			opt.gamerun = gLIST_GAMES;
+			opt.gamerun = GAMERUN_GAMES;
 			break;
 		case 'g':
 			opt.gfxhacks = FALSE;
 			break;
 #ifdef OPT_LIST_DICT
 		case 'd':
-			opt.gamerun = gSHOW_WORDS;
+			opt.gamerun = GAMERUN_WORDS;
 			break;
 #endif
 #ifdef OPT_LIST_OBJECTS
 		case 'o':
-			opt.gamerun = gSHOW_OBJECTS;
+			opt.gamerun = GAMERUN_OBJECTS;
 			break;
 #endif
 #ifdef OPT_PICTURE_VIEWER
 		case 'p':
-			opt.picview = TRUE;
+			opt.gamerun = GAMERUN_PICVIEW;
 			break;
 #endif
 		case 'n':
