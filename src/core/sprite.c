@@ -43,12 +43,12 @@ struct sprite {
 #undef ALLOC_DEBUG
 
 #ifdef USE_HIRES
-#  define POOL_SIZE 42000
+#  define POOL_SIZE 50000
 #else
-#  define POOL_SIZE 20000
+#  define POOL_SIZE 25000
 #endif
-static UINT8 sprite_pool[POOL_SIZE];
-static UINT8 *pool_top = (UINT8 *)sprite_pool;
+static UINT8 *sprite_pool;
+static UINT8 *pool_top;
 
 #ifdef ALLOC_DEBUG
 #include <stdio.h>
@@ -863,4 +863,18 @@ void commit_block (int x1, int y1, int x2, int y2)
 	flush_block_a (x1, y1 + offset, x2, y2 + offset);
 }
 
+int init_sprites ()
+{
+	if ((sprite_pool = malloc (POOL_SIZE)) == NULL)
+		return err_NotEnoughMemory;
+
+	pool_top = sprite_pool;
+
+	return err_OK;
+}
+
+void deinit_sprites ()
+{
+	free (sprite_pool);
+}
 /* end: sprite.c */

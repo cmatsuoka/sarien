@@ -110,10 +110,16 @@ int main (int argc, char *argv[])
 	};
 #endif
 
-	if (init_video () != err_OK) {
-		ec = err_Unk;
+	if (init_sprites () != err_OK) {
+		ec = err_NotEnoughMemory;
 		goto bail_out_3;
 	}
+
+	if (init_video () != err_OK) {
+		ec = err_Unk;
+		goto bail_out_4;
+	}
+
 
 #ifdef OPT_PICTURE_VIEWER
 	if (opt.gamerun == GAMERUN_PICVIEW) {
@@ -184,11 +190,12 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 	deinit_sound ();
 	deinit_video ();
 
+bail_out_4:
+	deinit_sprites ();
 bail_out_3:
 #ifdef USE_HIRES
 	free (game.hires);
 #endif
-
 bail_out_2:
 	free (game.sbuf);
 bail_out:

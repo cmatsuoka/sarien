@@ -214,14 +214,19 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 
 	game.color_fg = 15;
 	game.color_bg = 0;
-#ifdef USE_HIRES
-	game.hires = malloc (_WIDTH * _HEIGHT * 2);
-#endif
 
-	if (init_video () != err_OK) {
-		ec = err_Unk;
+	if ((game.sbuf = malloc (_WIDTH * _HEIGHT)) == NULL)
 		goto bail_out;
-	}
+#ifdef USE_HIRES
+	if ((game.hires = malloc (_WIDTH * _HEIGHT * 2)) == NULL)
+		goto bail_out2;
+#endif
+	if (init_sprites () != err_OK)
+		goto bail_out3;
+
+	if (init_video () != err_OK)
+		goto bail_out4;
+	
 	console_init ();
 	report ("--- Starting console ---\n\n");
 	if (!opt.gfxhacks)
@@ -251,10 +256,14 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 
 	deinit_sound ();
 	deinit_video ();
+bail_out4:
+	deinit_sprites ();
+bail_out3:
 #ifdef USE_HIRES
 	free (game.hires);
 #endif
-
+bail_out2:
+	free (game.sbuf);
 bail_out:
 	deinit_machine ();
 
