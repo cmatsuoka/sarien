@@ -79,11 +79,13 @@ static struct gfx_driver gfx_sdl = {
 extern struct gfx_driver *gfx;
 
 
+#define ASPECT_RATIO(x) ((x) * 6 / 5)
+
 /* ====================================================================*/
 
 /* Some optimized put_pixel routines for the most common cases */
 
-#define _putpixels_scale1(d) static void INLINE			\
+#define _putpixels_scale1(d) static void INLINE				\
 _putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) {		\
 	Uint##d## *s;							\
 	if (w == 0) return;						\
@@ -96,7 +98,7 @@ _putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) {		\
 	if (SDL_MUSTLOCK (screen)) SDL_UnlockSurface (screen);		\
 }
 
-#define _putpixels_scale2(d) static void INLINE			\
+#define _putpixels_scale2(d) static void INLINE				\
 _putpixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) {		\
 	Uint##d## *s, *t;						\
 	if (w == 0) return;						\
@@ -121,6 +123,49 @@ _putpixels_scale2(8);
 _putpixels_scale2(16);
 _putpixels_scale2(32);
 
+
+/* ====================================================================*/
+
+/* Aspect ratio correcting put pixels handlers */
+
+#define _putpixels_fixratio_scale1(d) static void			\
+_putpixels_fixratio_##d##bits_scale1 (int x, int y, int w, UINT8 *p) {	\
+	if (y > 0 && ASPECT_RATIO (y) - 1 != ASPECT_RATIO (y - 1))	\
+		_putpixels_##d##bits_scale1 (x, ASPECT_RATIO(y) - 1, w, p);\
+	_putpixels_##d##bits_scale1 (x, ASPECT_RATIO(y), w, p);		\
+}
+
+#define _putpixels_fixratio_scale2(d) static void INLINE		\
+_putpixels_fixratio_##d##bits_scale2 (int x, int y, int w, Uint8 *p0) {	\
+	Uint##d## *s, *t, *u; Uint8 *p; int extra = 0;			\
+	if (w == 0) return;						\
+	x <<= 1; y <<= 1;						\
+	if (y < ((GFX_WIDTH - 1) << 2) && ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2)) extra = w; \
+	y = ASPECT_RATIO(y);						\
+	s = (Uint##d## *)screen->pixels + x + y * screen->w;		\
+	t = s + screen->w;						\
+	u = t + screen->w;						\
+	if (SDL_MUSTLOCK (screen)) {					\
+		if (SDL_LockSurface (screen) < 0)			\
+			return;						\
+	}								\
+	for (p = p0; w--; p++) {					\
+		int c = mapped_color[*p];				\
+		*s++ = c; *s++ = c; *t++ = c; *t++ = c;			\
+	}								\
+	for (p = p0; extra--; p++) {					\
+		int c = mapped_color[*p];				\
+		*u++ = c; *u++ = c;					\
+	}								\
+	if (SDL_MUSTLOCK (screen)) SDL_UnlockSurface (screen);		\
+}
+
+_putpixels_fixratio_scale1(8);
+_putpixels_fixratio_scale1(16);
+_putpixels_fixratio_scale1(32);
+_putpixels_fixratio_scale2(8);
+_putpixels_fixratio_scale2(16);
+_putpixels_fixratio_scale2(32);
 
 /* ====================================================================*/
 
@@ -206,6 +251,13 @@ static void _putpixels (int x, int y, int w, Uint8 *p)
 	if (SDL_MUSTLOCK (screen))
 		SDL_UnlockSurface (screen);
 }
+
+static void _putpixels_fixratio (int x, int y, int w, UINT8 *p)
+{
+	if (y > 0 && ASPECT_RATIO (y) - 1 != ASPECT_RATIO (y - 1))
+		_putpixels (x, ASPECT_RATIO(y) - 1, w, p);
+	_putpixels (x, ASPECT_RATIO(y), w, p);
+} 
 
 /* ====================================================================*/
 
@@ -379,10 +431,14 @@ static int init_vidmode ()
 	}
 
 	mode = SDL_SWSURFACE | SDL_ANYFORMAT;
+
 	if (opt.fullscreen)
 		mode |= SDL_FULLSCREEN;
-	if ((screen = SDL_SetVideoMode (320 * scale, 200 * scale, 8,
-		mode)) == NULL) {
+
+	if ((screen = SDL_SetVideoMode (320 * scale,
+		(opt.fixratio ? ASPECT_RATIO(GFX_HEIGHT) : GFX_HEIGHT) * scale,
+		8, mode)) == NULL)
+	{
 		fprintf (stderr, "sdl: can't set video mode: %s\n",
 			SDL_GetError ());
 		return err_Unk;
@@ -403,22 +459,47 @@ static int init_vidmode ()
 	}
 	SDL_SetColors (screen, color, 0, 32);
 
+#define handle_case(d,s) case (d/8): \
+	gfx_sdl.put_pixels = _putpixels_##d##bits_scale##s##; break;
+#define handle_fixratio_case(d,s) case (d/8): \
+	gfx_sdl.put_pixels = _putpixels_fixratio_##d##bits_scale##s##; break;
+
 	/* Use an optimized put_pixels if available */
-	if (opt.gfxhacks) switch (scale) {
-	case 1:
-		switch (screen->format->BytesPerPixel) {
-		case 1: gfx_sdl.put_pixels = _putpixels_8bits_scale1; break;
-		case 2: gfx_sdl.put_pixels = _putpixels_16bits_scale1; break;
-		case 4: gfx_sdl.put_pixels = _putpixels_32bits_scale1; break;
+	if (!opt.fixratio) {
+		gfx_sdl.put_pixels = _putpixels_fixratio;
+		if (opt.gfxhacks) switch (scale) {
+		case 1:
+			switch (screen->format->BytesPerPixel) {
+			handle_case(8,1);
+			handle_case(16,1);
+			handle_case(32,1);
+			}
+			break;
+		case 2:
+			switch (screen->format->BytesPerPixel) {
+			handle_case(8,2);
+			handle_case(16,2);
+			handle_case(32,2);
+			}
+			break;
 		}
-		break;
-	case 2:
-		switch (screen->format->BytesPerPixel) {
-		case 1: gfx_sdl.put_pixels = _putpixels_8bits_scale2; break;
-		case 2: gfx_sdl.put_pixels = _putpixels_16bits_scale2; break;
-		case 4: gfx_sdl.put_pixels = _putpixels_32bits_scale2; break;
+	} else {
+		if (opt.gfxhacks) switch (scale) {
+		case 1:
+			switch (screen->format->BytesPerPixel) {
+			handle_fixratio_case(8,1);
+			handle_fixratio_case(16,1);
+			handle_fixratio_case(32,1);
+			}
+			break;
+		case 2:
+			switch (screen->format->BytesPerPixel) {
+			handle_fixratio_case(8,2);
+			handle_fixratio_case(16,2);
+			handle_fixratio_case(32,2);
+			}
+			break;
 		}
-		break;
 	}
 
 	return err_OK;
@@ -448,17 +529,22 @@ static void sdl_put_block (int x1, int y1, int x2, int y2)
 	if (scale > 1) {
 		x1 *= scale;
 		y1 *= scale;
-		x2 = x2 * scale + scale - 1;
-		y2 = y2 * scale + scale - 1;
+		x2 = (x2 + 1) * scale - 1;
+		y2 = (y2 + 1) * scale - 1;
 	}
-	SDL_UpdateRect (screen, x1, y1, x2 - x1 + 1, y2 - y1 + 1);
+
+	if (opt.fixratio) {
+		SDL_UpdateRect (screen, x1, ASPECT_RATIO(y1), x2 - x1 + 1,
+			ASPECT_RATIO (y2 + 1) - ASPECT_RATIO(y1));
+	} else {
+		SDL_UpdateRect (screen, x1, y1, x2 - x1 + 1, y2 - y1 + 1);
+	}
 }
 
 
 int sdl_is_keypress ()
 {
 	process_events ();
-
 	return key_queue_start != key_queue_end;
 }
 
