@@ -374,6 +374,11 @@ void update_viewtable ()
 			case 4:
 				loop = loop_table_4[v->direction];
 				break;
+			default:
+				/* for KQ4 */
+				if (agi_get_release () >= 0x3000)
+					loop = loop_table_4[v->direction];
+				break;
 			}
 		}
 
