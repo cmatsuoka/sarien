@@ -223,6 +223,13 @@ static void ccmd_load ()
 	return;
 }
 
+static void ccmd_quit ()
+{
+	deinit_video ();
+	deinit_machine ();
+	exit (0);
+}
+
 #if 0
 static void ccmd_exec ()
 {
@@ -493,6 +500,7 @@ int console_init ()
 	console_cmd ("load",   "Load AGI game", ccmd_load);
 	console_cmd ("objs",   "List all objects and locations", ccmd_objs);
 	console_cmd ("opcode", "Turn opcodes on/off in debug", ccmd_opcode);
+	console_cmd ("quit",   "Quit the interpreter", ccmd_quit);
 #if 0
 	console_cmd ("inv",    "List current inventory", ccmd_inv);
 	console_cmd ("say",    "Pass argument to the AGI parser", ccmd_say);
