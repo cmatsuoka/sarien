@@ -24,6 +24,7 @@
 extern "C"{
 #endif
 
+extern	UINT8	*exec_name;
 extern	UINT8	*screen_buffer;
 extern	volatile UINT32	clock_ticks;
 extern	volatile UINT32 clock_count;

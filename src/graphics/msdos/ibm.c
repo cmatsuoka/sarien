@@ -24,8 +24,7 @@
 extern struct gfx_driver *gfx;
 extern struct sarien_options opt;
 
-
-
+UINT8	*exec_name;
 UINT8	*screen_buffer;
 
 void	(__interrupt __far *prev_08)	(void);
@@ -65,6 +64,8 @@ int init_machine (int argc, char **argv)
 {
 	gfx = &GFX_ibm;
 
+	exec_name=(UINT8*)strdup(argv[0]);
+
 	screen_mode=GFX_MODE;
 	screen_buffer=(UINT8*)malloc(GFX_WIDTH*GFX_HEIGHT);
 	clear_buffer();
@@ -80,6 +81,7 @@ int init_machine (int argc, char **argv)
 
 int deinit_machine ()
 {
+	free (exec_name);
 	free (screen_buffer);
 	_dos_setvect (0x08, prev_08);
 
