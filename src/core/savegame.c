@@ -24,8 +24,70 @@
 #include "iff.h"
 
 static int loading_ok;
-
 extern struct agi_view_table view_table[];
+
+
+#ifdef WIN32
+
+/* Date: Tue, 22 May 2001 16:22:06 +0400
+ * From: Igor Nesterov <nest@rtsnet.ru>
+ * To: sarien-devel@lists.sourceforge.net
+ * Subject: Fw: [sarien-devel] Improved savegames
+ * 
+ * I remember yet another "ms-compatible solution" common for Win9X and
+ * WinNT/2K: ApplicationData directory. Value AppData in registry key
+ * "HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\
+ * Shell Folders" hold path to this directory. This maps to "c:\windows\
+ * appilcation data" for Win9X and "C:\Documents and Settings\UserName\
+ * Application Data for NT
+ */
+
+#include <windows.h>
+
+int get_app_dir (char *app_dir, unsigned int size)
+{
+	const char *szapp = "AppData";
+	const char *szpath = "Software\\Microsoft\\Windows\\CurrentVersion\\"
+		"Explorer\\Shell Folders";
+	HKEY hkey;
+	DWORD type;
+
+	if (RegOpenKey (HKEY_CURRENT_USER, szpath, &hkey) != ERROR_SUCCESS)
+		return -1;
+
+	if (RegQueryValueEx (hkey, szapp, NULL, &type,
+		(unsigned char *)app_dir, &size) != ERROR_SUCCESS)
+	{
+		RegCloseKey (hkey);
+		return -1;
+	}
+
+	RegCloseKey (hkey);
+
+	return 0;
+}
+
+#else
+
+/* MS-DOS and UNIX */
+
+int get_app_dir (char *app_dir, unsigned int size)
+{
+	char *x;
+
+	x = getenv (HOMEDIR);
+	if (x) {
+		strncpy (app_dir, x, size);
+	} else {
+		x = getenv ("SARIEN");
+		if (x)
+			strncpy (app_dir, x, size);
+	}
+	
+	return x ? 0 : -1;
+}
+
+#endif
 
 
 /* Words are big-endian */
@@ -367,18 +429,19 @@ int load_game (char *s)
 
 int savegame_dialog ()
 {
-	char *home, path[MAX_PATH];
+	char home[MAX_PATH], path[MAX_PATH];
 	char *desc;
 	int slot = 0;
 
 	save_screen ();
 	redraw_sprites ();
 
-	home = getenv (HOMEDIR);
-	if (home == NULL) home = getenv ("SARIEN");
-#ifdef WIN32
-	if (home == NULL) home = getenv ("WINDIR");
-#endif
+	if (get_app_dir (home, MAX_PATH) < 0) {
+		release_sprites ();
+		restore_screen ();
+		message_box ("Couldn't save game.");
+		return err_BadFileOpen;
+	}
 
 	textbox (
 		"Multi-slot savegames are under development and"
@@ -409,18 +472,19 @@ int savegame_dialog ()
 
 int loadgame_dialog ()
 {
-	char *home, path[MAX_PATH];
+	char home[MAX_PATH], path[MAX_PATH];
 	int slot = 0;
 	int rc;
 
 	save_screen ();
 	redraw_sprites ();
 
-	home = getenv (HOMEDIR);
-	if (home == NULL) home = getenv ("SARIEN");
-#ifdef WIN32
-	if (home == NULL) home = getenv ("WINDIR");
-#endif
+	if (get_app_dir (home, MAX_PATH) < 0) {
+		release_sprites ();
+		restore_screen ();
+		message_box ("Error loading game.");
+		return err_BadFileOpen;
+	}
 
 	snprintf (path, MAX_PATH, "%s/" DATADIR "/", home);
 	mkdir (path, 0755);

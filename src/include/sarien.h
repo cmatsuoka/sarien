@@ -37,7 +37,7 @@ extern "C"{
 /* Environment variable containing the path name for the users's
  * private files ($HOME in Unix, %USERPROFILE% in Win32)
  */
-#ifdef WIN32
+#if defined (WIN32) || defined (_M_MSDOS)
 #  define HOMEDIR "USERPROFILE"
 #  define DATADIR "Sarien"
 #else
