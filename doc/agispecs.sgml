@@ -1142,9 +1142,17 @@ LOADER v3.0 (c) Copyright Sierra On-Line, Inc. 1987 keyOfs
 <sect1 id="agi-versions">
 <title>AGI interpreter versions</title>
 
-  Known Sierra AGI versions are listed in <xref linkend="tab-agi-versions">.
+<para>
+  Known Sierra AGI versions are listed in <xref linkend="tab-agi-games">.
+  There are a number of different versions of the AGI interpeter but
+  generally the data formats are the same or can be converted
+  between each other. <xref linkend="tab-agi-versions"> compare the
+  number of commands and other features in these interpreter versions.
+</para>
 
-  <table>
+<para>
+  <table id="tab-agi-games">
+    <title>AGI games and interpreter versions</title>
     <tgroup cols="4">
       <thead>
         <row/ <entry/Game/ <entry/Version/ <entry/Int. version/ <entry/Date//
@@ -1184,53 +1192,47 @@ LOADER v3.0 (c) Copyright Sierra On-Line, Inc. 1987 keyOfs
 
 </para>
 
-  There are a number of different versions of the AGI interpeter but
-  generally the data formats are the same or can easy be converted
-  between each other. The following table is a list of AGI interpreter
-  versions that I know of:
-</para><para>
-<programlisting>
-     AGI       Interp.  Agidata   Num of   Object file  LZW
-   version       size     size    commands   encrypted
-   ---------- -------- -------- ---------- ------------ ----
-   2.089	34305	  6656	   155		No	No
-   2.272	34816	  6656	   161		No	No
-   2.411	38400  	  7680	   169		Yes	No
-   2.435	38400	  7680	   169		Yes	No
-   2.439	38400	  7680	   169		Yes	No
-   2.440	38400	  7680	   169		Yes	No
-   2.915	39424	  8192	   173		Yes	No
-   2.917	39424	  8192	   173		Yes	No
-   2.936	39424	  8192	   175		Yes	No
-   3.002.086	40866	  8064	   177		Yes	Yes
-   3.002.098	40898	  8080	   181		Yes	Yes
-   3.002.102	40898	  8080	   181		Yes	Yes
-   3.002.107	40962	  8080	   181		Yes	Yes
-   3.002.149	40520	  7488	   181		Yes	Yes
-</programlisting>
-</para><para>
-   This table illustrates a number of things:
-   <itemizedlist>
-    <listitem><para>
-      Firstly, as the interpreter version increased, the number of AGI
-      commands supported increased with it. The last eleven we do not
-      know the names of.
-    </para></listitem>
+<para>
+  <table id="tab-agi-versions">
+    <title>AGI interpreter versions and features</title>
+    <tgroup cols="6">
+      <thead>
+        <row/ <entry/AGI version/ <entry/Int. size/ <entry/Agidata size/
+		<entry/Commands/ <entry/Encrypted objects/ <entry/LZW//
+      </thead>
+      <tbody>
+        <row/ <entry/2.089/ <entry/34305/ <entry/6656/ <entry/155/
+	  <entry/No/ <entry/No//
+        <row/ <entry/2.272/ <entry/34816/ <entry/6656/ <entry/161/
+	  <entry/No/ <entry/No//
+        <row/ <entry/2.411/ <entry/38400/ <entry/7680/ <entry/169/
+	  <entry/Yes/ <entry/No//
+        <row/ <entry/2.435/ <entry/38400/ <entry/7680/ <entry/169/
+          <entry/Yes/ <entry/No//
+        <row/ <entry/2.439/ <entry/38400/ <entry/7680/ <entry/169/
+          <entry/Yes/ <entry/No//
+        <row/ <entry/2.440/ <entry/38400/ <entry/7680/ <entry/169/
+          <entry/Yes/ <entry/No//
+        <row/ <entry/2.915/ <entry/39424/ <entry/8192/ <entry/173/
+          <entry/Yes/ <entry/No//
+        <row/ <entry/2.917/ <entry/39424/ <entry/8192/ <entry/173/
+          <entry/Yes/ <entry/No//
+        <row/ <entry/2.936/ <entry/39424/ <entry/8192/ <entry/175/
+          <entry/Yes/ <entry/No//
+        <row/ <entry/3.002.086/ <entry/40866/ <entry/8064/ <entry/177/
+          <entry/Yes/ <entry/Yes//
+        <row/ <entry/3.002.098/ <entry/40898/ <entry/8080/ <entry/181/
+          <entry/Yes/ <entry/Yes//
+        <row/ <entry/3.002.102/ <entry/40898/ <entry/8080/ <entry/181/
+          <entry/Yes/ <entry/Yes//
+        <row/ <entry/3.002.107/ <entry/40962/ <entry/8080/ <entry/181/
+          <entry/Yes/ <entry/Yes//
+        <row/ <entry/3.002.149/ <entry/40520/ <entry/7488/ <entry/181/
+          <entry/Yes/ <entry/Yes//
+      </tbody>
+    </tgroup>
+  </table>
 
-    <listitem><para>
-      There are two main AGI versions: AGI v2 and AGI v3.
-    </para></listitem>
-
-    <listitem><para>
-      The early AGI v2 games did not encrypt the <filename/object/ file
-      with the ``Avis Durgan'' string.
-    </para></listitem>
-
-    <listitem><para>
-      AGI v3 games use adaptive LZW to compress their LOGIC, VIEW, and
-      SOUND files.
-    </para></listitem>
-   </itemizedlist>
 </para>
 
 <sect2>

@@ -159,6 +159,7 @@ static void draw_menu_option_hilite (int h_menu, int v_menu)
 
 	m = get_menu (h_menu);
 	d = get_menu_option (h_menu, v_menu);
+
 #ifdef FANCY_BOX
 	draw_box (m->wincol * CHAR_COLS + 4,
 		(v_menu + 2) * CHAR_LINES - 2 + v_menu * 2,
@@ -206,6 +207,27 @@ static int h_col;
 static int h_max_menu;
 static int v_max_menu[10];
 
+
+#if 0
+static void add_about_option ()
+{
+	struct agi_menu *m;
+	struct agi_menu_option *d;
+	char text[] = "About Sarien";
+
+	d = malloc (sizeof (struct agi_menu_option));
+	d->text = strdup (text);
+	d->enabled = TRUE;
+	d->event = 255;
+	d->index = (v_max_menu[0] += 1);
+
+	m = list_entry (menubar.next, struct agi_menu, list);
+	list_add_tail (&d->list, &m->down);
+	m->height++;
+	if (m->width < strlen (text))
+		m->width = strlen (text);
+}
+#endif
 
 /*
  * Public functions

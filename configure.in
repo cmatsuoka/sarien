@@ -52,7 +52,7 @@ palmos*)
 	MAIN_FILE="palmos"
 	;;
 amiga*)
-	CFLAGS="$CFLAGS -DAMIGA -Uamiga"
+	CFLAGS="$CFLAGS -DAMIGA -D__AMIGA__ -Uamiga"
 	;;
 esac
 
