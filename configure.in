@@ -131,7 +131,7 @@ linux*)
 	sparc)
 		SOUND_DRIVER="bsd"
 		;;
-	i*86)
+	i*86|powerpc)
 		AC_CHECK_HEADERS(sys/soundcard.h)
 		AC_CHECK_HEADERS(sys/asoundlib.h)
 		if test "${ac_cv_header_sys_soundcard_h}" = "yes" -a \
