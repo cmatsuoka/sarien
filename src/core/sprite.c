@@ -272,17 +272,17 @@ static void checkmove_sprites (struct list_head *head)
 
 		if (s->v->x_pos < s->v->x_pos2) {
 			x1 = s->v->x_pos;
-			x2 = s->v->x_pos2 + w - 1;
+			x2 = s->v->x_pos2 + w;
 		} else {
 			x1 = s->v->x_pos2;
-			x2 = s->v->x_pos + w - 1;
+			x2 = s->v->x_pos + w;
 		}
 
 		if (s->v->y_pos < s->v->y_pos2) {
-			y1 = s->v->y_pos - h + 1;
+			y1 = s->v->y_pos - h;
 			y2 = s->v->y_pos2;
 		} else {
-			y1 = s->v->y_pos2 - h + 1;
+			y1 = s->v->y_pos2 - h;
 			y2 = s->v->y_pos;
 		}
 
@@ -503,21 +503,29 @@ void show_obj (n)
 {
 	struct view_cel *c;
 	struct sprite s;
+	int x1, y1, x2, y2;
 
 	agi_load_resource (rVIEW, n);
 	if (!(c = &game.views[n].loop[0].cel[0]))
 		return;
 	
-	s.x_pos = (_WIDTH - c->width) / 2;
-	s.y_pos = 120;
+	x1 = (_WIDTH - c->width) / 2;
+	y1 = 120;
+	x2 = x1 + c->width - 1;
+	y2 = y1 + c->height - 1;
+
+	s.x_pos = x1;
+	s.y_pos = y1;
 	s.x_size = c->width;
 	s.y_size = c->height;
 	s.buffer = malloc (s.x_size * s.y_size);
 
 	objs_savearea (&s);
-	blit_cel (s.x_pos, s.y_pos, 15, c);
+	blit_cel (x1, y1, s.x_size, c);
+	commit_block (x1, y1, x2, y2);
 	message_box (game.views[n].descr);
 	objs_restorearea (&s);
+	commit_block (x1, y1, x2, y2);
 
 	free (s.buffer);
 }
