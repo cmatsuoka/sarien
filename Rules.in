@@ -7,7 +7,7 @@ LIB_DIR		= @libdir@
 MAN_DIR		= @mandir@/man1
 
 CC		= @CC@
-CFLAGS		= @CFLAGS@ -DVERSION='"$(VERSION)"' -U_TRACE
+CFLAGS		= @CFLAGS@ @DEFS@ -DVERSION='"$(VERSION)"' -U_TRACE
 LD		= @CC@
 LDFLAGS		= -o $@
 LIBS		= @LIBS@ #-lefence

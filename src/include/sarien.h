@@ -11,10 +11,6 @@
 #ifndef __SARIEN_H
 #define __SARIEN_H
 
-#ifdef HAVE_GETOPT_LONG
-#define ELIDE_CODE
-#endif
-
 #if defined (NATIVE_WIN32)
 #define INLINE __forceinline
 #elif !defined (INLINE)

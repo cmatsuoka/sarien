@@ -27,14 +27,18 @@ if test "${GCC-no}" = yes; then
 	CFLAGS="${CFLAGS} -Wall"
 fi
 
+case "${host_os}" in
+beos*)
+	CFLAGS="$CFLAGS -I/boot/develop/tools/gnupro/include"
+	;;
+esac
 
 dnl ----------------------------------------------
 dnl Checks for header files.
 dnl ----------------------------------------------
 
 AC_HEADER_STDC
-AC_CHECK_HEADERS(fcntl.h limits.h sys/ioctl.h sys/time.h unistd.h getopt.h)
-AC_CHECK_HEADERS(wingdi.h)
+AC_CHECK_HEADERS(getopt.h glob.h wingdi.h)
 
 
 dnl ----------------------------------------------
@@ -42,7 +46,7 @@ dnl Check graphics support.
 dnl ----------------------------------------------
 
 AC_CHECKING([for graphics support])
-CONSOLE_DRIVER="x11"
+CONSOLE_DRIVER="none"
 
 if test "${ac_cv_header_wingdi_h}" = "yes"; then
 	CONSOLE_DRIVER="win32"
@@ -64,22 +68,25 @@ elif test "${with_svgalib}" = "yes"; then
 	fi
 else
 	AC_PATH_X
-	AC_PATH_XTRA
-	AC_CHECK_HEADERS(X11/extensions/XShm.h X11/extensions/xf86dga.h \
-		X11/extensions/xf86vmode.h)
-	if test "${ac_cv_header_X11_extensions_XShm_h}" = "yes" -o \
-		"${ac_cv_header_X11_extensions_xf86dga_h}" = "yes"; then
-		X_LIBS="${X_LIBS} -lXext -lX11"
-	else
-		X_LIBS="${X_LIBS} -lX11"
-	fi
-	if test "${ac_cv_header_X11_extensions_XShm_h}" = "yes"; then
-		CFLAGS="${CFLAGS} -DMITSHM"
-	fi
-	if test "${ac_cv_header_X11_extensions_xf86dga_h}" = "yes" -a \
-		"${ac_cv_header_X11_extensions_xf86vmode_h}" = "yes"; then
-		CFLAGS="${CFLAGS} -DXF86DGA"
-		X_LIBS="${X_LIBS} -lXxf86dga -lXxf86vm"
+	if test ! -z "${ac_x_includes}"; then
+		CONSOLE_DRIVER="x11"
+		AC_PATH_XTRA
+		AC_CHECK_HEADERS(X11/extensions/XShm.h X11/extensions/xf86dga.h \
+			X11/extensions/xf86vmode.h)
+		if test "${ac_cv_header_X11_extensions_XShm_h}" = "yes" -o \
+			"${ac_cv_header_X11_extensions_xf86dga_h}" = "yes"; then
+			X_LIBS="${X_LIBS} -lXext -lX11"
+		else
+			X_LIBS="${X_LIBS} -lX11"
+		fi
+		if test "${ac_cv_header_X11_extensions_XShm_h}" = "yes"; then
+			CFLAGS="${CFLAGS} -DMITSHM"
+		fi
+		if test "${ac_cv_header_X11_extensions_xf86dga_h}" = "yes" -a \
+			"${ac_cv_header_X11_extensions_xf86vmode_h}" = "yes"; then
+			CFLAGS="${CFLAGS} -DXF86DGA"
+			X_LIBS="${X_LIBS} -lXxf86dga -lXxf86vm"
+		fi
 	fi
 fi
 AC_MSG_RESULT([using console driver: ${CONSOLE_DRIVER}])
@@ -201,18 +208,9 @@ dnl ----------------------------------------------
 
 AC_PROG_GCC_TRADITIONAL
 AC_FUNC_MEMCMP
-AC_TYPE_SIGNAL
+dnl AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS(vsnprintf gettimeofday strdup strstr strtoul getopt_long)
-
-if test "${ac_cv_header_getopt_h}" = "yes" -a		\
-	"${ac_cv_func_getopt_long}" = "yes"; then	\
-	CFLAGS="${CFLAGS} -DHAVE_GETOPT_LONG";		\
-fi
-
-if test "${ac_cv_func_vsnprintf}" = "yes"; then
-	CFLAGS="${CFLAGS} -DHAVE_VSNPRINTF";		\
-fi
+AC_CHECK_FUNCS(vsnprintf gettimeofday glob getopt_long)
 
 AC_OUTPUT(Rules)
 

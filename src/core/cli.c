@@ -11,12 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#else
-#include "getopt.h"
-#endif
 
 #include "sarien.h"
 #include "sound.h"

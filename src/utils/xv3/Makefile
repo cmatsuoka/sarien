@@ -1,5 +1,6 @@
 # $Id$
 
+XCFLAGS	= -I../../include
 BIN	= xv3
 LIBS	=
 OBJS	= xv3.o

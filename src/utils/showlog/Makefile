@@ -1,5 +1,6 @@
 # $Id$
 
+XCFLAGS	= -I../../include
 BIN	= showlog
 LIBS	=
 OBJS	= showlog.o

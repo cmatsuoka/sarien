@@ -1,5 +1,6 @@
 # $Id$
 
+XCFLAGS	= -I../../include
 BIN	= volx
 LIBS	=
 OBJS	= volx.o
