@@ -19,6 +19,11 @@
 #include "text.h"
 #include "keyboard.h"
 
+
+/*
+ * Messages and coordinates
+ */
+
 #define NOTHING_X	16
 #define NOTHING_Y	3
 #define NOTHING_MSG	"nothing"
@@ -35,7 +40,9 @@
 #define SELECT_Y	24
 #define SELECT_MSG	"Press ENTER to select, ESC to cancel"
 
+
 static UINT8 *intobj = NULL;
+
 
 
 static void print_item (int n, int fg, int bg)
@@ -91,7 +98,8 @@ static void select_items (int n)
 	while (42) {
 		cy = 2 + fsel;
 
-		print_item (fsel, STATUS_BG, STATUS_FG);
+		if (n > 0)
+			print_item (fsel, STATUS_BG, STATUS_FG);
 
 		switch (wait_any_key ()) {
 		case KEY_ENTER:
@@ -134,6 +142,13 @@ exit_select:
 	_D ("selected: %d", fsel);
 }
 
+/*
+ * Public functions
+ */
+
+/**
+ * Display inventory items.
+ */
 void inventory ()
 {
 	int old_fg, old_bg;
@@ -187,4 +202,5 @@ void inventory ()
 	game.has_prompt = 0;
 	flush_lines (game.line_user_input, 24);
 }
+
 
