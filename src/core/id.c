@@ -53,7 +53,7 @@ static UINT32 match_crc (UINT32 crc, char *path)
 			for (c = buf + strlen (buf) - 1;
 				*c == ' ' || *c == '\t'; *c-- = 0);
 		}
-		
+
 
 		if (!(t = strtok (buf, " \t\n")))
 			continue;
@@ -67,7 +67,7 @@ static UINT32 match_crc (UINT32 crc, char *path)
 			/* Now we must check options enclosed in brackets
 		 	 * like [A] for Amiga
 			 */
-		
+
 			if (*t == '[') {
 				while (*t != ']') {
 					switch (*t++) {
@@ -99,6 +99,7 @@ static UINT32 match_crc (UINT32 crc, char *path)
  */
 static UINT32 match_version (UINT32 crc)
 {
+#ifndef MSDOS
 	char buf[256];
 	int ver;
 
@@ -106,6 +107,32 @@ static UINT32 match_version (UINT32 crc)
 
 	if (!(ver = match_crc (crc, buf)))
 		ver = match_crc (crc, "/etc/sarien.conf");
+#endif
+
+#ifdef MSDOS
+	char buf[256];
+	int ver;
+	char *q;
+
+	if(getenv("SARIEN")!=NULL)
+	{
+		sprintf(buf, "%s/%s", getenv("SARIEN"), "sarien.ini");
+	}
+	else
+	{
+		strcpy(buf, exec_name);
+		q=strchr(buf, 0x0);
+		q--;
+		while((*q!='\\' && *q!='/') && q>buf)
+			q--;
+		if(q!=buf)
+			*q=0x0;
+		strcat(buf, "/sarien.ini");
+	}
+
+	_D("sarien conf : (%s)", buf);
+	ver = match_crc (crc, buf);
+#endif
 
 	return ver;
 }
