@@ -202,6 +202,9 @@ void message_box (char *message, ...)
 
 	va_end (args);
 
+	/* FIXME: move message_box to gfx, use a wrapper calling
+	 *        agi_printf() to format the text
+	 */
 	save_screen ();
 	redraw_sprites ();
 

@@ -341,12 +341,11 @@ end_test:
 		ip += 2;
 	else {
 		ip = last_ip;
-		while (*(code + ip) != 0xFF)
-		{
-			if (*(code + ip) == 0x0E) {
+		while (*(code + ip) != 0xff) {
+			if (*(code + ip) == 0x0e) {
 				ip++;
 				ip += (*(code + ip)) * 2 + 1;
-			} else if (*(code + ip) < 0xFC) {
+			} else if (*(code + ip) < 0xfc) {
 				ip += logic_names_test[*(code + ip++)].num_args;
 			} else {
 				ip++;
@@ -361,3 +360,4 @@ end_test:
 
 	return retval;
 }
+

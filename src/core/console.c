@@ -44,7 +44,6 @@ struct sarien_debug debug;
 
 extern struct agi_loader *loader;
 extern struct agi_object *objects;
-extern int num_objects;
 
 static struct console_command *ccmd_head = NULL;
 static UINT8 has_console;
@@ -244,7 +243,7 @@ static void ccmd_inv ()
 {
 	int i, j;
 
-	for (j = i = 0; i < num_objects; i++) {
+	for (j = i = 0; i < game.num_objects; i++) {
 		if (objects[i].location == EGO_OWNED) {
 			report ("%3d]%-16.16s", i, objects[i].name);
 			if (j % 2)
@@ -265,7 +264,7 @@ static void ccmd_objs ()
 {
 	int i;
 
-	for (i = 0; i < num_objects; i++) {
+	for (i = 0; i < game.num_objects; i++) {
 		report ("%3d]%-24s(%3d)\n", i, objects[i].name,
 			objects[i].location);
 	}

@@ -18,8 +18,10 @@
 #include "objects.h"
 #include "console.h"
 
+extern struct agi_game game;
+
 struct agi_object *objects;		/* objects in the game */
-int num_objects;
+//int num_objects;
 
 int load_objects (char *fname)
 {
@@ -30,7 +32,7 @@ int load_objects (char *fname)
 
 	padsize = game.game_flags & ID_AMIGA ? 4 : 3;
 
-	num_objects = 0;
+	game.num_objects = 0;
 	objects = NULL;
 
 	fixpath (NO_GAMEDIR, fname);
@@ -75,16 +77,16 @@ int load_objects (char *fname)
 #endif
 	}
 
-	num_objects = lohi_getword(mem) / padsize;
+	game.num_objects = lohi_getword(mem) / padsize;
 
-    	if ((objects = calloc (num_objects, sizeof(struct agi_object))) == NULL) {
+    	if ((objects = calloc (game.num_objects, sizeof(struct agi_object))) == NULL) {
 		fclose (fp);
 		free (mem);
     		return err_NotEnoughMemory;
 	}
 
     	/* build the object list */
-    	for (i = 0, so = padsize; i < num_objects; i++, so += padsize) {
+    	for (i = 0, so = padsize; i < game.num_objects; i++, so += padsize) {
 		(objects + i)->location = lohi_getbyte (mem + so + 2);
     		if ((lohi_getword (mem + so) + padsize) < flen) {
 			(objects+i)->name = strdup (mem +
@@ -108,7 +110,7 @@ void unload_objects ()
 	int i;
 
 	if (objects != NULL) {
-		for (i = 0; i < num_objects; i++)
+		for (i = 0; i < game.num_objects; i++)
 			free (objects[i].name);
 		free (objects);
 	}
@@ -120,10 +122,10 @@ int show_objects ()
 	int i;
 
 	printf(" ID   Objects\n");
-	for (i=0; i<num_objects; i++)
+	for (i = 0; i < game.num_objects; i++)
 		printf ("%3i - %s\n", (objects+i)->location, (objects+i)->name);
 
-	printf ("\n%i objects\n", num_objects);
+	printf ("\n%i objects\n", game.num_objects);
 
 	return err_OK;
 }

@@ -58,14 +58,14 @@ extern struct sarien_options opt;
 
 void dump_screen (int resnum)
 {
-	put_block_buffer (pictures[resnum].sdata, 0, 0, _WIDTH, _HEIGHT);
+	put_block_buffer (pictures[resnum].sdata);
 	put_screen ();
 }
 
 
 void dump_screen2 ()
 {
-	put_block_buffer (screen_data, 0, 0, _WIDTH, _HEIGHT);
+	put_block_buffer (screen_data);
 	put_screen();
 }
 
@@ -73,55 +73,55 @@ void dump_screen2 ()
 void dump_screenX ()
 {
 	memmove (screen_data, screen2, _WIDTH*_HEIGHT);
-	put_block_buffer (screen_data, 0, 0, _WIDTH, _HEIGHT);
+	put_block_buffer (screen_data);
 	put_screen ();
 }
 
 
 void dump_pri (int resnum)
 {
-	put_block_buffer (pictures[resnum].pdata, 0, 0, _WIDTH, _HEIGHT);
+	put_block_buffer (pictures[resnum].pdata);
 	put_screen ();
 }
 
 
 void dump_con (int resnum)
 {
-	put_block_buffer (pictures[resnum].cdata, 0, 0, _WIDTH, _HEIGHT);
+	put_block_buffer (pictures[resnum].cdata);
 	put_screen();
 }
 
 
 void dump_x (int resnum)
 {
-	put_block_buffer (pictures[resnum].xdata, 0, 0, _WIDTH, _HEIGHT);
+	put_block_buffer (pictures[resnum].xdata);
 	put_screen ();
 }
 
 void dump_screen3 ()
 {
-	put_block_buffer (screen2, 0, 0, _WIDTH, _HEIGHT);
+	put_block_buffer (screen2);
 	put_screen ();
 }
 
 
 void dump_pri_screen ()
 {
-	put_block_buffer (priority_data, 0, 0, _WIDTH, _HEIGHT);
+	put_block_buffer (priority_data);
 	put_screen ();
 }
 
 
 void dump_con_screen ()
 {
-	put_block_buffer (control_data, 0, 0, _WIDTH, _HEIGHT);
+	put_block_buffer (control_data);
 	put_screen ();
 }
 
 
 void dump_x_screen ()
 {
-	put_block_buffer (xdata_data, 0, 0, _WIDTH, _HEIGHT);
+	put_block_buffer (xdata_data);
 	put_screen ();
 }
 
@@ -817,27 +817,11 @@ void draw_picture ()
 		}
 
 		if (opt.showscreendraw) {
-			switch (show_screen_mode) {
-			case 'x':
-				put_block_buffer (xdata_data, 0, 0,
-					_WIDTH, _HEIGHT);
-				break;
-			case 'p':
-				put_block_buffer (priority_data, 0, 0,
-					_WIDTH, _HEIGHT);
-				break;
-			case 'c':
-				put_block_buffer (control_data, 0, 0,
-					_WIDTH, _HEIGHT);
-				break;
-			default:
-				dump_screen3 ();
-				break;
-			}
-
+			show_buffer (show_screen_mode);
 			put_screen ();
 		}
 
+#if 0
 		/* FIXME: ugh */
 		if (opt.showscreendraw && opt.showkeypress) {
 			act = get_key() & 0xFF;
@@ -846,6 +830,7 @@ void draw_picture ()
 			if(act == 'q' || act == 'Q')
 				opt.showscreendraw = 3;
 		}
+#endif
 	}
 
 	for (i = 0; i < stack_num_segs; i++)
@@ -853,18 +838,6 @@ void draw_picture ()
 
 	/* splitPriority (); */
 }
-
-
-void put_block_buffer (UINT8 *buff, int x1, int y1, int x2, int y2)
-{
-	int x;
-
-	for ( ; y1 < y2; y1++) {
-		for(x = x1; x < x2; x++)
-			put_pixel_buffer (x, y1, *(buff + (y1 * 160) + x));
-	}
-}
-
 
 
 /* load a pic and decode it into the correct slot */
@@ -921,5 +894,25 @@ int unload_picture (int resnum)
 	}
 
 	return err_OK;
+}
+
+
+void show_buffer (int mode)
+{
+	switch (mode) {
+	case 'x':
+		put_block_buffer (xdata_data);
+		break;
+	case 'c':
+		put_block_buffer (control_data);
+		break;
+	case 'p':
+		put_block_buffer (priority_data);
+		break;
+	case 'v':
+	default:
+		dump_screenX ();
+		break;
+	}
 }
 

@@ -1,20 +1,11 @@
-/*
- *  Sarien AGI :: Copyright (C) 1999 Dark Fiber 
- *
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
 /*
@@ -883,8 +874,7 @@ void cmd_print_at (UINT8 logic, UINT8 msg, SINT8 y, SINT8 x, SINT8 len)
 	if (logics[logic].texts==NULL || logics[logic].num_texts< (msg-1))
 		return;
 
-	if (window_nonblocking)
-	{
+	if (window_nonblocking) {
 		_D ((": window_nonblocking=1 => remove window"));
 		restore_screen_area ();	/* Yuck! */
 		window_nonblocking = 0;
@@ -1374,8 +1364,8 @@ void cmd_set_string (UINT8 logic, UINT8 str, UINT8 txt)
 void cmd_save_game ()
 {
 	report ("Debug: save.game ()\n");
-	//save_game ("savetest.iff", "Save game test");
-	message_box ((UINT8*)"Game NOT saved.");
+	save_game ("savetest.iff", "Save game test");
+	message_box ("Game saved.");
 }
 
 
@@ -1401,8 +1391,7 @@ void cmd_restart_game ()
 	save_screen ();
 	textbox ((UINT8*)"Press ENTER to restart the game.\n"
 		"Press ESC to continue this game.", -1, -1, 24);
-	switch (wait_key ())
-	{
+	switch (wait_key ()) {
 	case 0x0A:
 	case 0x0D:
 		game.quit_prog_now = 0xFF;
@@ -1607,8 +1596,7 @@ void cmd_version ()
 	char *p, *q;
 
 	_D (("()"));
-	switch (loader->version)
-	{
+	switch (loader->version) {
 	case 2:
 	    	q = ver2_msg;
         	break;
@@ -2199,21 +2187,16 @@ void execute_agi_command (UINT8 op, UINT16 lognum, UINT8 *p)
 }
 
 
-int run_logic (int lognum)
+void run_logic (int lognum)
 {
 	UINT16	saved_ip;
 	UINT16	last_ip;
 	UINT8	op;
-	int ec = TRUE;
-	UINT8	temp_logic=FALSE;
-	UINT8	run_flag = TRUE;
 	UINT8	p[16];
-
 
 	/* If logic not loaded, load it */
 	if ((game.dir_logic[lognum].flags & RES_LOADED) != RES_LOADED) {
 		loader->load_resource (rLOGIC, lognum);
-		temp_logic = TRUE;
 #ifdef DISABLE_COPYPROTECTION
 		break_copy_protection (lognum);
 #endif
@@ -2228,8 +2211,7 @@ int run_logic (int lognum)
 	logics[lognum].cIP = logics[lognum].sIP;
 	last_ip = ip;
 
-	while (run_flag && ip < logics[lognum].size && !game.quit_prog_now)
-	{
+	while (ip < logics[lognum].size && !game.quit_prog_now) {
 		if (debug.enabled) {
 			if (debug.steps > 0) {
 				if (debug.logic0 || lognum) {
@@ -2253,17 +2235,15 @@ int run_logic (int lognum)
 
 		memmove (&p, (code + ip), 16);
 
-		switch (op)
-		{
+		switch (op) {
 		case 0xFF:				/* IF (open/close) */
 			test_if_code (lognum);
 			break;
 		case 0xFE:				/* GOTO */
-			ip += 2+lohi_getword (code+ip);	/* +2 covers goto size */
+			ip += 2+lohi_getword (code+ip);	/* +2 covers goto size*/
 			break;
 		case 0x00:				/* return */
-			run_flag = FALSE;
-			break;
+			return;
 		default:
 			execute_agi_command (op, lognum, p);
 			ip += logic_names_cmd[op].num_args;
@@ -2272,6 +2252,4 @@ int run_logic (int lognum)
 		if (game.exit_all_logics)
 			break;
 	}
-
-	return ec;
 }

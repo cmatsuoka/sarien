@@ -30,6 +30,8 @@ void	print_character	(int, int, char, int, int);
 int	init_video_mode	(void);
 int	deinit_video_mode	(void);
 
+void	put_block_buffer	(UINT8 *);
+
 #ifdef __cplusplus
 };
 #endif

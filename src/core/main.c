@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -112,6 +112,9 @@ static int view_pictures ()
 		/* decodes the raw data to useable form */
 		decode_picture (resnum);
 
+		show_buffer (show_screen_mode);
+
+#if 0
 		switch (show_screen_mode) {
 		case 'x':
 			put_block_buffer (xdata_data, 0, 0, _WIDTH, _HEIGHT);
@@ -127,6 +130,7 @@ static int view_pictures ()
 			dump_screenX ();
 			break;
 		}
+#endif
 
 update_statusline:
 		sprintf ((char*)x, "V:Vis C:Con P:Pri X:P+C   +:Next -:Prev");

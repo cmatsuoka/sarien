@@ -16,7 +16,6 @@
 
 #include "sarien.h"
 #include "gfx_base.h"
-//#include "keyboard.h"
 #include "console.h"
 
 extern struct sarien_options opt;
@@ -124,6 +123,7 @@ void save_screen ()
 void restore_screen ()
 {
 	memcpy (layer1_data, back_buffer, 320 * 200);
+
 	redraw_sprites ();
 	flush_block (0, 0, 319, 199);
 	release_sprites ();

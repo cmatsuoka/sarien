@@ -37,7 +37,6 @@
 #define SELECT_MSG	"Press ENTER to select, ESC to cancel."
 
 extern struct agi_object *objects;
-extern int num_objects;
 
 extern struct gfx_driver *gfx;
 
@@ -67,9 +66,9 @@ void inventory ()
 
 	/* FIXME: doesnt check if objects overflow off screen... */
 
-	intObjects = malloc (4 + num_objects);
+	intObjects = malloc (4 + game.num_objects);
 
-	for (x = y = cx = 0, cy = 2, intObjCount = 0; x < num_objects; x++) {
+	for (x = y = cx = 0, cy = 2, intObjCount = 0; x < game.num_objects; x++) {
 		if ((objects + x)->location == EGO_OWNED) {
 			// add object to our list!
 			intObjects[intObjCount++]=x;

@@ -9,9 +9,7 @@
  */
 
 /*
- *
  * SVGALib port by XoXus <xoxus@usa.net>
- *
  */
 
 
@@ -46,7 +44,6 @@ UINT32 clock_count;
 
 
 //static int svgalib_key_init (void);
-
 //static void svgalib_key_close (void);
 //static void svgalib_key_flush (void);
 //static void svgalib_key_update (void);
@@ -266,7 +263,6 @@ static int svgalib_key_init ()
 }
 
 
-
 static void process_events ()
 {
 	svgalib_key_update ();
@@ -318,7 +314,7 @@ static int init_vidmode ()
 	svgalib_framebuffer = vga_getgraphmem ();
 
 	/* Set up EGA colors */
-	for (i=0; i < 32; i++)
+	for (i = 0; i < 32; i++)
 		vga_setpalette (i, palette[i * 3],
 			palette[i * 3 + 1], palette[i * 3 + 2]);
 
@@ -333,8 +329,8 @@ static int init_vidmode ()
 	screen_mode = GFX_MODE;
 
 	/* XoXus: This is a semantics issue, but the keyboard init
-			probably shouldn't be done in 'init_vidmode'
-	*/
+	 *		probably shouldn't be done in 'init_vidmode'
+	 */
 	err = svgalib_key_init ();
 	if (err != err_OK) {
 		deinit_vidmode ();
@@ -411,7 +407,6 @@ static void new_timer ()
 	struct timeval tv;
 	struct timezone tz;
 	static double msec = 0.0;
-	//static int msg_box_ticks = 0;
 	double m, dm;
 	
 	gettimeofday (&tv, &tz);

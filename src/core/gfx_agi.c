@@ -304,3 +304,17 @@ int get_key ()
 {
 	return gfx->get_key ();
 }
+
+
+void put_block_buffer (UINT8 *buff)
+{
+	int x, x1 = 0, y1 = 0, x2 = _WIDTH, y2 = _HEIGHT;
+
+	for ( ; y1 < y2; y1++) {
+		for(x = x1; x < x2; x++)
+			put_pixel_buffer (x, y1, *(buff + (y1 * 160) + x));
+	}
+}
+
+
+

@@ -68,6 +68,7 @@ struct agi_game {
 	struct agi_dir dir_view[MAX_DIRS];
 	struct agi_dir dir_sound[MAX_DIRS];
 
+	int num_objects;
 #if 0
 	/* resources */
 	struct agi_picture pictures[MAX_DIRS];

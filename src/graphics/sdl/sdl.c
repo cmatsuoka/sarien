@@ -244,8 +244,7 @@ static int init_vidmode (void)
 	fprintf (stderr, "sdl: SDL support by claudio@helllabs.org\n");
 
 	/* Initialize SDL */
-	if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) < 0)
-	{
+	if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) < 0) {
 		fprintf (stderr, "sdl: can't initialize: %s\n",
 			SDL_GetError ());
 		return err_Unk;
@@ -255,8 +254,7 @@ static int init_vidmode (void)
 	if (opt.fullscreen)
 		mode |= SDL_FULLSCREEN;
 	if ((screen = SDL_SetVideoMode (320 * scale, 200 * scale, 8,
-		mode)) == NULL)
-	{
+		mode)) == NULL) {
 		fprintf (stderr, "sdl: can't set video mode: %s\n",
 			SDL_GetError ());
 		return err_Unk;
@@ -337,9 +335,9 @@ static void inline sdl_put_pixel (int x, int y, int c)
 		break;
 	case 3:{
 		UINT8 r, g, b;
-		r = (pixel >> screen->format->Rshift) & 0xFF;
-		g = (pixel >> screen->format->Gshift) & 0xFF;
-		b = (pixel >> screen->format->Bshift) & 0xFF;
+		r = (pixel >> screen->format->Rshift) & 0xff;
+		g = (pixel >> screen->format->Gshift) & 0xff;
+		b = (pixel >> screen->format->Bshift) & 0xff;
 		*((bits) + screen->format->Rshift / 8) = r;
 		*((bits) + screen->format->Gshift / 8) = g;
 		*((bits) + screen->format->Bshift / 8) = b;
@@ -350,8 +348,7 @@ static void inline sdl_put_pixel (int x, int y, int c)
 		break;
 	}
 
-	if (SDL_MUSTLOCK (screen))
-	{
+	if (SDL_MUSTLOCK (screen)) {
 		SDL_UnlockSurface (screen);
 	}
 }
@@ -415,3 +412,4 @@ static void new_timer ()
 
 	process_events ();
 }
+

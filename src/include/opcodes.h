@@ -15,7 +15,7 @@
 extern "C"{
 #endif
 
-int	run_logic		(int);
+void	run_logic		(int);
 void	execute_agi_command	(UINT8, UINT16, UINT8 *);
 
 void	cmd_accept_input	(void);

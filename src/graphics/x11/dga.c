@@ -1,15 +1,12 @@
-/* Sarien - A Sierra AGI resource interpreter engine
- * Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
- * $Id$
+ *  $Id$
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; see docs/COPYING for further details.
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; see docs/COPYING for further details.
  */
-
-/* Coded with a little help from Ruda Moura's Xvidmode */
-
 
 #include <X11/Xlib.h>
 #include <X11/extensions/xf86dga.h>
@@ -19,7 +16,6 @@ static XF86VidModeModeInfo **modeinfo;
 static char *framebuffer, *buffer;
 static int bytes_per_line;
 static int bytes_per_pixel;
-
 
 static int	dga_init_vidmode	(void);
 static int	dga_deinit_vidmode	(void);

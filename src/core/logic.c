@@ -89,6 +89,7 @@ void unload_logic (int resnum)
 		logics[resnum].num_texts = 0;
 		game.dir_logic[resnum].flags &= ~RES_LOADED;
 	}
+
 	/* if cached, we end up here */
 	logics[resnum].sIP = 2;
 	logics[resnum].cIP = 2;

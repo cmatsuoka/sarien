@@ -15,7 +15,6 @@
 
 #include "sarien.h"
 #include "agi.h"
-#include "text.h"
 
 extern struct sarien_options opt;
 

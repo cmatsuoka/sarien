@@ -63,7 +63,7 @@ static void help (int argc, char **argv)
 "  -o --list-objects  List objects.\n"
 "  -p --picture-viewer\n"
 "                     Interactive picture viewer.\n"
-"  -ps --show-drawing Show screen as its drawn.\n"
+"  -ps --show-drawing Show screen as it's drawn.\n"
 "  -pk --wait-key     Wait for keypress on each action. (forces -ps)\n"
 "  -S --scale {num}   Window size scale (only for windowed graphics).\n"
 "  -v --emulate-version {version}\n"

@@ -48,9 +48,9 @@ void	dump_con_screen (void);
 void	dump_x_screen (void);
 void	dump_screenX (void);
 void	dump_screen2 (void);
-void	put_block_buffer (UINT8 *, int, int, int, int);
 UINT8* 	convert_v2_v3_pic (UINT8 *data, UINT32 len);
 void 	reset_graphics(void);
+void	show_buffer (int);
 
 #ifdef __cplusplus
 };

@@ -13,7 +13,7 @@
 
 #include "sarien.h"
 #include "agi.h"
-#include "keyboard.h"	/* remove later */
+#include "keyboard.h"
 #include "view.h"
 #include "objects.h"
 #include "opcodes.h"
@@ -24,7 +24,6 @@ static int loading_ok;
 
 extern struct agi_view_table view_table[];
 extern struct agi_object *objects;
-extern int num_objects;
 
 
 /* Words are big-endian */
@@ -89,7 +88,7 @@ int save_game (char *s, char *d)
 	FILE *f;
 	UINT8 b;
 	UINT32 i, s_agid, s_gcrc, s_form, s_desc, s_objs;
-	UINT32 s_flag, s_vars, /* s_vtbl, */ s_stri, s_view;
+	UINT32 s_flag, s_vars, s_stri, s_view;
 	UINT32 crc = 0x12345678;	/* FIXME */
 
 	_D (("(\"%s\", \"%s\")", s, d));
@@ -102,10 +101,9 @@ int save_game (char *s, char *d)
 	s_desc = WORD_ALIGN (strlen (d) + 1);
 	s_vars = WORD_ALIGN (MAX_VARS) + 4;
 	s_flag = WORD_ALIGN (MAX_FLAGS) + 4;
-	s_objs = num_objects + 4;	/* 1 byte / object */
+	s_objs = game.num_objects + 4;	/* 1 byte / object */
 	s_stri = 4;
 	for (i = 0; i < MAX_WORDS1; s_stri += strlen (strings[i++]) + 1);
-	/* s_vtbl = 4; */
 	s_view = 28;
 	s_form = s_agid + s_gcrc + s_desc + s_vars + s_flag + s_stri +
 		/* s_vtbl + */ MAX_VIEWTABLE * (8 + s_view) + s_objs;
@@ -162,8 +160,8 @@ int save_game (char *s, char *d)
 	/* Save the objects */
 	iff_newchunk ("OBJS", s_objs, f);
 
-	write32 (num_objects, f);
-	for (i = 0; i < num_objects; i++) {
+	write32 (game.num_objects, f);
+	for (i = 0; i < game.num_objects; i++) {
 		write8 (objects[i].location, f);
 	}
 
@@ -176,11 +174,7 @@ int save_game (char *s, char *d)
 		write8 (view_table[i].y_pos, f);
 		write8 (view_table[i].current_view, f);
 		write8 (view_table[i].current_loop, f);
-		//write8 (view_table[i].num_loops, f);
 		write8 (view_table[i].current_cel, f);
-		//write8 (view_table[i].num_cels, f);
-		//write8 (view_table[i].x_size, f);
-		//write8 (view_table[i].y_size, f);
 		write8 (view_table[i].step_size, f);
 		write8 (view_table[i].cycle_time, f);
 		write8 (view_table[i].cycle_time_count, f);
@@ -219,11 +213,7 @@ static void get_view (int size, UINT8 *buffer)
 	view_table[i].y_pos = hilo_getbyte (buffer++);
 	view_table[i].current_view = hilo_getbyte (buffer++);
 	view_table[i].current_loop = hilo_getbyte (buffer++);
-	//view_table[i].num_loops = hilo_getbyte (buffer++);
 	view_table[i].current_cel = hilo_getbyte (buffer++);
-	//view_table[i].num_cels = hilo_getbyte (buffer++);
-	//view_table[i].x_size = hilo_getbyte (buffer++);
-	//view_table[i].y_size = hilo_getbyte (buffer++);
 	view_table[i].step_size = hilo_getbyte (buffer++);
 	view_table[i].cycle_time = hilo_getbyte (buffer++);
 	view_table[i].cycle_time_count = hilo_getbyte (buffer++);
@@ -231,9 +221,7 @@ static void get_view (int size, UINT8 *buffer)
 	view_table[i].motion = hilo_getbyte (buffer++);
 	view_table[i].cycle_status = hilo_getbyte (buffer++);
 	view_table[i].priority = hilo_getbyte (buffer++);
-	/*view_table[i].flags = hilo_getword ((UINT8*)(((UINT16*)buffer)++));*/
-	view_table[i].flags = hilo_getword(buffer);
-	buffer+=2;
+	view_table[i].flags = hilo_getword(buffer); buffer+=2;
 	view_table[i].parm1 = hilo_getbyte (buffer++);
 	view_table[i].parm2 = hilo_getbyte (buffer++);
 	view_table[i].parm3 = hilo_getbyte (buffer++);
