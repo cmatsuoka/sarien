@@ -41,7 +41,6 @@ gfx_pccga	label	word
 cga_map	label	byte
 	db	0, 1, 1, 1, 2, 2, 2, 3
 	db	0, 1, 1, 1, 2, 2, 2, 3
-	db	0, 0, 0, 0
 _DATA	ends
 
 
@@ -111,19 +110,6 @@ _init_machine	proc	far
 	mov	word ptr es:_gfx,offset DGROUP:gfx_pccga
    ;	
    ;	
-   ;		screen_buffer = calloc (GFX_WIDTH / 4, GFX_HEIGHT);
-   ;	
-	mov	ax,200
-	push	ax
-	mov	ax,80
-	push	ax
-	call	far ptr _calloc
-	pop	cx
-	pop	cx
-	mov	word ptr DGROUP:screen_buffer+2,dx
-	mov	word ptr DGROUP:screen_buffer,ax
-   ;	
-   ;	
    ;		clock_count = 0;
    ;	
 	mov	ax,seg _clock_count
@@ -187,14 +173,6 @@ _deinit_machine	proc	far
 @3@86:
    ;	
    ;	{
-   ;		free (screen_buffer);
-   ;	
-	push	word ptr DGROUP:screen_buffer+2
-	push	word ptr DGROUP:screen_buffer
-	call	far ptr _free
-	pop	cx
-	pop	cx
-   ;	
    ;		_dos_setvect (0x08, prev_08);
    ;	
 	push	word ptr DGROUP:_prev_08+2
@@ -218,56 +196,12 @@ _deinit_machine	endp
 ;-------------------------------------------------------------------------
 ; static int pc_init_vidmode ()
 ;-------------------------------------------------------------------------
-
 	assume	cs:PCCGA_TEXT
+
 pc_init_vidmode	proc	far
-	push	bp
-	mov	bp,sp
-	sub	sp,16
-@4@86:
-   ;	
-   ;	{
-   ;		union REGS r;
-   ;		int i;
-   ;	
-   ;		memset (&r, 0x0, sizeof(union REGS));
-   ;	
-	mov	ax,16
-	push	ax
-	xor	ax,ax
-	push	ax
-	push	ss
-	lea	ax,word ptr [bp-16]
-	push	ax
-	call	far ptr _memset
-	add	sp,8
-   ;	
-   ;		r.x.ax = 0x4;
-   ;	
-	mov	word ptr [bp-16],4
-   ;	
-   ;		int86 (0x10, &r, &r);
-   ;	
-	push	ss
-	lea	ax,word ptr [bp-16]
-	push	ax
-	push	ss
-	lea	ax,word ptr [bp-16]
-	push	ax
-	mov	ax,16
-	push	ax
-	call	far ptr _int86
-	add	sp,10
-   ;	
-   ;	
-   ;		return err_OK;
-   ;	
-	xor	ax,ax
-   ;	
-   ;	}
-   ;	
-	mov	sp,bp
-	pop	bp
+	mov ax, 4
+	int 10h
+	xor ax, ax
 	ret	
 pc_init_vidmode	endp
 	
@@ -275,55 +209,12 @@ pc_init_vidmode	endp
 ;-------------------------------------------------------------------------
 ; static int pc_deinit_vidmode ()
 ;-------------------------------------------------------------------------
-
 	assume	cs:PCCGA_TEXT
+
 pc_deinit_vidmode	proc	far
-	push	bp
-	mov	bp,sp
-	sub	sp,16
-@5@86:
-   ;	
-   ;	{
-   ;		union REGS r;
-   ;	
-   ;		memset (&r, 0x0, sizeof(union REGS));
-   ;	
-	mov	ax,16
-	push	ax
-	xor	ax,ax
-	push	ax
-	push	ss
-	lea	ax,word ptr [bp-16]
-	push	ax
-	call	far ptr _memset
-	add	sp,8
-   ;	
-   ;		r.x.ax = 0x03;
-   ;	
-	mov	word ptr [bp-16],3
-   ;	
-   ;		int86 (0x10, &r, &r);
-   ;	
-	push	ss
-	lea	ax,word ptr [bp-16]
-	push	ax
-	push	ss
-	lea	ax,word ptr [bp-16]
-	push	ax
-	mov	ax,16
-	push	ax
-	call	far ptr _int86
-	add	sp,10
-   ;	
-   ;	
-   ;		return err_OK;
-   ;	
-	xor	ax,ax
-   ;	
-   ;	}
-   ;	
-	mov	sp,bp
-	pop	bp
+	mov ax, 3
+	int 10h
+	xor ax, ax
 	ret	
 pc_deinit_vidmode	endp
 	
@@ -332,6 +223,8 @@ pc_deinit_vidmode	endp
 ;	static void pc_put_block (int x1, int y1, int x2, int y2)
 ;-------------------------------------------------------------------------
 	assume	cs:PCCGA_TEXT
+
+screen_buffer	db	16000 dup (?)
 
 pc_put_block	proc	far
 	push	bp
@@ -431,8 +324,10 @@ pc_put_block	proc	far
    ;	
    ;		sbuffer = screen_buffer + p2;
    ;	
-	mov	ax,word ptr DGROUP:screen_buffer+2
-	mov	dx,word ptr DGROUP:screen_buffer
+	push	cs
+	pop	ax
+	mov	dx, offset screen_buffer
+
 	add	dx,word ptr [bp-8]
 	mov	word ptr [bp-14],ax
 	mov	word ptr [bp-16],dx
@@ -476,8 +371,10 @@ pc_put_block	proc	far
    ;	
    ;		sbuffer = screen_buffer + p2 + 80;
    ;	
-	mov	ax,word ptr DGROUP:screen_buffer+2
-	mov	dx,word ptr DGROUP:screen_buffer
+	push	cs
+	pop	ax
+	mov	dx, offset screen_buffer
+
 	add	dx,word ptr [bp-8]
 	add	dx,80
 	mov	word ptr [bp-14],ax
@@ -533,7 +430,9 @@ pc_put_pixels	proc	far
 	sub	sp,8
 
 	push	si
-	mov	si,word ptr [bp+10]		; si = w
+	push	di
+
+	mov di, offset screen_buffer
 @7@86:
    ;	
    ;	{
@@ -541,20 +440,16 @@ pc_put_pixels	proc	far
    ;	
    ;	 	for (s = &screen_buffer[80 * y + x / 4]; w; w--, x++, p++) {
    ;	
-	mov	ax,word ptr [bp+8]
-	mov	dx,80
+	mov	ax, word ptr [bp+8]
+	mov	dx, 80
 	imul	dx				; y * 80
 
-	mov	dx,word ptr [bp+6]
-	shr	dx,1
-	shr	dx,1				; x / 4
+	mov	dx, word ptr [bp+6]
+	shr	dx, 1
+	shr	dx, 1				; x / 4
 
-	add	dx,ax				; 80 * y + x / 4
-
-	mov	ax,word ptr DGROUP:screen_buffer+2
-	add	dx,word ptr DGROUP:screen_buffer
-	mov	word ptr [bp-2],ax
-	mov	word ptr [bp-4],dx
+	add	dx, ax				; 80 * y + x / 4
+	add	di, dx
 
 	jmp	short condition
 @7@114:
@@ -571,14 +466,14 @@ pc_put_pixels	proc	far
    ;	
 	les	bx,dword ptr [bp+12]
 	mov	al,byte ptr es:[bx]
+
 	cmp	al,15
 	jbe	short remap
-	mov	ch,0				; ch = color
+	xor	al, al				; al = color
 	jmp	short color_ok
 remap:
-	mov	ah,0
-	mov	bx,ax
-	mov	ch,byte ptr DGROUP:cga_map[bx]	; ch = color
+	mov	bx, offset cga_map
+	xlat					; al = color
 
 color_ok:
    ;	
@@ -590,21 +485,19 @@ color_ok:
    ;	
    ;			val = (c & 0x03) << (6 - shift);
    ;	
-	and	ch, 3
+	and	al, 3
 	mov	bl, cl
 	mov	cl, 6
 	sub	cl, bl				;
-	shl	ch, cl				; ch = val
+	shl	al, cl				; al = val
    ;	
    ;			*s = (*s & ~mask) | val;
    ;	
-	les	bx,dword ptr [bp-4]
-	mov	al,byte ptr es:[bx]
+	mov	ch, byte ptr cs:[di]
 	not	dl
-	and	al, dl				; dl = !mask
+	and	ch, dl				; dl = !mask
 	or	al, ch
-	les	bx,dword ptr [bp-4]
-	mov	byte ptr es:[bx],al
+	mov	byte ptr cs:[di], al
    ;	
    ;			
    ;			if ((x % 4) == 3)
@@ -616,19 +509,22 @@ color_ok:
    ;	
    ;				s++;
    ;	
-	inc	word ptr [bp-4]
+	;inc	word ptr [bp-4]
+	inc	di
 @7@254:
-	dec	si
-	inc	word ptr [bp+6]
-	inc	word ptr [bp+12]
+	dec	word ptr [bp+10]		; w--
+	inc	word ptr [bp+6]			; x++
+	inc	word ptr [bp+12]		; p++
 
 condition:
-	or	si,si
+	mov	ax, word ptr[bp+10]
+	or	ax,ax
 	jne	short @7@114
    ;	
    ;		}
    ;	}
    ;	
+	pop	di
 	pop	si
 	mov	sp,bp
 	pop	bp
@@ -642,17 +538,10 @@ pc_put_pixels	endp
 	assume	cs:PCCGA_TEXT
 
 pc_keypress	proc	far
-   ;	
    ;	{
    ;		return !!kbhit();
    ;	
 	call	far ptr _kbhit
-	;neg	ax
-	;sbb	ax,ax
-	;inc	ax
-	;neg	ax
-	;sbb	ax,ax
-	;inc	ax
    ;	
    ;	}
    ;	
@@ -748,8 +637,6 @@ PCCGA_TEXT	ends
 _BSS	segment word public 'BSS'
 _prev_08	label	dword
 	db	4 dup (?)
-screen_buffer	label	dword
-	db	4 dup (?)
 _exec_name	label	dword
 	db	4 dup (?)
 	?debug	C E9
@@ -771,7 +658,6 @@ _pc_init_vidmode	equ	pc_init_vidmode
 
 	public	_tick_increment
 	public	_prev_08
-_screen_buffer	equ	screen_buffer
 	extrn	_gfx:dword
 	extrn	_clock_count:word
 	extrn	_clock_ticks:word
