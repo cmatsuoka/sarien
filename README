@@ -5,6 +5,7 @@ Quick notes - see docs/README.* for detailed information
 Directories:
 
 ./VC++6.0		Visual C++ files
+./OSX-ProjectBuilder	MacOS X files
 ./doc			Documentation
 ./etc			Configuration files
 ./rulesets		Extra rulesets for different architectures
@@ -23,8 +24,8 @@ The following compilers/environments can be used to build sarien:
 	MIPSpro		IRIX
 	DJGPP		MS-DOS (uses Allegro)
 	Watcom C	MS-DOS
-	Turbo C++ 3.0	MS-DOS (real mode)
-	DICE C		AmigaOS (in progress)
+	Turbo C++ 3.0	MS-DOS 16-bit
+	DICE C		AmigaOS
 	MPW		MacOS (in progress)
 
 

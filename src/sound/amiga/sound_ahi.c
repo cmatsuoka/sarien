@@ -40,15 +40,15 @@ struct MsgPort      *AHImp     = NULL;
 struct AHIRequest   *AHIio     = NULL;
 BYTE                 AHIDevice = -1;
 
-// Global variables
-static ULONG ahi_id = AHI_DEFAULT_ID;			// AHI audio ID
+/* Global variables */
+static ULONG ahi_id = AHI_DEFAULT_ID;		/* AHI audio ID */
 static struct AHIAudioCtrl *ahi_ctrl = NULL;
-static struct AHISampleInfo sample[2];			// Two sample infos for double-buffering
+static struct AHISampleInfo sample[2];		/* For double-buffering */
 static struct Hook sf_hook;
-static int play_buf = 0;						// Number of currently played buffer
+static int play_buf = 0;		/* Number of currently played buffer */
 
-// Prototypes
-static __saveds __attribute__((regparm(3))) ULONG audio_callback(struct Hook *hook /*a0*/, struct AHISoundMessage *msg /*a1*/, struct AHIAudioCtrl *ahi_ctrl /*a2*/);
+/* Prototypes */
+static __saveds __attribute__((regparm(3)))ULONG audio_callback(struct Hook *hook /*a0*/, struct AHISoundMessage *msg /*a1*/, struct AHIAudioCtrl *ahi_ctrl /*a2*/);
 
 static SINT16 *buffer;
 
