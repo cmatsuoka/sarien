@@ -339,7 +339,7 @@ static unsigned int __stdcall GuiThreadProc(void *param)
 	MSG msg;
 	int i;
 	HDC  hDC;
-	WNDCLASS wndclass;
+	WNDCLASSEX wndclass;
 
 	memset (&wndclass, 0, sizeof(WNDCLASSEX));
 	wndclass.lpszClassName = g_szMainWndClass;
@@ -599,8 +599,14 @@ static int set_palette (UINT8 *pal, int scol, int numcols)
 	{
 
 		palette                = (LOGPALETTE *)malloc(sizeof(*palette) + 16 * sizeof(PALETTEENTRY));
+		if (NULL == palette)
+		{
+			fprintf(stderr, "set_palette(): malloc failed for palette\n");
+			return err_Unk;
+		}
+
 		palette->palVersion    = 0x300;
-		palette->palNumEntries = 256;   /* Yckes! */
+		palette->palNumEntries = 256;   /* Yikes! */
 
 		GetSystemPaletteEntries(hDC, 0, 16, palette->palPalEntry);
 
