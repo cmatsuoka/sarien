@@ -3,6 +3,7 @@
  * Written by Thomas Åkesson <tapilot@home.se> in March 2002
  * Copyright (C) 2002 Thomas Åkesson
  * Portions Copyright (C) 2001 Stuart George
+ * $Id$
  *
  ****************************************************************************/
 

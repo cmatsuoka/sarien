@@ -22,7 +22,7 @@ STRIP		= strip
 SOUND_DRIVER	= dummy
 CONSOLE_DRIVER	= palmos
 FILEIO_DRIVER	= palmos
-MAIN_FILE	= palmos
+MAIN_FILE	= palmos/sarien
 
 #
 # Ideally it should not be necessary to tweak parameters below this line

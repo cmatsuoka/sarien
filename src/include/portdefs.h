@@ -30,6 +30,7 @@ static char g_vmu_port[2];
 #  undef OPT_LIST_OBJECTS
 #  undef OPT_PICTURE_VIEWER
 #  undef OPT_LIST_DICT
+#  define assert(x) do { if (x) {}; } while (0)
 #else
 #  include <stdlib.h>
 #  include <assert.h>

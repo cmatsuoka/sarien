@@ -3,6 +3,8 @@
  */
 
 #include <PalmOS.h>
+#include "sarien.h"
+#include "agi.h"
 
 #include "callback.h"
 #include "sarienRsc.h"
@@ -13,12 +15,24 @@
 void mainloop (void);
 static UInt32 timeout, ticks;
 
+struct agi_game game;
+struct sarien_options opt;
+volatile UINT32 clock_count;
+
 
 char *strdup (char *s)
 {
 	char *r = MemPtrNew (strlen (s) + 1);
 	strcpy (r, s);
 	return r;
+}
+
+int tolower (int c)
+{
+	if (c >= 'A' && c <= 'Z')
+		c |= 0x20;
+
+	return c;
 }
 
 

@@ -14,7 +14,7 @@ XDEPS	= $(MAIN_FILE).o
 DFILES	= Makefile $(OBJS:.o=.c) rand.c main.c winmain.c id.c hirespic.c \
 	  Makefile.wat Makefile.dj
 CFILES	=
-DDIRS	= dc
+DDIRS	= dc palmos
 XLIBS	= -L../../lib -lagi -lsarien
 
 LIB	= ../../lib/libagi.a

@@ -10,11 +10,6 @@
 
 #include <stdio.h>
 #include <string.h>
-
-#ifdef HAVE_ASSERT_H
-#include <assert.h>
-#endif
-
 #include "sarien.h"
 #include "agi.h"
 #include "graphics.h"

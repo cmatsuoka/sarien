@@ -1,7 +1,7 @@
 # $Id$
 
 XCFLAGS	= -I../../include
-OBJS	= sarien.o
+OBJS	=
 DFILES	= Makefile $(OBJS:.o=.c)
 CFILES	=
 DDIRS	=

@@ -663,13 +663,10 @@ int savegame_dialog ()
 	uint8 addr, port, unit;
 
 	addr = maple_first_vmu();
-	if(addr)
-	{
+	if(addr) {
 		maple_create_port(addr, &port, &unit);
 		sprintf(g_vmu_port, "%c%d", port + 'a', unit);
-	}
-	else
-	{
+	} else {
 		message_box("No VMU found.");
 		return err_OK;
 	}
@@ -751,13 +748,10 @@ int loadgame_dialog ()
 	uint8 addr, port, unit;
 
 	addr = maple_first_vmu();
-	if(addr)
-	{
-		maple_create_port(addr, &port, &unit);
-		sprintf(g_vmu_port, "%c%d", port + 'a', unit);
-	}
-	else
-	{
+	if (addr) {
+		maple_create_port (addr, &port, &unit);
+		sprintf (g_vmu_port, "%c%d", port + 'a', unit);
+	} else {
 		message_box("No VMU found.");
 		return err_OK;
 	}
