@@ -63,24 +63,25 @@ BOOL CheckForOVL(char *szDir)
 
 int CALLBACK BrowseCallbackProc(HWND hwnd,UINT uMsg,LPARAM lp, LPARAM pData)
 {
-	CHAR szDir[MAX_PATH];
+	CHAR szDir[MAX_PATH] = {0};
 
 	switch(uMsg) 
 	{
-	case BFFM_INITIALIZED: 
-		if(GetCurrentDirectory(sizeof(szDir)/sizeof(CHAR), szDir))
+		case BFFM_INITIALIZED: 
+		{
 			SendMessage(hwnd,BFFM_SETSELECTION,TRUE,(LPARAM)szDir);
-		break;
-	case BFFM_SELCHANGED: 
-	   if (SHGetPathFromIDList((LPITEMIDLIST) lp ,szDir)) 
-	   {
-		   if(CheckForOVL(szDir))
-		   {
-			   SendMessage(hwnd, BFFM_ENABLEOK, 0, TRUE);
-			   SendMessage(hwnd,BFFM_SETSTATUSTEXT,0,(LPARAM)szDir);
-		   }
-		   else
-			   SendMessage(hwnd, BFFM_ENABLEOK, 0, FALSE);
+			break;
+		}
+		case BFFM_SELCHANGED: 
+		if (SHGetPathFromIDList((LPITEMIDLIST) lp ,szDir)) 
+		{
+			if(CheckForOVL(szDir))
+			{
+				SendMessage(hwnd, BFFM_ENABLEOK, 0, TRUE);
+				SendMessage(hwnd,BFFM_SETSTATUSTEXT,0,(LPARAM)szDir);
+			}
+			else
+				SendMessage(hwnd, BFFM_ENABLEOK, 0, FALSE);
 	   }
 	   break;
 	default:
@@ -150,12 +151,14 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 	if (!opt.gfxhacks)
 		report ("Graphics driver hacks disabled (if any)\n");
 
+	_D ("Detect game");
 	if (	agi_detect_game (filename) == err_OK ||
 		agi_detect_game (get_current_directory ()) == err_OK)
 	{
 		game.state = STATE_LOADED;
 	}
 
+	_D ("Init sound");
 	init_sound ();
 
 	report (" \nSarien " VERSION " is ready.\n");
@@ -165,27 +168,29 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 	}
 
 	/* Execute the game */
-    	do {
-		if (game.state < STATE_RUNNING) {
-    			ec = agi_init ();
+    	do 
+		{
+			_D(_D_WARN "game loop"); 
+			ec = agi_init ();
 			game.state = STATE_RUNNING;
-		}
 
-		if (ec == err_OK) {
+			if (ec == err_OK) 
+			{
    			/* setup machine specific AGI flags, etc */
     			setvar (V_computer, 0);	/* IBM PC */
     			setvar (V_soundgen, 1);	/* IBM PC SOUND */
     			setvar (V_max_input_chars, 38);
     			setvar (V_monitor, 0x3); /* EGA monitor */
-   			game.horizon = HORIZON;
-			game.player_control = FALSE;
+	   			game.horizon = HORIZON;
+				game.player_control = FALSE;
 
-			ec = run_game();
+				ec = run_game();
     		}
 
     		/* deinit our resources */
+			game.state = STATE_LOADED;
     		agi_deinit ();
-    	} while (ec == err_RestartGame || game.state == STATE_RUNNING);
+    	} while (ec == err_RestartGame);
 
 	deinit_sound ();
 	deinit_video ();

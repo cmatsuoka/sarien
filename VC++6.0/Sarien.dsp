@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "..\src\include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "NATIVE_WIN32" /FR /YX /FD /c
+# ADD CPP /nologo /MT /W3 /GX /Zi /I "..\src\include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "NATIVE_WIN32" /FR /YX /FD /c
 # ADD BASE RSC /l 0x416 /d "NDEBUG"
 # ADD RSC /l 0x416 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -250,12 +250,16 @@ SOURCE=..\src\graphics\win32\win32.c
 SOURCE=..\src\sound\win32\sound_win32.c
 # End Source File
 # End Group
-# Begin Group "FILEGLOB"
+# Begin Group "FILESYS"
 
 # PROP Default_Filter "*.C"
 # Begin Source File
 
-SOURCE=..\src\fileglob\win32\fileglob.c
+SOURCE=..\src\filesys\win32\fileglob.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\filesys\win32\path.c
 # End Source File
 # End Group
 # End Group
@@ -293,10 +297,6 @@ SOURCE=..\src\include\font.h
 # Begin Source File
 
 SOURCE=..\src\include\getopt.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\src\include\global.h
 # End Source File
 # Begin Source File
 

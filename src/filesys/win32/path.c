@@ -26,7 +26,7 @@
  * Application Data for NT
  */
 
-int get_basedir (char *app_dir, unsigned int size)
+int get_app_dir (char *app_dir, unsigned int size)
 {
 	const char *szapp = "AppData";
 	const char *szpath = "Software\\Microsoft\\Windows\\CurrentVersion\\"

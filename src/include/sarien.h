@@ -106,7 +106,7 @@ extern "C"{
 #define	TITLE		"Sarien"
 
 #ifdef NATIVE_WIN32
-#  define VERSION "Win32 native experimental version"
+#  define VERSION __TIMESTAMP__
 #endif
 
 
