@@ -21,7 +21,7 @@ static int	init_vidmode	(void);
 static int	deinit_vidmode	(void);
 static void	gfx_put_block	(int, int, int, int);
 static void	gfx_put_pixels	(int x, int y, int w, UINT8 *c);
-static void	dummy		(void);
+static void	gfx_timer	(void);
 static int	gfx_get_key	(void);
 static int	gfx_keypress	(void);
 
@@ -32,27 +32,27 @@ static struct gfx_driver gfx_pcdos = {
 	deinit_vidmode,
 	gfx_put_block,
 	gfx_put_pixels,
-	dummy,
+	gfx_timer,
 	gfx_keypress,
 	gfx_get_key
 };
 
 extern struct gfx_driver *gfx;
 
-static void dummy(void)
+static void gfx_timer (void)
 {
-	static UINT32 cticks=(SINT32)-1;
+	static UINT32 cticks = 0;
 
 	while (cticks == clock_ticks);
-	cticks=clock_ticks;
+	cticks = clock_ticks;
 }
 
 
-static void new_timer(void)
+static void tick_increment (void)
 {
 	clock_ticks++;
 }
-END_OF_FUNCTION(new_timer);
+END_OF_FUNCTION (tick_increment);
 
 
 int init_machine (int argc, char **argv)
@@ -62,15 +62,15 @@ int init_machine (int argc, char **argv)
 	install_keyboard();
 	install_timer();
 
-	LOCK_VARIABLE(clock_ticks);
-	LOCK_FUNCTION(new_timer);
+	LOCK_VARIABLE (clock_ticks);
+	LOCK_FUNCTION (tick_increment);
 
-	install_int_ex(new_timer, BPS_TO_TIMER(TICK_SECONDS));
+	install_int_ex (tick_increment, BPS_TO_TIMER (TICK_SECONDS));
 
-	screen_buffer=create_bitmap(320, 200);
+	screen_buffer = create_bitmap (320, 200);
 
-	clock_count=0;
-	clock_ticks=0;
+	clock_count = 0;
+	clock_ticks = 0;
 
 	return err_OK;
 }
@@ -78,8 +78,8 @@ int init_machine (int argc, char **argv)
 
 int deinit_machine ()
 {
-	destroy_bitmap(screen_buffer);
-	remove_int(dummy);
+	destroy_bitmap (screen_buffer);
+	remove_int (tick_increment);
 
 	allegro_exit();
 

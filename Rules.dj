@@ -2,7 +2,7 @@
 
 include $(TOPDIR)/Version
 
-CFLAGS = -I$(TOPDIR)/src/include -O2 -m386 -DVERSION='"$(VERSION)"' -DHAVE_ALLEGRO -Wall
+CFLAGS = -I$(TOPDIR)/src/include -O2 -m386 -DVERSION='"$(VERSION)"' -DHAVE_ALLEGRO -Wall -D_TRACE
 
 %.o : %.asm
 	$(NSM) -f coff $< -o$@
