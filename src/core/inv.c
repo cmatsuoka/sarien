@@ -145,15 +145,15 @@ void inventory ()
 
 			switch(get_key()) {
 			case KEY_ENTER:
-				message_box ("Selected item %i", intobj[fsel]);
-				//setvar(V_sel_item, intobj[fsel]);
-				//report("show_obj() -> %i\n", intobj[fsel]);
+				//message_box ("Selected item %i", intobj[fsel]);
+				setvar(V_sel_item, intobj[fsel]);
+				report("show_obj() -> %i\n", intobj[fsel]);
 				setvar(25, intobj[fsel]);
 				flag = FALSE;
 				break;
 			case KEY_ESCAPE:
-				//setvar(V_sel_item, 0xFF);
-				//report("show_obj() -> %i\n", intobj[fsel]);
+				setvar(V_sel_item, 0xFF);
+				report("show_obj() -> %i\n", intobj[fsel]);
 				setvar(25, 0xFF);
 				flag = FALSE;
 				break;

@@ -181,6 +181,10 @@ void add_view_table (int entry, int vw)
 		agi_load_resource (rVIEW, vw);
 	}
 
+	if (entry == 0) {
+		setvar (V_ego_view_resource, vw);
+	}
+
 	if (view_table[entry].current_view != vw || getflag(F_new_room_exec)) {	
 		view_table[entry].current_view = vw;
 

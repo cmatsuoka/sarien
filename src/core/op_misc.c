@@ -93,7 +93,10 @@ void new_room (int r)
 	setvar (V_border_touch_obj, 0);
 	setvar (V_border_code, 0);
 	setvar (V_word_not_found, 0);
-	setvar (V_ego_view_resource, 0);
+	/* Oops. Don't reset ego in new room, it breaks SQ1, KQ1 and others
+	 *
+	 * setvar (V_ego_view_resource, 0);i
+	 */
 
 	/* adjust ego position */
 	setvar (V_border_touch_ego, 0);
