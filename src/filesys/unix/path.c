@@ -48,7 +48,7 @@ char* get_config_file (void)
 	sprintf (rc_path, "%s/.sarienrc", getenv ("HOME"));
 #endif
 
-	if (stat (ini_path, &st) < 0)
+	if (stat (rc_path, &st) < 0)
 		strcpy (rc_path, "/etc/sarien.conf");
 
 	return rc_path;
