@@ -18,6 +18,11 @@
 #include "sarien.h"
 #include "gfx_base.h"
 
+#define KEY_PGUP	0x4A2D	/* keypad + */
+#define KEY_PGDN	0x4E2B  /* keypad - */
+#define KEY_HOME	0x352F  /* keypad / */
+#define KEY_END		0x372A  /* keypad * */
+
 #define __outp(a, b)	outp(a, b)
 #define move_memory(a, b, c) memmove((char*)a, (char*)b, (UINT32)c)
 
@@ -170,11 +175,21 @@ static int IBM_get_key ()
 	memset (&r, 0, sizeof(union REGS));
 	int386 (0x16, &r, &r);
 
-	key=r.h.ah*256;
-	if (r.h.al==0)
-		key &= 0xFF00;
-	else
-		key = r.h.al;
+	switch(r.w.ax)
+	{
+		case KEY_PGDN:
+		case KEY_PGUP:
+		case KEY_HOME:
+		case KEY_END:
+			key=r.w.ax;
+			break;
+		default:
+			if(r.h.al==0)
+				key=r.h.ah<<8;
+			else
+				key=r.h.al;
+			break;
+	}
 
 	return key;
 }

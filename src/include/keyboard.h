@@ -15,6 +15,7 @@
 extern "C"{
 #endif
 
+#define KEY_BACKSPACE	0x08
 #define	KEY_ESCAPE	0x1B
 #define KEY_ENTER	0x0D
 #define KEY_UP		0x4800
@@ -27,10 +28,19 @@ extern "C"{
 #define KEY_UP_LEFT	0x4700
 #define KEY_UP_RIGHT	0x4900
 
+/* FIXME SHOULD BE IN x11.c, ibm.c, etc in graphics */
+#ifdef _M_MSDOS
+/* duplicated in src/graphics/msdos/ibm.c */
+#define KEY_PGUP	0x4A2D	/* keypad + */
+#define KEY_PGDN	0x4E2B  /* keypad - */
+#define KEY_HOME	0x352F  /* keypad / */
+#define KEY_END		0x372A  /* keypad * */
+#else
 #define KEY_PGUP	0xff55	/* FIXME -- these are X11 codes,*/
 #define KEY_PGDN	0xff56  /*          must change to PC keyb */
 #define KEY_HOME	0xff57  /*          scancodes! */
 #define KEY_END		0xff58
+#endif
 
 #define KEY_SCAN(k)	(k >> 8)
 #define KEY_ASCII(k)	(k & 0xff)
