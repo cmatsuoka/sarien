@@ -453,6 +453,7 @@ void write_status ()
 
 	if (/*game.line_min_print == 0 ||*/ !game.status_line) {
 		clear_lines (0, 0, 0);
+		flush_lines (0, 0);
 		return;
 	}
 
