@@ -220,17 +220,22 @@ void handle_keys (int key)
 {
 	UINT8 *p=NULL;
 	int c = 0;
-	static UINT8  new_line = 1;
 	static UINT8  formated_entry[256];
 	static UINT16 pos = 0;
 	static int has_prompt = 0;
+	int l = game.line_user_input;
+	int fg = game.color_fg, bg = game.color_bg;
 
 	setvar (V_word_not_found, 0);
 
 	if (!KEY_ASCII(key)) {
-		if (!has_prompt)
+		/* Print prompt and cursor if they're not there */
+		if (!has_prompt) {
 			print_line_prompt ();	
-		has_prompt = 1;
+			/* Print cursor */
+			print_character (pos + 1, l, game.cursor_char, fg, bg);
+			has_prompt = 1;
+		}
 		return;
 	}
 
@@ -261,9 +266,12 @@ void handle_keys (int key)
 		}
 
 		/* Clear to start a new line*/
-		new_line = 1;
 		has_prompt = 0;
 		buffer[pos = 0] = 0;
+		_D (_D_WARN "clear lines");
+	   	clear_lines (l, l + 1, bg);
+		flush_lines (l, l + 1);
+		print_line_prompt();
 
 		break;
 	case KEY_ESCAPE:
@@ -274,9 +282,8 @@ void handle_keys (int key)
 		/* Ignore backspace at start of line */
 		if (pos == 0) break;
 
-		/* Print cursor */
-		print_character (pos + 1, game.line_user_input,
-			game.cursor_char, game.color_bg, game.color_bg);
+		/* Erase cursor */
+		print_character (pos + 1, l, game.cursor_char, bg, bg);
 
 		buffer[--pos] = 0;
 		break;
@@ -293,25 +300,12 @@ void handle_keys (int key)
 		buffer[pos] = 0;
 
 		/* echo */
-		print_character (pos, game.line_user_input,
-			buffer[pos - 1], game.color_fg,
-			game.color_bg);
+		print_character (pos, l, buffer[pos - 1], fg, bg);
 		break;
 	}
 
-	if (new_line) {
-		int l = game.line_user_input;
-
-		new_line = 0;
-		_D (_D_WARN "clear lines");
-	   	clear_lines (l, l + 1, game.color_bg);
-		flush_lines (l, l + 1);
-		print_line_prompt();
-	}
-
 	/* Print cursor */
-	print_character (pos + 1, game.line_user_input, game.cursor_char,
-		game.color_fg, game.color_bg );
+	print_character (pos + 1, l, game.cursor_char, fg, bg );
 }
 
 
