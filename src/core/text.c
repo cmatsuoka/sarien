@@ -456,6 +456,16 @@ void print_status (char *message, ...)
         print_text (x, 0, 0, game.line_status, 40, STATUS_FG, STATUS_BG);
 }
 
+
+static char *safe_strcat (char *s, const char *t)
+{
+	if (t != NULL)
+		strcat (s, t);
+
+	return s;
+}
+
+
 /**
  * Formats AGI string.
  * @param s  string containing the format specifier
@@ -486,39 +496,39 @@ char *agi_sprintf (char *s)
 					s++;
 				sprintf (z, "%03i", getvar(xx));
 
-				xy=99;
-				if(*s=='|') {
+				xy = 99;
+				if (*s=='|') {
 					s++;
 					xy = atoi (s);
 					while (*s >= '0' && *s <= '9')
 						s++;
 				}
-				xx=0;
-				if(xy==99) {
+				xx = 0;
+				if (xy == 99) {
 					/* remove all leading 0' */
 					/* dont remove the 3rd zero if 000 */
 					while(z[xx]=='0' && xx<2) xx++;
 				}
 				else
-					xx=3-xy;
-				strcat(p, z + xx);
+					xx = 3 - xy;
+				safe_strcat(p, z + xx);
 				break;
 			case '0':
-				strcat(p, object_name (atol(s)-1));
+				safe_strcat(p, object_name (atol(s)-1));
 				break;
 			case 'g':
-				strcat(p, game.logics[0].texts[atol(s)-1]);
+				safe_strcat(p, game.logics[0].texts[atol(s)-1]);
 				break;
 			case 'w':
-				strcat(p, game.ego_words[atol(s)-1].word);
+				safe_strcat(p, game.ego_words[atol(s)-1].word);
 				break;
 			case 's':
-				strcat(p, game.strings[atol(s)]);
+				safe_strcat(p, game.strings[atol(s)]);
 				break;
 			case 'm': {
 				int n = game.lognum, m = atoi(s) - 1;
 				if (game.logics[n].num_texts > m)
-					strcat(p, game.logics[n].texts[m]);
+					safe_strcat(p, game.logics[n].texts[m]);
 				break;
 				}
 			}

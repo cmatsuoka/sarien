@@ -30,8 +30,11 @@ extern	struct agi_logicnames	logic_names_if[];
 void	debug_console	(int, int, char *);
 int	test_if_code	(int);
 void	new_room	(int);
-void	patch_logic	(int);
 void	execute_agi_command	(UINT8, UINT8 *);
+
+#ifdef DISABLE_COPYPROTECTION
+void	patch_logic	(int);
+#endif
 
 #ifdef __cplusplus
 };

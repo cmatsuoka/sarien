@@ -131,7 +131,9 @@ extern "C"{
 #define STATUS_FG	0x00		/* Black */
 #define	STATUS_BG	0x0f		/* White */
 
+#ifdef _TRACE
 #define DISABLE_COPYPROTECTION		/* only works on some games */
+#endif
 
 
 UINT8	lohi_getbyte	(UINT8 *);

@@ -11,6 +11,11 @@ Revision History
 	- using scanline-based flood fill to reduce memory usage
 	- reduced memory allocation in shake.screen
 	- added many options to the configuration script
+	- widgets set to classic Sierra, MUMG wants white message boxes
+	- logic patch code compiled only if patching is enabled (reduces
+	  code size)
+	- patching enabled by default only when tracing is enabled
+	- checking null pointers when parsing AGI strings (closes: #491334)
 
 0.7.0 (20011122)
 	- added QNX4 native sound driver (untested)

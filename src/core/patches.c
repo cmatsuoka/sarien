@@ -14,6 +14,7 @@
 #include "agi.h"
 #include "opcodes.h"
 
+#ifdef DISABLE_COPYPROTECTION
 
 #define ip (game.logics[n].cIP)
 #define code (game.logics[n].data)
@@ -119,4 +120,6 @@ void patch_logic (int n)
 		break;  
 	}
 }
+
+#endif
 
