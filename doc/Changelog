@@ -5,6 +5,8 @@ Revision History
 0.8.0 (cvs)
 	- new find_word algorithm
 	- sprites are RLE-encoded to reduce memory usage
+	- sprites use a pre-allocated buffer to store backgrounds
+	- encoding flood fill coordinates in a 16-bit integer
 
 0.7.0 (20011122)
 	- added QNX native sound driver (untested)

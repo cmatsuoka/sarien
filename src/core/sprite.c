@@ -41,25 +41,53 @@ struct sprite {
 /*
  * Sprite pool replaces dynamic allocation
  */
-#define POOL_SIZE MAX_VIEWTABLE
-static struct sprite sprite_pool[POOL_SIZE];
+#undef ALLOC_DEBUG
 
-static struct sprite *get_from_pool ()
+#define POOL_SIZE 32000
+static UINT8 *sprite_pool[POOL_SIZE];
+static UINT8 *pool_top = (UINT8 *)sprite_pool;
+
+#ifdef ALLOC_DEBUG
+#include <stdio.h>
+static int max_alloc = 0;
+#endif
+
+static void *pool_alloc (int size)
 {
-	int i;
+	UINT8 *x;
 
-	for (i = 0; i < POOL_SIZE; i++) {
-		if (sprite_pool[i].list.prev == NULL)
-			return &sprite_pool[i];
+	x = pool_top;
+	pool_top += size;
+
+	if (pool_top >= (UINT8 *)sprite_pool + POOL_SIZE) {
+		pool_top = x;
+		return NULL;
 	}
+	
+#ifdef ALLOC_DEBUG
+	if ((int)(pool_top - (UINT8 *)sprite_pool) > max_alloc)
+		max_alloc = (int)(pool_top - (UINT8 *)sprite_pool);
 
-	return NULL;
+	printf ("pool_alloc: %d bytes @ %d (used memory: %d, max: %d)\n",
+		size, (x - (UINT8 *)sprite_pool),
+		(int)(pool_top - (UINT8 *)sprite_pool), max_alloc);
+#endif
+	return x;
 }
 
-static void return_to_pool (struct sprite *s)
+static void pool_release (void *s)
 {
-	s->list.prev = NULL;
+#ifdef ALLOC_DEBUG
+	printf ("pool_release: %d\n", (int)(s - (void *)sprite_pool));
+	if (s >= (void *)pool_top) {
+		printf ("s   = %d\n", (int)(s - (void *)sprite_pool));
+		printf ("top = %d\n", (int)(pool_top - (UINT8 *)sprite_pool));
+		abort ();
+	}
+#endif
+	pool_top = s;
 }
+
 
 /*
  * Blitting one pixel considering the priorities
@@ -119,7 +147,7 @@ static int blit_hires_cel (int x, int y, int spr, struct view_cel *c)
 		while (*q){
 			col = (*q & 0xF0)>>4;
 			for (j = *q & 0x0F; j; j--, h+=X_FACT*(1-2*m)){
-				if (col != t){
+				if (col != t) {
 					blit_pixel (h, col, spr, _WIDTH * X_FACT, &hidden);
 					blit_pixel (h+1, col, spr, _WIDTH * X_FACT, &hidden);
 				}
@@ -325,7 +353,7 @@ static struct sprite *new_sprite (struct vt_entry *v)
 {
 	struct sprite *s;
 
-	s = get_from_pool ();
+	s = (struct sprite *)pool_alloc (sizeof (struct sprite));
 	if (s == NULL)
 		abort ();
 	s->v = v;	/* link sprite to associated view table entry */
@@ -333,9 +361,9 @@ static struct sprite *new_sprite (struct vt_entry *v)
 	s->y_pos = v->y_pos - v->y_size + 1;
 	s->x_size = v->x_size;
 	s->y_size = v->y_size;
-	s->buffer = malloc (s->x_size * s->y_size);
+	s->buffer = pool_alloc (s->x_size * s->y_size);
 #ifdef USE_HIRES
-	s->hires = malloc (s->x_size * s->y_size * 2);
+	s->hires = pool_alloc (s->x_size * s->y_size * 2);
 #endif
 	v->s = s;	/* link view table entry to this sprite */
 
@@ -420,34 +448,16 @@ static void free_list (struct list_head *head)
 {
 	struct list_head *h;
 	struct sprite *s;
-	struct sprite *doomed = NULL;
 
-	list_for_each (h, head, next) {
+	list_for_each (h, head, prev) {
 		s = list_entry (h, struct sprite, list);
 		list_del (h);
-		free (s->buffer);
 #ifdef USE_HIRES
-		free (s->hires);
+		pool_release (s->hires);
 #endif
-		/*
-		 * if (h->prev != head)
-     		 *     free (list_entry (h->prev, struct sprite, list));
-		 *
-		 * Why not just "free(s);"? The problem is that sprite
-		 * structure contains list iterator so it cannot be deleted
-		 * during iteration (typical mistake of C++ beginners
-		 * trying to use STL). So, marked lines have some reasoning.
-		 * The idea is that previous element gets free'ed, not the
-		 * current one. Now, the bug is obvious -- who kills the
-		 * last element? My proposed fix is:
-		 */
-
-		if (doomed)
-			return_to_pool (doomed);
-		doomed = s;
+		pool_release (s->buffer);
+     		pool_release (s);
 	}
-	if (doomed)
-		return_to_pool (doomed);
 }
 
 /**
