@@ -45,6 +45,7 @@
 	LeaveCriticalSection(&g_key_queue.cs);		\
 } while (0)
 
+
 typedef struct {
 	UINT16 x1, y1;
 	UINT16 x2, y2;
@@ -105,6 +106,45 @@ static HDC  hDC;
 static WNDCLASSEX wndclass;
 
 
+static void INLINE gui_put_block (int x1, int y1, int x2, int y2)
+{
+	HDC hDC;
+
+	if (x1 >= GFX_WIDTH)
+		x1 = GFX_WIDTH - 1;
+
+	if (y1 >= GFX_HEIGHT)
+		y1 = GFX_HEIGHT - 1;
+
+	if (x2 >= GFX_WIDTH)
+		x2 = GFX_WIDTH - 1;
+
+	if (y2 >= GFX_HEIGHT)
+		y2 = GFX_HEIGHT - 1;
+
+	hDC = GetDC( hwndMain );
+
+	EnterCriticalSection (&g_screen.cs);
+	StretchDIBits(
+		hDC,
+		x1 * scale,
+		y1 * scale,
+		(x2 - x1 + 1) * scale,
+                (y2 - y1 + 1) * scale,
+		x1,
+                GFX_HEIGHT - y2 - 1,
+		x2 - x1 + 1,
+                y2 - y1 + 1,
+		g_screen.screen_pixels,
+		g_screen.binfo,
+		DIB_RGB_COLORS,
+		SRCCOPY);
+	LeaveCriticalSection (&g_screen.cs);
+
+	ReleaseDC (hwndMain, hDC);
+}
+
+
 LRESULT CALLBACK
 MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -123,7 +163,7 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		exit (-1);
 		return 0;
 	case WM_PAINT:
-		hDC = BeginPaint( hwndMain, &ps );
+		hDC = BeginPaint (hwndMain, &ps);
 		EnterCriticalSection(&g_screen.cs);
 		StretchDIBits(
 			hDC,
@@ -133,8 +173,8 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			GFX_HEIGHT * scale,
 			0,
 			0,
-			GFX_WIDTH * scale,
-			GFX_HEIGHT * scale,
+			GFX_WIDTH,
+			GFX_HEIGHT,
 			g_screen.screen_pixels,
 			g_screen.binfo,
 			DIB_RGB_COLORS,
@@ -324,8 +364,8 @@ static int init_vidmode ()
 		WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		(GFX_WIDTH*scale) + GetSystemMetrics (SM_CXFRAME),
-		(GFX_HEIGHT*scale) + GetSystemMetrics (SM_CYCAPTION) +
+		(GFX_WIDTH * scale) + GetSystemMetrics (SM_CXFRAME),
+			(GFX_HEIGHT * scale) + GetSystemMetrics (SM_CYCAPTION) +
 			GetSystemMetrics (SM_CYFRAME),
 		NULL,
 		NULL,
@@ -347,10 +387,10 @@ static int init_vidmode ()
 	}
 
 	g_screen.binfo->bmiHeader.biSize          = sizeof(BITMAPINFOHEADER);
-	g_screen.binfo->bmiHeader.biWidth         = GFX_WIDTH * scale;
-	g_screen.binfo->bmiHeader.biHeight        = GFX_HEIGHT * scale;
+	g_screen.binfo->bmiHeader.biWidth         = GFX_WIDTH;
+	g_screen.binfo->bmiHeader.biHeight        = GFX_HEIGHT;
 	g_screen.binfo->bmiHeader.biPlanes        = 1;
-	g_screen.binfo->bmiHeader.biBitCount      = 8;   /* 8 Bits per pixel should work fine! */
+	g_screen.binfo->bmiHeader.biBitCount      = 8;   /* should be fine */
 	g_screen.binfo->bmiHeader.biCompression   = BI_RGB;
 	g_screen.binfo->bmiHeader.biSizeImage     = 0;
 	g_screen.binfo->bmiHeader.biXPelsPerMeter = 0;
@@ -399,13 +439,13 @@ static void INLINE process_events ()
 static int deinit_vidmode (void)
 {
 	PostMessage (hwndMain, WM_QUIT, 0, 0);
-	//CloseHandle (g_hThread);
 	DeleteObject (g_screen.screen_bmp);
+
 	return err_OK;
 }
 
 /* put a block onto the screen */
-static void win32_put_block (int x1, int y1, int x2, int y2) //th0
+static void win32_put_block (int x1, int y1, int x2, int y2)
 {
 	xyxy *p;
 
@@ -420,94 +460,18 @@ static void win32_put_block (int x1, int y1, int x2, int y2) //th0
 	PostMessage (hwndMain, WM_PUT_BLOCK, 0, (LPARAM)p);
 }
 
-static void INLINE gui_put_block (int x1, int y1, int x2, int y2)
-{
-	HDC hDC;
-
-	if (x1 >= GFX_WIDTH)
-		x1 = GFX_WIDTH - 1;
-
-	if (y1 >= GFX_HEIGHT)
-		y1 = GFX_HEIGHT - 1;
-
-	if (x2 >= GFX_WIDTH)
-		x2 = GFX_WIDTH - 1;
-
-	if (y2 >= GFX_HEIGHT)
-		y2 = GFX_HEIGHT - 1;
-
-	if (scale > 1) {
-		x1 *= scale;
-		y1 *= scale;
-		x2 = (x2 + 1) * scale - 1;
-		y2 = (y2 + 1) * scale - 1;
-	}
-
-	hDC = GetDC( hwndMain );
-
-	EnterCriticalSection (&g_screen.cs);
-	StretchDIBits(
-		hDC,
-		x1,
-		y1,
-		x2 - x1 + 1,
-                y2 - y1 + 1,
-		x1,
-                GFX_HEIGHT * scale - y2 - 1,
-		x2 - x1 + 1,
-                y2 - y1 + 1,
-		g_screen.screen_pixels,
-		g_screen.binfo,
-		DIB_RGB_COLORS,
-		SRCCOPY);
-	LeaveCriticalSection (&g_screen.cs);
-
-	ReleaseDC (hwndMain, hDC);
-}
-
 /* put pixel routine */
 /* Some errors! Handle color depth */
 static void win32_put_pixels (int x, int y, int w, BYTE *p)
 {
-	register int i, j;
-        int offset;
-        BYTE *p1, *p0 = g_screen.screen_pixels; /* Word aligned! */
+        BYTE *p0 = g_screen.screen_pixels; /* Word aligned! */
 	EnterCriticalSection(&g_screen.cs);
 
         y = GFX_HEIGHT - y - 1;
 
-	if (scale == 1) {
-		p0 += x + y * GFX_WIDTH;
-		while (w--) {
-			*p0++ = *p++;
-		}
-	} else if (scale == 2) {
-		x <<= 1; y <<= 1;
-		p0 += x + y * (GFX_WIDTH << 1);
-		p1 = p0 + (GFX_WIDTH << 1);
+	p0 += x + y * GFX_WIDTH;
+	while (w--) { *p0++ = *p++; }
 
-		while (w--) {
-			*p0++ = *p;
-			*p0++ = *p;
-			*p1++ = *p;
-			*p1++ = *p;
-			p++;
-		}
-	} else {
-		x *= scale; 
-		y *= scale;
-
-		while (w--) {
-			for (i = 0; i < scale; i++) {
-                       		for (j = 0; j < scale; j++) {
-                                	offset = (x + i) + (y + j) * GFX_WIDTH * scale;
-                                	*(p0 +  offset) = *p;
-                        	}
-			}
-			x += scale;
-			p++;
-		}
-	}
 	LeaveCriticalSection(&g_screen.cs);
 
 }
@@ -528,9 +492,9 @@ static int win32_get_key (void)
 {
 	int k;
 
-	while (!win32_keypress()){
+	while (!win32_keypress())
 		win32_new_timer ();
-	}
+
 	key_dequeue(k);
 
 	return k;

@@ -8,6 +8,8 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
+#if !defined PALMOS && !defined WIN32
+
 #include <stdio.h>
 #include <string.h>
 #include <getopt.h>
@@ -268,3 +270,4 @@ int parse_cli (int argc, char **argv)
 	return ec;
 }
 
+#endif /* !PALMOS && !WIN32 */
