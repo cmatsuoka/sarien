@@ -739,7 +739,7 @@ cmd(print) {
 }
 
 cmd(print_f) {
-	int n = p0 < 1 ? 1 : p0;
+	int n = _v[p0] < 1 ? 1 : _v[p0];
 	print (cur_logic->texts[n - 1], 0, 0, 0);
 }
 
@@ -749,7 +749,7 @@ cmd(print_at) {
 }
 
 cmd(print_at_v)	{
-	int n = p0 < 1 ? 1 : p0;
+	int n = _v[p0] < 1 ? 1 : _v[p0];
 	print (cur_logic->texts[n - 1], p1, p2, p3);
 }
 
