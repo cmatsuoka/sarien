@@ -1,3 +1,4 @@
+# $Id$
 
 XCFLAGS	= -I../../include $(X11CFLAGS)
 OBJS	= ph.o
@@ -10,5 +11,6 @@ all: $(LIB)
 
 x11.o: ph.c
 
+include ../../../Version
 include ../../../Rules
 

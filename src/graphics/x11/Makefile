@@ -12,5 +12,6 @@ all: $(LIB)
 
 x11.o: x11.c dga.c
 
+include ../../../Version
 include ../../../Rules
 
