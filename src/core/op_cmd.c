@@ -78,7 +78,6 @@ extern struct agi_loader *loader;
 extern struct agi_object *objects;
 extern struct agi_logic logics[];
 extern struct agi_view views[];
-extern struct agi_event events[];
 extern struct agi_view_table view_table[];
 extern struct agi_menu *menu;
 extern struct sarien_options opt;
@@ -718,13 +717,13 @@ void cmd_stop_input ()
 void cmd_set_key (UINT8 ac, UINT8 sc, UINT8 ec)
 {
 	if (ac == 0) {
-		events[ec].event = eSCAN_CODE;
-		events[ec].data = sc;
-		events[ec].occured = FALSE;
+		game.events[ec].event = eSCAN_CODE;
+		game.events[ec].data = sc;
+		game.events[ec].occured = FALSE;
 	} else {
-		events[ec].event = eKEY_PRESS;
-		events[ec].data = ac;
-		events[ec].occured = FALSE;
+		game.events[ec].event = eKEY_PRESS;
+		game.events[ec].data = ac;
+		game.events[ec].occured = FALSE;
 	}
 }
 

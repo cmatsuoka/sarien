@@ -15,6 +15,13 @@
 extern "C"{
 #endif
 
+
+struct agi_event {
+	UINT8	event;
+	UINT8	occured;
+	UINT16	data;
+};
+
 struct agi_word {
 	int id;
 	char *word;
@@ -42,8 +49,8 @@ struct agi_dir {
 };
 
 /* This structure should contain everything we would want to
- * put in an agi savegame. Later in the cleanup process we'll remove
- * individual global variables and use this struct instead.
+ * put in an agi "snapshot" savegame. Later in the cleanup process
+ * we'll remove individual global variables and use this struct instead.
  */
 struct agi_game {
 	char name[8];		/* lead in id (eg, goldrush GR */
@@ -85,12 +92,13 @@ struct agi_game {
 	int num_ego_words;
 
 	int num_objects;
+
+	struct agi_event events[MAX_DIRS];	/* keyboard events */
 #if 0
 	/* resources */
 	struct agi_picture pictures[MAX_DIRS];
 	struct agi_logic logics[MAX_DIRS];
 	struct agi_view views[MAX_DIRS];
-	struct agi_events events[MAX_DIRS];
 	struct agi_object *objects;
 
 	/* view table */

@@ -15,13 +15,6 @@
 extern "C"{
 #endif
 
-struct agi_event {
-	UINT8	event;
-	UINT8	occured;
-	UINT16	data;
-};
-
-
 #define	KEY_ESCAPE	0x1B
 #define KEY_ENTER	0x0D
 #define KEY_UP		0x4800
@@ -46,9 +39,6 @@ struct agi_event {
 extern	UINT8		scancode_table[];
 extern	UINT16		key;
 
-//extern	struct agi_events	events[];
-//extern	struct agi_word	ego_words[];
-//extern	int		num_ego_words;
 extern	UINT8		strings[MAX_WORDS1][MAX_WORDS2];
 
 

@@ -23,8 +23,6 @@
 #include "console.h"
 #include "text.h"	/* remove later */
 
-struct agi_event events[MAX_DIRS];	/* keyboard events */
-
 UINT8 strings[MAX_WORDS1][MAX_WORDS2];	/* strings */
 
 UINT16 key; 
@@ -204,7 +202,7 @@ void poll_keyboard (void)
 
 	if (!console.active || !console.input_active) {
 		for (c1 = 0; c1 < MAX_DIRS; c1++)
-			events[c1].occured = FALSE;
+			game.events[c1].occured = FALSE;
 	}
 
 	/* If a key is ready, rip it */
@@ -231,29 +229,35 @@ void poll_keyboard (void)
 		/* For controller() */
 		for (c1 = 0; c1 < MAX_DIRS; c1++) {
 
-			if(events[c1].data && events[c1].data == KEY_SCAN(xkey))
+			if (game.events[c1].data &&
+				game.events[c1].data == KEY_SCAN (xkey))
+			{
 				report ("xevent SC:%i=%04X %i:%i\n", c1,
 					KEY_SCAN(xkey), eSCAN_CODE,
-					events[c1].event);
-			if(events[c1].data && events[c1].data==KEY_ASCII(xkey))
+					game.events[c1].event);
+			}
+			if(game.events[c1].data &&
+				game.events[c1].data == KEY_ASCII (xkey))
+			{
 	                       	report ("xevent AC:%i=%04X %i:%i\n", c1,
 					KEY_ASCII(xkey), eKEY_PRESS,
-					events[c1].event);
+					game.events[c1].event);
+			}
 
-			switch (events[c1].event) {
+			switch (game.events[c1].event) {
 			case eSCAN_CODE:
-				if (events[c1].data == KEY_SCAN(key) &&
+				if (game.events[c1].data == KEY_SCAN(key) &&
 					KEY_ASCII(key) == 0)
 				{
-					events[c1].occured = TRUE;
+					game.events[c1].occured = TRUE;
 					report("event SC:%i occured\n", c1);
 				}
 				break;
 			case eKEY_PRESS:
-				if (events[c1].data == KEY_ASCII(key) &&
+				if (game.events[c1].data == KEY_ASCII(key) &&
 					KEY_SCAN(key) == 0)
 				{
-					events[c1].occured = TRUE;
+					game.events[c1].occured = TRUE;
 					report ("event AC:%i occured\n", c1);
 				}
 				break;

@@ -28,7 +28,6 @@ extern struct agi_logic logics[];
 extern struct agi_view views[];
 extern struct agi_view_table view_table[];
 extern struct agi_object *objects;
-extern struct agi_event events[];
 
 //UINT16	test_if_code	(UINT16);
 static UINT8	test_obj_right	(UINT8, UINT8, UINT8, UINT8, UINT8);
@@ -68,7 +67,7 @@ static UINT8 test_controller (UINT8 cont)
 {
 	int r;
 
-	if ((r = events[cont].occured))
+	if ((r = game.events[cont].occured))
 		setvar (V_key, key = 0);
 
 	return r;

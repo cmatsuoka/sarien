@@ -17,7 +17,6 @@
 #include "gfx_agi.h"
 #include "gfx_base.h"
 #include "keyboard.h"
-//#include "console.h"
 #include "menu.h"
 #include "text.h"
 
@@ -26,7 +25,6 @@ struct agi_menu *menu;
 
 extern struct sarien_console console;
 extern struct agi_game game;
-extern struct agi_event events[];
 extern struct gfx_driver *gfx;
 
 
@@ -232,7 +230,7 @@ void do_menus ()
     			men = men->down;
     			for (x = 0; x < v_cur_menu; x++, men=men->down);
     			if (men->enabled) {
-    				events[men->event].occured = TRUE;
+    				game.events[men->event].occured = TRUE;
 				goto exit_menu;
     			}
     			break;

@@ -39,7 +39,6 @@ extern struct agi_picture pictures[];
 extern struct agi_logic logics[];
 extern struct agi_view views[];
 extern struct agi_object *objects;
-extern struct agi_events events[];
 extern UINT8 *font, font_english[], font_russian[];
 
 
@@ -67,7 +66,7 @@ int agi_init ()
 	memset (&logics, 0, MAX_DIRS * sizeof (struct agi_logic));
 	memset (&pictures, 0, MAX_DIRS * sizeof (struct agi_picture));
 	memset (&views, 0x0, MAX_DIRS * sizeof (struct agi_view));
-	memset (&events, 0x0, MAX_DIRS * sizeof (struct agi_event));
+	memset (&game.events, 0x0, MAX_DIRS * sizeof (struct agi_event));
 
 	init_words ();
 	init_view_table ();
