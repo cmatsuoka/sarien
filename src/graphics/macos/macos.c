@@ -196,13 +196,12 @@ static int macos_init_vidmode ()
 
 	/* Set palette */
 	for (i = 0; i < 32; i++) {
-		rgb_color[i].red   = (int)palette[i * 3] << 2;
-		rgb_color[i].green = (int)palette[i * 3 + 1] << 2;
-		rgb_color[i].blue  = (int)palette[i * 3 + 2] << 2;
+		rgb_color[i].red   = (int)palette[i * 3] << 10;
+		rgb_color[i].green = (int)palette[i * 3 + 1] << 10;
+		rgb_color[i].blue  = (int)palette[i * 3 + 2] << 10;
 	}
 
-	windRect = qd.screenBits.bounds;
-	InsetRect (&windRect, 10, 10);
+	SetRect (&windRect, 50, 50, 50 + 320, 50 + 200);
 	myWindow = NewCWindow (nil, &windRect, "Sarien", true, documentProc, 
 		(WindowPtr) -1, false, 0);
 		

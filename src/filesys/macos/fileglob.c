@@ -31,14 +31,12 @@ static char *match (char *s, int n)
 
 int file_isthere (char *fname)
 {
-	_D ("(fname=%s)", fname);
 	return match (fname, 0) != NULL;
 }
 
 
 char* file_name (char *fname)
 {
-	_D ("(fname=%s)", fname);
 	return match (fname, 0);
 }
 
