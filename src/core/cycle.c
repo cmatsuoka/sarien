@@ -271,8 +271,16 @@ static void normal_motion (int em, int x, int y)
 	while (check_control_lines (em, vt_obj->x_pos, vt_obj->y_pos) == -1) {
 		if (vt_obj->x_pos > 0)
 			vt_obj->x_pos--;
+		else
+			break;
+
+		if (check_control_lines (em, vt_obj->x_pos, vt_obj->y_pos) == 0)
+			break;
+
 		if (vt_obj->y_pos < _HEIGHT)
 			vt_obj->y_pos++;
+		else
+			break;
 	}
 
 	x += vt_obj->x_pos;
