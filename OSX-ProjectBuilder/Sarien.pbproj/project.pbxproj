@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 32;
+	objectVersion = 34;
 	objects = {
 		00C940990173921B7F000001 = {
 			isa = PBXFileReference;
@@ -16,10 +16,21 @@
 			settings = {
 			};
 		};
+//000
+//001
+//002
+//003
+//004
+//010
+//011
+//012
+//013
+//014
 		01471944014DD51D7F000001 = {
 			isa = PBXFileReference;
-			path = path.c;
-			refType = 4;
+			name = path.c;
+			path = ../src/filesys/unix/path.c;
+			refType = 2;
 		};
 		01471945014DD51D7F000001 = {
 			fileRef = 01471944014DD51D7F000001;
@@ -27,6 +38,16 @@
 			settings = {
 			};
 		};
+//010
+//011
+//012
+//013
+//014
+//080
+//081
+//082
+//083
+//084
 		080E96DCFE201CFB7F000001 = {
 			fileRef = 29B97318FDCFA39411CA2CEA;
 			isa = PBXBuildFile;
@@ -41,7 +62,6 @@
 				F5742F7B0140638F01000001,
 				F5742F7D0140638F01000001,
 				F5742F7C0140638F01000001,
-				F5E85D270146350301000001,
 			);
 			isa = PBXGroup;
 			name = Classes;
@@ -69,8 +89,19 @@
 			settings = {
 			};
 		};
+//080
+//081
+//082
+//083
+//084
+//100
+//101
+//102
+//103
+//104
 		1058C7A0FEA54F0111CA2CBB = {
 			children = (
+				F562A78901C54C78010DC54F,
 				1058C7A1FEA54F0111CA2CBB,
 			);
 			isa = PBXGroup;
@@ -101,11 +132,31 @@
 			settings = {
 			};
 		};
+//100
+//101
+//102
+//103
+//104
+//170
+//171
+//172
+//173
+//174
 		17587328FF379C6511CA2CBB = {
 			isa = PBXApplicationReference;
 			path = Sarien.app;
 			refType = 3;
 		};
+//170
+//171
+//172
+//173
+//174
+//190
+//191
+//192
+//193
+//194
 		19C28FACFE9D520D11CA2CBB = {
 			children = (
 				17587328FF379C6511CA2CBB,
@@ -114,6 +165,16 @@
 			name = Products;
 			refType = 4;
 		};
+//190
+//191
+//192
+//193
+//194
+//290
+//291
+//292
+//293
+//294
 		29B97313FDCFA39411CA2CEA = {
 			buildStyles = (
 				4A9504CCFFE6A4B311CA0CBA,
@@ -213,18 +274,14 @@
 				29B9732DFDCFA39411CA2CEA,
 			);
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/ApplicationServices.framework/Versions/A/Frameworks\"";
+				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/\"";
 				HEADER_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = "";
-				OPTIMIZATION_CFLAGS = "";
 				OTHER_CFLAGS = "-DMACOSX -DNATIVE_MACOSX";
-				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = Sarien;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
 				WRAPPER_EXTENSION = app;
-			};
-			conditionalBuildSettings = {
 			};
 			dependencies = (
 			);
@@ -268,6 +325,7 @@
 				F5742F7F0140638F01000001,
 				F5742F800140638F01000001,
 				F5F6248B0141197101000001,
+				F53A970C01A48B8B013B94F6,
 			);
 			isa = PBXHeadersBuildPhase;
 			name = Headers;
@@ -327,8 +385,8 @@
 				F5742F820140638F01000001,
 				F5742F830140638F01000001,
 				F5607D2A0144005201000001,
-				F5E85D280146350301000001,
 				01471945014DD51D7F000001,
+				F562A78801C54C0E010DC54F,
 			);
 			isa = PBXSourcesBuildPhase;
 			name = Sources;
@@ -347,15 +405,27 @@
 				1058C7A3FEA54F0111CA2CBB,
 				F5C2E82F01403B8801000001,
 				F5C2E83001403B8801000001,
+				F562A78A01C54C78010DC54F,
 			);
 			isa = PBXFrameworksBuildPhase;
 			name = "Frameworks & Libraries";
 		};
+//290
+//291
+//292
+//293
+//294
+//4A0
+//4A1
+//4A2
+//4A3
+//4A4
 		4A9504CCFFE6A4B311CA0CBA = {
 			buildRules = (
 			);
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				OPTIMIZATION_CFLAGS = "-O0";
 			};
 			isa = PBXBuildStyle;
 			name = Development;
@@ -369,6 +439,28 @@
 			isa = PBXBuildStyle;
 			name = Deployment;
 		};
+//4A0
+//4A1
+//4A2
+//4A3
+//4A4
+//F50
+//F51
+//F52
+//F53
+//F54
+		F53A970B01A48B8B013B94F6 = {
+			isa = PBXFileReference;
+			name = portdefs.h;
+			path = ../src/include/portdefs.h;
+			refType = 2;
+		};
+		F53A970C01A48B8B013B94F6 = {
+			fileRef = F53A970B01A48B8B013B94F6;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		F5607D290144005201000001 = {
 			isa = PBXFileReference;
 			name = picview.c;
@@ -377,6 +469,30 @@
 		};
 		F5607D2A0144005201000001 = {
 			fileRef = F5607D290144005201000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F562A78701C54C0E010DC54F = {
+			isa = PBXFileReference;
+			name = sound_macos.c;
+			path = /Users/jpenner/Code/sarien/src/sound/macos/sound_macos.c;
+			refType = 0;
+		};
+		F562A78801C54C0E010DC54F = {
+			fileRef = F562A78701C54C0E010DC54F;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F562A78901C54C78010DC54F = {
+			isa = PBXFrameworkReference;
+			name = Carbon.framework;
+			path = /System/Library/Frameworks/Carbon.framework;
+			refType = 0;
+		};
+		F562A78A01C54C78010DC54F = {
+			fileRef = F562A78901C54C78010DC54F;
 			isa = PBXBuildFile;
 			settings = {
 			};
@@ -539,6 +655,7 @@
 				F5C2E85B01403CD401000001,
 				F5C2E8A701403D1801000001,
 				01471944014DD51D7F000001,
+				F562A78701C54C0E010DC54F,
 			);
 			isa = PBXGroup;
 			name = "Sarien Sources";
@@ -781,6 +898,7 @@
 				F5C2E86D01403CD401000001,
 				F5C2E86E01403CD401000001,
 				F5C2E86F01403CD401000001,
+				F53A970B01A48B8B013B94F6,
 			);
 			isa = PBXGroup;
 			name = "Sarien Headers";
@@ -1124,17 +1242,6 @@
 		};
 		F5C2E8A801403D1801000001 = {
 			fileRef = F5C2E8A701403D1801000001;
-			isa = PBXBuildFile;
-			settings = {
-			};
-		};
-		F5E85D270146350301000001 = {
-			isa = PBXFileReference;
-			path = SarienAudio.c;
-			refType = 4;
-		};
-		F5E85D280146350301000001 = {
-			fileRef = F5E85D270146350301000001;
 			isa = PBXBuildFile;
 			settings = {
 			};

@@ -59,9 +59,16 @@ int cocoa_deinit(void)
 
 void cocoa_put_block(int x, int y, int w, int h)
 {
-    [sarienView lock];
-    [sarienView setNeedsDisplay: YES];
-    [sarienView unlock];
+/*    NSRect rect;
+    
+    rect.origin.x = x * opt.scale;
+    rect.origin.y = y * opt.scale;
+    rect.size.width = w * opt.scale;
+    rect.size.height = h * opt.scale;
+*/    
+//    [sarienView lock];
+    [sarienView display];
+//    [sarienView unlock];
 }
 
 void cocoa_put_pixels(int x, int y, int w, UINT8 *p)

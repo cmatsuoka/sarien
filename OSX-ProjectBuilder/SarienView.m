@@ -108,12 +108,49 @@
     [mutex lock];
     for (i = 0; i < length; i++)
     {
-        NSLog(@"Key Down: %d", [characters characterAtIndex: i]);
+//        NSLog(@"Key Down: %d", [characters characterAtIndex: i]);
 
         key_queue[key_queue_end++] = [characters characterAtIndex: i];
         key_queue_end %= KEY_QUEUE_SIZE;
     }
     [mutex unlock];
+}
+
+- (void)mouseDown:(NSEvent *)event
+{
+  NSPoint mouseLoc;
+  NSRect wndFrame;
+  float wCvt, hCvt;
+
+  wndFrame = [self frame];
+  wCvt = (float)GFX_WIDTH / (float)(wndFrame.size.width);
+  hCvt = (float)GFX_HEIGHT / (float)(wndFrame.size.height);  
+  mouseLoc = [self convertPoint:[event locationInWindow] fromView:nil];
+  mouse.x = mouseLoc.x * wCvt;
+  mouse.y = GFX_HEIGHT - (mouseLoc.y * hCvt);
+  
+  [mutex lock];
+  
+  switch ([event type])
+  {
+    case NSRightMouseUp:
+    case NSLeftMouseUp:
+      mouse.button = FALSE;
+      break;
+    case NSLeftMouseDown:
+      key_queue[key_queue_end++] = BUTTON_LEFT;
+      key_queue_end %= KEY_QUEUE_SIZE;
+      mouse.button = TRUE;
+      break;
+    case NSRightMouseDown:
+      key_queue[key_queue_end++] = BUTTON_RIGHT;
+      key_queue_end %= KEY_QUEUE_SIZE;
+      mouse.button = TRUE;
+      break;
+    default:
+      break;
+  }
+  [mutex unlock];
 }
 
 - (BOOL)hasPendingKey
