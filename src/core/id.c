@@ -43,7 +43,7 @@ static UINT32 match_crc (UINT32 crc, char *path)
 	if ((f = fopen (path, "r")) == NULL)
 		return 0;
 
-	while (!feof(f)) {
+	while (!feof (f)) {
 		fgets (buf, 256, f);
 		c = strchr (buf, '#');
 		if (c) *c = 0;
@@ -100,12 +100,10 @@ static UINT32 match_crc (UINT32 crc, char *path)
 }
 
 
-/* FIXME: use registry read function from savegame.c
- * DF, Rosinha or Igor, please fix it accordingly
+/* FIXME: use registry read function
  */
 static UINT32 match_version (UINT32 crc)
 {
-
 #ifdef WIN32
 	char buf[256];
 	int ver;
@@ -164,35 +162,37 @@ static UINT32 match_version (UINT32 crc)
 
 int v2id_game ()
 {
-	int ec = err_OK, y, ver;
+#ifdef __MPW__
+	return err_OK;		/* FIXME! */
+#else
+	int y, ver;
 	UINT32 len, c, crc;
 	UINT8 *buff;
 	FILE *fp;
 	char *fn[] = { "viewdir", "logdir", "picdir", "snddir",
 		"words.tok", "object", "" };
 
-	_D (_D_WARN "");
+	_D (_D_WARN);
 	buff = malloc (8192);
 
 	for (crc = y = 0; fn[y][0]; y++) {
 		char *path = fixpath (NO_GAMEDIR, fn[y]);
-		if ((fp = fopen(path, "rb")) != NULL) {
+		if ((fp = fopen (path, "rb")) != NULL) {
 			for (len = 1; len > 0; ) {
 				memset (buff, 0, 8192);
 				len = fread (buff, 1, 8000, fp);
 				for (c = 0; c < len; c++)
 					crc += *(buff + c);
 			}
-			fclose(fp);
+			fclose (fp);
 		}
 	}
-	free(buff);
+	free (buff);
 
 	ver = match_version (crc);
 	agi_set_release (ver);
-	ec = setup_v2_game(ver, crc);
-	
-	return ec;
+	return setup_v2_game(ver, crc);
+#endif
 }
 
 /*
@@ -271,6 +271,9 @@ int v4id_game (UINT32 crc)
 	return ec;
 }
 
+/**
+ *
+ */
 int setup_v2_game (int ver, UINT32 crc)
 {
 	int ec=err_OK;
@@ -294,7 +297,7 @@ int setup_v2_game (int ver, UINT32 crc)
 		logic_names_cmd[0x86].num_args = 0;	/* quit: 0 args */
 	case 0x2272:
 		logic_names_cmd[0x97].num_args = 3;	/* print.at: 3 args */
-		logic_names_cmd[0x98].num_args = 3;	/* print.at.v: 3 args */
+		logic_names_cmd[0x98].num_args = 3;	/* print.at.v: 3 args*/
 		break;
 	case 0x2440:
 		break;
@@ -311,9 +314,12 @@ int setup_v2_game (int ver, UINT32 crc)
 	return ec;
 }
 
-int setup_v3_game(int ver, UINT32 crc)
+/**
+ *
+ */
+int setup_v3_game (int ver, UINT32 crc)
 {
-	int ec=err_OK;
+	int ec = err_OK;
 	
 	if (ver == 0) {
 		report ("Unknown v3 Sierra game: %08x\n\n", crc);
@@ -338,3 +344,4 @@ int setup_v3_game(int ver, UINT32 crc)
 	
 	return ec;
 }
+

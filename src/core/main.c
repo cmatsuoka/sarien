@@ -23,7 +23,6 @@ volatile UINT32 clock_ticks;
 volatile UINT32 clock_count;
 
 extern int optind;
-
 extern UINT8 *font, font_english[];
 
 struct sarien_options opt;
@@ -35,7 +34,7 @@ INLINE void _D (char *s, ...) { s = s; }
 #endif
 
 
-int main(int argc, char *argv[])
+int main (int argc, char *argv[])
 {
 	int ec;
 
@@ -107,26 +106,26 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
     	do {
 		_D(_D_WARN "game loop");
 
-    		if (game.state < STATE_RUNNING) {
+		if (game.state < STATE_RUNNING) {
 			ec = agi_init ();
 			game.state = STATE_RUNNING;
 		}
 
 		if (ec == err_OK) {
-   			/* setup machine specific AGI flags, etc */
-    			setvar (V_computer, 0);	/* IBM PC */
-    			setvar (V_soundgen, 1);	/* IBM PC SOUND */
-    			setvar (V_max_input_chars, 38);
-    			setvar (V_monitor, 0x3); /* EGA monitor */
-   			game.horizon = HORIZON;
+			/* setup machine specific AGI flags, etc */
+			setvar (V_computer, 0);	/* IBM PC */
+			setvar (V_soundgen, 1);	/* IBM PC SOUND */
+			setvar (V_max_input_chars, 38);
+			setvar (V_monitor, 0x3); /* EGA monitor */
+			game.horizon = HORIZON;
 			game.player_control = FALSE;
 
 			ec = run_game();
-    		}
+		}
 
-    		/* deinit our resources */
+		/* deinit our resources */
 		game.state = STATE_LOADED;
-    		agi_deinit ();
+		agi_deinit ();
 
     	} while (ec == err_RestartGame);
 

@@ -247,10 +247,9 @@ char* get_current_directory (void);
 int get_app_dir (char *app_dir, unsigned int size);
 
 
-extern	void list_games(void);
-
-int v2id_game (void);
-int v3id_game (void);
+void	list_games	(void);
+int	v2id_game	(void);
+int	v3id_game	(void);
 
 enum {
 	NO_GAMEDIR = 0,

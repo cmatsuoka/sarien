@@ -108,7 +108,7 @@ int agi_init ()
 	/* load_instruments("kq.sys16"); */
 
 	/* Load logic 0 into memory, set cache flag for logic 0 */
-	if(ec == err_OK) {
+	if (ec == err_OK) {
 		ec = loader->load_resource (rLOGIC, 0);
 		game.dir_logic[0].flags |= RES_CACHED;	/* keep this one cached */
 	}

@@ -147,8 +147,6 @@ static char *match (char *p, int f)
 		dir = ".";
 	}
 	
-	report ("dir=%s, pattern=%s\n", dir, pattern);
-
 	/* empty pattern given */
 	if (!*pattern)
 		return 0;
@@ -178,12 +176,10 @@ static char *match (char *p, int f)
 			} else {
 				strcpy (path, e->d_name);
 			}
-			report ("path = %s\n", path);
 			return path;
 		}
 	}
 
-	report ("** returning NULL\n", path);
 	return NULL;
 }
 

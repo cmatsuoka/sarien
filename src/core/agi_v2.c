@@ -205,8 +205,11 @@ static UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 		if ((sig = hilo_getword (x)) == 0x1234) {
 			agid->len = lohi_getword (x + 3);
 			data = calloc (1, agid->len + 32);
-			if (data != NULL)
+			if (data != NULL) {
 				fread (data, 1, agid->len, fp);
+			} else {
+				abort ();
+			}
 		} else {
 #if 0
 			/* FIXME: call some panic handler instead of
@@ -216,7 +219,7 @@ static UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 #endif
 			report ("Error: bad signature %04x\n", sig);
 			fprintf (stderr, "ACK! BAD RESOURCE!!!\n");
-			exit (0);
+			abort ();
 		}
 		fclose (fp);
 	} else {
@@ -245,6 +248,7 @@ int agi_v2_load_resource (int t, int n)
 	switch (t) {
 	case rLOGIC:
 		if (~game.dir_logic[n].flags & RES_LOADED) {
+			report ("load logic #%d\n", n);
 			_D (_D_WARN "loading logic resource %d", n);
 			agi_v2.unload_resource (rLOGIC, n);
 			/* load raw resource into data */

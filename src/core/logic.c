@@ -10,7 +10,6 @@
 
 #include <stdio.h>
 #include <string.h>
-
 #include "sarien.h"
 #include "agi.h"
 
@@ -24,6 +23,7 @@ int decode_logic (int n)
 
 	/* decrypt messages at end of logic + build message list */
 
+	report ("decoding logic #%d\n", n);
 	m0 = game.logics[n].data;
 
 	mstart = lohi_getword (m0) + 2;
@@ -58,11 +58,11 @@ int decode_logic (int n)
 	if (game.logics[n].texts != NULL) {
 		/* move list of strings into list to make real pointers */
 		for(mc = 0; mc < game.logics[n].num_texts; mc++) {
-			mend=lohi_getword(m0+mc*2);
-			game.logics[n].texts[mc] = mend ?  m0+mend-2 : "";
+			mend = lohi_getword(m0+mc*2);
+			game.logics[n].texts[mc] = mend ? m0 + mend - 2 : "";
 		}
 		/* set loaded flag now its all completly loaded */
-		game.dir_logic[n].flags|=RES_LOADED;
+		game.dir_logic[n].flags |= RES_LOADED;
 	} else {
 		/* unload data
 		 * blah DF YA WANKER!!@!@# frag. i'm so dumb. not every logic
