@@ -32,8 +32,10 @@ Revision History
 	- fixed handling of CTRL and ALT keys in win32 (closes: #540852)
 	- extra checks in check_position() now AGI v3 only (closes: #590644)
 	- fixed old position setting in AGI commands position, position.v
+	- added input state field to savegame (closes: #590642)
 	- added CGA palette emulation
 	- added CGA video card support for PC DOS
+	- added icon and menu resources to the win32 port
 
 0.7.0 (20011122)
 	- added QNX4 native sound driver (untested)
