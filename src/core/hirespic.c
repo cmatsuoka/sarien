@@ -564,23 +564,20 @@ void show_hires_pic ()
 void fix_hires_picture ()
 {
 	UINT8 *p, *b;
+	int i;
 
 	p = game.hires;
 	b = game.sbuf;
 
-	while (b < &game.sbuf[_WIDTH * _HEIGHT]) {
+	for (i = 0; p < &game.hires[_WIDTH * _HEIGHT * 2] - 1; p++, i++) {
 		if ((*p & 0x0f) == 0x0f && (*b & 0x0f) != 0x0f)
 			*p = *b;
-		p++;
-		if ((*p & 0x0f) == 0x0f && (*b & 0x0f) != 0x0f)
-			*p = *b;
-
 		if ((*p >> 4) == 4 && (*b >> 4) != 4 &&
 			(*(b + 1) >> 4) != 4)
 		{
 			*p = (*p & 0x0f) | (*b & 0xf0);
 		}
-		p++; b++;
+		b += (i & 1);
 	}
 }
 
