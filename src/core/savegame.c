@@ -597,6 +597,7 @@ static int select_slot (char *path)
 			switch (key) {
 			case KEY_ENTER:
 				rc = active;
+				strcpy (game.strings[MAX_WORDS2], desc[i]);
 				goto press;
 			case KEY_ESCAPE:
 				rc = -1;
@@ -636,6 +637,7 @@ int savegame_dialog ()
 	char dstr[200];
 	int rc, slot = 0;
 	int hm = 2 * CHAR_COLS, vm = 3 * CHAR_LINES;	/* box margins */
+	int x, y, w;
 
 	if (get_app_dir (home, MAX_PATH) < 0) {
 		message_box ("Couldn't save game.");
@@ -648,19 +650,30 @@ int savegame_dialog ()
 	MKDIR (path, 0711);
 
 	erase_both ();
+	x = hm + CHAR_COLS;
+	y = vm + CHAR_COLS;
+	w = (GFX_WIDTH - 2 * hm) / CHAR_COLS - 1;
 	draw_window (hm, vm, GFX_WIDTH - hm, GFX_HEIGHT - vm);
 	draw_text ("Select a slot in which you wish to save the game:",
-		0, hm + CHAR_COLS, vm + CHAR_LINES,
-		(GFX_WIDTH - 2 * hm) / CHAR_COLS - 1,
-		MSG_BOX_TEXT, MSG_BOX_COLOUR);
+		0, x, y, w, MSG_BOX_TEXT, MSG_BOX_COLOUR);
 	draw_text ("Press ENTER to select, ESC cancels",
-		0, hm + CHAR_COLS, vm + 17 * CHAR_LINES,
-		(GFX_WIDTH - 2 * hm) / CHAR_COLS - 1,
-		MSG_BOX_TEXT, MSG_BOX_COLOUR);
+		0, x, vm + 17 * CHAR_LINES, w, MSG_BOX_TEXT, MSG_BOX_COLOUR);
 
 	slot = select_slot (path);
+	draw_window (hm, vm + 5 * CHAR_LINES, GFX_WIDTH - hm,
+		GFX_HEIGHT - vm - 9 * CHAR_LINES);
+	draw_text ("Enter a description for this game:",
+		0, x, vm + 6 * CHAR_LINES, w, MSG_BOX_TEXT, MSG_BOX_COLOUR);
+	draw_rectangle (3 * CHAR_COLS, 11 * CHAR_LINES - 1,
+		37 * CHAR_COLS, 12 * CHAR_LINES, MSG_BOX_TEXT);
+	flush_block (3 * CHAR_COLS, 11 * CHAR_LINES - 1,
+		37 * CHAR_COLS, 12 * CHAR_LINES);
 
- 	desc = "Save game test";
+	get_string (2, 11, 33, MAX_WORDS2);
+        do { main_cycle (); } while (game.input_mode == INPUT_GETSTRING);
+	close_window ();
+
+ 	desc = game.strings[MAX_WORDS2];
 
 	sprintf (dstr, "Are you sure you want to save the game "
 		"described as:\n\n%s\n\nin slot %d?\n\n\n",
@@ -672,7 +685,6 @@ int savegame_dialog ()
 		message_box ("Game NOT saved.");
 		return err_OK;
 	}
-
 
 	sprintf (path, "%s/" DATA_DIR "/%s/%08d.sav",
 		home, game.id, slot);
@@ -689,7 +701,6 @@ int savegame_dialog ()
 int loadgame_dialog ()
 {
 	char home[MAX_PATH], path[MAX_PATH];
-	char *buttons[] = { "I do!", "Of course not", NULL }; 
 	int rc, slot = 0;
 	int hm = 2 * CHAR_COLS, vm = 3 * CHAR_LINES;	/* box margins */
 
