@@ -2,6 +2,23 @@
         <!ENTITY lt "<">
         <!ENTITY gt ">">
         <!ENTITY amp "&">
+	<!ENTITY n "<entry/num/">
+	<!ENTITY v "<entry/var/">
+	<!ENTITY f "<entry/flag/">
+	<!ENTITY i "<entry/item/">
+	<!ENTITY o "<entry/obj/">
+	<!ENTITY s "<entry/str/">
+	<!ENTITY m "<entry/msg/">
+	<!ENTITY c "<entry/ctr/">
+	<!ENTITY w "<entry/word/">
+	<!ENTITY p0 "<entry/0/">
+	<!ENTITY p1 "<entry/1/">
+	<!ENTITY p2 "<entry/2/">
+	<!ENTITY p3 "<entry/3/">
+	<!ENTITY p4 "<entry/4/">
+	<!ENTITY p5 "<entry/5/">
+	<!ENTITY p6 "<entry/6/">
+	<!ENTITY p7 "<entry/7/">
 ]>
 
 <book>
@@ -4070,34 +4087,28 @@ if (said( open, door))       [ must be close enough
   <tgroup cols="8">
     <thead>
       <row>
-        <entry/Opcode/ <entry/Command/ <entry/Args/
-        <entry/1/ <entry/2/ <entry/3/ <entry/4/ <entry/5/
+        <entry/Opcode/ <entry/Command/ <entry/Args/ &p1; &p2; &p3; &p4; &p5;/
       </row>
     </thead>
     <tbody>
-<row/<entry/01/ <entry/<function/equaln//   <entry/2/ <entry/var/ <entry/num//
-<row/<entry/02/ <entry/<function/equalv//   <entry/2/ <entry/var/ <entry/var//
-<row/<entry/03/ <entry/<function/lessn//    <entry/2/ <entry/var/ <entry/num//
-<row/<entry/04/ <entry/<function/lessv//    <entry/2/ <entry/var/ <entry/var//
-<row/<entry/05/ <entry/<function/greatern// <entry/2/ <entry/var/ <entry/num//
-<row/<entry/06/ <entry/<function/greaterv// <entry/2/ <entry/var/ <entry/var//
-<row/<entry/07/ <entry/<function/isset//    <entry/1/ <entry/flag//
-<row/<entry/08/ <entry/<function/issetv//   <entry/1/ <entry/var//
-<row/<entry/09/ <entry/<function/has//      <entry/1/ <entry/item//
-<row/<entry/0A/ <entry/<function/obj.in.room//<entry/2/<entry/item/ <entry/var//
-<row/<entry/0B/ <entry/<function/posn//     <entry/5/ <entry/obj/
-	<entry/num/ <entry/num/ <entry/num/ <entry/num//
-<row/<entry/0C/ <entry/<function/controller//<entry/1/ <entry/ctr//
-<row/<entry/0D/ <entry/<function/have.key// <entry/0//
-<row/<entry/0E/ <entry/<function/said//     <entry/-/ <entry/.../
-<row/<entry/0F/ <entry/<function/compare.strings//<entry/2/
-	<entry/str/ <entry/str//
-<row/<entry/10/ <entry/<function/obj.in.box//<entry/5/ <entry/obj/
-	<entry/num/ <entry/num/ <entry/num/ <entry/num//
-<row/<entry/11/ <entry/<function/center.posn//<entry/5/ <entry/obj/
-	<entry/num/ <entry/num/ <entry/num/ <entry/num//
-<row/<entry/12/ <entry/<function/right.posn//<entry/5/ <entry/obj/
-	<entry/num/ <entry/num/ <entry/num/ <entry/num//
+      <row/<entry/01/ <entry/<function/equaln//     &p2; &v; &n;/
+      <row/<entry/02/ <entry/<function/equalv//     &p2; &v; &v;/
+      <row/<entry/03/ <entry/<function/lessn//      &p2; &v; &n;/
+      <row/<entry/04/ <entry/<function/lessv//      &p2; &v; &v;/
+      <row/<entry/05/ <entry/<function/greatern//   &p2; &v; &n;/
+      <row/<entry/06/ <entry/<function/greaterv//   &p2; &v; &v;/
+      <row/<entry/07/ <entry/<function/isset//      &p1; &f;/
+      <row/<entry/08/ <entry/<function/issetv//     &p1; &v;/
+      <row/<entry/09/ <entry/<function/has//        &p1; &i;/
+      <row/<entry/0A/ <entry/<function/obj.in.room//&p2; &i; &v;/
+      <row/<entry/0B/ <entry/<function/posn//       &p5; &o; &n; &n; &n; &n;/
+      <row/<entry/0C/ <entry/<function/controller// &p1; &c;/
+      <row/<entry/0D/ <entry/<function/have.key//   &p0;/
+      <row/<entry/0E/ <entry/<function/said//       <entry/-/ <entry/.../
+      <row/<entry/0F/ <entry/<function/compare.strings//&p2; &s; &s;/
+      <row/<entry/10/ <entry/<function/obj.in.box// &p5; &o; &n; &n; &n; &n;/
+      <row/<entry/11/ <entry/<function/center.posn//&p5; &o; &n; &n; &n; &n;/
+      <row/<entry/12/ <entry/<function/right.posn// &p5; &o; &n; &n; &n; &n;/
     </tbody>
   </tgroup>
 </table> 
@@ -4107,200 +4118,212 @@ if (said( open, door))       [ must be close enough
   <tgroup cols="10">
     <thead>
       <row/ <entry/Opcode/ <entry/Command/ <entry/Args/
-      <entry/1/ <entry/2/ <entry/3/ <entry/4/ <entry/5/ <entry/6/ <entry/7/ /
+      &p1; &p2; &p4; &p4; &p5; &p6; &p7; /
     </thead>
     <tbody>
-<row/<entry/00/ <entry/<function/return//   <entry/0//
-<row/<entry/01/ <entry/<function/increment//<entry/1/ <entry/var//
-<row/<entry/02/ <entry/<function/decrement//<entry/1/ <entry/var//
-<row/<entry/03/ <entry/<function/assignn//  <entry/2/ <entry/var/ <entry/num//
-<row/<entry/04/ <entry/<function/assignv//  <entry/2/ <entry/var/ <entry/var//
-<row/<entry/05/ <entry/<function/addn//     <entry/2/ <entry/var/ <entry/num//
-<row/<entry/06/ <entry/<function/addv//     <entry/2/ <entry/var/ <entry/var//
-<row/<entry/07/ <entry/<function/subn//     <entry/2/ <entry/var/ <entry/num//
-<row/<entry/08/ <entry/<function/subv//     <entry/2/ <entry/var/ <entry/var//
-<row/<entry/09/ <entry/<function/lindirectv//<entry/2/ <entry/var/ <entry/var//
-<row/<entry/0A/ <entry/<function/rindirect//<entry/2/ <entry/var/ <entry/var//
-<row/<entry/0B/ <entry/<function/lindirectn//<entry/2/ <entry/var/ <entry/num//
+      <row/<entry/00/ <entry/<function/return//         &p0;/
+      <row/<entry/01/ <entry/<function/increment//      &p1; &v;/
+      <row/<entry/02/ <entry/<function/decrement//      &p1; &v;/
+      <row/<entry/03/ <entry/<function/assignn//        &p2; &v; &n;/
+      <row/<entry/04/ <entry/<function/assignv//        &p2; &v; &v;/
+      <row/<entry/05/ <entry/<function/addn//           &p2; &v; &n;/
+      <row/<entry/06/ <entry/<function/addv//           &p2; &v; &v;/
+      <row/<entry/07/ <entry/<function/subn//           &p2; &v; &n;/
+      <row/<entry/08/ <entry/<function/subv//           &p2; &v; &v;/
+      <row/<entry/09/ <entry/<function/lindirectv//     &p2; &v; &v;/
+      <row/<entry/0A/ <entry/<function/rindirect//      &p2; &v; &v;/
+      <row/<entry/0B/ <entry/<function/lindirectn//     &p2; &v; &n;/
+      <row/<entry/0C/ <entry/<function/set//            &p1; &f;/
+      <row/<entry/0D/ <entry/<function/reset//          &p1; &f;/
+      <row/<entry/0E/ <entry/<function/toggle//         &p1; &f;/
+      <row/<entry/0F/ <entry/<function/set.v//          &p1; &v;/
+
+      <row/<entry/10/ <entry/<function/reset.v/         &p1; &v;/
+      <row/<entry/11/ <entry/<function/toggle.v//       &p1; &v;/
+      <row/<entry/12/ <entry/<function/new.room//       &p1; &n;/
+      <row/<entry/13/ <entry/<function/new.room.v//     &p1; &v;/
+      <row/<entry/14/ <entry/<function/load.logics//    &p1; &n;/
+      <row/<entry/15/ <entry/<function/load.logics.v//  &p1; &v;/
+      <row/<entry/16/ <entry/<function/call//           &p1; &n;/
+      <row/<entry/17/ <entry/<function/call.v//         &p1; &v;/
+      <row/<entry/18/ <entry/<function/load.pic//       &p1; &v;/
+      <row/<entry/19/ <entry/<function/draw.pic//       &p1; &v;/
+      <row/<entry/1A/ <entry/<function/show.pic//       &p0;/
+      <row/<entry/1B/ <entry/<function/discard.pic//    &p1; &v;/
+      <row/<entry/1C/ <entry/<function/overlay.pic//    &p1; &v;/
+      <row/<entry/1D/ <entry/<function/show.pri.screen//&p0;/
+      <row/<entry/1E/ <entry/<function/load.view//      &p1; &n;/
+      <row/<entry/1F/ <entry/<function/load.view.v//    &p1; &v;/
+
+      <row/<entry/20/ <entry/<function/discard.view//   &p1; &n;/
+      <row/<entry/21/ <entry/<function/animate.obj//    &p1; &o;/
+      <row/<entry/22/ <entry/<function/unanimate.all//  &p0;/
+      <row/<entry/23/ <entry/<function/draw//           &p1; &o;/
+      <row/<entry/24/ <entry/<function/erase//          &p1; &o;/
+      <row/<entry/25/ <entry/<function/position//       &p3; &o; &n; &n;/
+      <row/<entry/26/ <entry/<function/position.v//     &p3; &o; &v; &v;/
+      <row/<entry/27/ <entry/<function/get.posn//       &p3; &o; &v; &v;/
+      <row/<entry/28/ <entry/<function/reposition//     &p3; &o; &v; &v;/
+      <row/<entry/29/ <entry/<function/set.view//       &p2; &o; &n;/
+      <row/<entry/2A/ <entry/<function/set.view.v//     &p2; &o; &v;/
+      <row/<entry/2B/ <entry/<function/set.loop//       &p2; &o; &n;/
+      <row/<entry/2C/ <entry/<function/set.loop.v//     &p2; &o; &v;/
+      <row/<entry/2D/ <entry/<function/fix.loop//       &p1; &o;/
+      <row/<entry/2E/ <entry/<function/release.loop//   &p1; &o;/
+      <row/<entry/2F/ <entry/<function/set.cel//        &p2; &o; &n;/
+
+      <row/<entry/30/ <entry/<function/set.cel.v//      &p2; &o; &v;/
+      <row/<entry/31/ <entry/<function/last.cel//       &p2; &o; &v;/
+      <row/<entry/32/ <entry/<function/current.cel//    &p2; &o; &v;/
+      <row/<entry/33/ <entry/<function/current.loop//   &p2; &o; &v;/
+      <row/<entry/34/ <entry/<function/current.view//   &p2; &o; &v;/
+      <row/<entry/35/ <entry/<function/number.of.loops//&p2; &o; &v;/
+      <row/<entry/36/ <entry/<function/set.priority//   &p2; &o; &n;/
+      <row/<entry/37/ <entry/<function/set.priority.v// &p2; &o; &v;/
+      <row/<entry/38/ <entry/<function/release.priority//&p1; &o;/
+      <row/<entry/39/ <entry/<function/get.priority//   &p2; &o; &v;/
+      <row/<entry/3A/ <entry/<function/stop.update//    &p1; &o;/
+      <row/<entry/3B/ <entry/<function/start.update//   &p1; &o;/
+      <row/<entry/3C/ <entry/<function/force.update//   &p1; &o;/
+      <row/<entry/3D/ <entry/<function/ignore.horizon// &p1; &o;/
+      <row/<entry/3E/ <entry/<function/observe.horizon//&p1; &o;/
+      <row/<entry/3F/ <entry/<function/set.horizon//    &p1; &n;/
+
+      <row/<entry/40/ <entry/<function/object.on.water//&p1; &o;/
+      <row/<entry/41/ <entry/<function/object.on.land// &p1; &o;/
+      <row/<entry/42/ <entry/<function/object.on.anything// &p1; &o;/
+      <row/<entry/43/ <entry/<function/ignore.objs//    &p1; &o;/
+      <row/<entry/44/ <entry/<function/observe.objs//   &p1; &o;/
+      <row/<entry/45/ <entry/<function/distance//       &p3; &o; &o;/
+      <row/<entry/46/ <entry/<function/stop.cycling//   &p1; &o;/
+      <row/<entry/47/ <entry/<function/start.cycling//  &p1; &o;/
+      <row/<entry/48/ <entry/<function/normal.cycle//   &p1; &o;/
+      <row/<entry/49/ <entry/<function/end.of.loop//    &p2; &o; &f;/
+      <row/<entry/4A/ <entry/<function/reverse.cycle//  &p1; &o;/
+      <row/<entry/4B/ <entry/<function/reverse.loop//   &p2; &o; &f;/
+      <row/<entry/4C/ <entry/<function/cycle.time//     &p2; &o;&v;/
+      <row/<entry/4D/ <entry/<function/stop.motion//    &p1; &o;/
+      <row/<entry/4E/ <entry/<function/start.motion//   &p1; &o;/
+      <row/<entry/4F/ <entry/<function/step.size//      &p2; &o;&v;/
+
+      <row/<entry/50/ <entry/<function/step.time//      &p2; &o;&v;/
+      <row/<entry/51/ <entry/<function/move.obj//       &p5; &o;&n;/
+      <row/<entry/52/ <entry/<function/move.obj.v//     &p5; &o;&v;/
+      <row/<entry/53/ <entry/<function/follow.ego//     &p3; &o;&n;/
+      <row/<entry/54/ <entry/<function/wander//         &p1; &o;/
+      <row/<entry/55/ <entry/<function/normal.motion//  &p1; &o;/
+      <row/<entry/56/ <entry/<function/set.dir//        &p2; &o;&v;/
+      <row/<entry/57/ <entry/<function/get.dir//        &p2; &o;&v;/
+      <row/<entry/58/ <entry/<function/ignore.blocks//  &p1; &o;/
+      <row/<entry/59/ <entry/<function/observe.blocks// &p1; &o;/
+      <row/<entry/5A/ <entry/<function/block//          &p4; &n; &n;/
+      <row/<entry/5B/ <entry/<function/unblock//        &p0;/
+      <row/<entry/5C/ <entry/<function/get//            &p1; &i;/
+      <row/<entry/5D/ <entry/<function/get.v//          &p1; &v;/
+      <row/<entry/5E/ <entry/<function/drop//           &p1; &i;/
+      <row/<entry/5F/ <entry/<function/put//            &p2; &i;/
+
+      <row/<entry/60/ <entry/<function/put.v//          &p2; &v; &v;/
+      <row/<entry/61/ <entry/<function/get.room.v//     &p2; &v; &v;/
+      <row/<entry/62/ <entry/<function/load.sound//     &p1; &n;/
+      <row/<entry/63/ <entry/<function/sound//          &p2; &n; &f;/
+      <row/<entry/64/ <entry/<function/stop.sound//     &p0;/
+      <row/<entry/65/ <entry/<function/print//          &p1; &m;/
+      <row/<entry/66/ <entry/<function/print.v//        &p1; &v;/
+      <row/<entry/67/ <entry/<function/display//        &p3; &n; &n;/
+      <row/<entry/68/ <entry/<function/display.v//      &p3; &v; &v;/
+      <row/<entry/69/ <entry/<function/clear.lines//    &p3; &n; &n;/
+      <row/<entry/6A/ <entry/<function/text.screen//    &p0;/
+      <row/<entry/6B/ <entry/<function/graphics//       &p0;/
+      <row/<entry/6C/ <entry/<function/set.cursor.char//&p1; &m;/
+      <row/<entry/6D/ <entry/<function/set.text.attribute// &p2; &n; &n;/
+      <row/<entry/6E/ <entry/<function/shake.screen//   &p1; &n;/
+      <row/<entry/6F/ <entry/<function/configure.screen// &p3; &n; &n;/
+
+      <row/<entry/70/ <entry/<function/status.line.on// &p0;/
+      <row/<entry/71/ <entry/<function/status.line.off//&p0;/
+      <row/<entry/72/ <entry/<function/set.string//     &p2; &s; &m;/
+      <row/<entry/73/ <entry/<function/get.string//     &p2; &s; &m;/
+      <row/<entry/74/ <entry/<function/word.to.string// &p2; &w; &s;/
+      <row/<entry/75/ <entry/<function/parse//          &p1; &s;/
+      <row/<entry/76/ <entry/<function/get.num//        &p2; &s; &v;/
+      <row/<entry/77/ <entry/<function/prevent.input//  &p0;/
+      <row/<entry/78/ <entry/<function/accept.input//   &p0;/
+      <row/<entry/79/ <entry/<function/set.key//        &p3; &n; &n;/
+      <row/<entry/7A/ <entry/<function/add.to.pic//     &p7; &n; &n;/
+      <row/<entry/7B/ <entry/<function/add.to.pic.v//   &p7; &v; &v;/
+      <row/<entry/7C/ <entry/<function/status//         &p0;/
+      <row/<entry/7D/ <entry/<function/save.game//      &p0;/
+      <row/<entry/7E/ <entry/<function/restore.game//   &p0;/
+      <row/<entry/7F/ <entry/<function/init.disk//      &p0;/
+
+      <row/<entry/80/ <entry/<function/restart.game//   &p0;/
+      <row/<entry/81/ <entry/<function/show.obj//       &p1; &n;/
+      <row/<entry/82/ <entry/<function/random//         &p3; &n; &n;/
+      <row/<entry/83/ <entry/<function/program.control//&p0;/
+      <row/<entry/84/ <entry/<function/player.control// &p0;/
+      <row/<entry/85/ <entry/<function/obj.status.v//   &p1; &v;/
+      <row/<entry/86/ <entry/<function/quit//           &p1; &n;/
+      <row/<entry/87/ <entry/<function/show.mem//       &p0;/
+      <row/<entry/88/ <entry/<function/pause//          &p0;/
+      <row/<entry/89/ <entry/<function/echo.line//      &p0;/
+      <row/<entry/8A/ <entry/<function/cancel.line//    &p0;/
+      <row/<entry/8B/ <entry/<function/init.joy//       &p0;/
+      <row/<entry/8C/ <entry/<function/toggle.monitor// &p0;/
+      <row/<entry/8D/ <entry/<function/version//        &p0;/
+      <row/<entry/8E/ <entry/<function/script.size//    &p1; &n;/
+      <row/<entry/8F/ <entry/<function/set.game.id//    &p1; &m;/
+
+      <row/<entry/90/ <entry/<function/log//            &p1; &m;/
+      <row/<entry/91/ <entry/<function/set.scan.start// &p0;/
+      <row/<entry/92/ <entry/<function/reset.scan.start// &p0;/
+      <row/<entry/93/ <entry/<function/reposition.to//  &p3; &o; &n;/
+      <row/<entry/94/ <entry/<function/reposition.to.v//&p3; &o; &v;/
+      <row/<entry/95/ <entry/<function/trace.on//       &p0;/
+      <row/<entry/96/ <entry/<function/trace.info//     &p3; &n; &n;/
+      <row/<entry/97/ <entry/<function/print.at//       &p4; &m; &n; &v;/
+      <row/<entry/98/ <entry/<function/print.at.v//     &p4; &m; &v; &v;/
+      <row/<entry/99/ <entry/<function/discard.view.v// &p1; &v;/
+      <row/<entry/9A/ <entry/<function/clear.text.rect//&p5; &n; &n;/
+      <row/<entry/9B/ <entry/<function/set.upper.left// &p2; &n; &n;/
+      <row/<entry/9C/ <entry/<function/set.menu//       &p1; &m;/
+      <row/<entry/9D/ <entry/<function/set.menu.member//&p2; &m; &c;/
+      <row/<entry/9E/ <entry/<function/submit.menu//    &p0;/
+      <row/<entry/9F/ <entry/<function/enable.member//  &p1; &c;/
+
+      <row/<entry/A0/ <entry/<function/disable.member// &p1; &c;/
+      <row/<entry/A1/ <entry/<function/menu.input//     &p0;/
+      <row/<entry/A2/ <entry/<function/show.obj.v//     &p1; &v;/
+      <row/<entry/A3/ <entry/<function/open.dialogue//  &p0;/
+      <row/<entry/A4/ <entry/<function/close.dialogue// &p0;/
+      <row/<entry/A5/ <entry/<function/mul.n//          &p2; &v; &n;/
+      <row/<entry/A6/ <entry/<function/mul.v//          &p2; &v; &v;/
+      <row/<entry/A7/ <entry/<function/div.n//          &p2; &v; &n;/
+      <row/<entry/A8/ <entry/<function/div.v//          &p2; &v; &v;/
+      <row/<entry/A9/ <entry/<function/close.window//   &p0;/
+      <row/<entry/AA/ <entry/<function/set.simple//     &p1; <entry/???//
+      <row/<entry/AB/ <entry/<function/push.script//    &p0;/
+      <row/<entry/AC/ <entry/<function/pop.script//     &p0;/
+      <row/<entry/AD/ <entry/<function/hold.key//       &p0;/
+      <row/<entry/AE/ <entry/<function/set.pri.base//   &p1; &n;/
+      <row/<entry/AF/ <entry/<function/discard.sound//  &p1; &n;/
+
+      <row/<entry/B0/ <entry/<function/hide.mouse//     <entry>0/1</entry>/
+      <row/<entry/B1/ <entry/<function/allow.menu//     &p1; <entry/???//
+      <row/<entry/B2/ <entry/<function/show.mouse//     &p0;/
+      <row/<entry/B3/ <entry/<function/fence.mouse//    &p4; &n; &n; &n; &n;/
+      <row/<entry/B4/ <entry/<function/mouse.posn//     &p2; &v; &v;/
+      <row/<entry/B5/ <entry/<function/release.key//    &p0;/
+      <row/<entry/B6/ <entry/<function/adj.ego.move.to.xy// &p0;/
     </tbody>
   </tgroup>
 </table> 
 
-<programlisting>
-0C set                 1   flag
-0D reset               1   flag
-0E toggle              1   flag
-0F set.v               1   var
-10 reset.v             1   var
-11 toggle.v            1   var
-12 new.room            1   num
-13 new.room.v          1   var
-14 load.logics         1   num
-15 load.logics.v       1   var
-16 call                1   num
-17 call.v              1   var
-18 load.pic            1   var
-19 draw.pic            1   var
-1A show.pic            0
-1B discard.pic         1   var
-1C overlay.pic         1   var
-1D show.pri.screen     0
-1E load.view           1   num
-1F load.view.v         1   var
-20 discard.view        1   num
-21 animate.obj         1   Sobj
-22 unanimate.all       0
-23 draw                1   Sobj
-24 erase               1   Sobj
-25 position            3   Sobj num  num
-26 position.v          3   Sobj var  var
-27 get.posn            3   Sobj var  var
-28 reposition          3   Sobj var  var
-29 set.view            2   Sobj num
-02 set.view.v          2   Sobj var
-02 set.loop            2   Sobj num
-02 set.loop.v          2   Sobj var
-02 fix.loop            1   Sobj
-02 release.loop        1   Sobj
-02 set.cel             2   Sobj num
-1E set.cel.v           2   Sobj var
-1F last.cel            2   Sobj var
-20 current.cel         2   Sobj var
-21 current.loop        2   Sobj var
-22 current.view        2   Sobj var
-23 number.of.loops     2   Sobj var
-24 set.priority        2   Sobj num
-25 set.priority.v      2   Sobj var
-26 release.priority    1   Sobj
-27 get.priority        2   Sobj var
-03 stop.update         1   Sobj
-03 start.update        1   Sobj
-03 force.update        1   Sobj
-03 ignore.horizon      1   Sobj
-03 observe.horizon     1   Sobj
-03 set.horizon         1   num
-28 object.on.water     1   Sobj
-29 object.on.land      1   Sobj
-2A object.on.anything  1   Sobj
-2B ignore.objs         1   Sobj
-2C observe.objs        1   Sobj
-2D distance            3   Sobj Sobj
-2E stop.cycling        1   Sobj
-2F start.cycling       1   Sobj
-30 normal.cycle        1   Sobj
-31 end.of.loop         2   Sobj flag
-04 reverse.cycle       1   Sobj
-04 reverse.loop        2   Sobj flag
-04 cycle.time          2   Sobj var
-04 stop.motion         1   Sobj
-04 start.motion        1   Sobj
-04 step.size           2   Sobj var
-32 step.time           2   Sobj var
-33 move.obj            5   Sobj num
-34 move.obj.v          5   Sobj var
-35 follow.ego          3   Sobj num
-36 wander              1   Sobj
-37 normal.motion       1   Sobj
-38 set.dir             2   Sobj var
-39 get.dir             2   Sobj var
-3A ignore.blocks       1   Sobj
-3B observe.blocks      1   Sobj
-05 block               4   num  num
-5B unblock             0
-05 get                 1   Iobj
-05 get.v               1   var
-05 drop                1   Iobj
-05 put                 2   Iobj
-3C put.v               2   var  var
-3D get.room.v          2   var  var
-3E load.sound          1   num
-3F sound               2   num  flag
-64 stop.sound          0
-41 print               1   msg
-42 print.v             1   var
-43 display             3   num  num
-44 display.v           3   var  var
-45 clear.lines         3   num  num
-6A text.screen         0
-6B graphics            0
-06 set.cursor.char     1   msg
-06 set.text.attribute  2   num  num
-06 shake.screen        1   num
-06 configure.screen    3   num  num
-70 status.line.on      0
-71 status.line.off     0
-48 set.string          2   strinmessa
-49 get.string          5   strinmessa
-4A word.to.string      2   word strin
-4B parse               1   strin
-4C get.num             2   messavar
-77 prevent.input       0
-78 accept.input        0
-4F set.key             3   num  num
-07 add.to.pic          7   num  num
-07 add.to.pic.v        7   var  var
-7C status              0
-7D save.game           0
-7E restore.game        0
-7F init.disk           0
-80 restart.game        0
-51 show.obj            1   num
-52 random              3   num  num
-83 program.control     0
-84 player.control      0
-55 obj.status.v        1   var
-56 quit                1   num
-87 show.mem            0
-88 pause               0
-89 echo.line           0
-8A cancel.line         0
-8B init.joy            0
-8C toggle.monitor      0
-8D version             0
-08 script.size         1   num
-08 set.game.id         1   messa
-5A log                 1   messa
-91 set.scan.start      0
-92 reset.scan.start    0
-5D reposition.to       3   Sobj num
-5E reposition.to.v     3   Sobj var
-95 trace.on            0
-60 trace.info          3   num  num
-61 print.at            4   messanum
-62 print.at.v          4   messavar
-63 discard.view.v      1   var
-09 clear.text.rect     5   num  num
-9B set.upper.left      2   ???  ???
-09 set.menu            1   messa
-09 set.menu.member       2   messacntrl
-9E submit.menu         0
-09 enable.member         1   cntrl
-00 disable.member        1   cntrl
-A1 menu.input          0
-00 show.obj.v          1   var
-A3 open.dialogue       0
-A4 close.dialogue      0
-00 mul.n               2   var  num
-00 mul.v               2   var  var
-00 div.n               2   var  num
-00 div.v               2   var  var
-A9 close.window        0
-AA unknown170          1   ???
-AB unknown171          0
-AC unknown172          0
-AD unknown173          0
-AE unknown174          1   ???
-AF unknown175          1   ???
-B0 unknown176          0   (1 arg for AGI version 3.002.086)
-B1 unknown177          1   ???
-B2 unknown178          0
-B3 unknown179          4   ???  ???  ???  ???
-B4 unknown180          2   ???  ???
-B5 unknown181          0
-</programlisting>
+<sect1>
+<title>Logic resource format</title>
 
-<sect1><title>LOGIC resource format</title>
-<sect2><title>The header</title>
+<sect2>
+<title>The header</title>
 <para>
    The header of each logic script is seven bytes in length for games
    before 1988. After this date compression seems to have been introduced
