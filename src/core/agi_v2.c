@@ -18,12 +18,11 @@
 #include "view.h"
 #include "logic.h"
 #include "sound.h"
-//#include "gfx_agi.h"
 #include "console.h"
 
 static int agi_v2_init (void);
 static int agi_v2_deinit (void);
-static int agi_v2_detect_game (UINT8 *);
+static int agi_v2_detect_game (char *);
 static int agi_v2_load_resource (int, int);
 static int agi_v2_unload_resource (int, int);
 
@@ -32,7 +31,7 @@ extern struct agi_logic logics[];
 extern struct agi_view views[];
 extern struct agi_sound sounds[];
 
-struct agi_loader agi_v2= {
+struct agi_loader agi_v2 = {
 	2,
 	0,
 	agi_v2_init,
@@ -43,14 +42,14 @@ struct agi_loader agi_v2= {
 };
 
 
-static int agi_v2_detect_game (UINT8 *gn)
+static int agi_v2_detect_game (char *gn)
 {
 	int ec = err_Unk;
 	char *path;
 
 	strncpy (game.dir, gn, 8);
 
-	path = fixpath (NO_GAMEDIR, (UINT8*)LOGDIR);
+	path = fixpath (NO_GAMEDIR, LOGDIR);
 	if (__file_exists (path))
 		return err_InvalidAGIFile;
 
@@ -122,13 +121,13 @@ static int agi_v2_init ()
 	int ec = err_OK;
 
 	/* load directory files */
-	ec = agi_v2_load_dir (game.dir_logic, (UINT8*)LOGDIR);
+	ec = agi_v2_load_dir (game.dir_logic, LOGDIR);
 	if (ec == err_OK)
-		ec = agi_v2_load_dir (game.dir_pic, (UINT8*)PICDIR);
+		ec = agi_v2_load_dir (game.dir_pic, PICDIR);
 	if (ec == err_OK)
-		ec = agi_v2_load_dir (game.dir_view, (UINT8*)VIEWDIR);
+		ec = agi_v2_load_dir (game.dir_view, VIEWDIR);
 	if (ec == err_OK)
-		ec = agi_v2_load_dir (game.dir_sound, (UINT8*)SNDDIR);
+		ec = agi_v2_load_dir (game.dir_sound, SNDDIR);
 
 	return ec;
 }
@@ -179,7 +178,6 @@ static int agi_v2_unload_words ()
 
 static int agi_v2_unload_resource (int restype, int resnum)
 {
-	_D (_D_WARN "(restype = %d, resnum = %d)", restype, resnum);
 	switch (restype) {
 	case rLOGIC:
 		unload_logic (resnum);
@@ -211,11 +209,13 @@ UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 	UINT8 *data = NULL;
 	FILE *fp;
 
-	_D ("(agi_dir = )");
+	_D ("(agi_dir = [offset:%ld, len:%ld])", agid->offset, agid->len);
 	sprintf (x, "vol.%i", agid->volume);
 	path = fixpath (NO_GAMEDIR, x);
+	_D ("path = %s", path);
 
-	if (agid->offset != _EMPTY && (fp = fopen ((char*)path, "rb")) != NULL) {
+	if (agid->offset != _EMPTY && (fp = fopen (path, "rb")) != NULL) {
+		_D ("loading resource");
 		fseek (fp, agid->offset, SEEK_SET);
 		fread (&x, 1, 5, fp);
 		if (hilo_getword (x) == 0x1234) {
@@ -252,7 +252,6 @@ int agi_v2_load_resource (int restype, int resnum)
 	UINT8 *data = NULL;
 
 	_D (_D_WARN "(restype = %d, resnum = %d)", restype, resnum);
-	_D ( "F5 = %d", getflag (5));
 	if (resnum > MAX_DIRS)
 		return err_BadResource;
 

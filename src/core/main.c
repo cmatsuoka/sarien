@@ -52,6 +52,7 @@ static int detect_game (char *gn)
 {
 	int ec = err_OK;
 
+	_D ("(gn = %s)", gn);
 	if (gn == NULL)		/* assume current directory */
 		gn = get_current_directory ();
 

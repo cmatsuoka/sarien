@@ -60,10 +60,11 @@ char *fixpath (int flag, char *fname)
 
 	_D ("(flag = %d, fname = \"%s\")", flag, fname);
 
+	_D ("game.dir = %s", game.dir);
 	strcpy (path, game.dir);
-	if(*path && path[strlen((char*)path)-1]!='/')
+	if (*path && path[strlen (path) - 1]!='/')
 		strcat((char*)path, "/");
-		    
+
 	if (flag)
 		strcat (path, game.name);
 

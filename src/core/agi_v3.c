@@ -24,7 +24,7 @@
 
 static int agi_v3_init (void);
 static int agi_v3_deinit (void);
-static int agi_v3_detect_game (UINT8 *);
+static int agi_v3_detect_game (char *);
 static int agi_v3_load_resource (int, int);
 static int agi_v3_unload_resource (int, int);
 
@@ -44,7 +44,7 @@ struct agi_loader agi_v3 = {
 };
 
 
-int agi_v3_detect_game (UINT8 *gn)
+int agi_v3_detect_game (char *gn)
 {
 	int ec = err_Unk;
 	char x[MAX_PATH], *xname, *path;

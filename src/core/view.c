@@ -381,8 +381,13 @@ void calc_direction (int vt)
 void draw_obj (int vt)
 {
 	struct agi_view_table *v = &view_table[vt];
-	int cel_width = VT_WIDTH(view_table[vt]);
-	int cel_height = VT_HEIGHT(view_table[vt]);
+	int cel_width, cel_height;
+
+	/* Sanity check */
+	set_cel (vt, view_table[vt].current_cel);
+
+	cel_width = VT_WIDTH(view_table[vt]);
+	cel_height = VT_HEIGHT(view_table[vt]);
 
 	/* DF: CLIPPING (FIXES OP:RECON BUG !! (speach bubbles) */
 
