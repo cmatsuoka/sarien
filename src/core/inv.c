@@ -38,7 +38,7 @@
 
 void inventory ()
 {
-	int x, y, cy;
+	unsigned int x, y, cy;
 	UINT8 *intobj = NULL;
 	int objcount;
 	int joffs = 0, jlen = 0;

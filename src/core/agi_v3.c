@@ -75,7 +75,7 @@ static int agi_v3_load_dir (struct agi_dir *agid, FILE *fp, UINT32 offs, UINT32 
 {
 	int ec = err_OK;
 	UINT8 *mem;
-	int i;
+	unsigned int i;
 
 	fseek (fp, offs, SEEK_SET);
 	if ((mem = malloc (len + 32)) != NULL) {

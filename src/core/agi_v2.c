@@ -63,7 +63,7 @@ static int agi_v2_load_dir (struct agi_dir *agid, char *fname)
 	FILE *fp;
 	UINT8 *mem;
 	UINT32 flen;
-	int i;
+	unsigned int i;
 	char *path;
 
 	path = fixpath (NO_GAMEDIR, fname);

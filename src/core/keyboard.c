@@ -221,7 +221,7 @@ void handle_getstring (int key)
 
 	/* SGEO */
 	print_character (stringdata.x + pos+1, stringdata.y,
-		game.cursor_char, game.color_fg, game.color_bg);
+		(char)game.cursor_char, game.color_fg, game.color_bg);
 }
 
 

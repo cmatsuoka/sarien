@@ -207,7 +207,7 @@ void print_text_console (char *msg, int x, int y, int len, int fg, int bg)
 char* word_wrap_string (char *mesg, int *len)
 {
 	char *msg, *v, *e;
-	int maxc, c, l = *len;
+	unsigned int maxc, c, l = *len;
 
 	v = msg = strdup (mesg);
 	e = msg + strlen (msg);

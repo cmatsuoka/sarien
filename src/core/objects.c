@@ -29,7 +29,7 @@ static struct agi_object *objects;		/* objects in the game */
 int decode_objects(UINT8* mem, UINT32 flen)
 {
 #ifndef PALMOS
-	int i, so, padsize;
+	unsigned int i, so, padsize;
 
 	padsize = game.game_flags & ID_AMIGA ? 4 : 3;
 
@@ -124,7 +124,7 @@ int load_objects (char *fname)
 
 void unload_objects ()
 {
-	int i;
+	unsigned int i;
 
 	if (objects != NULL) {
 		for (i = 0; i < game.num_objects; i++)
@@ -136,7 +136,7 @@ void unload_objects ()
 #ifdef OPT_LIST_OBJECTS
 int show_objects ()
 {
-	int i;
+	unsigned int i;
 
 	printf(" ID   Objects\n");
 	for (i = 0; i < game.num_objects; i++)
@@ -148,7 +148,7 @@ int show_objects ()
 }
 #endif
 
-void object_set_location (int n, int i)
+void object_set_location (unsigned int n, int i)
 {
 	if (n >= game.num_objects) {
 		report ("Error: Can't access object %d.", n);
@@ -157,7 +157,7 @@ void object_set_location (int n, int i)
 	objects[n].location = i;
 }
 
-int object_get_location (int n)
+int object_get_location (unsigned int n)
 {
 	if (n >= game.num_objects) {
 		report ("Error: Can't access object %d.", n);
@@ -166,7 +166,7 @@ int object_get_location (int n)
 	return objects[n].location;
 }
 
-char *object_name (int n)
+char *object_name (unsigned int n)
 {
 	if (n >= game.num_objects) {
 		report ("Error: Can't access object %d.", n);

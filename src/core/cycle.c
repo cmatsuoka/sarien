@@ -250,7 +250,7 @@ int run_game ()
 	report ("Running AGI script.\n");
 
 #ifdef USE_CONSOLE
-	console.count = 20;
+	console.count = 5;
 	console_prompt ();
 #endif
 

@@ -73,7 +73,7 @@ static int _pn;
 static UINT8 console_parse (char *b)
 {
 	struct console_command *d;
-	int i;
+	UINT8 i;
 
 	for (; *b && *b == ' '; b++) {}	/* eat spaces */
 	for (; *b && b[strlen(b) - 1] == ' '; b[strlen(b) - 1] = 0) {}
@@ -285,7 +285,7 @@ static void ccmd_say ()
 
 static void ccmd_inv ()
 {
-	int i, j;
+	unsigned int i, j;
 
 	for (j = i = 0; i < game.num_objects; i++) {
 		if (object_get_location (i) == EGO_OWNED) {
@@ -305,7 +305,7 @@ static void ccmd_inv ()
 
 static void ccmd_objs ()
 {
-	int i;
+	unsigned int i;
 
 	for (i = 0; i < game.num_objects; i++) {
 		report ("%3d]%-24s(%3d)\n", i, object_name (i),

@@ -165,16 +165,16 @@ struct agi_game {
 
 	/* graphics & text*/
 	int gfx_mode;
-	int cursor_char;
-	int color_fg;
-	int color_bg;
+	char cursor_char;
+	unsigned int color_fg;
+	unsigned int color_bg;
 	UINT8 sbuf[_WIDTH * _HEIGHT];		/**< 160x168 AGI screen buffer */
 
 	/* player command line */
 	struct agi_word ego_words[MAX_WORDS];
 	int num_ego_words;
 
-	int num_objects;
+	unsigned int num_objects;
 
 	struct agi_event ev_keyp[MAX_DIRS];	/**< keyboard keypress events */
 	struct agi_event ev_scan[MAX_DIRS];	/**< keyboard scan events */
@@ -234,9 +234,9 @@ void	dictionary_words(char *);
 int	show_objects	(void);
 int	load_objects	(char *fname);
 void	unload_objects	(void);
-char*	object_name	(int);
-int	object_get_location (int);
-void	object_set_location (int, int);
+char*	object_name	(unsigned int);
+int	object_get_location (unsigned int);
+void	object_set_location (unsigned int, int);
 
 void	new_input_mode (int);
 void	old_input_mode (void);

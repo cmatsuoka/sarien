@@ -16,12 +16,12 @@
 static struct agi_word *words;			/* words in the game */
 extern int decode_words(UINT8* mem, UINT32 flen);
 
-static int num_words, num_syns;
+static unsigned int num_words, num_syns;
 
 int decode_words (UINT8* mem, UINT32 flen)
 {
 #ifndef PALMOS
-	int sc, wc, woff, wid;
+	unsigned int sc, wc, woff, wid;
 	UINT8 c, x[128];
 
 	num_words = 0;
@@ -123,7 +123,7 @@ int load_words (char *fname)
 
 void unload_words ()
 {
-	int i;
+	unsigned int i;
 
 	if (words != NULL) {
 		for (i = 0; i < num_words; i++)
@@ -139,7 +139,7 @@ void unload_words ()
  */
 int find_word (char *word)
 {
-	int i, offs = 0, id = 0, val, lid = 0, llen = 0;
+	unsigned int i, offs = 0, id = 0, val, lid = 0, llen = 0;
 
 	for (; offs < num_words && words[offs].word[0] != word[0]; offs++);
 	for (; offs < num_words && words[offs].word[0] == word[0]; offs++) {
@@ -264,7 +264,8 @@ void dictionary_words (char *msg)
 #ifdef OPT_LIST_DICT
 int show_words ()
 {
-	int i, uid, sid, lid;
+	unsigned int i, uid, sid;
+	int lid;
 
 	uid = sid = 0;
 	lid = 0xffff;

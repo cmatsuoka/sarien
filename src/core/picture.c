@@ -428,7 +428,7 @@ static void fill ()
 **************************************************************************/
 void plotPattern(UINT8 x, UINT8 y)
 {
-	static char circles[][15] = {		/* agi circle bitmaps */
+	static UINT8 circles[][15] = {		/* agi circle bitmaps */
 		{ 0x80 },
 		{ 0xfc },
 		{ 0x5f, 0xf4 },
@@ -496,7 +496,7 @@ void plotPattern(UINT8 x, UINT8 y)
 **************************************************************************/
 static void plot_brush ()
 {
-	int x1, y1;
+	UINT8 x1, y1;
 
 	while (42) {
 		if (patCode & 0x20) {
@@ -520,7 +520,8 @@ static void plot_brush ()
 static void draw_picture ()
 {
 	UINT8 act;
-	int i, drawing;
+	unsigned int i;
+	int drawing;
 
  	patCode = 0;
  	patNum = 0;
