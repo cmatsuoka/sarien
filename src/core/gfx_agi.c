@@ -129,6 +129,7 @@ void agi_put_bitmap (UINT8 *src, int x1, int y1, int w, int h, int trans, int pr
 
 			screen2[yy + xx] = c;
 end_of_loop:
+			; /* don't remove, VC++ wants this */
 		}
 	}
 	y = game.line_min_print ? 8 : 0;

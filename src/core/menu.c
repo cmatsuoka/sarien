@@ -135,7 +135,7 @@ void deinit_menus ()
 
 	/* free all down's then all next's */
 
-#warning FIXME: FR: bad memory deallocation
+	/* FIXME: FR: bad memory deallocation */
 #if 0
 	while ((m0 = menu->next)) {
 		while ((m1 = m0->down)) {
