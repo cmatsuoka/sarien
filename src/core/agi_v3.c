@@ -48,7 +48,8 @@ struct agi_loader agi_v3 = {
 	agi_v3_unload_resource
 };
 
-#ifndef _M_MSDOS
+/* CM: who uses this function? */
+#if !defined _M_MSDOS && !defined __BEOS__
 int match (char *s)
 {
     struct dirent **namelist;
@@ -64,6 +65,8 @@ int match (char *s)
         free(namelist[n]);
     }
     free(namelist);
+
+    return 0;
 }
 #endif
 

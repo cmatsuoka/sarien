@@ -56,10 +56,10 @@ static int key_queue_end = 0;
 
 static int init_vidmode (void);
 static int deinit_vidmode (void);
-static void put_block (int, int, int, int);
-static void inline _put_pixel (int, int, int);
+static void sdl_put_block (int, int, int, int);
+static void inline sdl_put_pixel (int, int, int);
 
-static void new_timer (void);
+static void sdl_timer (void);
 static Uint32 timer_function (Uint32);
 
 static volatile UINT32 tick_timer = 0;
@@ -67,17 +67,17 @@ static volatile UINT32 tick_timer = 0;
 
 #define TICK_SECONDS 20
 
-int is_keypress(void);
-int get_keypress(void);
+int sdl_is_keypress(void);
+int sdl_get_keypress(void);
 
 static struct gfx_driver GFX_sdl = {
 	init_vidmode,
 	deinit_vidmode,
-	put_block,
-	_put_pixel,
-	new_timer,
-	is_keypress,
-	get_keypress
+	sdl_put_block,
+	sdl_put_pixel,
+	sdl_timer,
+	sdl_is_keypress,
+	sdl_get_keypress
 };
 
 extern struct gfx_driver *gfx;
@@ -230,13 +230,13 @@ int init_machine (int argc, char **argv)
 }
 
 
-int deinit_machine (void)
+int deinit_machine ()
 {
 	return err_OK;
 }
 
 
-static int init_vidmode (void)
+static int init_vidmode ()
 {
 	int i, mode;
 
@@ -278,7 +278,7 @@ static int init_vidmode (void)
 }
 
 
-static int deinit_vidmode (void)
+static int deinit_vidmode ()
 {
 	_D ("()");
 	SDL_Quit ();
@@ -289,7 +289,7 @@ static int deinit_vidmode (void)
 
 
 /* put a block onto the screen */
-static void put_block (int x1, int y1, int x2, int y2)
+static void sdl_put_block (int x1, int y1, int x2, int y2)
 {
 	if (x1 >= GFX_WIDTH)
 		x1 = GFX_WIDTH - 1;
@@ -310,7 +310,7 @@ static void put_block (int x1, int y1, int x2, int y2)
 }
 
 
-static void inline sdl_put_pixel (int x, int y, int c)
+static void inline sdlsdl_put_pixel (int x, int y, int c)
 {
 	UINT32 pixel;
 	UINT8 *bits, bpp;
@@ -354,21 +354,21 @@ static void inline sdl_put_pixel (int x, int y, int c)
 
 
 /* put pixel routine */
-static void inline _put_pixel (int x, int y, int c)
+static void inline sdl_put_pixel (int x, int y, int c)
 {
 	register int i, j;
 
 	if (scale == 1) {
-		sdl_put_pixel (x, y, c);
+		sdlsdl_put_pixel (x, y, c);
 	} else {
 		for (i = 0; i < scale; i++)
 			for (j = 0; j < scale; j++)
-				sdl_put_pixel (x * scale + i, y * scale + j, c);
+				sdlsdl_put_pixel (x * scale + i, y * scale + j, c);
 	}
 }
 
 
-int is_keypress (void)
+int sdl_is_keypress ()
 {
 	process_events ();
 
@@ -376,12 +376,12 @@ int is_keypress (void)
 }
 
 
-int get_keypress (void)
+int sdl_get_keypress ()
 {
 	int k;
 
 	while (key_queue_start == key_queue_end)	/* block */
-		new_timer ();
+		sdl_timer ();
 	key_dequeue(k);
 
 	return k;
@@ -396,7 +396,7 @@ static Uint32 timer_function (Uint32 i)
 }
 
 
-static void new_timer ()
+static void sdl_timer ()
 {
 	static UINT32 m = 0;
 	UINT32 dm;
