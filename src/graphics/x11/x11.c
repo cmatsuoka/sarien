@@ -199,36 +199,42 @@ _putpixels_fixratio_scale2 (32);
 
 static void _putpixels (int x, int y, int w, UINT8 *p)
 {
-	register int cp;
+	int cp, z;
 	register int i, j;
 
 	if (w == 0)
 		return;
 
-	if (scale == 1) {
+	switch (scale) {
+	case 1:
 		while (w--) {
-			cp = rgb_palette[*p++];
-			XPutPixel (ximage, x++, y, cp);
+			XPutPixel (ximage, x++, y, rgb_palette[*p++]);
 		}
-	} else if (scale == 2) {
+		break;
+	case 2:
 		x <<= 1;
 		y <<= 1;
+		z = y + 1;
 		while (w--) {
 			cp = rgb_palette[*p++];
 			XPutPixel (ximage, x, y, cp);
-			XPutPixel (ximage, x++, y + 1, cp);
+			XPutPixel (ximage, x++, z, cp);
 			XPutPixel (ximage, x, y, cp);
-			XPutPixel (ximage, x++, y + 1, cp);
+			XPutPixel (ximage, x++, z, cp);
 		}
-	} else {
+		break;
+	default:
 		x *= scale;
 		y *= scale;
 		while (w--) {
 			cp = rgb_palette[*p++];
-			for (i = 0; i < scale; i++)
+			for (i = 0; i < scale; i++) {
 				for (j = 0; j < scale; j++)
 					XPutPixel (ximage, x + i, y + j, cp);
+			}
+			x += scale;
 		}
+		break;
 	}
 }
 
@@ -699,20 +705,16 @@ static int deinit_vidmode ()
 /* put a block onto the screen */
 static void x11_put_block (int x1, int y1, int x2, int y2)
 {
-	if (x1 >= GFX_WIDTH)
-		x1 = GFX_WIDTH - 1;
-	if (y1 >= GFX_HEIGHT)
-		y1 = GFX_HEIGHT - 1;
-	if (x2 >= GFX_WIDTH)
-		x2 = GFX_WIDTH - 1;
-	if (y2 >= GFX_HEIGHT)
-		y2 = GFX_HEIGHT - 1;
+	if (x1 >= GFX_WIDTH)  x1 = GFX_WIDTH  - 1;
+	if (y1 >= GFX_HEIGHT) y1 = GFX_HEIGHT - 1;
+	if (x2 >= GFX_WIDTH)  x2 = GFX_WIDTH  - 1;
+	if (y2 >= GFX_HEIGHT) y2 = GFX_HEIGHT - 1;
 
 	if (scale > 1) {
 		x1 *= scale;
 		y1 *= scale;
-		x2 = x2 * scale + scale - 1;
-		y2 = y2 * scale + scale - 1;
+		x2 = (x2 + 1) * scale - 1;
+		y2 = (y2 + 1) * scale - 1;
 	}
 
 #ifdef MITSHM

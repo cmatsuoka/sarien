@@ -79,152 +79,53 @@ static struct gfx_driver gfx_sdl = {
 extern struct gfx_driver *gfx;
 
 
-/*
- * Some optimized put_pixel routines for the most common cases.
- */
+/* ====================================================================*/
 
-static void inline _put_pixels_8bits_scale1 (int x, int y, int w, UINT8 *p)
-{
-	Uint8 *s;
+/* Some optimized put_pixel routines for the most common cases */
 
-	if (w == 0) return;
-
-	s = (Uint8 *)screen->pixels + x + y * screen->w;
-
-	if (SDL_MUSTLOCK (screen)) {
-		if (SDL_LockSurface (screen) < 0)
-			return;
-	}
-
-	while (w--) { *s++ = mapped_color[*p++]; }
-
-	if (SDL_MUSTLOCK (screen))
-		SDL_UnlockSurface (screen);
+#define _put_pixels_scale1(d) static void INLINE			\
+_put_pixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) {		\
+	Uint##d## *s;							\
+	if (w == 0) return;						\
+	s = (Uint##d## *)screen->pixels + x + y * screen->w;		\
+	if (SDL_MUSTLOCK (screen)) {					\
+		if (SDL_LockSurface (screen) < 0)			\
+			return;						\
+	}								\
+	while (w--) { *s++ = mapped_color[*p++]; }			\
+	if (SDL_MUSTLOCK (screen)) SDL_UnlockSurface (screen);		\
 }
 
-static void inline _put_pixels_16bits_scale1 (int x, int y, int w, UINT8 *p)
-{
-	Uint16 *s;
-
-	if (w == 0) return;
-
-	s = (Uint16 *)screen->pixels + x + y * screen->w;
-
-	if (SDL_MUSTLOCK (screen)) {
-		if (SDL_LockSurface (screen) < 0)
-			return;
-	}
-
-	while (w--) { *s++ = mapped_color[*p++]; }
-
-	if (SDL_MUSTLOCK (screen))
-		SDL_UnlockSurface (screen);
+#define _put_pixels_scale2(d) static void INLINE			\
+_put_pixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) {		\
+	Uint##d## *s, *t;						\
+	if (w == 0) return;						\
+	x <<= 1; y <<= 1;						\
+	s = (Uint##d## *)screen->pixels + x + y * screen->w;		\
+	t = s + screen->w;						\
+	if (SDL_MUSTLOCK (screen)) {					\
+		if (SDL_LockSurface (screen) < 0)			\
+			return;						\
+	}								\
+	while (w--) {							\
+		int c = mapped_color[*p];				\
+		*s++ = c; *s++ = c; *t++ = c; *t++ = c; p++;		\
+	}								\
+	if (SDL_MUSTLOCK (screen)) SDL_UnlockSurface (screen);		\
 }
 
-static void inline _put_pixels_32bits_scale1 (int x, int y, int w, UINT8 *p)
-{
-	Uint32 *s;
+_put_pixels_scale1(8);
+_put_pixels_scale1(16);
+_put_pixels_scale1(32);
+_put_pixels_scale2(8);
+_put_pixels_scale2(16);
+_put_pixels_scale2(32);
 
-	if (w == 0) return;
 
-	s = (Uint32 *)screen->pixels + x + y * screen->w;
-
-	if (SDL_MUSTLOCK (screen)) {
-		if (SDL_LockSurface (screen) < 0)
-			return;
-	}
-
-	while (w--) { *s++ = mapped_color[*p++]; }
-
-	if (SDL_MUSTLOCK (screen))
-		SDL_UnlockSurface (screen);
-}
-
-static void inline _put_pixels_8bits_scale2 (int x, int y, int w, UINT8 *p)
-{
-	Uint8 *s, *t;
-
-	if (w == 0) return;
-
-	x <<= 1; y <<= 1;
-	s = (Uint8 *)screen->pixels + x + y * screen->w;
-	t = s + screen->w;
-
-	if (SDL_MUSTLOCK (screen)) {
-		if (SDL_LockSurface (screen) < 0)
-			return;
-	}
-
-	while (w--) {
-		int c = mapped_color[*p];
-		*s++ = c;
-		*s++ = c;
-		*t++ = c;
-		*t++ = c;
-		p++;
-	}
-
-	if (SDL_MUSTLOCK (screen))
-		SDL_UnlockSurface (screen);
-}
-
-static void inline _put_pixels_16bits_scale2 (int x, int y, int w, UINT8 *p)
-{
-	Uint16 *s, *t;
-
-	if (w == 0) return;
-
-	x <<= 1; y <<= 1;
-	s = (Uint16 *)screen->pixels + x + y * screen->w;
-	t = s + screen->w;
-
-	if (SDL_MUSTLOCK (screen)) {
-		if (SDL_LockSurface (screen) < 0)
-			return;
-	}
-
-	while (w--) {
-		int c = mapped_color[*p];
-		*s++ = c;
-		*s++ = c;
-		*t++ = c;
-		*t++ = c;
-		p++;
-	}
-
-	if (SDL_MUSTLOCK (screen))
-		SDL_UnlockSurface (screen);
-}
-
-static void inline _put_pixels_32bits_scale2 (int x, int y, int w, UINT8 *p)
-{
-	Uint32 *s, *t;
-
-	if (w == 0) return;
-
-	x <<= 1; y <<= 1;
-	s = (Uint32 *)screen->pixels + y * screen->w;
-	t = s + screen->w;
-
-	if (SDL_MUSTLOCK (screen)) {
-		if (SDL_LockSurface (screen) < 0)
-			return;
-	}
-
-	while (w--) {
-		int c = mapped_color[*p];
-		*s++ = c;
-		*s++ = c;
-		*t++ = c;
-		*t++ = c;
-		p++;
-	}
-
-	if (SDL_MUSTLOCK (screen))
-		SDL_UnlockSurface (screen);
-}
+/* ====================================================================*/
 
 /* Slow, non-optimized put pixel routine */
+
 static void inline _put_pixel (int x, int y, int c)
 {
 	Uint32 pixel;
@@ -259,8 +160,6 @@ static void inline _put_pixel (int x, int y, int c)
 	}
 }
 
-
-/* slow put pixel routine */
 static void sdl_put_pixels (int x, int y, int w, Uint8 *p)
 {
 	register int c;
@@ -273,11 +172,13 @@ static void sdl_put_pixels (int x, int y, int w, Uint8 *p)
 			return;
 	}
 
-	if (scale == 1) {
+	switch (scale) {
+	case 1:
 		while (w--) {
 			_put_pixel (x++, y, *p++);
 		}
-	} else if (scale == 2) {
+		break;
+	case 2:
 		x <<= 1;
 		y <<= 1;
 		while (w--) {
@@ -287,21 +188,26 @@ static void sdl_put_pixels (int x, int y, int w, Uint8 *p)
 			_put_pixel (x, y, c);
 			_put_pixel (x++, y + 1, c);
 		}
-	} else {
+		break;
+	default:
 		x *= scale;
 		y *= scale;
 		while (w--) {
 			c = *p++;
-			for (i = 0; i < scale; i++)
+			for (i = 0; i < scale; i++) {
 				for (j = 0; j < scale; j++)
 					_put_pixel (x + i, y + j, c);
+			}
+			x += scale;
 		}
+		break;
 	}
 
 	if (SDL_MUSTLOCK (screen))
 		SDL_UnlockSurface (screen);
 }
 
+/* ====================================================================*/
 
 static void process_events ()
 {
