@@ -46,9 +46,9 @@ typedef Int32	SINT32;
 
 typedef unsigned char	UINT8;
 typedef unsigned short	UINT16;
-#ifndef WIN32
+//#ifndef WIN32
 typedef unsigned long	UINT32;
-#endif
+//#endif
 typedef signed char	SINT8;
 typedef signed short	SINT16;
 typedef signed long	SINT32;

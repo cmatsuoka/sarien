@@ -67,13 +67,13 @@ LINK32=link.exe
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
 # ADD CPP /nologo /Gm /ZI /Od /I "..\SRC\INCLUDE" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "NATIVE_WIN32" /D "STACK_PUSHPOP" /D "NO_DEBUG" /YX /FD /GZ /c
 # ADD BASE RSC /l 0x416 /d "_DEBUG"
-# ADD RSC /l 0x416 /d "_DEBUG"
+# ADD RSC /l 0x409 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winmm.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winmm.lib msvcrt.lib /nologo /subsystem:console /debug /machine:I386 /pdbtype:sept
 
 !ENDIF 
 
@@ -125,7 +125,11 @@ SOURCE=..\src\core\getopt1.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\core\gfx.c
+SOURCE=..\SRC\CORE\GFX_AGI.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\SRC\CORE\GFX_BASE.C
 # End Source File
 # Begin Source File
 
@@ -138,6 +142,10 @@ SOURCE=..\src\core\id.c
 # Begin Source File
 
 SOURCE=..\src\core\iff.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\SRC\CORE\INV.C
 # End Source File
 # Begin Source File
 
@@ -198,6 +206,10 @@ SOURCE=..\src\core\silent.c
 # Begin Source File
 
 SOURCE=..\src\core\sound.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\SRC\CORE\TEXT.C
 # End Source File
 # Begin Source File
 
