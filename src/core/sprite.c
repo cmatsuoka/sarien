@@ -151,7 +151,10 @@ static void objs_restorearea (struct sprite *s)
 		p0 += _WIDTH;
 #ifdef USE_HIRES
 		memcpy (h0, k, s->x_size * 2);
-		put_pixels_hires (s->x_pos * 2, s->y_pos + y, s->x_size * 2,h0);
+		if (opt.hires) {
+			put_pixels_hires (s->x_pos * 2, s->y_pos + y,
+				s->x_size * 2, h0);
+		}
 		k += s->x_size * 2;
 		h0 += _WIDTH * 2;
 #endif
@@ -656,7 +659,9 @@ void commit_block (int x1, int y1, int x2, int y2)
 		put_pixels_a (x1, i, w, q);
 		q += _WIDTH;
 #ifdef USE_HIRES
-		put_pixels_hires (x1 * 2, i, w * 2, h);
+		if (opt.hires) {
+			put_pixels_hires (x1 * 2, i, w * 2, h);
+		}
 		h += _WIDTH * 2;
 #endif
 	}
