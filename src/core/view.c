@@ -27,45 +27,43 @@ struct agi_view	views[MAX_DIRS];		/* max views */
 UINT8 old_prio = 0;
 
 
-static void mirror_cel (struct view_cel *ptrViewCel)
+static void mirror_cel (struct view_cel *vc)
 {
 	UINT8 *p;
-	int x, y, z, temp;
+	int x, y;
 
-	p = ptrViewCel->data;
+	p = vc->data;
 
-	for (y = 0; y < ptrViewCel->height; y++) {
+	for (y = 0; y < vc->height; y++) {
+		int z = vc->width - 1;
+		int w = y * vc->width;
+
 		x = 0;
-		z = ptrViewCel->width-1;
 
-		while(42) {
-			temp = p[(y*ptrViewCel->width) + x];
-			p[(y * ptrViewCel->width) + x] =
-				p[(y * ptrViewCel->width) + z];
-			p[(y*ptrViewCel->width) + z]=temp;
-
-			if (++x > --z)
-				break;
-		}
+		do {
+			int temp = p[w + x];
+			p[w + x] = p[w + z];
+			p[w + z] = temp;
+		} while (++x <= --z);
 	}
 }
 
 
-static void decode_cel (struct view_cel *ptrViewCel, UINT8 *data)
+static void decode_cel (struct view_cel *vc, UINT8 *data)
 {
 	int h, w, c, l, d;
 	UINT8 *p;
 
-	p = ptrViewCel->data;
-	memset (p, ptrViewCel->transparency,
-		ptrViewCel->height * ptrViewCel->width);
+	p = vc->data;
+	memset (p, vc->transparency,
+		vc->height * vc->width);
 
-	if (ptrViewCel->width == 0 || ptrViewCel->height == 0)
+	if (vc->width == 0 || vc->height == 0)
 		return;
 
-	for (d = h = 0; h < ptrViewCel->height; h++) {
+	for (d = h = 0; h < vc->height; h++) {
 		w = 0;
-		p = ptrViewCel->data + (h * ptrViewCel->width);
+		p = vc->data + (h * vc->width);
 
 		while(42) {
 			if ((l = data[d++]) == 0)
@@ -287,7 +285,6 @@ void set_cel (int entry, int cel)
 
 void set_loop (int entry, int loop)
 {
-	_D ("(entry = %d, loop = %d)", entry, loop);
 	if (loop >= VT_VIEW(view_table[entry]).num_loops)
 		loop = 0;
 
@@ -340,7 +337,7 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int priority, int ma
 
 void calc_direction (int vt)
 {
-	if((view_table[vt].flags&FIX_LOOP)==FIX_LOOP)
+	if (view_table[vt].flags & FIX_LOOP)
 		return;
 
 	/* CM: fixes the BAD LOOP error */
@@ -348,7 +345,7 @@ void calc_direction (int vt)
 		return;
 
 	/* FR: Fixed (see agistudio doc) */
-	if (views[view_table[vt].current_view].num_loops < 4) {
+	if (VT_VIEW(view_table[vt]).num_loops < 4) {
 		switch (view_table[vt].direction) {
 		case 0:
 		case 1:
@@ -357,37 +354,38 @@ void calc_direction (int vt)
 		case 2:
 		case 3:
 		case 4:
-			set_loop(vt, 0);
+			set_loop (vt, 0);
 			break;
 		case 6:
 		case 7:
 		case 8:
-			set_loop(vt, 1);
+			set_loop (vt, 1);
 			break;
 		}
-	} else if (views[view_table[vt].current_view].num_loops == 4) {
+	} else if (VT_VIEW(view_table[vt]).num_loops == 4) {
 		switch(view_table[vt].direction) {
 		case 0:
 			break;
 		case 1:
-			set_loop(vt, 3);
+			set_loop (vt, 3);
 			break;
 		case 2:
 		case 3:
 		case 4:
-			set_loop(vt, 0);
+			set_loop (vt, 0);
 			break;
 		case 5:
-			set_loop(vt, 2);
+			set_loop (vt, 2);
 			break;
 		case 6:
 		case 7:
 		case 8:
-			set_loop(vt, 1);
+			set_loop (vt, 1);
 			break;
 		}
 	}
 }
+
 
 void draw_obj (int vt)
 {
@@ -451,124 +449,101 @@ void draw_obj (int vt)
 		v->priority);
 }
 
+
 int decode_view (int resnum)
 {
-	SINT16		intCurLoop;
-	UINT8		*ptrView;
-	UINT8		*ptrLoopAddr;
-	UINT16		intLoopOffset;
-	struct view_loop *ptrViewLoop;
-	UINT16		intCelAddr;
-	SINT16		intCurCel;
-	struct view_cel	*ptrViewCel;
-	UINT8		*ptrCelData;
+	int loop, cel;
+	UINT8 *v, *lptr;
+	UINT16 lofs, cofs;
+	struct view_loop *vl;
+	struct view_cel	*vc;
 
 	_D ("(%d)", resnum);
-	ptrView = views[resnum].rdata;
+	v = views[resnum].rdata;
 
-	views[resnum].loop = NULL;
+	//views[resnum].loop = NULL;
 	views[resnum].num_loops = 0;
 
-	if (ptrView == NULL)
+	if (v == NULL)
 		return err_ViewDataError;
 
-	views[resnum].descr = lohi_getword (ptrView + 3) ?
-		strdup ((char*)ptrView + lohi_getword (ptrView + 3)) :
-		strdup ("");
+	views[resnum].descr = lohi_getword (v + 3) ?
+		strdup ((char*)v + lohi_getword (v + 3)) : strdup ("");
 
 	/* if no loops exist, return! */
-	views[resnum].num_loops = lohi_getbyte (ptrView+2);
-
-	_D ("views[%d].num_loops = %d", resnum, views[resnum].num_loops);
+	views[resnum].num_loops = lohi_getbyte (v + 2);
 
 	if (views[resnum].num_loops == 0)
 		return err_NoLoopsInView;
 
 	/* allocate memory for all views */
-	views[resnum].loop = calloc(views[resnum].num_loops, sizeof(struct view_loop));
+	views[resnum].loop = calloc(views[resnum].num_loops,
+		sizeof(struct view_loop));
+
 	if (views[resnum].loop == NULL)
 		return err_NotEnoughMemory;
 
 	/* clean out all our loop data */
-	for(intCurLoop=0; intCurLoop<views[resnum].num_loops; intCurLoop++)
-	{
-		views[resnum].loop[intCurLoop].num_cels=0;
-		views[resnum].loop[intCurLoop].cel=NULL;
+	for(loop=0; loop<views[resnum].num_loops; loop++) {
+		views[resnum].loop[loop].num_cels = 0;
+		//views[resnum].loop[loop].cel = NULL;
 	}
 
 	/* decode all of the loops in this view */
-	ptrLoopAddr=ptrView+5;		/* first loop address */
+	lptr = v + 5;		/* first loop address */
 
-	for(intCurLoop=0; intCurLoop<views[resnum].num_loops; intCurLoop++, ptrLoopAddr+=2)
-	{
-		/* decode all cells in a loop */
+	for (loop = 0; loop < views[resnum].num_loops; loop++, lptr += 2) {
 
-		/* get loop header offset */
-		intLoopOffset=lohi_getword(ptrLoopAddr);
+		lofs = lohi_getword (lptr);	/* loop header offset */
+		vl = &views[resnum].loop[loop];	/* the loop struct */
 
-		/* get the loop struct */
-		ptrViewLoop=&views[resnum].loop[intCurLoop];
-
-		/* get the number of cells in this loop */
-		ptrViewLoop->num_cels=lohi_getbyte(ptrView+intLoopOffset);
-		ptrViewLoop->cel=calloc(ptrViewLoop->num_cels, sizeof(struct view_cel));
-		if(ptrViewLoop->cel==NULL)
-		{
-			free(views[resnum].loop);
-			views[resnum].loop=NULL;
-			views[resnum].num_loops=0;
+		vl->num_cels = lohi_getbyte (v + lofs);
+		vl->cel = calloc (vl->num_cels, sizeof (struct view_cel));
+		if (vl->cel == NULL) {
+			free (views[resnum].loop);
+			views[resnum].num_loops = 0;
+			//views[resnum].loop=NULL;
 			return err_NotEnoughMemory;
 		}
-		else
-		{
-    		for(intCurCel=0; intCurCel<ptrViewLoop->num_cels; intCurCel++)
-    		{
 
-    			/* decode the cells */
-    			intCelAddr=intLoopOffset + lohi_getword(ptrView + intLoopOffset + 1 + (intCurCel*2));
+    		/* decode the cells */
+    		for (cel = 0; cel < vl->num_cels; cel++) {
 
-    			ptrViewCel=&ptrViewLoop->cel[intCurCel];
+    			cofs = lofs + lohi_getword (v + lofs + 1 + (cel * 2));
+    			vc = &vl->cel[cel];
 
-             	ptrViewCel->width=lohi_getbyte(ptrView + intCelAddr + 0);
-             	ptrViewCel->height=lohi_getbyte(ptrView + intCelAddr + 1);
-             	ptrViewCel->transparency=lohi_getbyte(ptrView + intCelAddr + 2)&0xF;
+             		vc->width = lohi_getbyte (v + cofs);
+             		vc->height = lohi_getbyte (v + cofs + 1);
+             		vc->transparency = lohi_getbyte (v + cofs + 2) & 0xf;
+    			vc->mirror_loop = (lohi_getbyte (v + cofs + 2) >>4) & 0x7;
+             		vc->mirror = (lohi_getbyte (v + cofs + 2) >> 7) & 0x1;
 
-    			ptrViewCel->mirror_loop=(lohi_getbyte(ptrView + intCelAddr + 2)>>4)&0x7;
-             	ptrViewCel->mirror=(lohi_getbyte(ptrView + intCelAddr + 2)>>7)&0x1;
+             		/* skip over width/height/trans|mirror data */
+             		cofs += 3;
 
-             	/* skip over width/height/trans|mirror data */
-             	intCelAddr+=3;
+    			vc->data = malloc ((vc->height + 1) * (vc->width + 1));
 
-    			ptrCelData=(UINT8*)malloc((1+ptrViewCel->height) * (1+ptrViewCel->width));
-    			ptrViewCel->data=ptrCelData;
-    			if(ptrViewCel->data==NULL)
-    			{
-    				intCurCel--;
-    				while(intCurCel>=0)
-    				{
-    					free(views[resnum].loop[intCurLoop].cel[intCurCel].data);
-    					intCurCel--;
-    				}
-    				while(intCurLoop>=0)
-    				{
-    					free(views[resnum].loop[intCurLoop].cel);
-    					intCurLoop--;
-    				}
+    			if (vc->data == NULL) {
+    				for (cel--; cel >= 0; cel--)
+    					free (views[resnum].loop[loop].cel[cel].data);
+    				for (; loop >= 0; loop--)
+    					free(views[resnum].loop[loop].cel);
+
     				free(views[resnum].loop);
-    				views[resnum].loop=NULL;
-    				views[resnum].num_loops=0;
+    				//views[resnum].loop=NULL;
+    				views[resnum].num_loops = 0;
     				return err_NotEnoughMemory;
     			}
-    			else
-    			{
-    				decode_cel(ptrViewCel, ptrView + intCelAddr);
 
-    				if(ptrViewCel->mirror==1 && ptrViewCel->mirror_loop!=intCurLoop)
-    					mirror_cel(ptrViewCel);
-           		}
-    		} /* intCurCel */
-    	}
-	} /* intCurLoop */
+			decode_cel (vc, v + cofs);
+
+			_D (_D_WARN "mirror=%d, loop=%d", vc->mirror,vc->mirror_loop);
+    			if (vc->mirror == 1 && vc->mirror_loop != loop) {
+				_D (_D_WARN "mirror_loop = %d", vc->mirror_loop);
+    				mirror_cel (vc);
+			}
+    		} /* cel */
+	} /* loop */
 
 	return err_OK;
 }

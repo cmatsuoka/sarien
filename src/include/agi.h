@@ -137,6 +137,7 @@ char*	object_name	(int);
 int	object_get_location (int);
 void	object_set_location (int, int);
 
+void	adj_direction	(int, int, int);
 
 #ifdef __cplusplus
 };

@@ -96,9 +96,8 @@ static void update_objects ()
 }
 
 
-static void adj_direction (int entry, int h, int w)
+void adj_direction (int entry, int h, int w)
 {
-	int original_direction;
 	struct agi_view_table *vt_obj;
 
 	if (h == 0 && w == 0)
@@ -106,15 +105,13 @@ static void adj_direction (int entry, int h, int w)
 
 	vt_obj = &view_table[entry];
 
-	original_direction = vt_obj->direction;
-
 	if (abs(w) > abs(h)) {
 		if (w > 0)
 			vt_obj->direction = h < 0 ? 2 : h > 0 ? 4 : 3;
 		else if (w < 0)
 			vt_obj->direction = h < 0 ? 8 : h > 0 ? 6 : 7;
 		else
-			vt_obj->direction = h <=0 ? 1 : 5;
+			vt_obj->direction = h <= 0 ? 1 : 5;
 	} else {
 		if (h > 0)
 			vt_obj->direction = w < 0 ? 6 : w > 0 ? 4 : 5;
@@ -124,8 +121,8 @@ static void adj_direction (int entry, int h, int w)
 			vt_obj->direction = w <= 0 ? 7 : 3;
 	}
 
-	if (vt_obj->direction != original_direction)
-		calc_direction (entry);
+	/* Always call calc_direction to avoid moonwalks */
+	calc_direction (entry);
 }
 
 
@@ -358,6 +355,9 @@ static void calc_obj_motion ()
 			if (vt_obj->x_pos == vt_obj->parm1 &&
 				vt_obj->y_pos == vt_obj->parm2)
 			{
+				_D (_D_WARN "obj %d at (%d, %d), set %d!", em,
+					vt_obj->x_pos, vt_obj->y_pos,
+					vt_obj->parm4);
 				if (em == EGO_VIEW_TABLE)
 					setvar (V_ego_dir, 0);
 

@@ -121,11 +121,9 @@ void cmd_load_view (UINT8 entry)
 	_D("(view = %d)", entry);
 	agi_load_resource (rVIEW, entry);
 
-	/* FIXME : stops larry walking left on load */
-	if(entry==0 && game.control_mode==CONTROL_PLAYER)
-	{
-		vt.direction=0;
-		setvar(V_ego_dir, 0);
+	if(entry == 0 && game.control_mode == CONTROL_PLAYER) {
+		vt.direction = 0;
+		setvar (V_ego_dir, 0);
 	}
 }
 
@@ -575,66 +573,40 @@ void cmd_observe_blocks (UINT8 entry)
 }
 
 
-void cmd_move_obj (UINT8 entry, UINT8 p1, UINT8 p2, UINT8 sv, UINT8 p4)
+void cmd_move_obj (UINT8 entry, UINT8 x, UINT8 y, UINT8 step, UINT8 flag)
 {
-	SINT16 h, w, od;
+	_D ("(entry=%d, x=%d, y=%d, step=%d, flag=%d)", entry, x, y, step, flag);
 
-	_D ("(%d, %d, %d, %d, %d)", entry, p1, p2, sv, p4);
-
-	/* FIXME: I don't know if this is the correct behaviour, but
-	 *        KQ2 demo needs this in the lion sequence. This test
-	 *        won't permit move.obj () if you're already at the
-	 * 	  destination point!
+	/* CM: I don't know if this is the correct behaviour, but
+	 *     KQ2 demo needs this in the lion sequence. This test
+	 *     won't permit move.obj() if you're already at the
+	 *     destination point!
 	 */
-	if (vt.parm1 == p1 && vt.parm2 == p2 &&
-		vt.x_pos == p1 && vt.y_pos == p2) {
-		setflag (p4, TRUE);
+	if (vt.parm1 == x && vt.parm2 == y &&
+		vt.x_pos == x && vt.y_pos == y)
+	{
+		_D (_D_WARN "Already at destination point!");
+		setflag (flag, TRUE);
 		return;
 	}
 
-	vt.parm1 = p1;
-	vt.parm2 = p2;
+	vt.parm1 = x;
+	vt.parm2 = y;
 	vt.parm3 = vt.step_size;
-	if (sv > 0)
-		vt.step_size = sv;
-	vt.parm4 = p4;
+	if (step > 0)
+		vt.step_size = step;
+	vt.parm4 = flag;
 	vt.motion = MOTION_MOVE_OBJ;
 
-	setflag (p4, FALSE);		/* Needed for KQ2 demo!! */
+	setflag (flag, FALSE);		/* Needed for KQ2 demo!! */
 
 	vt.flags |= MOTION;
 	vt.cycle_status = CYCLE_NORMAL;
 
-
-	/* FR:
-	 * Guess the direction of the movement (should call adj_direction)
+	/* FR: Guess the direction of the movement (should call adj_direction)
+	 * CM: Ok, calling adj_direction
 	 */
-	w = p1 - vt.x_pos;
-	h = p2 - vt.y_pos;
-
-	if (( h == 0 ) && ( w == 0 ))
-		return;
-
-	od = vt.direction;
-
-	if (abs (w) > abs (h)) {
-		if (w > 0)
-			vt.direction = h < 0 ? 2 : h > 0 ? 4 : 3;
-		else if (w < 0)
-			vt.direction = h < 0 ? 8 : h > 0 ? 6 : 7;
-		else
-			vt.direction = h <=0 ? 1 : 5;
-	} else {
-		if (h > 0)
-			vt.direction = w < 0 ? 6 : w > 0 ? 4 : 5;
-		else if (h < 0)
-			vt.direction = w < 0 ? 8 : w > 0 ? 2 : 1;
-		else
-			vt.direction = w <= 0 ? 7 : 3;
-	}
-
-	if ( od != vt.direction )
-		calc_direction ( entry );
+	adj_direction (entry, y - vt.y_pos, x - vt.x_pos);
 
 	/* CM: added according to AGDS docs */
 	if (!entry)
