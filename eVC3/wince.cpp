@@ -553,7 +553,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		switch(wParam)
 		{
 		case IDC_ABOUT:
-			message_box("Pocket Sarien R4 (" __DATE__ ")\n\n"
+			message_box("Pocket Sarien (" __DATE__ ")\n\n"
 						"Ported by Vasyl Tsvirkunov\n"
 						"http://pocketatari.\n"
 						"               retrogames.com\n\n"
