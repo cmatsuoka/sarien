@@ -87,9 +87,9 @@ static int agi_v2_load_dir (struct agi_dir *agid, char *fname)
 	}
 
 	/* build directory entries */
-	for (i = 0; i < flen; i+=3) {
-		agid[i/3].volume = hilo_getbyte (mem+i) >> 4;
-		agid[i/3].offset = hilo_getpword (mem+i) & (UINT32)_EMPTY;
+	for (i = 0; i < flen; i += 3) {
+		agid[i / 3].volume = hilo_getbyte (mem + i) >> 4;
+		agid[i / 3].offset = hilo_getpword (mem + i) & (UINT32)_EMPTY;
 	}
 
 	free (mem);
@@ -160,6 +160,8 @@ static int agi_v2_unload_words ()
 
 static int agi_v2_unload_resource (int t, int n)
 {
+	_D ("unload resource");
+
 	switch (t) {
 	case rLOGIC:
 		unload_logic (n);

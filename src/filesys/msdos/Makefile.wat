@@ -8,7 +8,7 @@
 
 !include $(HOME)\src\graphics\msdos\watcom.dep
 
-OBJS = fileglob.obj
+OBJS = fileglob.obj path.obj
 
 all: fileglob.lib
 

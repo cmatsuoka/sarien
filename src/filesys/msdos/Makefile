@@ -1,7 +1,7 @@
 
 XCFLAGS	= -I../../include
 OBJS	=
-DFILES	= Makefile fileglob.c turboc.c Makefile.wat Makefile.dj
+DFILES	= Makefile fileglob.c tcglob.c path.c Makefile.wat Makefile.dj
 CFILES	=
 DDIRS	=
 XDFILES	=

@@ -132,19 +132,22 @@ extern "C"{
 #undef OPT_PICTURE_VIEWER
 
 /* You'll need an ANSI terminal to use these :\ */
-#define _D_INFO "\x1b[33m"
-#define _D_CRIT "\x1b[31m"
-#define _D_WARN "\x1b[36m"
 
 #ifdef _TRACE
 #  include <stdio.h>
 #ifdef __GNUC__
+#define _D_INFO "\x1b[33m"
+#define _D_CRIT "\x1b[31m"
+#define _D_WARN "\x1b[36m"
 #  define _D(args...) do { \
         printf("\x1b[33m" __PRETTY_FUNCTION__ " \x1b[37m[" __FILE__ \
         ":%d] " _D_INFO, __LINE__); printf (args); printf ("\x1b[0m\n"); \
         } while (0)
 #else
-#  define _D printf ("\n%s:%d: ", __FILE__, __LINE__); printf
+#define _D_INFO "I: "
+#define _D_CRIT "C: "
+#define _D_WARN "W: "
+#  define _D fflush (stdout); printf ("\n%s:%d: ", __FILE__, __LINE__); printf
 #endif /* __GNUC__ */
 #else
 #  ifdef _D
@@ -211,6 +214,9 @@ extern	void inventory(void);
  * Implementations of this function are in the fileglob directory.
  */
 char* get_current_directory (void);
+
+int get_app_dir (char *app_dir, unsigned int size);
+
 
 extern	void list_games(void);
 

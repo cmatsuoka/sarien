@@ -90,7 +90,7 @@ static int agi_v3_load_dir (struct agi_dir *agid, FILE *fp, UINT32 offs, UINT32 
 		/* build directory entries */
 		for(i = 0; i < len; i += 3) {
 			agid[i / 3].volume = hilo_getbyte (mem + i) >> 4;
-			agid[i / 3].offset = hilo_getpword (mem+i) & _EMPTY;
+			agid[i / 3].offset = hilo_getpword (mem+i) & (UINT32)_EMPTY;
 		}
 
 		free(mem);

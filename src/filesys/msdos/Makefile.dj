@@ -6,7 +6,7 @@
 
 include $(TOPDIR)/Rules.dj
 
-OBJS = fileglob.o
+OBJS = fileglob.o path.o
 
 all: fileglob.a
 

@@ -28,8 +28,8 @@ OBJS	= agi.obj agi_v2.obj agi_v3.obj checks.obj cli.obj console.obj \
 	  id.obj iff.obj inv.obj keyboard.obj logic.obj lzw.obj main.obj \
 	  menu.obj motion.obj objects.obj op_cmd.obj op_dbg.obj op_test.obj \
 	  patches.obj picture.obj rand.obj savegame.obj silent.obj sound.obj \
-	  sprite.obj text.obj view.obj words.obj fileglob.obj dummy.obj \
-	  ibm.obj
+	  sprite.obj text.obj view.obj words.obj tcglob.obj dummy.obj \
+	  path.obj ibm.obj
 
 #		*Explicit Rules*
 sarien: sarien.cfg $(OBJS)
@@ -69,7 +69,8 @@ lib\sprite.obj
 lib\text.obj
 lib\view.obj
 lib\words.obj
-lib\fileglob.obj
+lib\tcglob.obj
+lib\path.obj
 lib\dummy.obj
 lib\ibm.obj
 |
@@ -189,8 +190,11 @@ winmain.obj: sarien.cfg src\core\winmain.c
 words.obj: sarien.cfg src\core\words.c 
 	$(CC) -c src\core\words.c
 
-fileglob.obj: sarien.cfg src\fileglob\msdos\turboc.c 
-	$(CC) -c src\fileglob\msdos\fileglob.c
+tcglob.obj: sarien.cfg src\filesys\msdos\tcglob.c 
+	$(CC) -c src\filesys\msdos\tcglob.c
+
+path.obj: sarien.cfg src\filesys\msdos\path.c 
+	$(CC) -c src\filesys\msdos\path.c
 
 dummy.obj: sarien.cfg src\sound\dummy\dummy.c 
 	$(CC) -c src\sound\dummy\dummy.c
@@ -226,6 +230,7 @@ sarien.cfg: makefile.tc
 -DVERSION="0.7.0"
 -D__interrupt=interrupt
 -D__far=far
+-D_TRACE
 -L$(LIBPATH)
 -Ff
 | sarien.cfg

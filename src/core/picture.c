@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include <string.h>
-
+#include <assert.h>
 #include "sarien.h"
 #include "agi.h"
 #include "graphics.h"
@@ -49,29 +49,29 @@ static void put_virt_pixel (int x, int y)
 #define STACK_SEG_SIZE 0x1000
 
 struct point_xy {
-	struct point *next;
+	struct point_xy *next;
 	unsigned int x, y;
 };
 
-static int stack_ptr;
-
 #define MAX_STACK_SEGS 16
+static unsigned int stack_num_segs;
+static unsigned int stack_seg;
+static unsigned int stack_ptr;
+
 static struct point_xy *stack[MAX_STACK_SEGS];
-static int stack_num_segs;
-static int stack_seg;
 
 static INLINE void _PUSH (struct point_xy *c)
 {
 	if (stack_ptr >= STACK_SEG_SIZE) {
 		/* Allocate new stack segment */
-		if (stack_num_segs >= MAX_STACK_SEGS) {
-			fprintf (stderr, "flood fill stack overflow\n");
-			abort ();
-		}
+
+		assert (stack_num_segs < MAX_STACK_SEGS);
+
 		if (stack_num_segs <= ++stack_seg) {
 			_D ("new stack (#%d)", stack_num_segs);
 			stack[stack_num_segs++] = malloc (sizeof (struct point_xy)
 				* STACK_SEG_SIZE);
+			assert (stack[stack_num_segs - 1] != NULL);
 		}
 		stack_ptr = 0;
 	}
@@ -267,7 +267,7 @@ static void absolute_draw_line ()
 **************************************************************************/
 static INLINE int is_ok_fill_here (int x, int y)
 {
-	int i;
+	unsigned int i;
 	UINT8 p;
 
 	if (!scr_on && !pri_on)
@@ -518,7 +518,6 @@ static void draw_picture ()
 	UINT8 act;
 	int i, drawing;
 
-	_D ("()");
  	patCode = 0;
  	patNum = 0;
  	pri_on = scr_on = FALSE;
@@ -527,7 +526,6 @@ static void draw_picture ()
 
 	if (opt.showscreendraw == 3)
 		opt.showscreendraw = TRUE;
-
 
 	drawing = 1;
 
@@ -538,7 +536,6 @@ static void draw_picture ()
 	_D (_D_WARN "Drawing picture");
 	for (drawing = 1; drawing && foffs < flen; ) {
 		act = next_byte;
-
 		switch(act) {
 		case 0xf0:			/* set colour on screen */
 			scr_colour = next_byte;
