@@ -43,6 +43,8 @@ static UINT8 test_keypressed ()
 	game.keypress = 0;
 	if (!x) main_cycle ();
 
+	if (x) _D (_D_WARN "keypress = %02x", x);
+
 	return x;
 }
 

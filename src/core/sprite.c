@@ -474,8 +474,8 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 
 	if (x1 < 0) x1 = 0;
 	if (y1 < 0) y1 = 0;
-	if (x2 >= _WIDTH) x2 = _WIDTH - c->width;
-	if (y2 >= _HEIGHT) y2 = _HEIGHT - c->height;
+	if (x2 >= _WIDTH) x2 = _WIDTH - 1;
+	if (y2 >= _HEIGHT) y2 = _HEIGHT - 1;
 
 	erase_both ();
 
@@ -559,7 +559,7 @@ void commit_block (int x1, int y1, int x2, int y2)
 	if (y1 >= _HEIGHT) y1 = _HEIGHT - 1;
 	if (y2 >= _HEIGHT) y2 = _HEIGHT - 1;
 
-	/* _D ("%d, %d, %d, %d", x1, y1, x2, y2); */
+	_D ("%d, %d, %d, %d", x1, y1, x2, y2);
 
 	w = x2 - x1 + 1;
 	q = &game.sbuf[x1 + _WIDTH * y1];

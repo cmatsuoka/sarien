@@ -253,6 +253,7 @@ void handle_keys (int key)
 	switch (key) {
 	case KEY_ENTER:
 		_D (("KEY_ENTER"));
+		game.keypress = 0;
 
 		/* Remove all leading spaces */
 		for (p = buffer; *p && *p == 0x20; p++);
@@ -324,6 +325,9 @@ int wait_key ()
 {
 	int key;
 
+	/* clear key queue */
+	while (keypress ()) { get_key (); }
+
 	_D (_D_WARN "waiting...");
 	while (42) {
 		poll_timer ();		/* msdos driver -> does nothing */
@@ -341,6 +345,9 @@ int wait_key ()
 int wait_any_key ()
 {
 	int key;
+
+	/* clear key queue */
+	while (keypress ()) { get_key (); }
 
 	_D (_D_WARN "waiting...");
 	while (42) {

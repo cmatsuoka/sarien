@@ -194,7 +194,9 @@ int main_cycle ()
 		case INPUT_NORMAL:
 			if (!handle_controller (key)) {
 				handle_keys (key);
-				if (key) game.keypress = key;
+				/* commented out to close bug #438872
+				 * if (key) game.keypress = key;
+				 */
 			}
 			break;
 		case INPUT_GETSTRING:
