@@ -152,6 +152,7 @@ freebsd*)
 	LIBS="${LIBS} -pthread"
 	;;
 nto*)
+	AC_CHECK_HEADERS(sys/asoundlib.h)
 	SOUND_DRIVER="qnx"
 	;;
 hpux*)
@@ -196,7 +197,7 @@ esac
 fi
 
 case "${SOUND_DRIVER}" in
-dummy|win32|sdl|freebsd)
+dummy|win32|sdl|freebsd|qnx)
 	;;
 *)
 	AC_CHECK_LIB(pthread, pthread_create,[
@@ -208,6 +209,14 @@ dummy|win32|sdl|freebsd)
 	;;
 esac
 
+case "${target_os}" in
+nto*)
+	if test "${ac_cv_header_sys_asoundlib_h}" = "yes"; then
+		SOUND_DRIVER="alsa"
+		AC_CHECK_LIB(asound, snd_pcm_open)
+	fi
+	;;
+esac
 
 dnl ----------------------------------------------
 dnl Check for file globbing support

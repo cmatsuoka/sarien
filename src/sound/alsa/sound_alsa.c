@@ -1,20 +1,11 @@
-/*
- *  Sarien AGI :: Copyright (C) 1999 Dark Fiber 
- *
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
 /* ALSA sound driver by Claudio Matsuoka <claudio@helllabs.org> */
@@ -40,7 +31,7 @@ static void alsa_close_sound (void);
 static void dump_buffer (void);
 static SINT16 *buffer;
 
-static SOUND_DRIVER sound_alsa = {
+static struct sound_driver sound_alsa = {
 	"ALSA PCM sound output",
 	alsa_init_sound,
 	alsa_close_sound,
@@ -72,35 +63,54 @@ void __init_sound ()
 
 static int alsa_init_sound (SINT16 *b)
 {
-	snd_pcm_format_t format;
-	snd_pcm_playback_status_t ps;
-	snd_pcm_playback_params_t pp;
+	snd_pcm_channel_params_t params;
+	snd_pcm_channel_setup_t setup;
+	int err;
 
 	buffer = b;
 
-	if (snd_pcm_open (&pcm_handle, 0, 0, SND_PCM_OPEN_PLAYBACK) < 0)
+	if ((err = snd_pcm_open (&pcm_handle, 0, 0, SND_PCM_OPEN_PLAYBACK)) < 0){
+		report ("sound_alsa: Error: %s\n", snd_strerror (err));
 		return -1;
+	}
 
 	report ("ALSA driver written by claudio@helllabs.org.\n");
 
+	memset (&params, 0, sizeof(snd_pcm_channel_params_t));
+	params.mode = SND_PCM_MODE_BLOCK;
+	params.buf.block.frag_size = FRAGSIZE;
+	params.buf.block.frags_min = 1;
+	params.buf.block.frags_max = FRAGNUM;
+
+	params.channel = SND_PCM_CHANNEL_PLAYBACK;
+	params.start_mode = SND_PCM_START_FULL;
+	params.stop_mode = SND_PCM_STOP_ROLLOVER;
+
 	/* Set sound device to 16 bit, 22 kHz mono */
 
-	format.rate = 22050;
-	format.channels = 1;
-	format.format = SND_PCM_SFMT_S16_LE;
+	params.format.interleave = 1;
+	params.format.format = SND_PCM_SFMT_S16_LE;
+	params.format.rate = 22050;
+	params.format.voices = 1;
 
-	if (snd_pcm_playback_format (pcm_handle, &format))
+	if ((err = snd_pcm_plugin_params (pcm_handle, &params)) < 0) {
+		report ("sound_alsa: Error: %s\n", snd_strerror (err));
 		return -1;
+	}
 
-	memset (&pp, 0, sizeof(pp));
-	pp.fragment_size = FRAGSIZE;
-	pp.fragments_max = FRAGNUM;
-	pp.fragments_room = 1;
-	snd_pcm_playback_params (pcm_handle, &pp);
-	snd_pcm_playback_status (pcm_handle, &ps);
+	if (snd_pcm_plugin_prepare (pcm_handle, SND_PCM_CHANNEL_PLAYBACK) < 0) {
+		report ("sound_alsa: can't prepare\n");
+		return -1;
+	}
 
-	report ("Using %d fragments of %d bytes\n",
-		ps.fragments, ps.fragment_size);
+	memset (&setup, 0, sizeof (setup));
+	setup.mode = SND_PCM_MODE_STREAM;
+	setup.channel = SND_PCM_CHANNEL_PLAYBACK;
+
+	if (snd_pcm_channel_setup (pcm_handle, &setup) < 0) {
+		report ("sound_alsa: can't setup\n");
+		return -1;
+	}
 
 	pthread_create (&thread, NULL, sound_thread, NULL);
 	pthread_detach (thread);
@@ -117,6 +127,6 @@ static void alsa_close_sound ()
 
 static void dump_buffer ()
 {
-	snd_pcm_write (pcm_handle, buffer, BUFFER_SIZE << 1);
+	snd_pcm_plugin_write (pcm_handle, buffer, BUFFER_SIZE << 1);
 }
 
