@@ -219,6 +219,20 @@ MainWndProc (HWND hwndMain, UINT nMsg, WPARAM wParam, LPARAM lParam)
 	xyxy         *p = (xyxy *)lParam;
 
 	switch (nMsg) {
+	case WM_COMMAND:
+		/* Handle menu options */
+		switch (LOWORD(wParam)) {
+		case ITEM_HELP_ABOUT:
+			DialogBox (GetModuleHandle(NULL),
+				MAKEINTRESOURCE(DIALOG_ABOUT), hwndMain,
+				AboutDlgProc);
+			break;
+		case ITEM_FILE_EXIT:
+			deinit_vidmode ();
+			exit (0);
+		}
+		break;
+
 	case WM_PUT_BLOCK:
 		hDC = GetDC (hwndMain);
 		w = p->x2 - p->x1 + 1;
@@ -239,7 +253,6 @@ MainWndProc (HWND hwndMain, UINT nMsg, WPARAM wParam, LPARAM lParam)
 	case WM_DESTROY:
 		deinit_vidmode ();
 		exit (-1);
-		return 0;
 
 	case WM_PAINT:
 		hDC = BeginPaint (hwndMain, &ps);
@@ -474,12 +487,6 @@ static int init_vidmode ()
 {
 	int i;
 
-#if 0
-	/* FIXME: place this in an "About" box or something... */
-	fprintf (stderr,
-	"win32: Win32 DIB support by rosinha@dexter.damec.cefetpr.br\n");
-#endif
-
 	InitializeCriticalSection (&g_screen.cs);
 	InitializeCriticalSection (&g_key_queue.cs);
 
@@ -494,12 +501,10 @@ static int init_vidmode ()
 	wc.style         = CS_HREDRAW | CS_VREDRAW;
 	wc.lpfnWndProc   = MainWndProc;
 	wc.hInstance     = GetModuleHandle(NULL);
-	/* wc.hIcon         = LoadIcon (NULL, IDI_APPLICATION); */
 	wc.hIcon         = LoadIcon (GetModuleHandle(NULL),
-				MAKEINTRESOURCE(ICON_MAIN));
+			   MAKEINTRESOURCE(ICON_MAIN));
 	wc.hIconSm       = (HICON)LoadImage (GetModuleHandle(NULL),
-				MAKEINTRESOURCE(ICON_MAIN),
-				IMAGE_ICON, 16, 16, 0);
+			   MAKEINTRESOURCE(ICON_MAIN), IMAGE_ICON, 16, 16, 0);
 	wc.hCursor       = LoadCursor (NULL, IDC_ARROW);
 	wc.hbrBackground = GetStockObject (BLACK_BRUSH);
 	wc.lpszMenuName  = MAKEINTRESOURCE(MENU_MAIN);

@@ -20,6 +20,8 @@ extern "C" {
 HWND     hwndMain;
 void     (*flush_sound) (PWAVEHDR pWave);
 
+BOOL CALLBACK AboutDlgProc(HWND, UINT, WPARAM, LPARAM);
+
 #ifdef __cplusplus
 } 
 #endif

@@ -26,3 +26,28 @@ BEGIN
 END
 
 
+DIALOG_ABOUT DIALOG DISCARDABLE 20, 20, 250, 150
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About Sarien"
+FONT 8, "Helv"
+BEGIN
+	CTEXT "\
+Sarien - A Sierra AGI Resource Interpreter Engine\r\n\
+Version 0.8.0 (Sep 2002)\r\n\
+\r\n\
+Written by Stuart George, Lance Ewing, Felipe Rosinha, \
+Claudio Matsuoka, Igor Nesterov, Vasyl Tsvirkunov and Thomas Akesson. \
+See the AUTHORS file for a complete list of contributors.\r\n\
+\r\n\
+Win32 port written by Felipe Rosinha. Fixes and improvements by \
+Igor Nesterov, Ryan Gordon, Matt Hargett, Ian Hanschen, Michel Montague, \
+Justin the Almighty and Claudio Matsuoka.\r\n\
+\r\n\
+This program is free software, you can redistribute and/or modify it \
+under the terms of the GNU General Public License, version 2 or later, \
+as published by the Free Software Foundation.",
+		-1, 5, 5, 240, 120
+
+	DEFPUSHBUTTON "&OK", IDOK, 100, 130, 50, 14
+END
+

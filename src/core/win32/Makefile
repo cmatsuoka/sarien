@@ -10,7 +10,8 @@ LIB	= ../../../lib/libsarien.a
 all: $(LIB)
 
 include ../../../Rules
+include ../../../Version
 
 winres.o: winres.rc
-	$(WINDRES) -i $*.rc -o $@ -Irc -Ocoff
+	$(WINDRES) --define VERSION=\"$(VERSION)\" -i $*.rc -o $@ -Irc -Ocoff
 
