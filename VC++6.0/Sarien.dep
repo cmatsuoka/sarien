@@ -1,0 +1,836 @@
+# Microsoft Developer Studio Generated Dependency File, included by Sarien.mak
+
+..\core_agi\agi.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\agi_v2.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\agi_v3.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\cli.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\getopt.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\font.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\getopt.c : \
+	"..\..\..\..\arquivos de programas\microsoft visual studio\vc98\include\basetsd.h"\
+	"..\include\getopt.h"\
+	
+
+..\core_agi\getopt1.c : \
+	"..\include\getopt.h"\
+	
+
+..\core_agi\gfx.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\global.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\id.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\iff.c : \
+	"..\include\iff.h"\
+	"..\include\typedef.h"\
+	
+
+..\core_agi\keyboard.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\logic.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\lzw.c : \
+	"..\include\lzw.h"\
+	"..\include\typedef.h"\
+	
+
+..\core_agi\main.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\menu.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\objects.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\op_cmd.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\op_dbg.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\op_misc.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\op_test.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\picture.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\rand.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\savegame.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\iff.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\silent.c : \
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	
+
+..\core_agi\sound.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\view.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\core_agi\words.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
+
+..\console\win32\win32.c : \
+	"..\..\..\..\arquivos de programas\microsoft visual studio\vc98\include\basetsd.h"\
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\win32.h"\
+	"..\include\words.h"\
+	
+
+..\sound\win32\sound_win32.c : \
+	"..\..\..\..\arquivos de programas\microsoft visual studio\vc98\include\basetsd.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\win32.h"\
+	
+
+..\fileglob\win32\fileglob.c : \
+	"..\include\agi-v2.h"\
+	"..\include\agi-v3.h"\
+	"..\include\agi.h"\
+	"..\include\cli.h"\
+	"..\include\config.h"\
+	"..\include\defines.h"\
+	"..\include\enums.h"\
+	"..\include\font.h"\
+	"..\include\gfx.h"\
+	"..\include\global.h"\
+	"..\include\id.h"\
+	"..\include\includes.h"\
+	"..\include\keyboard.h"\
+	"..\include\logic.h"\
+	"..\include\lzw.h"\
+	"..\include\machine.h"\
+	"..\include\menu.h"\
+	"..\include\objects.h"\
+	"..\include\op-cmd.h"\
+	"..\include\op-dbg.h"\
+	"..\include\op-misc.h"\
+	"..\include\op-test.h"\
+	"..\include\picture.h"\
+	"..\include\rand.h"\
+	"..\include\savegame.h"\
+	"..\include\sound.h"\
+	"..\include\typedef.h"\
+	"..\include\view.h"\
+	"..\include\words.h"\
+	
