@@ -2,7 +2,26 @@
 Revision History
 ================
 
-0.5.3 (20010408) *DEVELOPMENT*
+0.6.0 (20010625)
+	- file layout changes
+	- interpreter core redesigned
+	- new sprite manager
+	- graphics layer redesigned to work with new sprites
+	- all ancillary buffers replaced by a single AGI screen buffer
+	  containing both priority and visible data
+	- sprite repositioning implemented
+	- blocks implemented (fixes pimp blocking stairs in LSL1)
+	- proper handling of previously unused view table entries and flags
+	- fixed implementation of several AGI commands
+	- preliminary savegame support
+	- optimized pixel routines in the graphics drivers
+	- PC EGA video controller 320x200 aspect ratio correction
+	- implemented inventory and object viewing
+	- AGI games can be loaded from the console
+	- picture viewer temporarily removed, it will be put back in
+	  a future release.
+
+0.5.3 (20010408) *unstable*
 	- starting code cleanup
 	  * reindentations & cosmetic changes
 	  * removing redundant checks
@@ -25,13 +44,13 @@ Revision History
 	- added agi2pdb to the utilities set
 	- added preliminary v4 driver (to directly load PalmOS DB files)
 
-0.5.2 (20000512) *DEVELOPMENT*
+0.5.2 (20000512) *unstable*
 	- Fixed speach bubbles bug for going outside of screen (draw_obj)
 	- Added more inventory code for object viewing
 	- Added Peter Hawkins' save patches
 	- Added Magnus Kristiansen's status line patches
 
-0.5.1 (20000110) *DEVELOPMENT*
+0.5.1 (20000110) *unstable*
 	- added new id mechanism with external id file.
 	- added -C/--crc to cli options for dumping the CRC/ID of a game
 	- merged v2/v3 id lists into 1 list
@@ -45,7 +64,7 @@ Revision History
 	  TAB key to the inventory....
 	  (tab is bound in controller but doesnt work....)
 
-0.5.0 (19991230)
+0.5.0 (19991230) *unstable*
 	- used 0.4.10 as base for dev version
 
 0.4.10 (19991222)
