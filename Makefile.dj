@@ -20,8 +20,8 @@ drivers:
 	cd src\graphics\msdos
 	make -f Makefile.dj TOPDIR=../../..
 	cd ..\..\..
-	@echo Building fileglob driver
-	cd src\fileglob\msdos
+	@echo Building filesys driver
+	cd src\filesys\msdos
 	make -f Makefile.dj TOPDIR=../../..
 	cd ..\..\..
 	@echo Building sound driver
@@ -44,8 +44,8 @@ clean:
 	cd src\sound\dummy
 	make -f Makefile.dj clean TOPDIR=../../..
 	cd ..\..\..
-	echo Cleaning fileglob
-	cd src\fileglob\msdos
+	echo Cleaning filesys
+	cd src\filesys\msdos
 	make -f Makefile.dj clean TOPDIR=../../..
 	cd ..\..\..
 
@@ -54,7 +54,7 @@ sarien:
 	gcc -O2 src/core/agi_core.a \
 		src/graphics/msdos/driver.a \
 		src/sound/dummy/sound.a \
-		src/fileglob/msdos/fileglob.a \
+		src/filesys/msdos/fileglob.a \
 		-lalleg -o bin/sarien.exe
 
 tarball:
