@@ -60,7 +60,7 @@
   UNIX systems (Helen Zommer's Qt-based implementation). Both tools
   are licensed under the GNU General Public License.
 </para><para>
-  As mentioned before, the most likely source of script execution errors 
+  As mentioned above, the most likely source of script execution errors 
   is the lack of complete specifications. Problems arising from partial
   or incorrect implementation of instructions can range from screen
   corruption to in-game errors or even interpreter crashes. The current
@@ -75,8 +75,13 @@
 <sect1 id="intro-portability">
 <title>Portability</title>
 <para>
-  Sarien is currently very portable. It is currently known to run in
-  many platforms, summarized in the following table:
+  Sarien is very portable, and runs in a variety of platforms including
+  UNIX and UNIX-like systems (Linux, BSD, Solaris), BeOS, QNX, MS-DOS,
+  Microsoft Windows and others. The supported platforms are summarized in
+  the following table<footnote><para>Sarien was successfully ported to
+  other platforms such as Amiga, Atari and Acorn but these ports are not
+  yet integrated to the main development tree.</para></footnote>:
+</para><para>
 
   <informaltable>
     <tgroup cols="8">
@@ -227,9 +232,6 @@
     </tgroup>
   </informaltable>
 </para><para>
-  Other ports such as Amiga, Atari and Acorn are not yet integrated to
-  the main development tree.
-</para><para>
   To achieve maximum portability, the following guidelies should be
   observed when writing code for Sarien:
 
@@ -325,9 +327,9 @@
     <listitem><para>
       Cross-compiling to platforms such as Win32 or BeOS using
       <application/gcc/ is supported using the supplied configuration
-      script with appropriate values in the <parameter/CC/ and
-      <parameter/RANLIB/ enviroment variables and setting the
-      <parameter/--host/ command-line parameter.
+      script with appropriate values in the <envar/CC/ and <envar/RANLIB/
+      enviroment variables and setting the <parameter/--host/ command-line
+      parameter.
     </para></listitem>
     <listitem><para>
       Pre-configured rulesets are available to cross-compile to other
@@ -434,6 +436,12 @@
 </para>
 </sect1>
 
+<sect1 id="arch-mainloop">
+<title>The main loop</title>
+<para>
+</para>
+</sect1>
+
 <sect1 id="arch-data">
 <title>Data structures</title>
 <para>
@@ -467,8 +475,9 @@
 <title>Keyboard input handling</title>
 <para>
   The keystroke is routed to different subsystems according to the value
-  of <parameter/game.input-mode/. This variable can assume one of the
-  following values:
+  of <parameter/game.input-mode/, as shown in <xref linkend="fig-keyhandling">.
+  This variable can assume one of the following values, and the possible
+  transitions between input modes are depicted in <xref linkend="fig-input">.
 
   <variablelist>
     <varlistentry>
@@ -508,6 +517,16 @@
     </varlistentry>
   </variablelist>
 
+  <figure id="fig-keyhandling" float="1">
+    <title>Key event routing</title>
+    <graphic fileref="images/hg/key_handling.eps" format="eps"></graphic>
+  </figure>
+
+  <figure id="fig-input" float="1">
+    <title>Interpreter input modes</title>
+    <graphic fileref="images/hg/input_mode.eps" format="eps"></graphic>
+  </figure>
+
 </para><para>
   The interpreter architecture doesn't allow key handling to be implemented
   in a interrupt handler for portability reasons. Instead, keyboard events
@@ -528,6 +547,12 @@
   key handler. The console key handler is completely transparent to the
   rest of the system: when the console is active all key events are
   handled by its own handler before reaching the dispatcher.
+
+</para><para>
+  Key events are stored in the <parameter/V_key/ variable for AGI use.
+  Controller events require ASCII and scan codes and are stored in the
+  special variable <parameter/game.keypress/.
+  
 </para>
 </sect1>
 
@@ -579,6 +604,18 @@
 
 <sect1 id="gfx-fonts">
 <title>Fonts</title>
+<para>
+</para>
+</sect1>
+
+<sect1 id="gfx-msgbox">
+<title>Windowing</title>
+<para>
+</para>
+</sect1>
+
+<sect1 id="gfx-sprite">
+<title>Sprite management</title>
 <para>
 </para>
 </sect1>
