@@ -1,20 +1,21 @@
 Name: sarien
-Version: 0.6.0
+Version: 0.6.cvs20010901
 Release: 1cm
 Summary: An interpreter for old Sierra AGI games
 Group: Games
 License: GPL
-Source: sarien-0.6.0.tar.gz
+Source: sarien-20010901.tar.gz
 URL: http://sarien.sourceforge.net/
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 
 %description 
 Sarien is an open source, portable implementation of the Sierra On-Line
-Adventure Game Interpreter (AGI). It is currently under development;
-no production-quality packages have been released.
+Adventure Game Interpreter (AGI), and is able to run AGI version 2 and
+version 3 games such as Space Quest 1 and 2, King's Quest 1 to 4, Gold
+Rush! and Leisure Suit Larry in the Land of the Lounge Lizards).
 
 %prep
-%setup -q -n %{name}-%{version}
+%setup -q -n %{name}-20010901
 
 %build
 %configure

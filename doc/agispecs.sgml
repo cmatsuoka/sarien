@@ -856,12 +856,12 @@ draw (smoke);
 <sect2>
 <title>Message</title>
 <para>
-  At the end of every Logic resource is a message section. There need not be
+  At the end of every logic resource is a message section. There need not be
   any messages in it, but it will still exist. Messages each logic resource
   can only be accessed from their own script. AGI commands that have messages
   as parameters refer to a message number in their own logic script.
 </para><para>
-   Example:
+  Example:
 
 <programlisting>
 print ("Message 34 in logic.0 is %g34.");
@@ -4087,7 +4087,7 @@ if (said( open, door))       [ must be close enough
   <tgroup cols="8">
     <thead>
       <row>
-        <entry/Opcode/ <entry/Command/ <entry/Args/ &p1; &p2; &p3; &p4; &p5;/
+        <entry/Opcode/ <entry/Command/ <entry/Args/ &p1; &p2; &p3; &p4; &p5;
       </row>
     </thead>
     <tbody>
@@ -4194,26 +4194,26 @@ if (said( open, door))       [ must be close enough
       <row/<entry/42/ <entry/<function/object.on.anything// &p1; &o;/
       <row/<entry/43/ <entry/<function/ignore.objs//    &p1; &o;/
       <row/<entry/44/ <entry/<function/observe.objs//   &p1; &o;/
-      <row/<entry/45/ <entry/<function/distance//       &p3; &o; &o;/
+      <row/<entry/45/ <entry/<function/distance//       &p3; &o; &o; &v;/
       <row/<entry/46/ <entry/<function/stop.cycling//   &p1; &o;/
       <row/<entry/47/ <entry/<function/start.cycling//  &p1; &o;/
       <row/<entry/48/ <entry/<function/normal.cycle//   &p1; &o;/
       <row/<entry/49/ <entry/<function/end.of.loop//    &p2; &o; &f;/
       <row/<entry/4A/ <entry/<function/reverse.cycle//  &p1; &o;/
       <row/<entry/4B/ <entry/<function/reverse.loop//   &p2; &o; &f;/
-      <row/<entry/4C/ <entry/<function/cycle.time//     &p2; &o;&v;/
+      <row/<entry/4C/ <entry/<function/cycle.time//     &p2; &o; &v;/
       <row/<entry/4D/ <entry/<function/stop.motion//    &p1; &o;/
       <row/<entry/4E/ <entry/<function/start.motion//   &p1; &o;/
-      <row/<entry/4F/ <entry/<function/step.size//      &p2; &o;&v;/
+      <row/<entry/4F/ <entry/<function/step.size//      &p2; &o; &v;/
 
-      <row/<entry/50/ <entry/<function/step.time//      &p2; &o;&v;/
-      <row/<entry/51/ <entry/<function/move.obj//       &p5; &o;&n;/
-      <row/<entry/52/ <entry/<function/move.obj.v//     &p5; &o;&v;/
-      <row/<entry/53/ <entry/<function/follow.ego//     &p3; &o;&n;/
+      <row/<entry/50/ <entry/<function/step.time//      &p2; &o; &v;/
+      <row/<entry/51/ <entry/<function/move.obj//       &p5; &o; &n;/
+      <row/<entry/52/ <entry/<function/move.obj.v//     &p5; &o; &v;/
+      <row/<entry/53/ <entry/<function/follow.ego//     &p3; &o; &n;/
       <row/<entry/54/ <entry/<function/wander//         &p1; &o;/
       <row/<entry/55/ <entry/<function/normal.motion//  &p1; &o;/
-      <row/<entry/56/ <entry/<function/set.dir//        &p2; &o;&v;/
-      <row/<entry/57/ <entry/<function/get.dir//        &p2; &o;&v;/
+      <row/<entry/56/ <entry/<function/set.dir//        &p2; &o; &v;/
+      <row/<entry/57/ <entry/<function/get.dir//        &p2; &o; &v;/
       <row/<entry/58/ <entry/<function/ignore.blocks//  &p1; &o;/
       <row/<entry/59/ <entry/<function/observe.blocks// &p1; &o;/
       <row/<entry/5A/ <entry/<function/block//          &p4; &n; &n;/
@@ -4230,15 +4230,15 @@ if (said( open, door))       [ must be close enough
       <row/<entry/64/ <entry/<function/stop.sound//     &p0;/
       <row/<entry/65/ <entry/<function/print//          &p1; &m;/
       <row/<entry/66/ <entry/<function/print.v//        &p1; &v;/
-      <row/<entry/67/ <entry/<function/display//        &p3; &n; &n;/
-      <row/<entry/68/ <entry/<function/display.v//      &p3; &v; &v;/
-      <row/<entry/69/ <entry/<function/clear.lines//    &p3; &n; &n;/
+      <row/<entry/67/ <entry/<function/display//        &p3; &n; &n; &m;/
+      <row/<entry/68/ <entry/<function/display.v//      &p3; &v; &v; &v;/
+      <row/<entry/69/ <entry/<function/clear.lines//    &p3; &n; &n; &m;/
       <row/<entry/6A/ <entry/<function/text.screen//    &p0;/
       <row/<entry/6B/ <entry/<function/graphics//       &p0;/
       <row/<entry/6C/ <entry/<function/set.cursor.char//&p1; &m;/
       <row/<entry/6D/ <entry/<function/set.text.attribute// &p2; &n; &n;/
       <row/<entry/6E/ <entry/<function/shake.screen//   &p1; &n;/
-      <row/<entry/6F/ <entry/<function/configure.screen// &p3; &n; &n;/
+      <row/<entry/6F/ <entry/<function/configure.screen// &p3; &n; &n; &n;/
 
       <row/<entry/70/ <entry/<function/status.line.on// &p0;/
       <row/<entry/71/ <entry/<function/status.line.off//&p0;/
@@ -4249,9 +4249,9 @@ if (said( open, door))       [ must be close enough
       <row/<entry/76/ <entry/<function/get.num//        &p2; &s; &v;/
       <row/<entry/77/ <entry/<function/prevent.input//  &p0;/
       <row/<entry/78/ <entry/<function/accept.input//   &p0;/
-      <row/<entry/79/ <entry/<function/set.key//        &p3; &n; &n;/
-      <row/<entry/7A/ <entry/<function/add.to.pic//     &p7; &n; &n;/
-      <row/<entry/7B/ <entry/<function/add.to.pic.v//   &p7; &v; &v;/
+      <row/<entry/79/ <entry/<function/set.key//        &p3; &n; &n; &n;/
+      <row/<entry/7A/ <entry/<function/add.to.pic//  &p7; &n;&n;&n;&n;&n;&n;&n;/
+      <row/<entry/7B/ <entry/<function/add.to.pic.v//&p7; &v;&v;&v;&v;&v;&v;&v;/
       <row/<entry/7C/ <entry/<function/status//         &p0;/
       <row/<entry/7D/ <entry/<function/save.game//      &p0;/
       <row/<entry/7E/ <entry/<function/restore.game//   &p0;/
@@ -4259,7 +4259,7 @@ if (said( open, door))       [ must be close enough
 
       <row/<entry/80/ <entry/<function/restart.game//   &p0;/
       <row/<entry/81/ <entry/<function/show.obj//       &p1; &n;/
-      <row/<entry/82/ <entry/<function/random//         &p3; &n; &n;/
+      <row/<entry/82/ <entry/<function/random//         &p3; &n; &n; &v/
       <row/<entry/83/ <entry/<function/program.control//&p0;/
       <row/<entry/84/ <entry/<function/player.control// &p0;/
       <row/<entry/85/ <entry/<function/obj.status.v//   &p1; &v;/
@@ -4277,14 +4277,14 @@ if (said( open, door))       [ must be close enough
       <row/<entry/90/ <entry/<function/log//            &p1; &m;/
       <row/<entry/91/ <entry/<function/set.scan.start// &p0;/
       <row/<entry/92/ <entry/<function/reset.scan.start// &p0;/
-      <row/<entry/93/ <entry/<function/reposition.to//  &p3; &o; &n;/
-      <row/<entry/94/ <entry/<function/reposition.to.v//&p3; &o; &v;/
+      <row/<entry/93/ <entry/<function/reposition.to//  &p3; &o; &n; &n;/
+      <row/<entry/94/ <entry/<function/reposition.to.v//&p3; &o; &v; &v;/
       <row/<entry/95/ <entry/<function/trace.on//       &p0;/
-      <row/<entry/96/ <entry/<function/trace.info//     &p3; &n; &n;/
-      <row/<entry/97/ <entry/<function/print.at//       &p4; &m; &n; &v;/
-      <row/<entry/98/ <entry/<function/print.at.v//     &p4; &m; &v; &v;/
+      <row/<entry/96/ <entry/<function/trace.info//     &p3; &n; &n; &n;/
+      <row/<entry/97/ <entry/<function/print.at//       &p4; &m; &n; &n; &n/
+      <row/<entry/98/ <entry/<function/print.at.v//     &p4; &v; &n; &n; &n/
       <row/<entry/99/ <entry/<function/discard.view.v// &p1; &v;/
-      <row/<entry/9A/ <entry/<function/clear.text.rect//&p5; &n; &n;/
+      <row/<entry/9A/ <entry/<function/clear.text.rect//&p5; &n; &n; &n; &n;&n;/
       <row/<entry/9B/ <entry/<function/set.upper.left// &p2; &n; &n;/
       <row/<entry/9C/ <entry/<function/set.menu//       &p1; &m;/
       <row/<entry/9D/ <entry/<function/set.menu.member//&p2; &m; &c;/
@@ -4308,7 +4308,7 @@ if (said( open, door))       [ must be close enough
       <row/<entry/AE/ <entry/<function/set.pri.base//   &p1; &n;/
       <row/<entry/AF/ <entry/<function/discard.sound//  &p1; &n;/
 
-      <row/<entry/B0/ <entry/<function/hide.mouse//     <entry>0/1</entry>/
+      <row/<entry/B0/ <entry/<function/hide.mouse//     <entry>0|1</entry>/
       <row/<entry/B1/ <entry/<function/allow.menu//     &p1; <entry/???//
       <row/<entry/B2/ <entry/<function/show.mouse//     &p0;/
       <row/<entry/B3/ <entry/<function/fence.mouse//    &p4; &n; &n; &n; &n;/
@@ -4325,25 +4325,32 @@ if (said( open, door))       [ must be close enough
 <sect2>
 <title>The header</title>
 <para>
-   The header of each logic script is seven bytes in length for games
-   before 1988. After this date compression seems to have been introduced
-   and the header was subsequently altered. This compression will be
-   discussed at a later stage.
-
-<programlisting>
-Byte  Meaning
------ -----------------------------------------------------------
- 0-1  0x1234: signature for the start of a file in the VOL block
-  2   Vol file number
- 3-4  Length of the logic script
- 5-6  Offset of logic code end and text begin
------ -----------------------------------------------------------
-</programlisting>
-
-   All text that can be printed to the screen from within a logic script
-   is stored in an encrypted form at the end of the logic script.
-
-   Example 1: KQ1. Room 2.
+  The header of each logic script is seven bytes in length for games
+  before 1988. After this date compression seems to have been introduced
+  and the header was subsequently altered. This compression will be
+  discussed at a later stage.
+</para>
+<para>
+  <informaltable>
+    <tgroup cols="2">
+      <thead>
+        <row/ <entry/Offset/ <entry/Command/ /
+      </thead>
+      <tbody>
+        <row/ <entry/0-1/ <entry/Signature (0x12--0x34)//
+        <row/ <entry/ 2 / <entry/Vol number that the resource is contained in//
+        <row/ <entry/3-4/ <entry/Length of the resource without the header//
+        <row/ <entry/5-6/ <entry/Offset of logic code message section//
+      </tbody>
+    </tgroup>
+  </informaltable>
+</para>
+<para>
+  All text that can be printed to the screen from within a logic script
+  is stored in an encrypted form at the end of the logic script.
+</para><para>
+  Example: KQ1. Room 2.
+</para><para>
 
 <programlisting>
  12 34    Signature
@@ -4353,76 +4360,74 @@ Byte  Meaning
 </programlisting>
 </para>
 
-<sect2><title>The LOGIC codes</title>
+<sect2>
+<title>Opcodes</title>
 <para>
-   The logic code section starts immediately after the header and
-   continues until the start of the text section has been reached. There
-   are three sets of codes used in a logic script. Most codes will have
-   between one and seven arguments inclusive. This is discussed later on.
-   The first set of codes is the AGI commands themselves and they have
-   the range:
-
-<programlisting>
-0x00 - 0xB5    AGI commands. (eg. animate.obj)
-</programlisting>
-
-   The value 181 (0xB5) may well be different for each game. Sierra will
-   have added more commands to their set as they went along. The value
-   above is for Manhunter 2 which is one of the last AGI games made. The
-   second set of codes is as follows:
-
-<programlisting>
-   FF      if
-   FE      else (or goto)
-   FD      not (!)
-   FC      or (||)
-</programlisting>
-
-   At present these are the only high value codes encountered. The <literal/if/
-   and <literal/or/ codes are more like brackets, ie. the code will be at the
-   start and the end of the section of codes that it refers to. The
-   following example will illustrate this:
-
-   Example 2: KQ1. Room 2.
+  The logic code section starts immediately after the header and
+  continues until the start of the message section has been reached. There
+  are three sets of codes used in a logic script. Most codes will have
+  between one and seven arguments inclusive. This is discussed later on.
+  The first set of codes is the AGI commands themselves listed in
+  <xref linkend="tab-action-commands">, and they have the range 0x00--0xB6.
+  The second set of codes is as follows:
+</para><para>
+  <informaltable>
+    <tgroup cols="2">
+      <thead>
+        <row/ <entry/Code/ <entry/Command/ /
+      </thead>
+      <tbody>
+        <row/ <entry/FF/ <entry/<function/if// /
+        <row/ <entry/FE/ <entry/<function/else/ or <function/goto// /
+        <row/ <entry/FD/ <entry/<function/not// /
+        <row/ <entry/FC/ <entry/<function/or// /
+      </tbody>
+    </tgroup>
+  </informaltable>
+</para><para>
+  At present these are the only high value codes encountered. The
+  <function/if/ and <function/or/ codes are like brackets, i.e. the code
+  will be at the start and the end of the section of codes that it refers
+  to. The following example will illustrate this:
+</para><para>
+  Example: KQ1, Room 2.
 <programlisting>
    FF      'if' conditions start.
    07      07 = isset
    05      05 = flag 5
    FF      'if' conditions close.
 </programlisting>
-
+</para><para>
    The above translates to:
-
+</para><para>
 <programlisting>
 if (isset(5))
 </programlisting>
-
-   which tests whether flag number 5 is set. The 0xFF effectively switches
-   the interpreter into a condition checking mode which leads us to the
-   next set of codes which I call the condition codes:
+</para><para>
+  which tests whether flag number 5 is set. The 0xFF effectively switches
+  the interpreter into a condition checking mode which leads us to the
+  set of codes listed in <xref linkend="tab-test-commands">
 </para><para>
 <programlisting>
 0x00 - 0x12    Condition codes.
 </programlisting>
 </para><para>
-
-   The <function/isset/ condition code was introduced in example 2 above.
-   When the interpreter encounters a 0xFF it will then interpret the
-   following code values as being in the condition code range until it
-   encounters the next 0xFF which switches it back into normal AGI command
-   mode. The two bytes immediately following the second 0xFF determine how
-   many bytes this <function/if/ statement lasts for before the <function/if/
-   is ended.  When the second 0xFF is encountered the interpreter, be it
-   us or the machine, does three things:
+  When the interpreter encounters a 0xFF it will then interpret the
+  following code values as being in the condition code range until it
+  encounters the next 0xFF which switches it back into normal AGI command
+  mode. The two bytes immediately following the second 0xFF determine how
+  many bytes this <function/if/ statement lasts for before the <function/if/
+  is ended.  When the second 0xFF is encountered the interpreter, be it
+  us or the machine, does three things:
 </para><para>
-   <orderedlist>
+  <orderedlist>
     <listitem><para>Reads in the following two bytes.</para></listitem>
     <listitem><para>Opens a bracket.</para></listitem>
     <listitem><para>Switches to AGI command mode.</para></listitem>
-   </orderedlist>
+  </orderedlist>
 </para><para>
 
-   Example 3: KQ1. Room 2.
+  Example: KQ1, Room 2.
 </para><para>
 <programlisting>
 FF 07 05 FF    if (isset(5))
@@ -4433,20 +4438,18 @@ FF 07 05 FF    if (isset(5))
 ...		   ...
                }			[ Closed. 0x0084 bytes counted.
 </programlisting>
-
-</para><para>
-   Of course, the code inside the brackets is only executed if the <literal/if/
-   condition is met.
 </para>
 
-<sect2><title>The <literal/else/ command and more on brackets</title>
+<sect2>
+<title>The <function/else/ command and more on brackets</title>
 <para>
-   The else statement will always continue after an <literal/if/ bracket block.
-   This next feature is important and has caused a number of hassles in
-   the past. When an <literal/else/ statement follows an <literal/if/, then the bracket
-   distance given after the <literal/if/ statement <emphasis>will be three bytes
-   longer</emphasis> (this is a consequence of the way the interpreter handles
-   <literal/if/ and <literal/else/ codes which is discussed later).
+  The <function/else/ statement will always continue after an
+  <function/if/ bracket block. This next feature is important and has
+  caused a number of hassles in the past. When an <function/else/
+  statement follows an <function/if/, then the bracket distance given
+  after the <function/if/ statement <emphasis>will be three bytes
+  longer</emphasis> (this is a consequence of the way the interpreter handles
+  <function/if/ and <function/else/ codes which is discussed later).
 
 </para><para>
    Here's an example:
@@ -4467,22 +4470,24 @@ else {                                     FE 11 00
 </programlisting>
 
 </para><para>
-   Usually you would expect the bracket distance to be 0x0002 but in the
-   above case it is clearly 0x0005 which illustrates the difference
-   between a straight <literal/if/ statement and an <literal/if..else/ structure. The
-   situation is the same for nested <literal/if..else/ structures.
-
+  Usually you would expect the bracket distance to be 0x0002 but in the
+  above case it is clearly 0x0005 which illustrates the difference
+  between a straight <function/if/ statement and an <function/if..else/
+  structure. The situation is the same for nested <function/if..else/
+  structures.
 </para><para>
-   The <literal/else/ statements themselves are a lot like <literal/if/ statements
-   except that they're test condition is given after the 0xFE code but is
-   instead the inverse of the condition given by the above <literal/if/
-   statement. Only the bracket distance is given after the 0xFE code and
-   then the AGI command clock that the <literal/else/ statement encompasses.
+  The <function/else/ statements themselves are a lot like <function/if/
+  statements except that they're test condition is given after the 0xFE
+  code but is instead the inverse of the condition given by the above
+  <function/if/ statement. Only the bracket distance is given after the
+  0xFE code and then the AGI command clock that the <function/else/
+  statement encompasses.
 </para>
 
-<sect2><title>Test conditions</title>
+<sect2>
+<title>Test conditions</title>
 <para>
-   Conditions can be one of the following types:
+  Conditions can be one of the following types:
 </para><para>
 <programlisting>
 FF 07 05 FF                         One condition tested, ie. isset(5)
@@ -4492,7 +4497,7 @@ FF FC 07 05 07 06 FC FF             Multiple conditions ORed.
 FF FC 07 06 07 06 FC FD 07 08 FF    Combination.
 </programlisting>
 </para><para>
-   These conditions translate to:
+  These conditions translate to:
 </para><para>
 <programlisting>
 if (isset(5))
@@ -4501,38 +4506,41 @@ if (isset(5) && isset(6))
 if (isset(5) || isset(6))
 if ((isset(5) || isset(6)) && !isset(7))
 </programlisting>
-</para><para>
-
-   If multiple boolean expressions are grouped together, then there
-   respective values are ANDed together. If multiple boolean expressions
-   are grouped together and then surrounded by a pair of 0xFC codes, then
-   their values are ORed together.
-
-</para><para>
-   The 0xFD code only applies to the following condition code whose
-   boolean value it inverts.
 </para>
 
-<sect2><title>Arguments</title>
 <para>
-   You may well be asking how the interpreter knows how many arguments
-   each code has and what type of argument each argument is. This
-   information is stored in a file called <literal/agidata.ovl/ (MS-DOS version).
-   Inside this file there is a table which contains four bytes for each
-   AGI command and condition code. These four bytes are interpreted as
-   follows:
+  If multiple boolean expressions are grouped together, then there
+  respective values are ANDed together. If multiple boolean expressions
+  are grouped together and then surrounded by a pair of 0xFC codes, then
+  their values are ORed together.
+</para><para>
+  The 0xFD code only applies to the following condition code whose
+  boolean value it inverts.
+</para>
+
+<sect2>
+<title>Arguments</title>
+<para>
+  You may well be asking how the interpreter knows how many arguments
+  each code has and what type of argument each argument is. This
+  information is stored in <filename/agidata.ovl/ in the MS-DOS version.
+  Inside this file there is a table which contains four bytes for each
+  AGI command and condition code. These four bytes are interpreted as
+  follows:
 
 </para><para>
-<programlisting>
-Byte  Meaning
------ -----------------------------------------------------------
- 0-1  Pointer to the machine code implementation contained in the
-      file agi
-  2   Number of arguments
-  3   The type of arguments
------ -----------------------------------------------------------
-</programlisting>
-
+  <informaltable>
+    <tgroup cols="2">
+      <thead>
+        <row/ <entry/Offset/ <entry/Description/ /
+      </thead>
+      <tbody>
+        <row/ <entry/0-1/ <entry/Pointer to implementation code/ /
+        <row/ <entry/ 2 / <entry/Number of arguments/ /
+        <row/ <entry/ 3 / <entry/Type of arguments/ /
+      </tbody>
+    </tgroup>
+  </informaltable>
 </para><para>
    The type of arguments value is interpreted as follows:
 </para><para>
@@ -4543,28 +4551,29 @@ command( arg1, arg2, arg3, arg4, arg5, arg6, arg7); (unknown)
 </programlisting>
 
 </para><para>
-   If the bit is set, argument is interpreted as a variable; otherwise
-   the argument is interpreted as a number. It is unknown what bit 0 does
-   since no AGI command or AGI condition code has more than seven arguments.
+  If the bit is set, argument is interpreted as a variable; otherwise
+  the argument is interpreted as a number. It is unknown what bit 0 does
+  since no AGI command or AGI condition code has more than seven arguments.
 
 </para><para>
-   Examples:
+  Examples:
 </para><para>
-   <simplelist>
+  <simplelist>
     <member>0x80 Says that the commands first argument is a variable.
     <member>0x60 Says that the second and third arguments are variable numbers.
-   </simplelist>
+  </simplelist>
 </para>
 
 
-<sect2><title>The text section</title>
+<sect2>
+<title>The messages section</title>
 <para>
-   The text section of a logic script contains all the strings that can
-   be displayed by that logic script. These strings are encrypted by
-   xoring every eleven bytes with the string "Avis Durgan".
+  The messages section of a logic script contains all the strings that can
+  be displayed by that logic script. These strings are encrypted by
+  xor'ing every eleven bytes with the string "Avis Durgan".
 
 </para><para>
-   Example 4: KQ1. Room 2.
+  Example: KQ1, Room 2.
 </para><para>
 <programlisting>
 if (said(look, alligators))
@@ -4574,7 +4583,7 @@ if (said(look, alligators))
 </programlisting>
 
 </para><para>
-   In the above example, the print statement is represented as:
+  In the above example, the print statement is represented as:
 </para><para>
 
 <programlisting>
@@ -4582,37 +4591,39 @@ if (said(look, alligators))
 </programlisting>
 
 </para><para>
-   The 0x08 is the number given to the string and corresponds to its
-   position in the list of strings at the end of the logic script.
+  The 0x08 is the number given to the string and corresponds to its
+  position in the list of strings at the end of the logic script.
+  The format of the message section is as follows:
+</para><para>
 
 </para><para>
-   The format of the text section is as follows:
-</para><para>
-<programlisting>
-Byte  Meaning
------ -----------------------------------------------------------
-  0   Number of messages
- 1-2  Pointer to end of messages
- 3-4  A list of offsets which point to each of the messages. The
-      first offset naturally enough points to the start of the
-      textual data
- ...
-  ?   Start of the text data. From this point the messages are
-      encrypted with Avis Durgan (in their unencrypted form, each
-      message is separated by a 0x00 value)
------ -----------------------------------------------------------
-</programlisting>
+  <informaltable>
+    <tgroup cols="2">
+      <thead>
+        <row/ <entry/Offset/ <entry/Description/ /
+      </thead>
+      <tbody>
+        <row/ <entry/ 0 / <entry/Number of messages//
+        <row/ <entry/1-2/ <entry/Pointer to the end of the messages//
+        <row/ <entry/3-4/ <entry/Array of message pointers//
+        <row/ <entry/.../ <entry/Array of message pointers//
+        <row/ <entry/ ? / <entry/Start of the text data. From this point
+               the messages are encrypted with Avis Durgan (in their
+               unencrypted form, each message is separated by a 0x00 value)//
+      </tbody>
+    </tgroup>
+  </informaltable>
 </para>
 
-<sect2><title>Machine code implementation</title>
+<sect2><title>Implementation</title>
 <para>
-   The machine code for each AGI statement is found in the AGI file. This
-   is the AGI interpreter itself. The data in the <literal/agidata.ovl/ file is
-   used to find the start of the implementation for an AGI statement.
-   Below are a couple of examples:
+  The implementation for each AGI statement is found in the <filename/agi/
+  file. This is the AGI interpreter itself. The data in the
+  <filename/agidata.ovl/ file is used to find the start of the
+  implementation for an AGI statement. Below are a couple of examples:
 
 </para><para>
-   Example 5: MH2. equaln.
+  Example: MH2, equaln.
 </para><para>
 <programlisting>
 ;equaln   (eg.   if (work = 3)   )
@@ -4628,7 +4639,7 @@ Byte  Meaning
 </programlisting>
 
 </para><para>
-   Example 6: MH2. equalv.
+   Example: MH2, equalv.
 </para><para>
 <programlisting>
 ;equalv  (eg.   if (work = maxwork)   )
@@ -4646,23 +4657,21 @@ Byte  Meaning
 </programlisting>
 
 </para><para>
-   These two examples show the difference between how numbers and
-   variables are dealt with. In the case of a variable, the variables
-   number is used as an index into the table of variable values to get
-   the value which is being tested. It appears that the variable table is
-   at offset 0x0009 in the data segment.
+  These two examples show the difference between how numbers and
+  variables are dealt with. In the case of a variable, the variables
+  number is used as an index into the table of variable values to get
+  the value which is being tested. It appears that the variable table is
+  at offset 0x0009 in the data segment.
 </para>
 
-<sect2><title>How the interpreter handles LOGIC code</title>
+<sect2>
+<title>How the interpreter handles the code</title>
 <para>
-   Now that you know a bit about what the actual code looks like once it
-   has been converted into the LOGIC game data, we will now look at how
-   these codes are interpreted by the interpreter. The following 8086
-   assembly language code is the actual code from the MS-DOS version of
-   Manhunter: San Francisco. There are some calls
-   to routines which aren't displayed. Take my word for it that they do
-   what the comment says. For those of you who can't follow whats going
-   on, I'll explain the interpretation in steps after the code block.
+  The following 8086 assembly language code is the actual code from
+  the MS-DOS version of Manhunter: San Francisco. There are some calls
+  to routines which aren't displayed. Take my word for it that they do
+  what the comment says. For those of you who can't follow whats going
+  on, I'll explain the interpretation in steps after the code block.
 
 </para><para>
 <programlisting>
@@ -4776,45 +4785,47 @@ s)
 </programlisting>
 
 </para><para>
-   <emphasis/Situation 1./ Okay, every LOGIC file starts in normal AGI command
-   execution mode. In this routine, if the code is below 0xFC, then it is
-   presumed to be an AGI command. It will then call the main command
-   execution routine which will jump to the relevant routine for the
-   specific command using the jump table stored in <literal/agidata.ovl/. The
-   command is performed and it returns to the main execution routine
-   where it loops back to the top and deals with the next code in the
-   LOGIC file.
+  <emphasis/Situation 1./ Every logic script starts in normal AGI command
+  execution mode. In this routine, if the code is below 0xFC, then it is
+  presumed to be an AGI command. It will then call the main command
+  execution routine which will jump to the relevant routine for the
+  specific command using the jump table stored in <filename/agidata.ovl/.
+  The command is performed and it returns to the main execution routine
+  where it loops back to the top and deals with the next code in the
+  logic file.
 
 </para><para>
-   <emphasis/Situation 2./ If the code is an 0xFF code, then if jumps to the <literal/if/
-   statement handler. In this routine is basically assesses whether the
-   whole test condition evaluates to true or to false. It does this by
-   treating each test separately and calling the relevant test command
-   routines using the jump table in the <literal/agidata.ovl/ file. Each test
-   command routine will return a value in <literal/AL/ which says whether it is
-   true or not. Depending on the NOTs and ORs, the whole expression is
-   evaluated. If at any stage during the evaluation the routine decides
-   that the expression will be false, it exits to another routine which
-   skips the rest of the <literal/if/ statement and then adds the two byte word
-   following the closing 0xFF code to the execution pointer. This usually
-   has the affect of jumping over the <literal/if/ block of code. If the
-   <literal/if/ handler gets to the ending 0xFF then it knows the expression
-   is true simply because it hasn't exited out of the routine yet. At this
-   stage it jumps over the two bytes following the closing 0xFF and then
-   goes back to executing straight AGI commands.
+  <emphasis/Situation 2./
+  If the code is an 0xFF code, then if jumps to the <function/if/
+  statement handler. In this routine is basically assesses whether the
+  whole test condition evaluates to true or to false. It does this by
+  treating each test separately and calling the relevant test command
+  routines using the jump table in the <filename/agidata.ovl/ file.
+  Each test command routine will return a value in <literal/AL/ which
+  says whether it is true or not. Depending on the NOTs and ORs, the
+  whole expression is evaluated. If at any stage during the evaluation
+  the routine decides that the expression will be false, it exits to
+  another routine which skips the rest of the <function/if/ statement
+  and then adds the two byte word following the closing 0xFF code to
+  the execution pointer. This usually has the affect of jumping over
+  the <function/if/ block of code. If the <function/if/ handler gets
+  to the ending 0xFF then it knows the expression is true simply because
+  it hasn't exited out of the routine yet. At this stage it jumps over
+  the two bytes following the closing 0xFF and then goes back to
+  executing straight AGI commands.
+</para><para>
+  <emphasis/Situation 3./ If in the normal execution of AGI commands,
+  the code 0xFE is encountered, a very simple action takes place. The
+  two bytes which follow form a 16-bit twos complement value which is
+  added to execution pointer. This is all it does. Previously we said
+  that the 0xFE code stood for the <function/else/ statement which is
+  in actual fact correct for over 90% of the time, but the small number
+  of other occurrences are best described as <function/goto/ statements.
+  If you're confused by this, the following example will probably explain
+  things.
 
 </para><para>
-   <emphasis/Situation 3./ If in the normal execution of AGI commands, the code 0xFE
-   is encountered, a very simple action takes place. The two bytes which
-   follow form a 16-bit twos complement value which is added to execution
-   pointer. This is all it does. Previously we said that the 0xFE code
-   stood for the <literal/else/ statement which is in actual fact correct for
-   over 90% of the time, but the small number of other occurrences are
-   best described as <literal/goto/ statements. If you're confused by this, the
-   following example will probably explain things.
-
-</para><para>
-   Example:
+  Example:
 </para><para>
 <programlisting>
 if (said( open, door)) {
@@ -4826,9 +4837,9 @@ else {
 </programlisting>
 
 </para><para>
-   The above example is how the original coder would have written the AGI
-   code. If we now look at the following example, it is not hard to see
-   that it would achieve the same thing.
+  The above example is how the original coder would have written the AGI
+  code. If we now look at the following example, it is not hard to see
+  that it would achieve the same thing.
 </para><para>
 
 <programlisting>
@@ -4843,46 +4854,48 @@ label2:
 </programlisting>
 
 </para><para>
-   This is exactly how all <literal/if/s and <literal/else/s are implemented in the LOGIC
-   code. The <literal/if/ statement is a conditional branch where the branch is
-   taken if the condition is not met, while the <literal/else/ statement is a
-   nonconditional jump. If a 0xFE code appears in the middle of some AGI
-   code and wasn't actually originally coded as an <literal/else/, then it was
-   most likely a <literal/goto/ statement.
+  This is exactly how all <function/if/s and <function/else/s are
+  implemented in the logic code. The <function/if/ statement is a
+  conditional branch where the branch is taken if the condition is
+  not met, while the <function/else/ statement is a nonconditional
+  jump. If a 0xFE code appears in the middle of some AGI code and
+  wasn't actually originally coded as an <function/else/, then it was
+  most likely a <function/goto/ statement.
 </para>
 
-<sect2><title>The <literal/said/ test command</title>
+<sect2>
+<title>The <literal/said/ test command</title>
 <para>
-   The above assembly language code does raise a very important point.
-   The <literal/said/ command can have a variable number of arguments. Its
-   code is 0x0E, and the byte following this byte gives the number of
-   two byte words that follow as parameters.
+  The above assembly language code does raise a very important point.
+  The <function/said/ command can have a variable number of arguments. Its
+  code is 0x0E, and the byte following this byte gives the number of
+  two byte words that follow as parameters.
 
 </para><para>
-   Examples:
+  Examples:
 </para><para>
-
 <programlisting>
 if (said(marble))                          FF 0E 01 1E 01 FF
 if (said( open, door))                     FF 0E 02 37 02 73 00 FF
 </programlisting>
 
 </para><para>
-   In the above examples, the values 0x011E, 0x0237, and 0x0073 are just
-   random word numbers that could stand for the words given.
+  In the above examples, the values 0x011E, 0x0237, and 0x0073 are just
+  random word numbers that could stand for the words given.
 </para>
 
-<sect2><title>Inner loops</title>
+<sect2>
+<title>Inner loops</title>
 <para>
-   At first I almost totally discarded the existence of loops in the AGI
-   code because it seemed to me that execution of the LOGIC file
-   continually looped. Loop code like ``while'', ``do..while'', and ``for''
-   statements wouldn't be needed because you could just use a variable to
-   increment with each pass and an <literal/if/ statement to test the value of
-   the variable and take action if it was withing the desired range.
+  At first I almost totally discarded the existence of loops in the AGI
+  code because it seemed to me that execution of the logic script
+  continually looped. Loop code like ``while'', ``do..while'', and ``for''
+  statements wouldn't be needed because you could just use a variable to
+  increment with each pass and an <function/if/ statement to test the
+  value of the variable and take action if it was withing the desired range.
 
 </para><para>
-   Example:
+  Example:
 </para><para>
 <programlisting>
 if (greatern(30, 45) && lessn(30, 55)) {
@@ -4892,17 +4905,17 @@ if (greatern(30, 45) && lessn(30, 55)) {
 </programlisting>
 
 </para><para>
-   I have found evidence of this sort of thing taking place which means
-   that they must loop over continuously. I don't know whether this is
-   something that the interpreter does itself or whether it is part of
-   the AGI code, e.g. at the end of one LOGIC file it calls another which
-   then calls the first one again. With the existence of the conditional
-   branching and unconditional branching nature of the <literal/if/ and <literal/else/
-   statement, it is easy to see that some of the structures such as
-   ``do..while'' can infact be coded into LOGIC code.
+  I have found evidence of this sort of thing taking place which means
+  that they must loop over continuously. I don't know whether this is
+  something that the interpreter does itself or whether it is part of
+  the AGI code, e.g. at the end of one logic script it calls another which
+  then calls the first one again. With the existence of the conditional
+  branching and unconditional branching nature of the <function/if/ and
+  <function/else/ statement, it is easy to see that some of the
+  structures such as ``do..while'' can infact be coded into logic scripts.
 
 </para><para>
-   Example:
+  Example:
 </para><para>
 
 <programlisting>
@@ -4913,55 +4926,30 @@ do {
 </programlisting>
 
 </para><para>
-   The above translation is a simple one which is taken from SQ2. The
-   value 0xFFF7 is the twos complement notation for -9 which is the exact
-   branching value to take the execution back to the start of the <literal/if/
-   statement. If the above example had AGI code between the 0x00 and the
-   0xFE, then there would be code within the brackets of the ``do..while''
-   structure. I don't know whether the original AGI coders used these
-   statements or used <literal/goto/ statements to achieve the same result.
-</para>
-
-<sect2><title>New information on LOGIC interpretation</title>
-<para>
-   It has now come to light that <literal/logic.0/ is run over and over again with
-   each interpretation cycle. The other LOGICs that have been loaded will
-   only get executed if <literal/logic.0/ calls them directly or indirectly (i.e.
-   LOGICs called from <literal/logic.0/ can call other LOGICs and so on).
-
-</para><para>
-   I have also become aware that code 0x00 can basically be thought of
-   as the command <literal/return/. If <literal/logic.0/ calls another logic, the
-   execution will return to <literal/LOGIC.0/ when the 0x00 code is encountered.
-
-</para><para>
-   It is also possible to set the entry point for a LOGIC file. The
-   <literal/set.scan.start/ command makes the entry point of the LOGIC file being
-   executed equal to the position of the command following
-   <literal/set.scan.start/. This means that the next time the LOGIC file is
-   executed, execution begins at that point. The <literal/reset.scan.start/
-   command sets the entry point back to the start of the LOGIC.
+  The above translation is a simple one which is taken from SQ2. The
+  value 0xFFF7 is the twos complement notation for -9 which is the exact
+  branching value to take the execution back to the start of the <function/if/
+  statement. If the above example had AGI code between the 0x00 and the
+  0xFE, then there would be code within the brackets of the ``do..while''
+  structure. I don't know whether the original AGI coders used these
+  statements or used <function/goto/ statements to achieve the same result.
 </para>
 
 </sect1>
-
 </chapter>
 
 
-<chapter id="picture"><title>PICTURE resources</title>
+<chapter id="picture"><title>Picture resources</title>
 <para>
-   Lance Ewing, updated by Claudio Matsuoka based on the AGDS documentation,
-   22 May 1999.
-</para>
 
 <sect1 id="picintro"><title>Introduction</title>
 <para>
-   PICTURE is usually used for background pictures and other full
-   screen images. Pictures in AGI and early SCI games are not stored as a
-   complete picture. Instead they're constructed and stored as
-   coordinates and vectors. Vectors give the instructions for drawing a
-   picture and they have the advantage of taking less space than would a
-   bit image of a complete picture.
+  Picture resources are used for background scenarios and other full
+  screen images. Pictures in AGI and early SCI games are not stored as a
+  complete picture. Instead they're constructed and stored as
+  coordinates and vectors. Vectors give the instructions for drawing a
+  picture and they have the advantage of taking less space than would a
+  bit image of a complete picture.
 
 </para><para>
    Pictures are drawn using nine different drawing actions. These actions
@@ -5425,25 +5413,21 @@ Code  Color             R    G    B
    to draw a single pixel. The function <function/round()/ is what makes
    it act like Sierra's. Essentially when it comes down to a 50:50 decision
    about where to put a pixel, the direction in which the line is being drawn
-   is taken into account. I've only noticed one pixel out of place in all
-   the screens I've tried Showpic on which makes me believe its probably
-   not a fault in this algorithm, but somewhere else in the code.
-</para><para>
-   Note that Sarien (see <xref linkend="otheragi">)
-   use a more efficient line drawing algorithm written by Joshua Neal and
-   Stuart George.
+   is taken into account.<footnote><para>I've only noticed one pixel out
+   of place in all the screens I've tried Showpic on which makes me believe
+   its probably not a fault in this algorithm, but somewhere else in the
+   code. (L.E.)</para></footnote>
 </para><para>
 <programlisting>
-int round(float aNumber, float dirn)
+int round (float f, float dirn)
 {
    if (dirn < 0)
-      return ((aNumber - floor(aNumber) <= 0.501) ?
-	floor(aNumber) : ceil(aNumber));
-   return ((aNumber - floor(aNumber) < 0.499) ?
-	floor(aNumber) : ceil(aNumber));
+      return ((f - floor (f) <= 0.501) ?
+	floor (f) : ceil (f));
+   return ((f - floor (f) < 0.499) ? floor (f) : ceil (f));
 }
 
-void drawline(word x1, word y1, word x2, word y2)
+void drawline (word x1, word y1, word x2, word y2)
 {
    int height, width;
    float x, y, addX, addY;
@@ -5475,44 +5459,45 @@ void drawline(word x1, word y1, word x2, word y2)
 </programlisting>
 </para>
 
-<sect2><title>Flood filling</title>
+<sect2>
+<title>Flood filling</title>
 <para>
-   I have discovered that using a queue in a flood fill routine works
-   quite well. It is also the easiest method to understand as far as I'm
-   concerned. I just thought about what needed to be done and this method
-   took shape.
+  I have discovered that using a queue in a flood fill routine works
+  quite well. It is also the easiest method to understand as far as I'm
+  concerned. I just thought about what needed to be done and this method
+  took shape.
 </para><para>
-   Basically you start at a particular location. If its the desired
-   background colour (white or red depending on the screen), then set
-   that pixel. You then check the pixels immediately up, left, down, and
-   right to see if they are of the desired background colour. If they
-   are, store them in the queue. You then retrieve the first pixel
-   position from the queue and repeat the above steps.
+  Basically you start at a particular location. If its the desired
+  background colour (white or red depending on the screen), then set
+  that pixel. You then check the pixels immediately up, left, down, and
+  right to see if they are of the desired background colour. If they
+  are, store them in the queue. You then retrieve the first pixel
+  position from the queue and repeat the above steps.
 </para>
 </sect1>
 
 <sect1><title>Using higher resolution modes</title>
 <para>
-   I've often wondered if it would be possible to show PICTUREs in a
-   higher resolution, for example, 640x400. Since the data is stored as
-   vectors, it should be possible to multiply all the x components by
-   four and all the y components by two and then draw the lines. This
-   would give less blocky pictures. There would be a number of problems
-   to overcome. Firstly, the fill action (or tool) may cause problems
-   because pixels could be in the wrong places. There will also be a need
-   to draw end pixels of a line with a width of four so that there are no
-   holes for the flood fill to flow out of.
+  I've often wondered if it would be possible to show PICTUREs in a
+  higher resolution, for example, 640x400. Since the data is stored as
+  vectors, it should be possible to multiply all the x components by
+  four and all the y components by two and then draw the lines. This
+  would give less blocky pictures. There would be a number of problems
+  to overcome. Firstly, the fill action (or tool) may cause problems
+  because pixels could be in the wrong places. There will also be a need
+  to draw end pixels of a line with a width of four so that there are no
+  holes for the flood fill to flow out of.
 </para>
 </sect1>
 
 <sect1>
 <title>Sierra's picture editor</title>
 <para>
-   The picture editor that Sierra used back in the vector picture days
-   was much like a CAD program. I've seen a few photos of it in ``The
-   Official Book of King's Quest''. It has a status bar at the top which
-   gives the current tool being used (Line, Fill, etc), the current X and
-   Y locations, and four others which I explain below.
+  The picture editor that Sierra used back in the vector picture days
+  was much like a CAD program. I've seen a few photos of it in ``The
+  Official Book of King's Quest''. It has a status bar at the top which
+  gives the current tool being used (Line, Fill, etc), the current X and
+  Y locations, and four others which I explain below.
 
 </para><para>
    Status bar examples:
@@ -5641,7 +5626,8 @@ Tool:Line V:A P:o C:o X=199 Y=55 Pri:2
     <tbody>
       <row/ <entry/ 0 / <entry/Width of cel in AGI pixels//
       <row/ <entry/ 1 / <entry/Height of cel//
-      <row/ <entry/ 2 / <entry/Transparency and cel mirroring//
+      <row/ <entry/ 2 / <entry/Transparency and cel mirroring
+	     (see <xref linkend="tab-cel-mirror">)//
     </tbody>
   </tgroup>
 </table>
@@ -5705,8 +5691,8 @@ Tool:Line V:A P:o C:o X=199 Y=55 Pri:2
   tell the interpreter what is mirrored:
 </para><para>
 
-<table id="tab-cel-header">
-  <title>Cel header (3 bytes)</title>
+<table id="tab-cel-mirror">
+  <title>Cel mirroring</title>
   <tgroup cols="2">
     <thead>
       <row/ <entry/Bit/ <entry/Description/ /
@@ -5715,6 +5701,7 @@ Tool:Line V:A P:o C:o X=199 Y=55 Pri:2
       <row/ <entry/ 0 / <entry/Specify whether or not this cel is mirrored//
       <row/ <entry/1-3/ <entry/Specify the number of the loop (from 0-7)
             which is NOT mirrored//
+      <row/ <entry/4-7/ <entry/Transparent color//
     </tbody>
   </tgroup>
 </table>

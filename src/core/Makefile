@@ -10,7 +10,8 @@ GFILES	= agi_v2.c agi_v3.c agi_v4.c agi.c cli.c words.c view.c id.c \
 	  logic.c keyboard.c savegame.c sound.c silent.c console.c \
 	  cycle.c graphics.c sprite.c checks.c motion.c menu.c view.c
 XDEPS	= $(MAIN_FILE).o
-DFILES	= Makefile $(OBJS:.o=.c) main.c winmain.c id.c Makefile.wat Makefile.dj
+DFILES	= Makefile $(OBJS:.o=.c) main.c winmain.c id.c hirespic.c \
+	  Makefile.wat Makefile.dj
 CFILES	=
 DDIRS	=
 XLIBS	= -L../../lib -lagi

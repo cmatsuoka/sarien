@@ -220,20 +220,26 @@ void init_menus ()
 
 void deinit_menus ()
 {
-	struct list_head *h, *v;
+	struct list_head *h, *h2, *v, *v2;
 	struct agi_menu *m = NULL;
 	struct agi_menu_option *d = NULL;
 
 	/* scan all menus for event number # */
 
-	list_for_each (h, &menubar, next) {
+	for (h = (&menubar)->prev; h != (&menubar); h = h2) {
 		m = list_entry (h, struct agi_menu, list);
-		list_for_each (v, &m->down, next) {	
+		h2 = h->prev;
+		_D ("deiniting hmenu %s", m->text);
+		for (v = (&m->down)->prev; v != (&m->down); v = v2) {
 			d = list_entry (v, struct agi_menu_option, list);
+			v2 = v->prev;
+			_D ("  deiniting vmenu %s", d->text);
 			list_del (v);
+			free (d->text);
 			free (d);
 		}
 		list_del (h);
+		free (m->text);
 		free (m);
 	}
 }

@@ -1,9 +1,7 @@
 
 Things noted to be fixed
 
- - Much nicer menu code
  - Finish the DJGPP/Allegro port (partially done)
- - Get KQ4 working
  - Nicer save/load functions
 
 SGEO:
@@ -24,5 +22,4 @@ Graphics:
  - Drop root privileges when running svgalib binary and not
    initializing graphics
  - XFree86 DGA support
-
 
