@@ -172,6 +172,10 @@ int handle_controller (int key)
 		/* Handle mouse button events */
 		switch (key) {
 		case BUTTON_LEFT:
+			if (mouse.y <= CHAR_LINES) {
+				new_input_mode (INPUT_MENU);
+				return TRUE;
+			}
 			v->flags |= ADJ_EGO_XY;
 			v->parm1 = WIN_TO_PIC_X(mouse.x);
 			v->parm2 = WIN_TO_PIC_Y(mouse.y);

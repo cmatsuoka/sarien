@@ -46,12 +46,32 @@ static void draw_horizontal_menu_bar (int cur_menu)
 	for (z = 0; men; z++, men = men->next) {
 		_D ("searching: %s", men->text);
 		if (men->text) {
+			print_text (men->text, 0, col, 0, 40,
+				MENU_FG, MENU_BG);
+			col += strlen (men->text) + 1;
+		}
+	}
+
+	flush_lines (0, 0);
+}
+
+
+static void draw_horizontal_menu_hilite (int cur_menu)
+{
+	struct agi_menu *men = NULL;
+	int col, z;
+
+	_D (_D_WARN "current menu = %d", cur_menu);
+	/* draw menu titles */
+	men = master_menu->next;
+
+	col = 1;
+	for (z = 0; men; z++, men = men->next) {
+		_D ("searching: %s", men->text);
+		if (men->text) {
 			if(z == cur_menu) {
 				print_text (men->text, 0, col, 0, 40,
 					MENU_BG, MENU_FG);
-			} else {
-				print_text (men->text, 0, col, 0, 40,
-					MENU_FG, MENU_BG);
 			}
 			col += strlen (men->text) + 1;
 		}
@@ -220,19 +240,43 @@ int menu_keyhandler (int key)
 
 		/* calc size of horizontal menu */
 		h_max_menu = 0;
-		for (men = master_menu->next; men; h_max_menu++, men=men->next) {}
+		for (men = master_menu->next; men; h_max_menu++, men=men->next);
 	
+   		draw_horizontal_menu_bar (h_cur_menu);
+	}
+
+	if (mouse.button) {
+		int x = 0, x2;
+
+		h_cur_menu = 0;
+    		for (men = master_menu->next; men; men = men->next) {
+			_D ("%s", men->text);
+			x2 = x + strlen(men->text) * CHAR_COLS;
+			if (mouse.y <=CHAR_LINES && mouse.x > x && mouse.x < x2)
+				break;
+			else
+				h_cur_menu++;
+			x = x2 + 1;
+		}
+	}
+#if 0
+	else {
+		goto exit_menu;
+	}
+#endif
+
+	if (!menu_active) {
  		/* calc size of vertical menus */
 		v_max_menu = 0;
    		for (i = 0, men = master_menu->next; i < h_cur_menu; i++)
    			men = men->next;
-   		for (v_max_menu = 0; men; v_max_menu++, men = men->down) {}
+   		for (v_max_menu = 0; men; v_max_menu++, men = men->down);
 	
-   		draw_horizontal_menu_bar (h_cur_menu /* , h_max_menu */);
+   		draw_horizontal_menu_hilite (h_cur_menu);
    		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
 		menu_active = TRUE;
 	}
-	
+
     	switch (key) {
 	case KEY_ESCAPE:
 		_D (_D_WARN "KEY_ESCAPE");
@@ -240,9 +284,9 @@ int menu_keyhandler (int key)
     	case KEY_ENTER:
 		_D (_D_WARN "KEY_ENTER");
     		men = master_menu->next;
-    		for (i = 0; i < h_cur_menu; i++, men = men->next) {}
+    		for (i = 0; i < h_cur_menu; i++, men = men->next);
     		men = men->down;
-    		for (i = 0; i < v_cur_menu; i++, men = men->down) {}
+    		for (i = 0; i < v_cur_menu; i++, men = men->down);
     		if (men->enabled) {
 			_D ("event %d registered", men->event);
     			game.ev_scan[men->event].occured = TRUE;
@@ -274,9 +318,10 @@ int menu_keyhandler (int key)
 		/* calc size of vertical menus */
 		for(i = 0, men = master_menu->next; i < h_cur_menu; i++)
 			men=men->next;
-		for (v_max_menu = 0; men; v_max_menu++, men = men->down) {}
+		for (v_max_menu = 0; men; v_max_menu++, men = men->down);
 		v_cur_menu = 0;
-		draw_horizontal_menu_bar (h_cur_menu /* , h_max_menu */);
+		draw_horizontal_menu_bar (h_cur_menu);
+   		draw_horizontal_menu_hilite (h_cur_menu);
     		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
     		break;
     	case KEY_LEFT:
@@ -290,9 +335,10 @@ int menu_keyhandler (int key)
 		/* calc size of vertical menus */
 		for (i = 0, men = master_menu->next; i < h_cur_menu; i++)
 			men=men->next;
-		for (v_max_menu = 0; men; v_max_menu++, men=men->down) {}
+		for (v_max_menu = 0; men; v_max_menu++, men=men->down);
 		v_cur_menu = 0;
-		draw_horizontal_menu_bar (h_cur_menu /*, h_max_menu */);
+		draw_horizontal_menu_bar (h_cur_menu);
+   		draw_horizontal_menu_hilite (h_cur_menu);
     		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
     		break;
     	}
