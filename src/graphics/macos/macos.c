@@ -128,7 +128,7 @@ static INLINE void putpixel_8 (void *img, int idx, int p)
 #define _putpixels_scale1(d) static void \
 _putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
 	if (w == 0) return; \
-	x += y * GFX_WIDTH + y * 8; \
+	x += y * (GFX_WIDTH + 8); \
 	while (w--) { putpixel_##d (screen_buffer, x++, rgb_palette[*p++]); }\
 }
 
@@ -136,8 +136,8 @@ _putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
 _putpixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) { \
 	register int c; if (w == 0) return; \
 	x <<= 1; y <<= 1; \
-	x += y * (GFX_WIDTH << 1); \
-	y = x + (GFX_WIDTH << 1); \
+	x += y * ((GFX_WIDTH << 1) + 8); \
+	y = x + ((GFX_WIDTH << 1) + 8); \
 	while (w--) { \
 		c = rgb_palette[*p++]; \
 		putpixel_##d (screen_buffer, x++, c); \
@@ -194,11 +194,9 @@ _putpixels_fixratio_scale1 (8);
 _putpixels_fixratio_scale1 (16);
 _putpixels_fixratio_scale1 (32);
 
-#if 0
 _putpixels_fixratio_scale2 (8);
 _putpixels_fixratio_scale2 (16);
 _putpixels_fixratio_scale2 (32);
-#endif
 
 /* ===================================================================== */
 
@@ -349,13 +347,12 @@ static int macos_init_vidmode ()
 	set_palette (palette, 0, 32);
 
 	/* Create offscreen pixmap */
-	/* CM: it's inconsistent with window creation below -- why? :\ */
-	SetRect (&gworld_rect, 0, 0, (GFX_WIDTH - 1) * scale,
-		(GFX_HEIGHT - 1) * scale);
-	GetGWorld (&old_gw, &old_gd);
+	SetRect (&gworld_rect, 0, 0, GFX_WIDTH * scale - 1,
+		GFX_HEIGHT * scale - 1);
 	if (NewGWorld (&gworld, depth, &gworld_rect, NULL, NULL, 0) != noErr)
 		return -1;
 
+	GetGWorld (&old_gw, &old_gd);
 	SetGWorld (gworld, NULL);
 	BackColor (blackColor);
 	EraseRect (&gworld->portRect);
