@@ -9,73 +9,76 @@
 .PATH.obj = LIB
 
 #		*Translator Definitions*
-CC = tcc +SARIEN.CFG
-TASM = TASM
-TLIB = tlib
-TLINK = tlink
-LIBPATH = \TC\LIB
+CC	= tcc +SARIEN.CFG
+TASM	= TASM
+TLIB	= tlib
+TLINK	= tlink
+LIBPATH	= \TC\LIB
 INCLUDEPATH = SRC\INCLUDE;\TC\INCLUDE;SRC\CORE
 
 
 #		*Implicit Rules*
 .c.obj:
-  $(CC) -c {$< }
+	$(CC) -c {$< }
 
 #		*List Macros*
 
 OBJS	= agi.obj agi_v2.obj agi_v3.obj checks.obj cli.obj console.obj \
 	  cycle.obj font.obj getopt.obj getopt1.obj global.obj graphics.obj \
-	  id.obj inv.obj keyboard.obj logic.obj lzw.obj main.obj \
-	  menu.obj motion.obj objects.obj op_cmd.obj op_dbg.obj op_test.obj \
-	  patches.obj picture.obj rand.obj savegame.obj silent.obj sound.obj \
-	  sprite.obj text.obj view.obj words.obj tcglob.obj dummy.obj \
-	  path.obj pcvga.obj picview.obj
+	  id.obj inv.obj keyboard.obj logic.obj lzw.obj menu.obj motion.obj \
+	  objects.obj op_cmd.obj op_dbg.obj op_test.obj patches.obj \
+	  picture.obj rand.obj savegame.obj silent.obj sound.obj sprite.obj \
+	  text.obj view.obj words.obj tcglob.obj dummy.obj path.obj pcvga.obj \
+	  picview.obj
+LIB	= lib\sarien.lib
+BIN	= ..\bin\sarien.exe
 
 #		*Explicit Rules*
-sarien: sarien.cfg $(OBJS)
-   $(CC) -eagi @&&|
-lib\agi.obj
-lib\agi_v2.obj
-lib\agi_v3.obj
-lib\checks.obj
-lib\cli.obj
-lib\console.obj
-lib\cycle.obj
-lib\font.obj
-lib\getopt.obj
-lib\getopt1.obj
-lib\global.obj
-lib\graphics.obj
-lib\id.obj
-lib\inv.obj
-lib\keyboard.obj
-lib\logic.obj
-lib\lzw.obj
-lib\main.obj
-lib\menu.obj
-lib\motion.obj
-lib\objects.obj
-lib\op_cmd.obj
-lib\op_dbg.obj
-lib\op_test.obj
-lib\patches.obj
-lib\picture.obj
-lib\rand.obj
-lib\savegame.obj
-lib\silent.obj
-lib\sound.obj
-lib\sprite.obj
-lib\text.obj
-lib\view.obj
-lib\words.obj
-lib\tcglob.obj
-lib\path.obj
-lib\dummy.obj
-lib\pcvga.obj
-lib\picview.obj
-|
-   copy lib\agi.exe bin\sarien.exe
 
+binary: sarien.cfg $(LIB)
+	$(CC) -e$(BIN) lib\main.obj $(LIB)
+
+$(LIB): sarien.cfg $(OBJS) main.obj
+	del $(LIB)
+	$(TLIB) $(LIB) /C +lib\agi.obj
+	$(TLIB) $(LIB) /C +lib\agi_v2.obj
+	$(TLIB) $(LIB) /C +lib\agi_v3.obj
+	$(TLIB) $(LIB) /C +lib\checks.obj
+	$(TLIB) $(LIB) /C +lib\cli.obj
+	$(TLIB) $(LIB) /C +lib\console.obj
+	$(TLIB) $(LIB) /C +lib\cycle.obj
+	$(TLIB) $(LIB) /C +lib\font.obj
+	$(TLIB) $(LIB) /C +lib\getopt.obj
+	$(TLIB) $(LIB) /C +lib\getopt1.obj
+	$(TLIB) $(LIB) /C +lib\global.obj
+	$(TLIB) $(LIB) /C +lib\graphics.obj
+	$(TLIB) $(LIB) /C +lib\id.obj
+	$(TLIB) $(LIB) /C +lib\inv.obj
+	$(TLIB) $(LIB) /C +lib\keyboard.obj
+	$(TLIB) $(LIB) /C +lib\logic.obj
+	$(TLIB) $(LIB) /C +lib\lzw.obj
+	$(TLIB) $(LIB) /C +lib\main.obj
+	$(TLIB) $(LIB) /C +lib\menu.obj
+	$(TLIB) $(LIB) /C +lib\motion.obj
+	$(TLIB) $(LIB) /C +lib\objects.obj
+	$(TLIB) $(LIB) /C +lib\op_cmd.obj
+	$(TLIB) $(LIB) /C +lib\op_dbg.obj
+	$(TLIB) $(LIB) /C +lib\op_test.obj
+	$(TLIB) $(LIB) /C +lib\patches.obj
+	$(TLIB) $(LIB) /C +lib\picture.obj
+	$(TLIB) $(LIB) /C +lib\rand.obj
+	$(TLIB) $(LIB) /C +lib\savegame.obj
+	$(TLIB) $(LIB) /C +lib\silent.obj
+	$(TLIB) $(LIB) /C +lib\sound.obj
+	$(TLIB) $(LIB) /C +lib\sprite.obj
+	$(TLIB) $(LIB) /C +lib\text.obj
+	$(TLIB) $(LIB) /C +lib\view.obj
+	$(TLIB) $(LIB) /C +lib\words.obj
+	$(TLIB) $(LIB) /C +lib\tcglob.obj
+	$(TLIB) $(LIB) /C +lib\path.obj
+	$(TLIB) $(LIB) /C +lib\dummy.obj
+	$(TLIB) $(LIB) /C +lib\pcvga.obj
+	$(TLIB) $(LIB) /C +lib\picview.obj
 
 
 #		*Individual File Dependencies*

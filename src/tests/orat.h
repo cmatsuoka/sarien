@@ -4,6 +4,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+
+#ifndef INLINE
+#  define INLINE
+#endif
+
 #include "list.h"
 
 #define MAX_LEN 1024

@@ -6,6 +6,10 @@
 struct sarien_options opt;
 struct agi_game game;
 
+#if (!defined(_TRACE) && !defined(__GNUC__))
+INLINE void _D (char *s, ...) { s = s; }
+#endif
+
 
 int st_load_game (char *s)
 {

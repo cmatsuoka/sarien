@@ -214,7 +214,7 @@ struct agi_game {
 	/* view table */
 	struct vt_entry view_table[MAX_VIEWTABLE];
 
-	UINT32 ver;		/**< detected game version */
+	SINT32 ver;				/**< detected game version */
 };
 
 /**

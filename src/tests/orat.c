@@ -4,15 +4,6 @@
 #include <stdarg.h>
 #include "orat.h"
 
-#if 0
-static int s->succeeded;
-static int s->failed;
-static int s->skipped;
-static int count;
-static time_t t0, t1;
-static LIST_HEAD(module_list);
-#endif
-
 static char msg_buffer[MAX_LEN];
 
 

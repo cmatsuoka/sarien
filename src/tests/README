@@ -12,6 +12,11 @@ contains the actual tests.
 
 Creating a test suite
 ---------------------
+Before running your tests, a test suite must be created. This can be done
+using test_initialize(name), where "name" is a free-form string. It
+returns the suite handler used to register test modules.
+
+	suite = test_initialize ("Suite");
 
 
 Writing test modules
@@ -33,8 +38,10 @@ A simple test module:
 	}
 
 Test modules are registered in a suite using the test_register_module
-function.
+function, which takes the suite handler, the test function name and a
+free-form description as arguments:
 
+	test_register_module (suite, example, "Example test");
 
 
 Executing tests

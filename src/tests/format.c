@@ -7,7 +7,11 @@ static test_result c (char *test, char *expected)
 	char result[MAX_LEN];
 	int match;
 
+#ifdef HAVE_SNPRINTF
 	snprintf (result, MAX_LEN, "%s", agi_sprintf (test));
+#else
+	sprintf (result, "%s", agi_sprintf (test));
+#endif
 	test_report ("%s => %s", test, result);
 	if (!(match = !strcmp (result, expected))) {
 		test_report (" [Expected: %s]", expected);
