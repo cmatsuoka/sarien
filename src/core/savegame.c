@@ -494,10 +494,12 @@ int loadgame_dialog ()
 	
 	snprintf (path, MAX_PATH, "%s/" DATADIR "/%s/%08d.iff",
 		home, game.id, slot);
-	if ((rc = load_game (path)) == err_OK)
+	if ((rc = load_game (path)) == err_OK) {
 		message_box ("Gamed loaded.");
-	else
+		/* show pic, etc */
+	} else {
 		message_box ("Error loading game.");
+	}
 
 	return rc;
 }

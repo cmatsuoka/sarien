@@ -352,7 +352,7 @@ void update_viewtable ()
 		{
 			continue;
 		}
-			
+
 		i++;
 
 		loop = 4;

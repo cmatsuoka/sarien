@@ -104,7 +104,7 @@ cmd(stop_cycling)	{ vt.flags &= ~CYCLING; }
 cmd(start_cycling)	{ vt.flags |= CYCLING; }
 cmd(normal_cycle)	{ vt.cycle = CYCLE_NORMAL; vt.flags |= CYCLING; }
 cmd(reverse_cycle)	{ vt.cycle = CYCLE_REVERSE; vt.flags |= CYCLING; }
-cmd(set_dir)		{ vt.direction = p1; }
+cmd(set_dir)		{ vt.direction = _v[p1]; }
 cmd(get_dir)		{ _v[p1] = vt.direction; }
 cmd(reposition_to)	{ vt.x_pos = p1; vt.y_pos = p2; vt.flags |= FLAG10; }
 cmd(reposition_to_v)	{ vt.x_pos=_v[p1]; vt.y_pos=_v[p2]; vt.flags|=FLAG10; }

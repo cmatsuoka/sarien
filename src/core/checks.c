@@ -178,7 +178,7 @@ void update_position ()
 			if (--v->step_time_count != 0)
 				continue;
 		}
-			
+
 		v->step_time_count = v->step_time;
 
 		x = x2 = v->x_pos;
@@ -246,7 +246,8 @@ void fix_position (int n)
 	struct vt_entry *v = &game.view_table[n];
 	int count, dir, tries;
 
-	_D (_D_WARN "adjusting view table entry #%d", n);
+	_D (_D_WARN "adjusting view table entry #%d (%d,%d)",
+		n, v->x_pos, v->y_pos);
 
 	/* test horizon */
 
@@ -281,6 +282,9 @@ void fix_position (int n)
 
 		count = tries;
 	}
+
+	_D (_D_WARN "view table entry #%d position adjusted to (%d,%d)",
+		n, v->x_pos, v->y_pos);
 }
 
 /* end: checks.c */

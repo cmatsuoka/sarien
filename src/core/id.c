@@ -282,10 +282,10 @@ int setup_v2_game (int ver, UINT32 crc)
 
 	switch(agi_get_release ()) {
 	case 0x2089:
-		logic_names_cmd[0x86].num_args=0;	/* quit: 0 args */
+		logic_names_cmd[0x86].num_args = 0;	/* quit: 0 args */
 	case 0x2272:
-		logic_names_cmd[0x97].num_args=3;	/* print.at: 3 args */
-		logic_names_cmd[0x98].num_args=3;	/* print.at.v: 3 args */
+		logic_names_cmd[0x97].num_args = 3;	/* print.at: 3 args */
+		logic_names_cmd[0x98].num_args = 3;	/* print.at.v: 3 args */
 		break;
 	case 0x2440:
 		break;
@@ -316,10 +316,10 @@ int setup_v3_game(int ver, UINT32 crc)
 
 	switch(ver) {
 	case 0x3086:
-		logic_names_cmd[0xAD].num_args = 1;	/* 173 : 1 args */
+		logic_names_cmd[0xad].num_args = 1;	/* 173 : 1 args */
 		break;
 	case 0x3149:
-		logic_names_cmd[0xAD].num_args = 0;	/* 173 : 0 args */
+		logic_names_cmd[0xad].num_args = 0;	/* 173 : 0 args */
 		break;
 	default:
 		printf("Error: cannot setup for unknown version\n");
