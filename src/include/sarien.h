@@ -15,7 +15,9 @@
 #include <Pilot.h>
 #else
 #include <stdlib.h>
+#ifndef FAKE_PALMOS
 #define USE_CONSOLE
+#endif
 #endif
 
 #if defined (NATIVE_WIN32)
@@ -82,12 +84,12 @@ typedef signed long	SINT32;
 #define STATUS_FG_CLEAN	0x00		/* Black */
 
 
-#ifndef PALMOS
+#if !defined PALMOS && !defined FAKE_PALMOS
 #define AGDS_SUPPORT			/* enable support for AGDS games */
 #define OPT_LIST_OBJECTS
 #define OPT_PICTURE_VIEWER
 #define OPT_LIST_DICT
-#endif /* PALMOS */
+#endif
 
 #define	DISABLE_COPYPROTECTION		/* only works on some games */
 

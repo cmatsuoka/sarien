@@ -6,6 +6,7 @@ OBJS	= global.o agi_v2.o agi_v3.o agi.o cli.o words.o objects.o \
 	  op_dbg.o keyboard.o rand.o menu.o font.o lzw.o getopt.o getopt1.o \
 	  sound.o savegame.o silent.o iff.o console.o cycle.o inv.o text.o \
 	  gfx_base.o gfx_agi.o
+XDEPS	= main.o
 DFILES	= Makefile $(OBJS:.o=.c) main.c Makefile.wat Makefile.dj
 CFILES	=
 DDIRS	=

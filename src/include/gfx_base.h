@@ -8,14 +8,14 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#ifndef __AGI_GFX_BASE_H
-#define __AGI_GFX_BASE_H
+#ifndef __GFX_BASE_H
+#define __GFX_BASE_H
 
 #ifdef __cplusplus
 extern "C"{
 #endif
 
-#ifdef PALMOS
+#if defined PALMOS || defined FAKE_PALMOS
 #define GFX_WIDTH	160
 #define GFX_HEIGHT	160
 #define CHAR_COLS	4
@@ -81,6 +81,6 @@ void	poll_timer	(void);
 };
 #endif
 
-#endif /* __AGI_GFX_BASE_H */
+#endif /* __GFX_BASE_H */
 
 

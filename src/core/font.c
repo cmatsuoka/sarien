@@ -13,7 +13,7 @@
 /* font pointer */
 UINT8 *font;
 
-#ifdef PALMOS
+#if defined PALMOS || defined FAKE_PALMOS
 
 /* small 4x6 font patterns */
 UINT8 font_english[]= {

@@ -59,7 +59,7 @@ static int x_min = GFX_WIDTH, x_max = 0, y_min = GFX_HEIGHT, y_max = 0;
  */
 void put_pixel_buffer (int x, int y, int c)
 {
-#ifdef PALMOS
+#if defined PALMOS || defined FAKE_PALMOS
 	y = y * PIC_HEIGHT / 168;	/* ick! */
 #else
 	x <<= 1;
@@ -320,7 +320,7 @@ void draw_box (int x1, int y1, int x2, int y2, int colour1, int colour2, int f, 
 void do_blit ()
 {
 	if (x_min < x_max && y_min < y_max) {
-#ifdef PALMOS
+#if defined PALMOS || defined FAKE_PALMOS
 		gfx->put_block (x_min, y_min * PIC_HEIGHT / 168, x_max + 1, y_max * PIC_HEIGHT / 168);
 #else
 		gfx->put_block (x_min << 1, y_min, (x_max << 1) + 1, y_max);
