@@ -93,8 +93,14 @@ extern "C"{
 #endif /* _TRACE */
 
 
-/* Include port-specific definitions */
-#include "portdefs.h"
+/* Include port-specific definitions
+ *
+ * In most C compiler implementation, quoted form of #include
+ * searches in the same folder first. On the contrary, angle-bracket
+ * form starts search in compiler predefined order. So, #include
+ * <portdefs.h> would be more correct. --Vasyl
+ */
+#include <portdefs.h>
 
 
 #ifndef FALSE
