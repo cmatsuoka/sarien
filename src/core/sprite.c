@@ -31,6 +31,9 @@ struct sprite {
 	UINT16 x_size;			/**< width of the sprite */
 	UINT16 y_size;			/**< height of the sprite */
 	UINT8 *buffer;			/**< buffer to store background data */
+#ifdef USE_HIRES
+	UINT8 *hires;			/**< buffer for hi-res background */
+#endif
 };    
 
 
@@ -40,17 +43,26 @@ struct sprite {
 
 static void blit_cel (int x, int y, int spr, struct view_cel *c)
 {
-	UINT8 *p0, *p, *q	= NULL;
+	UINT8 *p0, *p, *q = NULL;
+#ifdef USE_HIRES
+	UINT8 *h0, *h;
+#endif
 	int i, j, t;
 	int epr, pr;		/* effective and real priorities */
 
 	p0 = &game.sbuf[x + y * _WIDTH];
+#ifdef USE_HIRES
+	h0 = &game.hires[(x + y * _WIDTH) * 2];
+#endif
 	q = c->data;
 	t = c->transparency;
 	spr <<= 4;
 
 	for (i = 0; i < c->height; i++) {
 		p = p0;
+#ifdef USE_HIRES
+		h = h0;
+#endif
 		for (j = c->width; j; j--, p++, q++) {
 			/* Check if we're on a control line */
 			if ((pr = *p & 0xf0) < 0x30) {
@@ -70,10 +82,19 @@ static void blit_cel (int x, int y, int spr, struct view_cel *c)
 				 * but put our priority over water (0x30)
 				 * surface
 				 */
+#ifdef USE_HIRES
+				*h = *(h + 1) =
+#endif
 				*p = (pr < 0x30 ? pr : spr) | *q;
 			}
+#ifdef USE_HIRES
+			h += 2;
+#endif
 		}
 		p0 += _WIDTH;
+#ifdef USE_HIRES
+		h0 += _WIDTH * 2;
+#endif
 	}
 }
 
@@ -81,16 +102,28 @@ static void objs_savearea (struct sprite *s)
 {
 	int y;
 	UINT8 *p0, *q;
+#ifdef USE_HIRES
+	UINT8 *h0, *k;
+#endif
 
 	if (s->y_pos >= _HEIGHT)
 		return;
 
 	p0 = &game.sbuf[s->x_pos + s->y_pos * _WIDTH];
 	q = s->buffer;
+#ifdef USE_HIRES
+	h0 = &game.hires[(s->x_pos + s->y_pos * _WIDTH) * 2];
+	k = s->hires;
+#endif
 	for (y = 0; y < s->y_size; y++) {
 		memcpy (q, p0, s->x_size);
 		q += s->x_size;
 		p0 += _WIDTH;
+#ifdef USE_HIRES
+		memcpy (k, h0, s->x_size * 2);
+		k += s->x_size * 2;
+		h0 += _WIDTH * 2;
+#endif
 	}
 }
 
@@ -98,18 +131,31 @@ static void objs_restorearea (struct sprite *s)
 {
 	int y;
 	UINT8 *p0, *q;
+#ifdef USE_HIRES
+	UINT8 *h0, *k;
+#endif
 
 	if (s->y_pos >= _HEIGHT)
 		return;
 
 	p0 = &game.sbuf[s->x_pos + s->y_pos * _WIDTH];
 	q = s->buffer;
+#ifdef USE_HIRES
+	h0 = &game.hires[(s->x_pos + s->y_pos * _WIDTH) * 2];
+	k = s->hires;
+#endif
 	for (y = 0; y < s->y_size; y++) {
 		memcpy (p0, q, s->x_size);
 		put_pixels_a (s->x_pos, s->y_pos + y, s->x_size, p0);
 		q += s->x_size;
 		p0 += _WIDTH;
+#ifdef USE_HIRES
+		memcpy (h0, k, s->x_size * 2);
+		put_pixels_hires (s->x_pos * 2, s->y_pos + y, s->x_size * 2,h0);
+		k += s->x_size * 2;
+		h0 += _WIDTH * 2;
 	}
+#endif
 }
 
 
@@ -172,6 +218,9 @@ static struct sprite *new_sprite (struct vt_entry *v)
 	s->x_size = v->x_size;
 	s->y_size = v->y_size;
 	s->buffer = malloc (s->x_size * s->y_size);
+#ifdef USE_HIRES
+	s->hires = malloc (s->x_size * 2 * s->y_size);
+#endif
 	v->s = s;	/* link view table entry to this sprite */
 
 	return s;
@@ -576,6 +625,9 @@ void commit_block (int x1, int y1, int x2, int y2)
 {
 	int i, w;
 	UINT8 *q;
+#ifdef USE_HIRES
+	UINT8 *h;
+#endif
 
 	if (!game.picture_shown)
 		return;
@@ -594,9 +646,16 @@ void commit_block (int x1, int y1, int x2, int y2)
 
 	w = x2 - x1 + 1;
 	q = &game.sbuf[x1 + _WIDTH * y1];
+#ifdef USE_HIRES
+	h = &game.hires[(x1 + _WIDTH * y1) * 2];
+#endif
 	for (i = y1; i <= y2; i++) {
 		put_pixels_a (x1, i, w, q);
 		q += _WIDTH;
+#ifdef USE_HIRES
+		put_pixels_hires (x1 * 2, i, w * 2, h);
+		h += _WIDTH * 2;
+#endif
 	}
 
 	flush_block_a (x1, y1, x2, y2);

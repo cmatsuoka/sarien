@@ -26,6 +26,7 @@ Revision History
 	- menu system rewritten to allow mouse operation
 	- added mouse event support to the X11, SDL and Win32 drivers
 	- fixed PgUp/PgDn/Home/End codes (submitted by Ziv Barber)
+	- added experimental hi-res mode
 
 0.6.1 (20010722)
 	- fixed QNX build and Photon driver

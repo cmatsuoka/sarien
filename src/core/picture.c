@@ -630,7 +630,7 @@ static void draw_picture ()
 			patCode = next_byte;
 			break;
 		case 0xfA:			/* plot brush */
-			plot_brush ();
+			plot_hires_brush ();
 			break;
 		case 0xFF:			/* end of pic data */
 		default:
@@ -756,6 +756,13 @@ int unload_picture (int n)
 void show_pic ()
 {
 	int i, y;
+
+#ifdef USE_HIRES
+	if (opt.hires) {
+		show_hires_pic ();
+		return;
+	}
+#endif
 
 	i = 0;
 	for (y = 0; y < _HEIGHT; y++) {

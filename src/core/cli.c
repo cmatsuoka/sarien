@@ -52,6 +52,9 @@ static void help (int argc, char **argv)
 "  -F --full-screen   Run in full-screen mode if allowed by the graphics device\n"
 "  -g --no-gfx-optimizations\n"
 "                     Disable optimized graphic driver hacks (if available).\n"
+#ifdef USE_HIRES
+"  -H --hires         Enable experimental hi-res mode.\n"
+#endif
 "  -h --help          Display this help screen.\n"
 "  -n --no-sound      Disable sound output.\n"
 #ifdef OPT_PICTURE_VIEWER
@@ -100,7 +103,7 @@ int parse_cli (int argc, char **argv)
 		{0x0, (UINT8*)""}
 	};
 	int o, optidx = 0;
-#define OPTIONS "AaCDdE:FghLlnoprskS:Vv:x"
+#define OPTIONS "AaCDdE:FgHhLlnoprskS:Vv:x"
 	static struct option lopt[] = {
 		{ "version",		0, 0, 'V' },
 		{ "help",		0, 0, 'h' },
@@ -120,6 +123,9 @@ int parse_cli (int argc, char **argv)
 #endif
 		{ "debug",		0, 0, 'D' },
 		{ "full-screen",	0, 0, 'F' },
+#ifdef USE_HIRES
+		{ "hires",		0, 0, 'H' },
+#endif
 		{ "no-sound",		0, 0, 'n' },
 #ifdef OPT_LIST_OBJECTS
 		{ "list-objects",	0, 0, 'o' },
@@ -212,6 +218,11 @@ int parse_cli (int argc, char **argv)
 		case 'g':
 			opt.gfxhacks = FALSE;
 			break;
+#ifdef USE_HIRES
+		case 'H':
+			opt.hires = TRUE;
+			break;
+#endif
 #ifdef OPT_LIST_DICT
 		case 'd':
 			opt.gamerun = GAMERUN_WORDS;

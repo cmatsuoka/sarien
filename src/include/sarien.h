@@ -380,6 +380,9 @@ struct sarien_options {
 #ifdef XF86DGA
 	int dga;		/**< use XFree86 DGA extension */
 #endif
+#ifdef USE_HIRES
+	int hires;		/**< use hi-res pictures */
+#endif
 	int soundemu;		/**< sound emulation mode */
 	int gfxhacks;		/**< enable graphics driver optimizations */
 };

@@ -409,14 +409,14 @@ static void hires_fill ()
 }
 
 
-#define plotPatternPoint() do {						\
+#define plotHiresPatternPoint() do {					\
 	if (patCode & 0x20) {						\
 		if ((splatterMap[bitPos>>3] >> (7-(bitPos&7))) & 1)	\
-			put_virt_pixel(x1, y1);				\
+			put_hires_pixel(x1, y1);			\
 		bitPos++;						\
 		if (bitPos == 0xff)					\
 			bitPos=0;					\
-	} else put_virt_pixel(x1, y1);					\
+	} else put_hires_pixel(x1, y1);					\
 } while (0)
 
 /**************************************************************************
@@ -425,9 +425,8 @@ static void hires_fill ()
 ** Draws pixels, circles, squares, or splatter brush patterns depending
 ** on the pattern code.
 **************************************************************************/
-void plot_hires_Pattern(UINT8 x, UINT8 y)
+static void plot_hires_pattern(UINT8 x, UINT8 y)
 {
-#if 0
 	static UINT8 circles[][15] = {		/* agi circle bitmaps */
 		{ 0x80 },
 		{ 0xfc },
@@ -477,17 +476,16 @@ void plot_hires_Pattern(UINT8 x, UINT8 y)
 		y = penSize;
 
 	for (y1 = y - penSize; y1 <= y + penSize; y1++) {
-		for (x1 = x-(penSize+1)/2; x1<=x+penSize/2; x1++) {
+		for (x1 = x * 2-(penSize+1); x1<=x * 2+penSize; x1++) {
 			if (patCode & 0x10) {		/* Square */
-				plotPatternPoint();
+				plotHiresPatternPoint();
 			} else {			/* Circle */
 				if ((circles[patCode&7][circlePos>>3] >> (7-(circlePos&7)))&1)
-					plotPatternPoint();
+					plotHiresPatternPoint();
 				circlePos++;
 			}
 		}
 	}
-#endif
 }
 
 /**************************************************************************
@@ -512,7 +510,7 @@ static void plot_hires_brush ()
 		if ((y1 = next_byte) >= 0xf0)
 			break;
 
-		//plotPattern (x1, y1);
+		plot_hires_pattern (x1, y1);
    	}
 
    	foffs--;

@@ -44,7 +44,6 @@ int view_pictures ()
 	int ec = err_OK;
 	char x[64];
 	int i, pic = 0, dir = 1;
-	int hires = 0;
 
 	for (i = 0; ec == err_OK; i = 1) {
 		while (game.dir_pic[pic].offset == _EMPTY) {
@@ -71,17 +70,12 @@ int view_pictures ()
 		/* decodes the raw data to useable form */
 		decode_picture (pic, TRUE);
 
-#ifdef USE_HIRES
-		if (hires)
-			show_hires_pic ();
-		else
-#endif
-			show_pic ();
+		show_pic ();
 		put_screen ();
 		
 update_statusline:
 		sprintf (x, "Picture:%3i                  Hi-res: %3s",
-			pic, hires ? " on" : "off");
+			pic, opt.hires ? " on" : "off");
 		print_text (x, 0, 0, 0, strlen (x) + 1, 0, 15);
 		sprintf (x, "H:Hi-res     P:Vis/Prio    +:Next -:Prev");
 		print_text (x, 0, 0, 23, strlen (x) + 1, 15, 0);
@@ -95,22 +89,14 @@ update_statusline:
 				goto end_view;
 #ifdef USE_HIRES
     			case 'h':
-				hires = !hires;
-				if (hires)
-					show_hires_pic ();
-				else
-					show_pic ();
+				opt.hires = !opt.hires;
+				show_pic ();
 				put_screen ();
 				goto update_statusline;
 #endif
     			case 'p':
 				debug.priority = !debug.priority;
-#ifdef USE_HIRES
-				if (hires)
-					show_hires_pic ();
-				else
-#endif
-					show_pic ();
+				show_pic ();
 				put_screen ();
     				break;
 			case 'd':
