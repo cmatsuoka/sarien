@@ -44,125 +44,6 @@ struct game_id_list game_info;
 INLINE void _D (char *s, ...) { }
 #endif
 
-#ifdef OPT_PICTURE_VIEWER
-static int view_pictures ()
-{
-	int ec = err_OK;
-	UINT32 resnum = 0;
-	char x[64];
-	int i, pic, dir = 1;
-
-#ifdef USE_CONSOLE
-	console.active = 0;
-	console.y = 0;
-#endif
-
-	show_screen_mode = 'v';
-
-	for (i = 0; ec == err_OK; i = 1) {
-		for (pic = resnum; ; ) {
-			/* scan for resource */
-			if (game.dir_pic[pic].offset != _EMPTY)
-				break;
-
-			pic += dir;
-			if (pic < 0)
-				pic = MAX_DIRS - 1;
-
-			if (pic > MAX_DIRS - 1) {
-				pic = 0;
-				if (i == 0) {		/* no pics? */
-					ec = 1;
-					fprintf (stderr, "No pictures found\n");
-					goto end_view;
-				}
-			}
-		}
-		resnum = pic;
-
-		if ((ec = agi_load_resource (rPICTURE, resnum)) != err_OK)
-			continue;
-
-		sprintf ((char*)x, "Picture:%3li     [drawing]     Show: %3s",
-			resnum, opt.showscreendraw ? " on" : "off");
-		print_text (x, 0, 4, 190, strlen ((char*)x) + 1, 15, 0);
-
-		/* decodes the raw data to useable form */
-		decode_picture (resnum);
-
-		show_buffer (show_screen_mode);
-
-update_statusline:
-		sprintf (x, "V:Vis C:Con P:Pri X:P+C   +:Next -:Prev");
-		print_text (x, 0, 4, 170, strlen (x) + 1, 15, 0);
-		sprintf (x, "R:Redraw      D:Show toggle      Q:Quit");
-		print_text (x, 0, 4, 180, strlen (x) + 1, 15, 0);
-		sprintf (x, "Picture:%3li                   Show: %3s",
-			resnum, opt.showscreendraw ? " on" : "off");
-		print_text (x, 0, 4, 190, strlen (x) + 1, 15, 0);
-
-		put_screen ();
-
-		while (42) {
-    			switch (tolower (get_key() & 0xFF)) {
-    			case 'q':
-				goto end_view;
-    			case 'v':
-				show_screen_mode = 'v';
-    				dump_screenX ();
-    				break;
-    			case 'p':
-    			case 'z':
-				show_screen_mode = 'p';
-#if 0 /* temporarily commented out for tests --claudio */
-    				dump_pri (resnum);
-#endif
- 				break;
-    			case 'c':
-				show_screen_mode = 'c';
-#if 0 /* temporarily commented out for tests --claudio */
-    				dump_con (resnum);
-#endif
-				break;
-			case 'd':
-				opt.showscreendraw = !opt.showscreendraw;
-				goto update_statusline;
-    			case 'x':
-				show_screen_mode = 'x';
-#if 0 /* temporarily commented out for tests --claudio */
-    				dump_x (resnum);
-#endif
-  				break;
-			case 'r':
-				goto next_pic;
-    			case '+':
-    				pic = resnum;
- 				if (pic < MAX_DIRS - 1)
-    					pic++;
-    				else
-    					pic = 0;
-    				dir = 1;
-				goto next_pic;
-    			case '-':
-    				pic = resnum;
-    				if (pic > 0)
-    					pic--;
-    				else
-    					pic = MAX_DIRS - 1;
-    				i = 0;
-    				dir = -1;
-				goto next_pic;
-    			}
-    		}
-next_pic:
-    		agi_unload_resource (rPICTURE, resnum);
-    		resnum = pic;
-	}
-
-end_view:
-	return ec;
-}
-#endif
 
 static int run_game ()
 {
@@ -176,11 +57,6 @@ static int run_game ()
 	case gRUN_GAME:
 		ec = run_game2 ();
 		break;
-#ifdef OPT_PICTURE_VIEWER
-	case gVIEW_PICTURES:
-		ec = view_pictures ();
-		break;
-#endif
 #ifdef OPT_LIST_DICT
 	case gSHOW_WORDS:
 		ec = show_words ();
@@ -255,7 +131,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 
 	printf("AGI v%i game detected.\n", agi_version ());
 
-	if (opt.gamerun == gRUN_GAME || opt.gamerun == gVIEW_PICTURES) {
+	if (opt.gamerun == gRUN_GAME) {
 		if (init_video () != err_OK) {
 			ec = err_Unk;
 			goto bail_out;
@@ -295,8 +171,6 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 
 	if (opt.gamerun == gRUN_GAME) {
 		deinit_sound ();
-		deinit_video ();
-        } else if (opt.gamerun == gVIEW_PICTURES) {
 		deinit_video ();
 	}
 

@@ -97,6 +97,7 @@ typedef signed long	SINT32;
 
 #define	DISABLE_COPYPROTECTION		/* only works on some games */
 
+#undef OPT_PICTURE_VIEWER
 
 #define EGO_VIEW_TABLE	0
 #define	HORIZON		36

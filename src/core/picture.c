@@ -19,11 +19,6 @@
 
 #define next_byte data[foffs++]
 
-struct point {
-	struct point *next;
-	int x, y;
-};
-
 struct agi_picture pictures[MAX_DIRS];
 
 static UINT8	*data;
@@ -32,7 +27,6 @@ static UINT32	foffs;
 
 static UINT8	patCode;
 static UINT8	patNum;
-static UINT8	we_are_drawing;
 static UINT8	pri_on;
 static UINT8	scr_on;
 static UINT8	scr_colour;
@@ -55,23 +49,6 @@ UINT8	pic_clear_flag = TRUE;
 extern UINT8 old_prio;		/* Used in add_to_pic() */
 
 
-#ifdef OPT_PICTURE_VIEWER
-
-void dump_screen2 ()
-{
-	put_block_buffer (screen_data);
-	put_screen();
-}
-
-
-void dump_screen3 ()
-{
-	put_block_buffer (screen2);
-	put_screen ();
-}
-
-#endif
-
 void dump_x_screen ()
 {
 	put_block_buffer (xdata_data);
@@ -84,25 +61,6 @@ void dump_screenX ()
 	memmove (screen_data, screen2, _WIDTH*_HEIGHT);
 	put_block_buffer (screen_data);
 	put_screen ();
-}
-
-
-static void clear_picture ()
-{
-	memset (&screen2, 0x0F, _WIDTH * _HEIGHT);
-	memset (&xdata_data, 0x4, _WIDTH * _HEIGHT);
-}
-
-
-static UINT8 get_scr_pixel (UINT16 x, UINT16 y)
-{
-	return screen2[y * _WIDTH + x];
-}
-
-
-static UINT8 get_pri_pixel (UINT16 x, UINT16 y)
-{
-	return xdata_data[y * _WIDTH + x];
 }
 
 
@@ -119,8 +77,15 @@ static void put_virt_pixel (UINT16 x, UINT16 y)
 
 
 /* For the flood fill routines */
+
 #define STACK_SEG_SIZE 0x1000
 #define MAX_STACK_SEGS 16
+
+struct point {
+	struct point *next;
+	int x, y;
+};
+
 static struct point *stack[MAX_STACK_SEGS];
 static int stack_num_segs;
 static int stack_seg;
@@ -193,7 +158,7 @@ static void draw_line (int x1, int y1, int x2, int y2)
 			y2 = y;
 		}
 
-		for( ; y1 <= y2; y1++)
+		for ( ; y1 <= y2; y1++)
 			put_virt_pixel (x1, y1);
 
 		return;
@@ -307,10 +272,10 @@ static void dynamic_draw_line ()
 **************************************************************************/
 static void absolute_draw_line ()
 {
-	UINT8	x1, y1, x2, y2;
+	UINT8 x1, y1, x2, y2;
 
-	x1= next_byte;
-	y1= next_byte;
+	x1 = next_byte;
+	y1 = next_byte;
 	put_virt_pixel (x1, y1);
 
 	while (42) {
@@ -333,16 +298,20 @@ static void absolute_draw_line ()
 **************************************************************************/
 static INLINE int is_ok_fill_here (int x, int y)
 {
+	int i;
+
 	if (!scr_on && !pri_on)
 		return FALSE;
 
+	i = y * _WIDTH + x;
+
 	if (!pri_on && scr_on && scr_colour != 15)
-		return get_scr_pixel (x, y) == 15;
+		return screen2[i] == 15;
 
 	if (pri_on && !scr_on && pri_colour != 4)
-		return get_pri_pixel (x, y) == 4;
+		return xdata_data[i] == 4;
 
-	return (scr_on && get_scr_pixel (x, y) == 15 && scr_colour != 15);
+	return (scr_on && screen2[i] == 15 && scr_colour != 15);
 }
 
 /**************************************************************************
@@ -378,10 +347,6 @@ static void agiFill (int x, int y)
 				c.y--; _PUSH (&c); c.y++;
     			}
 		}
-#ifdef DUMPFILL
-		if (opt.showscreendraw)
-			dump_screen3 ();
-#endif
 	}
 
 	stack_ptr = 0;
@@ -583,7 +548,7 @@ UINT8* convert_v2_v3_pic (UINT8 *data, UINT32 len)
 	UINT8	d, old = 0, x, *in, *xdata, *out, mode = 0;
 	UINT32	i, ulen;
 
-	xdata = (UINT8*)malloc (len + len / 2);
+	xdata = malloc (len + len / 2);
 
 	out = xdata;
 	in = data;
@@ -673,8 +638,8 @@ extern UINT8 show_screen_mode;
 
 static void draw_picture ()
 {
-	UINT8	act;
-	int i;
+	UINT8 act;
+	int i, drawing;
 
 	_D ("()");
  	patCode = 0;
@@ -684,22 +649,22 @@ static void draw_picture ()
  	pri_colour = 0x4;
 	old_prio = 4;
 
-	if (opt.showkeypress == 3)
-		opt.showkeypress = TRUE;
 	if (opt.showscreendraw == 3)
 		opt.showscreendraw = TRUE;
 
-	if (pic_clear_flag == TRUE)
-		clear_picture ();
+	if (pic_clear_flag == TRUE) {
+		memset (&screen2, 0x0F, _WIDTH * _HEIGHT);
+		memset (&xdata_data, 0x4, _WIDTH * _HEIGHT);
+	}
 
-	we_are_drawing = 1;
+	drawing = 1;
 
 	stack[0] = calloc (sizeof (struct point), STACK_SEG_SIZE);
 	stack_ptr = stack_seg = 0;
 	stack_num_segs = 1;
 
 	_D (_D_WARN "Drawing picture");
-	for (we_are_drawing = 1; we_are_drawing && foffs < flen; ) {
+	for (drawing = 1; drawing && foffs < flen; ) {
 		act = next_byte;
 
 		switch(act) {
@@ -742,34 +707,13 @@ static void draw_picture ()
 			break;
 		case 0xFF:			/* end of pic data */
 		default:
-			we_are_drawing = 0;
+			drawing = 0;
 			break;
 		}
-
-#ifdef OPT_PICTURE_VIEWER
-		if (opt.showscreendraw) {
-			show_buffer (show_screen_mode);
-			put_screen ();
-		}
-
-#if 0
-		/* FIXME: ugh */
-		if (opt.showscreendraw && opt.showkeypress) {
-			act = get_key() & 0xFF;
-			if(act == 'c')
-				opt.showkeypress = 3;
-			if(act == 'q' || act == 'Q')
-				opt.showscreendraw = 3;
-		}
-#endif
-
-#endif /* OPT_PICTURE_VIEWER */
 	}
 
 	for (i = 0; i < stack_num_segs; i++)
 		free (stack[i]);
-
-	/* splitPriority (); */
 }
 
 
@@ -782,7 +726,7 @@ int decode_picture (int resnum)
 
 	patCode = 0;
 	patNum = 0;
-	we_are_drawing = pri_on = scr_on = FALSE;
+	pri_on = scr_on = FALSE;
 	scr_colour = 0xF;
 	pri_colour = 0x4;
 
@@ -817,28 +761,3 @@ int unload_picture (int resnum)
 	return err_OK;
 }
 
-
-#ifdef OPT_PICTURE_VIEWER
-
-void show_buffer (int mode)
-{
-	switch (mode) {
-	case 'x':
-		put_block_buffer (xdata_data);
-		break;
-#if 0
-	case 'c':
-		put_block_buffer (control_data);
-		break;
-	case 'p':
-		put_block_buffer (priority_data);
-		break;
-#endif
-	case 'v':
-	default:
-		dump_screenX ();
-		break;
-	}
-}
-
-#endif

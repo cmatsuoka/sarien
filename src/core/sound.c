@@ -24,7 +24,8 @@
 /* TODO: add support for variable sampling rate in the output device
  */
 
-/* private data types (no need to be in the public header) */
+#ifdef USE_IIGS_SOUND
+
 struct sound_envelope {
 	UINT8 bp;
 	UINT8 inc_hi;
@@ -67,13 +68,16 @@ struct sound_iigs_sample {
 
 static struct sound_instrument *instruments;
 static int num_instruments;
+static UINT8 *wave;
+
+#endif
+
 static int playing;
 static struct channel_info chn[NUM_CHANNELS];
 static int endflag = -1;
 static int playing_sound = -1;
 static UINT16 type;
 static UINT8 *song;
-static UINT8 *wave;
 static UINT8 env;
 static SINT16 *waveform;
 
@@ -118,14 +122,17 @@ static SINT16 waveform_mac[WAVEFORM_SIZE] = {
     -175,-172,-165,-159,-137,-114, -67, -19
 };
 
+
+static void stop_note(int i);
+static void play_note(int i, int freq, int vol);
+
+#ifdef USE_IIGS_SOUND
+
 static UINT16 period[] = {
 	1024, 1085, 1149, 1218, 1290, 1367,
 	1448, 1534, 1625, 1722, 1825, 1933
 };
 
-
-static void stop_note(int i);
-static void play_note(int i, int freq, int vol);
 static struct agi_note play_sample[] = {
 	{ 0xff, 0x7f, 0x18, 0x00, 0x7f },
 	{ 0xff, 0xff, 0x00, 0x00, 0x00 },
@@ -138,6 +145,8 @@ static int note_to_period (int note)
 {
 	return period[note % 12] >> (note / 12 - 3);
 }
+
+#endif /* USE_IIGS_SOUND */
 
 
 void unload_sound (int resnum)
@@ -157,6 +166,7 @@ void unload_sound (int resnum)
 
 void decode_sound (int resnum)
 {
+#ifdef USE_IIGS_SOUND
 	int type, size;
 	SINT16 *buf;
 	UINT8 *src;
@@ -178,13 +188,17 @@ void decode_sound (int resnum)
 		sounds[resnum].rdata = (UINT8 *)buf;
 		free (src);
 	}
+#endif /* USE_IIGS_SOUND */
 }
+
 
 
 void start_sound (int resnum, int flag)
 {
 	int i;
+#ifdef USE_IIGS_SOUND
 	struct sound_iigs_sample *smp;
+#endif
 
 	if (sounds[resnum].flags & SOUND_PLAYING)
 		return;
@@ -204,6 +218,7 @@ void start_sound (int resnum, int flag)
 	song = (UINT8 *)sounds[resnum].rdata;
 
 	switch (type) {
+#ifdef USE_IIGS_SOUND
 	case AGI_SOUND_SAMPLE:
 		_D (_D_WARN "IIGS sample");
 		smp = (struct sound_iigs_sample *)sounds[resnum].rdata;
@@ -231,6 +246,7 @@ void start_sound (int resnum, int flag)
 		chn[0].timer = *(song + 2);
 		chn[0].ptr = (struct agi_note *)(song + 3);
 		break;
+#endif
 	case AGI_SOUND_4CHN:
 		_D (_D_WARN "AGI four-channel sound resource");
 
@@ -356,6 +372,8 @@ static void play_note (int i, int freq, int vol)
 }
 
 
+#ifdef USE_IIGS_SOUND
+
 void play_midi_sound ()
 {
 	UINT8 *p;
@@ -411,6 +429,8 @@ void play_midi_sound ()
 	}
 }
 
+#endif /* USE_IIGS_SOUND */
+
 
 void play_agi_sound ()
 {
@@ -454,9 +474,11 @@ void play_sound ()
 	if (endflag == -1)
 		return;
 
+#ifdef USE_IIGS_SOUND
 	if (type == AGI_SOUND_MIDI)
 		play_midi_sound ();
 	else
+#endif
 		play_agi_sound ();
 
 	if (!playing) {
@@ -523,6 +545,8 @@ UINT32 mix_sound (void)
 	return BUFFER_SIZE;
 }
 
+
+#ifdef USE_IIGS_SOUND
 
 int load_instruments (char *fname)
 {
@@ -609,3 +633,4 @@ void unload_instruments ()
 	free (instruments);
 }
 
+#endif /* USE_IIGS_SOUND */

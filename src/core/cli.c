@@ -60,12 +60,6 @@ static void help (int argc, char **argv)
 #ifdef OPT_LIST_OBJECTS
 "  -o --list-objects  List objects.\n"
 #endif
-#ifdef OPT_PICTURE_VIEWER
-"  -p --picture-viewer\n"
-"                     Interactive picture viewer.\n"
-"  -ps --show-drawing Show screen as it's drawn.\n"
-"  -pk --wait-key     Wait for keypress on each action. (forces -ps)\n"
-#endif
 #ifndef _M_MSDOS
 "  -S --scale {num}   Window size scale (only for windowed graphics).\n"
 #endif
@@ -125,10 +119,6 @@ int parse_cli (int argc, char **argv)
 		{ "list-objects",	0, 0, 'o' },
 #endif
 		{ "emulate-sound",	1, 0, 'E' },
-#ifdef OPT_PICTURE_VIEWER
-		{ "picture-viewer",	0, 0, 'p' },
-		{ "show-drawing",	0, 0, 's' },
-#endif
 		{ "wait-key",		0, 0, 'k' },
 		{ "no-x-shm",		0, 0, 'x' },
 		{ "scale",		1, 0, 'S' }
@@ -166,12 +156,6 @@ int parse_cli (int argc, char **argv)
 #endif
 			printf("Listing Objects is ");
 #ifdef OPT_LIST_OBJECTS
-			printf("supported\n");
-#else
-			printf("not supported\n");
-#endif
-			printf("Builtin Picture Viewer is ");
-#ifdef OPT_PICTURE_VIEWER
 			printf("supported\n");
 #else
 			printf("not supported\n");
@@ -254,17 +238,6 @@ int parse_cli (int argc, char **argv)
 				opt.scale = 1;
 			if (opt.scale > 4)
 				opt.scale = 4;
-			break;
-#endif
-#ifdef OPT_PICTURE_VIEWER
-		case 'k':
-			opt.showkeypress = TRUE;
-			/* fall through */
-		case 's':
-			opt.showscreendraw = TRUE;
-			/* fall through */
-		case 'p':
-			opt.gamerun = gVIEW_PICTURES;
 			break;
 #endif
 #ifdef MITSHM
