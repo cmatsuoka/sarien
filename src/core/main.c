@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999 Dark Fiber, (C) 1999,2001 Claudio Matsuoka
+ *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -233,7 +233,7 @@ int main(int argc, char *argv[])
 
 	printf(
 TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
-"Copyright (C) 1999 Stuart George, (C) 1999,2001 Claudio Matsuoka\n"
+"Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka\n"
 "Portions Copyright (C) 1998 Lance Ewing, (C) 1999 Felipe Rosinha\n"
 #ifndef HAVE_GETOPT_LONG
 "Portions Copyright (C) 1989-1997 Free Software Foundation, Inc.\n"
