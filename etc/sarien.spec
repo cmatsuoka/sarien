@@ -18,7 +18,7 @@ Rush! and Leisure Suit Larry in the Land of the Lounge Lizards).
 %setup -q
 
 %build
-configure
+./configure
 make
 
 %install
