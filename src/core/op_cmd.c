@@ -160,18 +160,18 @@ cmd(obj_status_v)	{ report ("Not implemented: obj.status.v\n"); }
  * unk_177: Disable menus completely -- j5
  * unk_181: Deactivate keypressed control (default control of ego)
  */
-cmd(unk_170)		{ message_box ("cmd_unk_170"); }
-cmd(unk_171)		{ message_box ("cmd_unk_171"); }
-cmd(unk_172)		{ message_box ("cmd_unk_172"); }
-cmd(unk_173)		{ message_box ("cmd_unk_173"); }
-cmd(unk_174)		{ message_box ("cmd_unk_174"); }
-cmd(unk_175)		{ message_box ("cmd_unk_175"); }
-cmd(unk_176)		{ message_box ("cmd_unk_176"); }
-cmd(unk_177)		{ message_box ("cmd_unk_177"); }
-cmd(unk_178)		{ message_box ("cmd_unk_178"); }
-cmd(unk_179)		{ message_box ("cmd_unk_179"); }
-cmd(unk_180)		{ message_box ("cmd_unk_180"); }
-cmd(unk_181)		{ message_box ("cmd_unk_181"); }
+cmd(unk_170)		{ report ("Not implemented: cmd_unk_170\n"); }
+cmd(unk_171)		{ report ("Not implemented: cmd_unk_171\n"); }
+cmd(unk_172)		{ report ("Not implemented: cmd_unk_172\n"); }
+cmd(unk_173)		{ report ("Not implemented: cmd_unk_173\n"); }
+cmd(unk_174)		{ report ("Not implemented: cmd_unk_174\n"); }
+cmd(unk_175)		{ report ("Not implemented: cmd_unk_175\n"); }
+cmd(unk_176)		{ report ("Not implemented: cmd_unk_176\n"); }
+cmd(unk_177)		{ report ("Not implemented: cmd_unk_177\n"); }
+cmd(unk_178)		{ report ("Not implemented: cmd_unk_178\n"); }
+cmd(unk_179)		{ report ("Not implemented: cmd_unk_179\n"); }
+cmd(unk_180)		{ report ("Not implemented: cmd_unk_180\n"); }
+cmd(unk_181)		{ report ("Not implemented: cmd_unk_181\n"); }
 
 
 
