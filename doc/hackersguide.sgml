@@ -19,11 +19,25 @@
     </authorgroup>
 
     <abstract><para>
+      This guide documents the internal aspects of the Sarien AGI
+      interpreter, providing comprehensive guidelines for new developers
+      and a rich reference material for future maintenance. The system
+      architecture, subsystem details and design decisions are explained,
+      and the API and requisites for porting the interpreter to new
+      platforms are discussed. 
     </para></abstract>
 
     <releaseinfo>
       $Id$
     </releaseinfo>
+
+    <legalnotice><para>
+      <copyright>
+        <year>2001</year>
+        <holder>The Sarien Development Team</holder>
+      </copyright>
+    </para></legalnotice>
+
   </bookinfo>
 
 <chapter id="intro">
@@ -439,7 +453,26 @@
 <sect1 id="arch-mainloop">
 <title>The main loop</title>
 <para>
+  The interpreter main loop runs a complete AGI cycle in each iteration.
+  Actions performed in the main loop include keyboard polling and key
+  event processing, internal timer updating, frame rate control, AGI cycle
+  processing and sprite updating. <xref linkend="fig-mainloop"> outlines
+  the process: actions from key polling to sprite blitting are performed
+  in sequence in the main loop; actions in the dashed box belog to the
+  "main cycle" that is also called from blocking and timed message boxes, 
+  string input and step debugging. The reason for doing this is the
+  cycle granularity of the main loop; string input or blocking message
+  boxes can be executed in the middle of the logic script, and the
+  execution returns to the main loop only after the end of logic
+  script 0. Having a main loop with instruction granularity is possible,
+  but it would add complexity and overhead to the interpreter.
 </para>
+
+  <figure id="fig-mainloop" float="1">
+    <title>Interpreter main loop</title>
+    <graphic fileref="images/hg/main_loop.eps" format="eps"></graphic>
+  </figure>
+
 </sect1>
 
 <sect1 id="arch-data">
