@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "..\src\include" /D "NDEBUG" /D "WIN32" /D "_CONSOLE" /D "_MBCS" /D "NATIVE_WIN32" /FR /YX /FD /c
+# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "..\src\include" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "NATIVE_WIN32" /FR /YX /FD /c
 # ADD BASE RSC /l 0x416 /d "NDEBUG"
 # ADD RSC /l 0x416 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -50,7 +50,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib  winmm.lib /nologo /subsystem:console /incremental:yes /debug /machine:I386
+# ADD LINK32 winmm.lib kernel32.lib user32.lib gdi32.lib winspool.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /incremental:yes /debug /machine:I386
+# SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "Sarien - Win32 Debug"
 
@@ -106,6 +107,10 @@ SOURCE=..\SRC\CORE\AGI_V4.C
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\core\checks.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\core\cli.c
 # End Source File
 # Begin Source File
@@ -130,15 +135,11 @@ SOURCE=..\src\core\getopt1.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\SRC\CORE\GFX_AGI.C
-# End Source File
-# Begin Source File
-
-SOURCE=..\SRC\CORE\GFX_BASE.C
-# End Source File
-# Begin Source File
-
 SOURCE=..\src\core\global.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\core\graphics.c
 # End Source File
 # Begin Source File
 
@@ -166,11 +167,11 @@ SOURCE=..\src\core\lzw.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\core\main.c
+SOURCE=..\src\core\menu.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\core\menu.c
+SOURCE=..\src\core\motion.c
 # End Source File
 # Begin Source File
 
@@ -186,11 +187,11 @@ SOURCE=..\src\core\op_dbg.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\core\op_misc.c
+SOURCE=..\src\core\op_test.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\core\op_test.c
+SOURCE=..\src\core\patches.c
 # End Source File
 # Begin Source File
 
@@ -214,11 +215,19 @@ SOURCE=..\src\core\sound.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\src\core\sprite.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\SRC\CORE\TEXT.C
 # End Source File
 # Begin Source File
 
 SOURCE=..\src\core\view.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\src\core\winmain.c
 # End Source File
 # Begin Source File
 
@@ -255,14 +264,6 @@ SOURCE=..\src\fileglob\win32\fileglob.c
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE="..\src\include\agi-v2.h"
-# End Source File
-# Begin Source File
-
-SOURCE="..\src\include\agi-v3.h"
-# End Source File
-# Begin Source File
-
 SOURCE=..\src\include\agi.h
 # End Source File
 # Begin Source File
@@ -295,11 +296,11 @@ SOURCE=..\src\include\getopt.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\include\gfx.h
+SOURCE=..\src\include\global.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\include\global.h
+SOURCE=..\src\include\graphics.h
 # End Source File
 # Begin Source File
 

@@ -105,7 +105,6 @@ static UINT32 match_version (UINT32 crc)
 #ifdef WIN32
 	char buf[256];
 	int ver;
-	char *q;
 
 	strcpy(buf, "./");
 
