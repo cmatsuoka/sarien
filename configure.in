@@ -56,7 +56,7 @@ CONSOLE_DRIVER="none"
 
 if test "${ac_cv_header_Ph_h}" = "yes"; then
 	CONSOLE_DRIVER="ph"
-	dnl AC_CHECK_LIB(FIXME)
+	LIBS="${LIBS} -lph -lphrender"
 elif test "${ac_cv_header_wingdi_h}" = "yes"; then
 	CONSOLE_DRIVER="win32"
 	AC_CHECK_LIB(cygwin, usleep)
