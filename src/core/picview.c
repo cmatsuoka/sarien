@@ -33,6 +33,7 @@ static int picviewer_get_key ()
 
 	_D (_D_WARN "waiting...");
 	while (42) {
+		poll_timer ();
 		key = do_poll_keyboard ();
 		if (key) break;
 	}
@@ -46,6 +47,8 @@ int view_pictures ()
 	int ec = err_OK;
 	char x[64];
 	int i, pic = 0, dir = 1;
+
+	game.line_min_print = 1;
 
 	for (i = 0; ec == err_OK; i = 1) {
 		while (game.dir_pic[pic].offset == _EMPTY) {

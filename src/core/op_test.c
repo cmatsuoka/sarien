@@ -262,7 +262,6 @@ int test_if_code (int lognum)
 			break;
 		case 0x0D:
 			ec = test_keypressed ();
-			_D (_D_WARN "have.key = %d", ec);
 			break;
 		case 0x0E:
 			ec = test_said (p[0], (UINT8*)code + (ip + 1));
