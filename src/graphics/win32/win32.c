@@ -291,9 +291,8 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 
 		switch (key) {
 		case VK_SHIFT:
-			key = 0;
-			break;
 		case VK_CONTROL:
+		case VK_MENU:
 			key = 0;
 			break;
 		case VK_UP:
@@ -457,10 +456,7 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		}
 
 		_D (": key = 0x%02x ('%c')", key, isprint(key) ? key : '?');
-
-		/* Cancel "alt" keybind to toggle.monitor (huh?) */
-		if (key == 0x12)
-			key = 0;
+		report ("key = 0x%02x ('%c')\n", key, isprint(key) ? key : '?');
 
 		break;
 	};
