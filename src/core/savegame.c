@@ -14,7 +14,9 @@
 #include <stdio.h>
 #include <string.h>
 #ifndef __MPW__
+#ifndef __DICE__
 #include <sys/stat.h>
+#endif
 #include <sys/types.h>
 #endif
 
@@ -29,6 +31,11 @@
 
 static int loading_ok;
 
+#ifdef __DICE__
+#  define MKDIR(a,b) mkdir(a)
+#else
+#  define MKDIR(a,b) mkdir(a,b)
+#endif
 
 
 /* Words are big-endian */
@@ -403,10 +410,10 @@ int savegame_dialog ()
 	/* DATADIR conflicts with ObjIdl.h in win32 SDK,
 		renamed to DATA_DIR */
 	sprintf (path, "%s/" DATA_DIR "/", home);
-	mkdir (path, 0755);
+
+	MKDIR (path, 0755);
 	sprintf (path, "%s/" DATA_DIR "/%s/", home, game.id);
-	_D (_D_WARN "path is [%s]", path);
-	mkdir (path, 0711);
+	MKDIR (path, 0711);
 
 	sprintf (path, "%s/" DATA_DIR "/%s/%08d.iff",
 		home, game.id, slot);
@@ -432,9 +439,9 @@ int loadgame_dialog ()
 	}
 
 	sprintf (path, "%s/" DATA_DIR "/", home);
-	mkdir (path, 0755);
+	MKDIR (path, 0755);
 	sprintf (path, "%s/" DATA_DIR "/%s/", home, game.id);
-	mkdir (path, 0711);
+	MKDIR (path, 0711);
 	
 	sprintf (path, "%s/" DATA_DIR "/%s/%08d.iff",
 		home, game.id, slot);
