@@ -5,7 +5,6 @@
 ]>
 
 <Book>
-
   <Title>The Sierra Adventure Game Interpreter Specification</Title>
 
   <TitleAbbrev>AGI Specs</TitleAbbrev>
@@ -52,7 +51,6 @@
      </Para></AuthorBlurb>
     </Author>
 
-
     <Abstract><Para>
       This document is a collection of all the information currently known
       about the structure and operation of the Adventure Game Interpreter,
@@ -61,7 +59,7 @@
       the Land of the Lounge Lizards.
     </Para></Abstract>
 
-    <ReleaseInfo/Third edition./
+    <ReleaseInfo/$Id$/
 
     <LegalNotice>
      <Para>
@@ -468,12 +466,12 @@ draw (smoke);
 </para>
 <para>
    <simplelist>
-   <member>Gold Rush: type <command>BIRD MAN</command>.
-   <member>King's Quest 3: type <command>RATS ASS</command> (in some versions
+    <listitem><para>Gold Rush: type <command>BIRD MAN</command>.
+    <listitem><para>King's Quest 3: type <command>RATS ASS</command> (in some versions
      <keycombo><keycap>ALT</keycap><keycap>D</keycap></keycombo>
      works instead).
-   <member>Police Quest: type <command>STINK BUG</command>.
-   <member>Space Quest 2: type <command>BACKSTAGE</command> or
+    <listitem><para>Police Quest: type <command>STINK BUG</command>.
+    <listitem><para>Space Quest 2: type <command>BACKSTAGE</command> or
      <command>DBG</command> (type <command>TESTER</command> to
       bring up Roger's screen coordinates).
    </simplelist>
@@ -483,24 +481,24 @@ draw (smoke);
 </para>
 <para>
    <simplelist>
-   <member><command/TP/: Teleport to another room.
-   <member><command/SHOW PRIORITY/: Show the current rooms priority bands and
+    <listitem><para><command/TP/: Teleport to another room.
+    <listitem><para><command/SHOW PRIORITY/: Show the current rooms priority bands and
       control lines.
-   <member><command/GET OBJECT/: Get any inventory member.
-   <member><command/GIMME GIMME/: Get all inventory members.
-   <member><command/SHOW FLAG/: Show one of the 256 flags.
-   <member><command/SET FLAG/: Set one of the 256 flags.
-   <member><command/RESET FLAG/: Clear one of the 256 flags.
-   <member><command/SHOW VAR/: Show one of the 256 variables.
-   <member><command/SET VAR/: Change the value of one of the 256 variables.
-   <member><command/POSITION/: Change egos position.
-   <member><command/SHOW POSITION/: Show egos current screen coordinates.
-   <member><command/OBJECT NUMBER/: Gives a list of all the objects and their
+    <listitem><para><command/GET OBJECT/: Get any inventory member.
+    <listitem><para><command/GIMME GIMME/: Get all inventory members.
+    <listitem><para><command/SHOW FLAG/: Show one of the 256 flags.
+    <listitem><para><command/SET FLAG/: Set one of the 256 flags.
+    <listitem><para><command/RESET FLAG/: Clear one of the 256 flags.
+    <listitem><para><command/SHOW VAR/: Show one of the 256 variables.
+    <listitem><para><command/SET VAR/: Change the value of one of the 256 variables.
+    <listitem><para><command/POSITION/: Change egos position.
+    <listitem><para><command/SHOW POSITION/: Show egos current screen coordinates.
+    <listitem><para><command/OBJECT NUMBER/: Gives a list of all the objects and their
 	object numbers.
-   <member><command/OBJECT ROOM/: Says which room an object is found in.
-   <member><command/ROOM/: Says what room number ego is currently in.
-   <member><command/SET PRIORITY/: Set the priority of ego.
-   <member><command/RELEASE PRIORITY/: Release the last priority that ego was set to.
+    <listitem><para><command/OBJECT ROOM/: Says which room an object is found in.
+    <listitem><para><command/ROOM/: Says what room number ego is currently in.
+    <listitem><para><command/SET PRIORITY/: Set the priority of ego.
+    <listitem><para><command/RELEASE PRIORITY/: Release the last priority that ego was set to.
    </simplelist>
 </para>
 <para>
@@ -668,13 +666,21 @@ draw (smoke);
    script for the edge of a cliff or a drowning script for the edge of a
    lake. There are four types of control lines:
 </para><para>
-   <simplelist>
-   <member>the black control line is a unconditional obstacle;
-   <member>the blue is a conditional obstacle;
-   <member>the green is an alarm line;
-   <member>the cyan is typically used for water (or something that a VIEW
-      can be confined to being on).
-   </simplelist>
+   <itemizedlist>
+    <listitem>
+     <para>the black control line is a unconditional obstacle;</para>
+    </listitem>
+    <listitem>
+     <para>the blue is a conditional obstacle;</para>
+    </listitem>
+    <listitem>
+     <para>the green is an alarm line;</para>
+    </listitem>
+    <listitem>
+     <para>the cyan is typically used for water (or something that a
+      VIEW can be confined to being on).</para>
+    </listitem>
+   </itemizedlist>
 </para>
 <para>
    In most games, black and blue appear to be used for obstacle use which
@@ -709,15 +715,17 @@ draw (smoke);
    it (KQ1, room 20, blue control line beside left hand tree). There are
    also a number of other one pixel visual errors that are virtually
    unnoticeable if you don't know they are there.
+</para><para>
 <programlisting>
                              _
                             |_| <- priority required for this pixel.
       Search downwards  |   |_| \
       for next pixel    |   |_|  \___ These pixels have all got a control
       with a priority  \|/  |_|  /    line covering their priority info.
-                            |_| /
+                        V   |_| /
                             |_| <- use this pixels priority.
 </programlisting>
+</para><para>
    It may be possible to draw the control lines on a separate screen
    altogether which would conserve the priority information.
 </para>
@@ -733,26 +741,36 @@ draw (smoke);
 (From the AGDS documentation, translated by Vassili Bykov)
 </para><para>
    The AGI interpreter contains:
-   <simplelist>
-   <member>256 8 bit variables, numbered 0--255 (Var);
-   <member>256 flags, numbered 0--255 (Flag);
-   <member>a number of objects controlled by the interpreter, one of which
-      (the object 0) may be controlled by the player using the keyboard;
-   <member>a number of inventory members;
-   <member>12 40-character string variables (string).
-   </simplelist>
+   <itemizedlist>
+    <listitem>
+     <para>256 8 bit variables, numbered from 0 to 255;</para>
+    </listitem>
+    <listitem>
+     <para>256 flags, numbered from 0 to 255;</para>
+    </listitem>
+    <listitem>
+     <para>a number of objects controlled by the interpreter, one of which
+     (the object 0) may be controlled by the player using the keyboard;</para>
+    </listitem>
+    <listitem>
+     <para>a number of inventory members;</para>
+    </listitem>
+    <listitem>
+     <para>12 40-character string variables).</para>
+    </listitem>
+   </itemizedlist>
 </para><para>
    Some variables (0 - 26) and flags (0 - 15) are reserved by the
-   interpreter, all others are free to be used by the programmer.
+   interpreter, all others are available to be used by the programmer.
 </para><para>
-   The interpreter provides a common variable and flag space for all
-   programs simultaneously loaded in the memory. The number of objects
+   The interpreter provides a common variable and flag space for all the
+   scripts simultaneously loaded in the memory. The number of objects
    and things is determined by the OBJECT resource.
 </para><para>
-   Interpreter's actions are described using the commands of the
-   interpreter's language. For example, there are commands to manage
-   objects, load and unload resources, etc. Further we shall consider the
-   commands in detail.
+   The interpreter's actions are described using the commands of its
+   language. For example, there are commands to manage objects, load
+   and unload resources, etc. These commands will be described in
+   detail in <xref linkend="cmdref">.
 </para><para>
    Note: Any variable, flag, object, string, word, message, etc. has a
    unique ID number, and numbering of different data types is independent
@@ -772,12 +790,12 @@ draw (smoke);
    Here is a list of all the existing resources. Resources are used to
    represent:
    <simplelist>
-   <member>colour background drawings (PICTURE resource);
-   <member>colour animated images (VIEW resource);
-   <member>sound effects (music, noise) (SOUND resource);
-   <member>inventory members and other objects (OBJECT resource);
-   <member>system dictionary for communicating with the user (WORD resource);
-   <member>programs in internal AGI programming language (LOGIC resource).
+    <listitem><para>colour background drawings (PICTURE resource);
+    <listitem><para>colour animated images (VIEW resource);
+    <listitem><para>sound effects (music, noise) (SOUND resource);
+    <listitem><para>inventory members and other objects (OBJECT resource);
+    <listitem><para>system dictionary for communicating with the user (WORD resource);
+    <listitem><para>programs in internal AGI programming language (LOGIC resource).
    </simplelist>
 </para>
 </sect2>
@@ -795,21 +813,21 @@ draw (smoke);
 </para><para>
    In each cycle the interpreter performs the following basic actions:
    <simplelist>
-   <member>time delay;
-   <member>clears the keyboard buffer;
-   <member>polls the keyboard and the joystick;
-   <member>analyses some of the reserved variables and flags (see block
+    <listitem><para>time delay;
+    <listitem><para>clears the keyboard buffer;
+    <listitem><para>polls the keyboard and the joystick;
+    <listitem><para>analyses some of the reserved variables and flags (see block
        diagram);
-   <member>for all controllable objects for which animate_obj, start_update
+    <listitem><para>for all controllable objects for which animate_obj, start_update
        and draw commands were issued, directions of motion are
        recalculated;
-   <member>LOGIC resource 0 is executed, as well as any logics it
+    <listitem><para>LOGIC resource 0 is executed, as well as any logics it
        calls--which, in turn, can call other logics. Depending on the
        state of variables and flags analyzed at step 4 the number of
        commands interpreted at stage 4 commands varies from one iteration
        of the cycle to another depending, for example, on a number of
        LOGIC resources to be called in the current situation;
-   <member>tests if the <function/new_room/ command has been issued;
+    <listitem><para>tests if the <function/new_room/ command has been issued;
    </simplelist>
 
    then the cycle is repeated.
@@ -851,31 +869,31 @@ draw (smoke);
                      +---------------------------+
                                    |
                                    V
-                +-------------------------------------+
-                | 3. poll keyboard and joystick       |
-                +-------------------------------------+
+                 +-------------------------------------+
+                 | 3. poll keyboard and joystick       |
+                 +-------------------------------------+
                                    |
                                    V
-                +-------------------------------------+
-                | If the current mode is              |
-                | - program_control, the direction of |
-                |   Ego motion <-- var(6).            |
-                | - player.control, var (6) --> dir.  |
-                |   of Ego motion.                    |
-                +-------------------------------------+
+                 +-------------------------------------+
+                 | If the current mode is              |
+                 | - program_control, the direction of |
+                 |   Ego motion <-- var(6).            |
+                 | - player.control, var (6) --> dir.  |
+                 |   of Ego motion.                    |
+                 +-------------------------------------+
                                    |
                                    V
-+---------------------------------------------------------------+
-| For all objects for which command animate.obj, start_update   |
-| and draw were carried out, the recalculation of the direction |
-| of movement is performed.                                     |
-+---------------------------------------------------------------+
+    +---------------------------------------------------------------+
+    | For all objects for which command animate.obj, start_update   |
+    | and draw were carried out, the recalculation of the direction |
+    | of movement is performed.                                     |
+    +---------------------------------------------------------------+
                                    |
                                    V
-+---------------------------------------------------------------+
-| If the score has changed (var (3)) or the sound has been      |
-| turned on or off (Flag (9)), the status line is updated.      |
-+---------------------------------------------------------------+
+    +---------------------------------------------------------------+
+    | If the score has changed (var (3)) or the sound has been      |
+    | turned on or off (Flag (9)), the status line is updated.      |
+    +---------------------------------------------------------------+
                                    |
                                    +---------+
                                              V
@@ -1051,20 +1069,20 @@ print ("Message 34 in logic.0 is %g34.");
    On interpreter startup all variables are set to 0.
 
    <simplelist>
-   <member>0 - Current room number (parameter new_room cmd), initially 0.
-   <member>1 - Previous room number.
-   <member>2 - Code of the border touched by Ego:
+    <listitem><para>0 - Current room number (parameter new_room cmd), initially 0.
+    <listitem><para>1 - Previous room number.
+    <listitem><para>2 - Code of the border touched by Ego:
       <simplelist>
-      <member>0 - Touched nothing;
-      <member>1 - Top edge of the screen or the horizon;
-      <member>2 - Right edge of the screen;
-      <member>3 - Bottom edge of the screen;
-      <member>4 - Left edge of the screen.
+       <listitem><para>0 - Touched nothing;
+       <listitem><para>1 - Top edge of the screen or the horizon;
+       <listitem><para>2 - Right edge of the screen;
+       <listitem><para>3 - Bottom edge of the screen;
+       <listitem><para>4 - Left edge of the screen.
       </simplelist>
-   <member>3 - Current score.
-   <member>4 - Number of object, other than Ego, that touched the border.
-   <member>5 - The code of border touched by the object in Var (4).
-   <member>6 - Direction of Ego's motion.
+    <listitem><para>3 - Current score.
+    <listitem><para>4 - Number of object, other than Ego, that touched the border.
+    <listitem><para>5 - The code of border touched by the object in Var (4).
+    <listitem><para>6 - Direction of Ego's motion.
    <verb>
                       1
                 8     |     2
@@ -1076,42 +1094,42 @@ print ("Message 34 in logic.0 is %g34.");
                 6     |     4
                       5
    </verb>
-   <member>7 - Maximum score.
-   <member>8 - Number of free 256-byte pages of the interpreter's memory.
-   <member>9 - If == 0, it is the number of the word in the user message that was
+    <listitem><para>7 - Maximum score.
+    <listitem><para>8 - Number of free 256-byte pages of the interpreter's memory.
+    <listitem><para>9 - If == 0, it is the number of the word in the user message that was
    not found in the dictionary. <emphasis>(I would assume they mean "if != 0", but
    that's what they say. --VB)</emphasis>
-   <member>10 - Time delay between interpreter cycles in 1/20 second intervals.
-   <member>11 - Seconds (interpreter's internal clock)
-   <member>12 - Minutes (interpreter's internal clock)
-   <member>13 - Hours (interpreter's internal clock)
-   <member>14 - Days (interpreter's internal clock)
-   <member>15 - Joystick sensitivity (if Flag (8) = 1).
-   <member>16 - ID number of the view-resource associated with Ego.
-   <member>17 - Interpreter error code (if == 0) <emphasis>(Again I would expect this
+    <listitem><para>10 - Time delay between interpreter cycles in 1/20 second intervals.
+    <listitem><para>11 - Seconds (interpreter's internal clock)
+    <listitem><para>12 - Minutes (interpreter's internal clock)
+    <listitem><para>13 - Hours (interpreter's internal clock)
+    <listitem><para>14 - Days (interpreter's internal clock)
+    <listitem><para>15 - Joystick sensitivity (if Flag (8) = 1).
+    <listitem><para>16 - ID number of the view-resource associated with Ego.
+    <listitem><para>17 - Interpreter error code (if == 0) <emphasis>(Again I would expect this
 	to say ``if != 0''. --VB)</emphasis>
-   <member>18 - Additional information that goes with the error code.
-   <member>19 - Key pressed on the keyboard.
-   <member>20 - Computer type. For IBM-PC it is always 0.
-   <member>21 - If Flag (15) == 0 (command reset 15 was issued) and Var (21) is
+    <listitem><para>18 - Additional information that goes with the error code.
+    <listitem><para>19 - Key pressed on the keyboard.
+    <listitem><para>20 - Computer type. For IBM-PC it is always 0.
+    <listitem><para>21 - If Flag (15) == 0 (command reset 15 was issued) and Var (21) is
    not equal to 0, the window is automatically closed after 1/2 * Var
    (21) seconds.
-   <member>22 - Sound generator type:
+    <listitem><para>22 - Sound generator type:
       <simplelist>
-      <member>1 - PC;
-      <member>3 - Tandy.
+       <listitem><para>1 - PC;
+       <listitem><para>3 - Tandy.
       </simplelist>
-   <member>23 - 0:F - sound volume (for Tandy).
-   <member>24 - This variable stores the maximum number that can be entered
+    <listitem><para>23 - 0:F - sound volume (for Tandy).
+    <listitem><para>24 - This variable stores the maximum number that can be entered
       in the input line. By default, this variable is set to 41 (29h).
       (information by Dark Minister)
-   <member>25 - ID number of the member selected using status command or 0xFF if ESC
+    <listitem><para>25 - ID number of the member selected using status command or 0xFF if ESC
    was pressed.
-   <member>26 - monitor type
+    <listitem><para>26 - monitor type
       <simplelist>
-      <member>0 - CGA;
-      <member>2 - Hercules;
-      <member>3 - EGA.
+       <listitem><para>0 - CGA;
+       <listitem><para>2 - Hercules;
+       <listitem><para>3 - EGA.
       </simplelist>
    </simplelist>
 </para>
@@ -1122,27 +1140,27 @@ print ("Message 34 in logic.0 is %g34.");
    On the interpreter startup all flags are set to 0.
 </para><para>
    <simplelist>
-   <member>0 - Ego base line is completely on pixels with priority = 3 (water
+    <listitem><para>0 - Ego base line is completely on pixels with priority = 3 (water
    surface).
-   <member>1 - Ego is invisible of the screen (completely obscured by another
+    <listitem><para>1 - Ego is invisible of the screen (completely obscured by another
    object).
-   <member>2 - the player has issued a command line.
-   <member>3 - Ego base line has touched a pixel with priority 2 (signal).
-   <member>4 - <function/said/ command has accepted the user input.
-   <member>5 - The new room is executed for the first time.
-   <member>6 - <function/restart_game/ command has been executed.
-   <member>7 - if this flag is 1, writing to the script buffer is blocked.
-   <member>8 - if 1, Var(15) determines the joystick sensitivity.
-   <member>9 - sound on/off.
-   <member>10 - 1 turns on the built-in debugger.
-   <member>11 - Logic 0 is executed for the first time.
-   <member>12 - `restore_game' command has been executed.
-   <member>13 - 1 allows the `status' command to select members.
-   <member>14 - 1 allows the menu to work.
-   <member>15 - Determines the output mode of `print' and `print_at' commands:
+    <listitem><para>2 - the player has issued a command line.
+    <listitem><para>3 - Ego base line has touched a pixel with priority 2 (signal).
+    <listitem><para>4 - <function/said/ command has accepted the user input.
+    <listitem><para>5 - The new room is executed for the first time.
+    <listitem><para>6 - <function/restart_game/ command has been executed.
+    <listitem><para>7 - if this flag is 1, writing to the script buffer is blocked.
+    <listitem><para>8 - if 1, Var(15) determines the joystick sensitivity.
+    <listitem><para>9 - sound on/off.
+    <listitem><para>10 - 1 turns on the built-in debugger.
+    <listitem><para>11 - Logic 0 is executed for the first time.
+    <listitem><para>12 - `restore_game' command has been executed.
+    <listitem><para>13 - 1 allows the `status' command to select members.
+    <listitem><para>14 - 1 allows the menu to work.
+    <listitem><para>15 - Determines the output mode of `print' and `print_at' commands:
       <simplelist>
-      <member>1 - message window is left on the screen
-      <member>0 - message window is closed when <keycap/ENTER/ or
+       <listitem><para>1 - message window is left on the screen
+       <listitem><para>0 - message window is closed when <keycap/ENTER/ or
          <keycap/ESC/ key are pressed.
          If Var(21) is not 0, the window is closed automatically after 1/2 *
          Var(21) seconds
@@ -1228,11 +1246,11 @@ print ("Message 34 in logic.0 is %g34.");
    Here are a few examples of some game ID's and the data following them:
 
    <simplelist>
-   <member>Police Quest: <literal/'P' 'Q' 0x00 'e' 'I' 'D' 'X'/
-   <member>Mother Goose: <literal/'M' 'G' 0x00 'e' 'I' 'D' 'X'/
-   <member>Manhunter 2: <literal/'M' 'H' '2' 0x00 'I' 'D' 'X'/
-   <member>XMAS Demo: <literal/'X' 'M' 'A' 'S' 0x00 'D' 'X'/
-   <member>Leisure Suit Larry: <literal/'L' 'L' 'L' 'L' 'L' 0x00 'X'/
+    <listitem><para>Police Quest: <literal/'P' 'Q' 0x00 'e' 'I' 'D' 'X'/
+    <listitem><para>Mother Goose: <literal/'M' 'G' 0x00 'e' 'I' 'D' 'X'/
+    <listitem><para>Manhunter 2: <literal/'M' 'H' '2' 0x00 'I' 'D' 'X'/
+    <listitem><para>XMAS Demo: <literal/'X' 'M' 'A' 'S' 0x00 'D' 'X'/
+    <listitem><para>Leisure Suit Larry: <literal/'L' 'L' 'L' 'L' 'L' 0x00 'X'/
    </simplelist>
 </para><para>
    The game ID itself is the null terminated string that ends at the 00h.
@@ -1423,10 +1441,10 @@ From the AGDS documentation, translated by Vassili Bykov.
    ends. If all the words have been assigned some codes:
 </para><para>
    <simplelist>
-   <member>The Interpreter removes from the sequence of codes all zeros (that
+    <listitem><para>The Interpreter removes from the sequence of codes all zeros (that
        means all vocabulary words with zero codes are ignored).
-   <member><literal/f2/ (the user has entered an input line) is set to 1
-   <member><literal/f4/ (<function/said/ command accepted the user input) is set to 0.
+    <listitem><para><literal/f2/ (the user has entered an input line) is set to 1
+    <listitem><para><literal/f4/ (<function/said/ command accepted the user input) is set to 0.
    </simplelist>
 </para><para>
    If the sequence of code produced by the interpreter is
@@ -1443,8 +1461,8 @@ From the AGDS documentation, translated by Vassili Bykov.
 </para><para>
    Compare parameters W(i) and codes V(i) as follows:
    <simplelist>
-   <member>if W(i) = 1, it matches any V(i);
-   <member>if W(i) = 9999, it matches the whole remaining input i.e. the
+    <listitem><para>if W(i) = 1, it matches any V(i);
+    <listitem><para>if W(i) = 9999, it matches the whole remaining input i.e. the
        codes V(i), V(i+1),...V(m).
    </simplelist>
 </para><para>
@@ -1572,13 +1590,13 @@ MH2	3.03	AGI	3.002.149	08/17/89
 </para><para>
    This table illustrates a number of things:
    <simplelist>
-   <member>Firstly, as the interpreter version increased, the number of AGI
+    <listitem><para>Firstly, as the interpreter version increased, the number of AGI
        commands supported increased with it. The last eleven we do not
        know the names of.
-   <member>There are two main AGI versions: AGI v2 and AGI v3.
-   <member>The early AGI v2 games did not encrypt the <filename/object/ file with the
+    <listitem><para>There are two main AGI versions: AGI v2 and AGI v3.
+    <listitem><para>The early AGI v2 games did not encrypt the <filename/object/ file with the
        ``Avis Durgan'' string.
-   <member>AGI v3 games use adaptive LZW to compress their LOGIC, VIEW, and
+    <listitem><para>AGI v3 games use adaptive LZW to compress their LOGIC, VIEW, and
        SOUND files.
    </simplelist>
 </para>
@@ -1589,12 +1607,12 @@ MH2	3.03	AGI	3.002.149	08/17/89
    are passed to them. All this information is based on observations made
    of the above interpreter versions.
    <simplelist>
-   <member>The <function/quit/ command had no arguments for version
+    <listitem><para>The <function/quit/ command had no arguments for version
        2.089 whereas all the others above have one argument.
-   <member>The <function/print.at/ and <function/print.at.v/ commands
+    <listitem><para>The <function/print.at/ and <function/print.at.v/ commands
        had only three
        arguments for versions 2.089--2.400 and four for the other versions.
-   <member>Unknown command number 176 had one argument for version
+    <listitem><para>Unknown command number 176 had one argument for version
        3.002.086 but later versions had no arguments for this command.
    </simplelist>
 </para>
@@ -1765,15 +1783,15 @@ if (v7 > 0 && !f6) { .....
    There are 9 different types of arguments that commands use:
 
    <simplelist>
-   <member>Number (no prefix)
-   <member>Var (prefix ``v'')
-   <member>Flag (prefix ``f'')
-   <member>Message (prefix ``m'')
-   <member>Object (prefix ``o'')
-   <member>Inventory Item (prefix ``i'')
-   <member>String (prefix ``s'')
-   <member>Word (prefix ``w'')
-   <member>Controller (prefix ``c'')
+    <listitem><para>Number (no prefix)
+    <listitem><para>Var (prefix ``v'')
+    <listitem><para>Flag (prefix ``f'')
+    <listitem><para>Message (prefix ``m'')
+    <listitem><para>Object (prefix ``o'')
+    <listitem><para>Inventory Item (prefix ``i'')
+    <listitem><para>String (prefix ``s'')
+    <listitem><para>Word (prefix ``w'')
+    <listitem><para>Controller (prefix ``c'')
    </simplelist>
 </para><para>
    The <literal/said/ test command uses its own special arguments which will be
@@ -2294,10 +2312,10 @@ From the AGDS documentation translated by Vassili Bykov,
     <listitem><para>
      Set Ego coordinates according to <literal/v2/:
        <simplelist>
-       <member>if Ego touched the bottom edge, put it on the horizon;
-       <member>if Ego touched the top edge, put it on the bottom edge of the
+        <listitem><para>if Ego touched the bottom edge, put it on the horizon;
+        <listitem><para>if Ego touched the top edge, put it on the bottom edge of the
           screen;
-       <member>if Ego touched the right edge, put it at the left and vice
+        <listitem><para>if Ego touched the right edge, put it at the left and vice
           versa.
        </simplelist>
     </para></listitem>
@@ -2356,17 +2374,17 @@ From the AGDS documentation translated by Vassili Bykov,
    automatically checking the following conditions:
 
    <simplelist>
-   <member>If an object priority is 0 it cannot cross an unconditional barrier
+    <listitem><para>If an object priority is 0 it cannot cross an unconditional barrier
    (pixels with priority 0).
 
-   <member>If an object priority is 15 and a command <literal/ignore.block/ has not
+    <listitem><para>If an object priority is 15 and a command <literal/ignore.block/ has not
    been given to it, it cannot cross a conditional barrier (pixels with
    priority 1) and leave the block set using the <literal><ulink name="block"/block/</literal> command.
 
-   <member>If an object has not been given <literal><ulink name="ignore.horizon"/ignore.horizon/</literal> command, it cannot
+    <listitem><para>If an object has not been given <literal><ulink name="ignore.horizon"/ignore.horizon/</literal> command, it cannot
    move above the horizon set using the <literal><ulink name="set.horizon"/set.horizon/</literal> command.
 
-   <member>An object should follow the conditions set using <literal><ulink name="object.on.water"/object.on.water/</literal>
+    <listitem><para>An object should follow the conditions set using <literal><ulink name="object.on.water"/object.on.water/</literal>
    and <literal><ulink name="object.on.land"/object.on.land/</literal> commands (see below).
    </simplelist>
 
@@ -2414,13 +2432,13 @@ From the AGDS documentation translated by Vassili Bykov,
    Automatic choice of the loop is done according to the table:
 
    <simplelist>
-   <member>for objects with fewer than 4 but more than 1 loops:
+    <listitem><para>for objects with fewer than 4 but more than 1 loops:
 <programlisting>
 Direction  0  1  2  3  4  5  6  7  8
   Loop     x  x  0  0  0  x  1  1  1
 </programlisting>
 
-   <member>for objects with more than 4 loops:
+    <listitem><para>for objects with more than 4 loops:
 <programlisting>
 Direction  0  1  2  3  4  5  6  7  8
   Loop     x  3  0  0  0  2  1  1  1
@@ -2733,13 +2751,13 @@ Direction  0  1  2  3  4  5  6  7  8
 
    Parameters are:
    <simplelist>
-   <member><parameter/a/ (<parameter/va/): number of the VIEW resource;
-   <member><parameter/b/ (<parameter/vb/): loop number;
-   <member><parameter/c/ (<parameter/vc/): cel number;
-   <member><parameter/d/ (<parameter/vd/): x coordinate;
-   <member><parameter/e/ (<parameter/ve/): y coordinate;
-   <member><parameter/f/ (<parameter/vf/): priority;
-   <member><parameter/g/ (<parameter/vg/): margin.
+    <listitem><para><parameter/a/ (<parameter/va/): number of the VIEW resource;
+    <listitem><para><parameter/b/ (<parameter/vb/): loop number;
+    <listitem><para><parameter/c/ (<parameter/vc/): cel number;
+    <listitem><para><parameter/d/ (<parameter/vd/): x coordinate;
+    <listitem><para><parameter/e/ (<parameter/ve/): y coordinate;
+    <listitem><para><parameter/f/ (<parameter/vf/): priority;
+    <listitem><para><parameter/g/ (<parameter/vg/): margin.
    </simplelist>
 
    If margin is 0, 1, 2, or 3, the base of the cel is surrounded with a
@@ -2796,20 +2814,20 @@ show.pic();
    letters, digits, and other symbols, the string may contain:
 
    <simplelist>
-   <member>Newline character (0x0A);
-   <member>Format element:
+    <listitem><para>Newline character (0x0A);
+    <listitem><para>Format element:
      <simplelist>
-     <member><literal/%v&lt;decimal number>/: at this place the output will include a
+      <listitem><para><literal/%v&lt;decimal number>/: at this place the output will include a
        decimal value of variable with the given number.
-     <member><literal/%m &lt;number>/: the text of the message with the given number is
+      <listitem><para><literal/%m &lt;number>/: the text of the message with the given number is
        inserted at this place.
-     <member><literal/%0 &lt;number>/: the name of the member with the given number is
+      <listitem><para><literal/%0 &lt;number>/: the name of the member with the given number is
        inserted at this place.
-     <member><literal/%w &lt;number>/: a vocabulary word with the given number is
+      <listitem><para><literal/%w &lt;number>/: a vocabulary word with the given number is
        inserted at this place.
-     <member><literal/%s &lt;number>/: a string variable with the given number is
+      <listitem><para><literal/%s &lt;number>/: a string variable with the given number is
        inserted at this place.
-     <member><literal/%g &lt;number>/: a message with this number from message field of
+      <listitem><para><literal/%g &lt;number>/: a message with this number from message field of
        Logic(0) is inserted at this place.
      </simplelist>
    </simplelist>
@@ -3073,8 +3091,8 @@ Room <current room> Input line <current input line> ... message ...
 <function id="controller">controller(n)</function>
    TRUE if the event with code <parameter/n/ has occurred:
    <simplelist>
-   <member>a key with the code <parameter/n/ was pressed (set using <literal/set_key/);
-   <member>menu member with code <parameter/n/ was selected in command <literal/menu_input/.
+    <listitem><para>a key with the code <parameter/n/ was pressed (set using <literal/set_key/);
+    <listitem><para>menu member with code <parameter/n/ was selected in command <literal/menu_input/.
    </simplelist>
    </variablelist>
 </para>
@@ -3687,10 +3705,10 @@ Byte  Meaning
    characters. The next two codes have a special meaning:
 
    <simplelist>
-   <member>256 is used as a start over code. The table is cleared, the number
+    <listitem><para>256 is used as a start over code. The table is cleared, the number
    of bits set back to 9, and the process begins again with the next code
    being 258.
-   <member>257 tells the interpreter that it has reached the end of the
+    <listitem><para>257 tells the interpreter that it has reached the end of the
    resource.
    </simplelist>
 
@@ -3738,20 +3756,20 @@ Compressed picture code: F0 6F 81 24 5F 07 F2 5F 81 46 7 ...
    The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
 
    <simplelist>
-   <member><literal><ulink name="examples/files/agifiles.c"/agifiles.c/</literal>
+    <listitem><para><literal><ulink name="examples/files/agifiles.c"/agifiles.c/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: routines to handle loading of resources
-   <member><literal><ulink name="examples/files/agifiles.h"/agifiles.h/</literal>
+    <listitem><para><literal><ulink name="examples/files/agifiles.h"/agifiles.h/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: header file for <literal/agifiles.c/
-   <member><literal><ulink name="examples/files/general.h"/general.h/</literal>
+    <listitem><para><literal><ulink name="examples/files/general.h"/general.h/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: general definitions
-   <member><literal><ulink name="examples/files/volx2.c"/volx2.c/</literal>
+    <listitem><para><literal><ulink name="examples/files/volx2.c"/volx2.c/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz" name="Lance Ewing">, <ulink name="mailto:jmoller@algonet.se" name="Joakim Möller"> and <ulink name="mailto:mrtn@rocketmail.com"/Martin Tillenius/: program to extract
       resources from AGI version 2 games (UNIX version available in
       the <ulink name="http://agi.helllabs.org/#utils/"/AGI Utils/ package).
-   <member><literal><ulink name="examples/files/xv3.pas"/xv3.pas/</literal>
+    <listitem><para><literal><ulink name="examples/files/xv3.pas"/xv3.pas/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: program to extract resources from AGI version 3 games
       (UNIX version available in the <ulink name="http://agi.helllabs.org/#utils/"/AGI Utils/ package).
-   <member><literal><ulink name="examples/files/agiver.pas"/agiver.pas/</literal>
+    <listitem><para><literal><ulink name="examples/files/agiver.pas"/agiver.pas/</literal>
       by <ulink name="mailto:mikeph@concentric.net"/Jeremy Hayes/: displays version number of game and interpreter
    </simplelist>
 </para>
@@ -4139,9 +4157,9 @@ if (isset(5))
    second 0xFF is encountered the interpreter, be it us or the machine,
    does three things:
    <enum>
-   <member>Reads in the following two bytes.
-   <member>Opens a bracket.
-   <member>Switches to AGI command mode.
+    <listitem><para>Reads in the following two bytes.
+    <listitem><para>Opens a bracket.
+    <listitem><para>Switches to AGI command mode.
    </enum>
 
    Example 3: KQ1. Room 2.
@@ -4256,8 +4274,8 @@ command( arg1, arg2, arg3, arg4, arg5, arg6, arg7); (unknown)
 
    Examples:
    <simplelist>
-   <member>0x80 Says that the commands first argument is a variable.
-   <member>0x60 Says that the second and third arguments are variable numbers.
+    <listitem><para>0x80 Says that the commands first argument is a variable.
+    <listitem><para>0x60 Says that the second and third arguments are variable numbers.
    </simplelist>
 </para>
 
@@ -4622,15 +4640,15 @@ do {
    The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
 
    <simplelist>
-   <member><literal><ulink name="examples/logic/logic.c"/logic.c/</literal>
+    <listitem><para><literal><ulink name="examples/logic/logic.c"/logic.c/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: loads LOGIC resources into LOGICFile structure
-   <member><literal><ulink name="examples/logic/logic.h"/logic.h/</literal>
+    <listitem><para><literal><ulink name="examples/logic/logic.h"/logic.h/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: header file for <literal/logic.c/
-   <member><literal><ulink name="examples/files/agifiles.c"/agifiles.c/</literal>
+    <listitem><para><literal><ulink name="examples/files/agifiles.c"/agifiles.c/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: routines to handle loading of resources
-   <member><literal><ulink name="examples/files/agifiles.h"/agifiles.h/</literal>
+    <listitem><para><literal><ulink name="examples/files/agifiles.h"/agifiles.h/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: header file for <literal/agifiles.c/
-   <member><literal><ulink name="examples/logic/agicommands.pas"/agicommands.pas/</literal>
+    <listitem><para><literal><ulink name="examples/logic/agicommands.pas"/agicommands.pas/</literal>
       by <ulink name="mailto:ptrkelly@ozemail.com.au"/Peter Kelly/: Delphi/Pascal unit with a list of all commands and
       argument types
    </simplelist>
@@ -4662,18 +4680,18 @@ based on the AGDS documentation translated by <ulink name="mailto:nest@rtsnet.ru
    are given values from 0xF0 to 0xFA and are defined as follows:
 
    <simplelist>
-   <member>0xF0: Change picture colour and enable picture draw.
-   <member>0xF1: Disable picture draw.
-   <member>0xF2: Change priority colour and enable priority draw.
-   <member>0xF3: Disable priority draw.
-   <member>0xF4: Draw a Y corner.
-   <member>0xF5: Draw an X corner.
-   <member>0xF6: Absolute line (long lines).
-   <member>0xF7: Relative line (short lines).
-   <member>0xF8: Fill.
-   <member>0xF9: Change pen size and style.
-   <member>0xFA: Plot with pen.
-   <member>0xFB--0xFE: Unused in most AGI games.
+    <listitem><para>0xF0: Change picture colour and enable picture draw.
+    <listitem><para>0xF1: Disable picture draw.
+    <listitem><para>0xF2: Change priority colour and enable priority draw.
+    <listitem><para>0xF3: Disable priority draw.
+    <listitem><para>0xF4: Draw a Y corner.
+    <listitem><para>0xF5: Draw an X corner.
+    <listitem><para>0xF6: Absolute line (long lines).
+    <listitem><para>0xF7: Relative line (short lines).
+    <listitem><para>0xF8: Fill.
+    <listitem><para>0xF9: Change pen size and style.
+    <listitem><para>0xFA: Plot with pen.
+    <listitem><para>0xFB--0xFE: Unused in most AGI games.
    </simplelist>
 
    Note: SQ2 appears to be the only AGI version 2 game that uses 0xF9 and
@@ -5209,9 +5227,9 @@ Tool:Line V:A P:o C:o X=199 Y=55 Pri:2
    The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
 
    <simplelist>
-   <member><literal><ulink name="examples/picture/picv3-v2.c"/picv3-v2.c/</literal>
+    <listitem><para><literal><ulink name="examples/picture/picv3-v2.c"/picv3-v2.c/</literal>
        by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: converts version 3 pictures to version 2 pictures
-   <member><literal><ulink name="examples/picture/showpic.c"/showpic.c/</literal>
+    <listitem><para><literal><ulink name="examples/picture/showpic.c"/showpic.c/</literal>
        by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: displays pictures
    </simplelist>
 </para>
@@ -5330,10 +5348,10 @@ Byte  Meaning
 
    This line will have:
    <simplelist>
-   <member>X pixels of colour A (<literal/AX/)
-   <member>Y pixels of colour B (<literal/BY/)
-   <member>Z pixels of colour C (<literal/CZ/)
-   <member>(then that will be the end of the line) (<literal/00/)
+    <listitem><para>X pixels of colour A (<literal/AX/)
+    <listitem><para>Y pixels of colour B (<literal/BY/)
+    <listitem><para>Z pixels of colour C (<literal/CZ/)
+    <listitem><para>(then that will be the end of the line) (<literal/00/)
    </simplelist>
 
    If the color of the last chunk on the line is the transparent color,
@@ -5457,20 +5475,20 @@ Written by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/
    View objects appear to have the following properties:
 
    <simplelist>
-   <member>x position
-   <member>y position
-   <member>current view
-   <member>current loop
-   <member>current cel
-   <member>priority
-   <member>cycle time (1/n gives the fraction of the maximum speed)
-   <member>step time (1/n gives the fraction of the maximum speed)
-   <member>x size (in pixels)
-   <member>y size (in pixels)
-   <member>step size
-   <member>direction
-   <member>number of loops
-   <member>number of cels
+    <listitem><para>x position
+    <listitem><para>y position
+    <listitem><para>current view
+    <listitem><para>current loop
+    <listitem><para>current cel
+    <listitem><para>priority
+    <listitem><para>cycle time (1/n gives the fraction of the maximum speed)
+    <listitem><para>step time (1/n gives the fraction of the maximum speed)
+    <listitem><para>x size (in pixels)
+    <listitem><para>y size (in pixels)
+    <listitem><para>step size
+    <listitem><para>direction
+    <listitem><para>number of loops
+    <listitem><para>number of cels
    </simplelist>
 
    There are probably other properties that aren't listed here which they
@@ -5624,7 +5642,7 @@ X........
    The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
 
    <simplelist>
-   <member><literal><ulink name="examples/view/viewview.pas"/viewview.pas/</literal>
+    <listitem><para><literal><ulink name="examples/view/viewview.pas"/viewview.pas/</literal>
       by <ulink name="mailto:ptrkelly@ozemail.com.au"/Peter Kelly/: unit from AGIhack that displays VIEWs
    </simplelist>
 </chapter>
@@ -5837,14 +5855,14 @@ Written by <ulink name="mailto:irsman@iag.net"/Ian Schmidt/ (Last updated: 3 Nov
    When oscillators are paired to create generators, there are 4 possible
    modes:
    <simplelist>
-   <member>Free-run: the oscillator simply plays the waveform and stops. No
+    <listitem><para>Free-run: the oscillator simply plays the waveform and stops. No
        interaction with it's 'twin' occurs.
-   <member>Swap: Only one oscillator of the pair is active at a time. When
+    <listitem><para>Swap: Only one oscillator of the pair is active at a time. When
        one stops, the other immediately starts.
-   <member>Loop: The oscillator simply plays the waveform and if it hits the
+    <listitem><para>Loop: The oscillator simply plays the waveform and if it hits the
        end without encounter.cgiing a zero, it starts over at the
        beginning.
-   <member>Sync/AM: This actually has 2 possible effects: either one
+    <listitem><para>Sync/AM: This actually has 2 possible effects: either one
        oscillator of the pair modulates the volume of the other with the
        waveform it's playing, or both oscillators sync up perfectly,
        causing a louder and more 'solid' sound.
@@ -5925,10 +5943,10 @@ Byte  Meaning
    note entries of the following format:
 
    <simplelist>
-   <member>First and second byte: Note duration
-   <member>Third byte
+    <listitem><para>First and second byte: Note duration
+    <listitem><para>Third byte
       <simplelist>
-      <member>In the case of a tone voice,
+       <listitem><para>In the case of a tone voice,
 <verb>
 7  6  5  4  3  2  1  0
 
@@ -5936,11 +5954,11 @@ Byte  Meaning
 .  X  .  .  .  .  .  .      Unused, ignored.
 .  .  F0 F1 F2 F3 F4 F5     6 of 10-bits in frequency count.
 </verb>
-      <member>In the case of the noise voice, this byte is equal to zero.
+       <listitem><para>In the case of the noise voice, this byte is equal to zero.
       </simplelist>
-   <member>Fourth byte
+    <listitem><para>Fourth byte
       <simplelist>
-      <member>In the case of a tone voice,
+       <listitem><para>In the case of a tone voice,
 <verb>
 7  6  5  4  3  2  1  0
 
@@ -5951,7 +5969,7 @@ Byte  Meaning
 F = frequency = 111860 / (((Byte3 & 0x3f) << 4) + (Byte4 & 0x0f))
 R = register address
 </verb>
-      <member>In the case of the noise voice,
+       <listitem><para>In the case of the noise voice,
 <verb>
 7  6  5  4  3  2  1  0
 
@@ -5968,7 +5986,7 @@ NF0  NF1       Noise Frequency
  1    0         1,193,180 / 2048 = 583
 </verb>
       </simplelist>
-   <member>Fifth byte
+    <listitem><para>Fifth byte
 <verb>
    7  6  5  4  3  2  1  0
 
@@ -6205,14 +6223,14 @@ A wave count: 1, B wave count: 1
    all but the lowest 3 bits and it gives you the basic wave size as follows:
 
    <simplelist>
-   <member>%000 = 1 page (256 bytes)
-   <member>%001 = 2 pages (512 bytes)
-   <member>%010 = 4 pages (1k bytes)
-   <member>%011 = 8 pages (2k bytes)
-   <member>%100 = 16 pages (4k bytes)
-   <member>%101 = 32 pages (8k bytes)
-   <member>%110 = 64 pages (16k bytes)
-   <member>%111 = 128 pages (32k bytes)
+    <listitem><para>%000 = 1 page (256 bytes)
+    <listitem><para>%001 = 2 pages (512 bytes)
+    <listitem><para>%010 = 4 pages (1k bytes)
+    <listitem><para>%011 = 8 pages (2k bytes)
+    <listitem><para>%100 = 16 pages (4k bytes)
+    <listitem><para>%101 = 32 pages (8k bytes)
+    <listitem><para>%110 = 64 pages (16k bytes)
+    <listitem><para>%111 = 128 pages (32k bytes)
    </simplelist>
 
    Note that if a zero is encountered in the wave before that size you still
@@ -6238,9 +6256,9 @@ A wave count: 1, B wave count: 1
 
    Where:
    <simplelist>
-   <member><literal/c/ - stereo output channel. Odd values mean left, even mean right.
-   <member><literal/m/ - mode, as described previously.
-   <member><literal/h/ - halt bit. 0 to start the oscillator, 1 to halt it.
+    <listitem><para><literal/c/ - stereo output channel. Odd values mean left, even mean right.
+    <listitem><para><literal/m/ - mode, as described previously.
+    <listitem><para><literal/h/ - halt bit. 0 to start the oscillator, 1 to halt it.
       This is handled specially in swap mode.
    </simplelist>
 
@@ -6348,16 +6366,16 @@ f = 111860 / (((Byte2 & 0x3F) << 4) + (Byte3 & 0x0F))
    The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
 
    <simplelist>
-   <member><literal><ulink name="examples/sound/adlib.c"/adlib.c/</literal>
+    <listitem><para><literal><ulink name="examples/sound/adlib.c"/adlib.c/</literal>
       by Kevin A. Lee: low level adlib routines
-   <member><literal><ulink name="examples/sound/adlib.h"/adlib.h/</literal>
+    <listitem><para><literal><ulink name="examples/sound/adlib.h"/adlib.h/</literal>
       by Kevin A. Lee: header for <literal/adlib.c/
-   <member><literal><ulink name="examples/sound/oldplay.c"/oldplay.c/</literal>
+    <listitem><para><literal><ulink name="examples/sound/oldplay.c"/oldplay.c/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: old program to play AGI sounds
-   <member><literal><ulink name="examples/sound/play.c"/play.c/</literal>
+    <listitem><para><literal><ulink name="examples/sound/play.c"/play.c/</literal>
       by <ulink name="mailto:jchrr@hrz.uni-bielefeld.de"/Jens Christian Restemeier/: new program for playing AGI sounds (plays as a MIDI
       file)
-   <member><literal><ulink name="examples/sound/agiplay.c"/agiplay.c/</literal>
+    <listitem><para><literal><ulink name="examples/sound/agiplay.c"/agiplay.c/</literal>
       by <ulink name="mailto:claudio@helllabs.org"/Claudio Matsuoka/: program to play PCjr AGI sound resources in Linux using
       software mixing and <literal>/dev/dsp</literal>
    </simplelist>
@@ -6530,9 +6548,9 @@ if (said(take, anyword)) {
    The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
 
    <simplelist>
-   <member><literal><ulink name="examples/otherdata/object.pas"/object.pas/</literal>
+    <listitem><para><literal><ulink name="examples/otherdata/object.pas"/object.pas/</literal>
       by <ulink name="mailto:ptrkelly@ozemail.com.au"/Peter Kelly/: displays contents of the <literal/object/ file
-   <member><literal><ulink name="examples/otherdata/words.pas"/words.pas/</literal>
+    <listitem><para><literal><ulink name="examples/otherdata/words.pas"/words.pas/</literal>
       by <ulink name="mailto:ptrkelly@ozemail.com.au"/Peter Kelly/: displays contents of the <literal/words.tok/ file
    </simplelist>
 </chapter>
@@ -6716,37 +6734,37 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
    Programming for AGI is fairly unusual because of the specifics of how
    the interpreter works:
    <simplelist>
-   <member>The cyclic nature of the interpreter operation completely defines
+    <listitem><para>The cyclic nature of the interpreter operation completely defines
        the style of AGI programming. The style is rather unusual and
        requires understanding and getting used to it. We shall discuss,
        using the source of of <emphasis/Thunderstorm/ as an example, how to write
        programs executing in that cyclic manner.
-   <member>A common set of variables, flags, and strings for all the
+    <listitem><para>A common set of variables, flags, and strings for all the
        subroutines loaded in the interpreter memory, which means any
        variable or flag is accessible from any part of the program (this
        includes the reserved variables and flags).
-   <member>Data elements of any type (variable, flag, resource) are
+    <listitem><para>Data elements of any type (variable, flag, resource) are
        identified with a unique ID number (0..255, string variable -
        0..11). At first this seems inconvenient, but later you get used
        to it.
-   <member>Command name determines the data type it operates on, the nature
+    <listitem><para>Command name determines the data type it operates on, the nature
        of its operation, and the result. For example, consider assignment
        commands: <literal/assignn 10, 2/ means store the value 2 into the variable
        number 10; <literal/assignv 10, 2/ means store the value of variable 2 into
        the variable 10; <literal/set 10/ mean set flag 10 to 1. Most often you will
        have to memorize what each command does and the type of its
        operands.
-   <member>Small internal interpreter memory occasionally overflows. This is
+    <listitem><para>Small internal interpreter memory occasionally overflows. This is
        annoying because there may be lots of free RAM at the same time.
-   <member>There are powerful commands new_room and <literal/new_room_v/ used to
+    <listitem><para>There are powerful commands new_room and <literal/new_room_v/ used to
        completely change the program behaviour.
-   <member>There are many test commands which allow not only to check the
+    <listitem><para>There are many test commands which allow not only to check the
        state of variables and flags, but also the position of objects one
        relative to another, or relative to some special lines and areas
        drawn on the background (for example, control barriers or water
        surface). The result of tests determines the progress of the game
        according to the design.
-   <member>The ability to fairly easily animate objects on the screen. Note
+    <listitem><para>The ability to fairly easily animate objects on the screen. Note
        that all the images programmatically associated with objects the
        interpreter or the user can control, have to be first created
        using the VIM utility, as well as the background created using PM
@@ -6756,7 +6774,7 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
        object for which the animation is played (this creates a walking
        figure). We shall later discuss the interaction between the
        designer, the artist and the programmer.
-   <member>The ability to use a built-in debugger, invoked using Scroll Lock
+    <listitem><para>The ability to use a built-in debugger, invoked using Scroll Lock
        if the debugger table log.dbg is loaded into the interpreter
        memory.
    </simplelist>
@@ -6838,31 +6856,31 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
    and in details describe the plot. Using the interpreter's terminology,
    the following should be included:
    <simplelist>
-   <member>All rooms and conditions when the rooms are changed, i.e. when the
+    <listitem><para>All rooms and conditions when the rooms are changed, i.e. when the
        background art and the controlling programs change.
-   <member>All actions taking place in each room and conditions determining
+    <listitem><para>All actions taking place in each room and conditions determining
        when each particular action takes place.
-   <member>All objects in the room, and whether an object is a part of the
+    <listitem><para>All objects in the room, and whether an object is a part of the
        scenery (PICTURE resource) or a separate thing (VIEW resource)
        controllable from the program; this is important to the artist.
-   <member>Position, at least approximate, of all objects created as VIEW
+    <listitem><para>Position, at least approximate, of all objects created as VIEW
        resources; this is important to the programmer.
-   <member>All members the player can get as the result of certain actions, and
+    <listitem><para>All members the player can get as the result of certain actions, and
        those actions themselves.
-   <member>Approximate priorities of the objects, both parts of scenery and
+    <listitem><para>Approximate priorities of the objects, both parts of scenery and
        VIEW resources, which creates an illusion of depth; this is
        important to the artist and the programmer.
-   <member>Interactions between the objects: for example, whether the object
+    <listitem><para>Interactions between the objects: for example, whether the object
        treats other objects as obstacles, whether it can cross the
        horizon or leave a certain area, etc.; this is important to the
        programmer.
-   <member>Conditions when the on-screen image of an object may change. For
+    <listitem><para>Conditions when the on-screen image of an object may change. For
        example, when a walking person crosses a brook, the images should
        change to the image knee-deep in water, etc.
-   <member>All messages and dialogue that occur in each room under certain
+    <listitem><para>All messages and dialogue that occur in each room under certain
        conditions, and those conditions.
-   <member>Game vocabulary including the words the game understand.
-   <member>Sentences used to control the objects and reactions to them, etc.
+    <listitem><para>Game vocabulary including the words the game understand.
+    <listitem><para>Sentences used to control the objects and reactions to them, etc.
    </simplelist>
 </para><para>
    Probably you can extend this list yourself. How detailed the design
@@ -7090,12 +7108,12 @@ A:   ..............
    <literal/new_room/ is a complex and powerful command, it executes a lot of
    actions. For now, it is important to understand the following:
    <simplelist>
-   <member><literal/new_room n/ stores the command operand in <literal/v0/, i.e. the
+    <listitem><para><literal/new_room n/ stores the command operand in <literal/v0/, i.e. the
        value of <emphasis/n/, 2 in our case.
-   <member>All logics in the interpreter memory are discarded and logic n (2
+    <listitem><para>All logics in the interpreter memory are discarded and logic n (2
        in this case) is loaded.
-   <member>flag 5 is set (<literal/f5/ -> 1)!
-   <member>Control is returned to the interpreter which starts logic 0 from
+    <listitem><para>flag 5 is set (<literal/f5/ -> 1)!
+    <listitem><para>Control is returned to the interpreter which starts logic 0 from
        the beginning (see the <emphasis/Interpreter Work Cycle/).
    </simplelist>
 </para><para>
@@ -7113,10 +7131,10 @@ A:   ..............
 </para><para>
    Thus logic 0 should contain:
    <enum>
-   <member>A test for an error (using <literal/v17/) and a call to the error handler.
-   <member>A call to the initialization logic.
-   <member>Actions common to all logics.
-   <member><literal/call_v 0/ command that calls the logic corresponding to the last
+    <listitem><para>A test for an error (using <literal/v17/) and a call to the error handler.
+    <listitem><para>A call to the initialization logic.
+    <listitem><para>Actions common to all logics.
+    <listitem><para><literal/call_v 0/ command that calls the logic corresponding to the last
        room set using <literal/new_room v/, which has to be executed each
        interpreter cycle.
    </enum>
@@ -7191,13 +7209,13 @@ A:   ..............
    Perhaps I won't say anything new, but the following conditions are
    important when you design an educational program.
    <simplelist>
-   <member>Sequential access to the material.
-   <member>Periodic control of the progress and the possibility to repeat a
+    <listitem><para>Sequential access to the material.
+    <listitem><para>Periodic control of the progress and the possibility to repeat a
        lesson without restarting the program.
-   <member>Reasonable sound effects with a possibility to turn the sound off.
-   <member>A brief description of what is going on in the output line rather
+    <listitem><para>Reasonable sound effects with a possibility to turn the sound off.
+    <listitem><para>A brief description of what is going on in the output line rather
        than only in the text windows.
-   <member>etc.
+    <listitem><para>etc.
    </simplelist>
 </para><para>
    First condition is satisfied naturally if you make the program linear
@@ -7205,11 +7223,11 @@ A:   ..............
    previous one are complete. In each room the following actions are
    performed:
    <simplelist>
-   <member>Displaying the explanatory text.
-   <member>Illustrating the topic using animations, possibly with the
+    <listitem><para>Displaying the explanatory text.
+    <listitem><para>Illustrating the topic using animations, possibly with the
        student's participation.
-   <member>Checking the student's understanding by asking questions.
-   <member>Moving to the next room if the answers are correct.
+    <listitem><para>Checking the student's understanding by asking questions.
+    <listitem><para>Moving to the next room if the answers are correct.
    </simplelist>
 </para><para>
    There are two possibilities to display the explanation: displaying the
@@ -7237,35 +7255,37 @@ A:   ..............
 <sect3><title>Writing <emphasis/Thunderstorm/'s logics</title>
 <para>
    The logic that starts teaching is logic 5. Its commented source code
-   is in <literal/log05.asm/, this is why I will give here only a short
+   is in <filename/log05.asm/, this is why I will give here only a short
    description.
 </para><para>
    This logic, according to the scenario, explains how a cloud is formed.
 </para><para>
    Initialization code loads only the resources that are required for
    displaying the picture that starts the lesson. Because the commentary
-   text has to be printed sequentially, one of the variables (<literal/v130/)
-   tracks this sequence. When <literal/v130/ changes, <literal/print_v 130/ command
-   prints a new message. <literal/v130/ is incremented when the <literal/ENTER/ key
-   is pressed, confirming that the text has been read and the animation
-   illustrating the explanation has been viewed. This way the student is
-   in control of the teaching speed.
+   text has to be printed sequentially, one of the variables (<parameter/v130/)
+   tracks this sequence. When <parameter/v130/ changes, the
+   <function/print_v 130/ command prints a new message. <parameter/v130/
+   is incremented when the <keycap/ENTER/ key is pressed, confirming that
+   the text has been read and the animation illustrating the explanation
+   has been viewed. This way the student is in control of the teaching
+   speed.
 </para><para>
    Because the program is intended to be executed cyclically, tests of
-   <literal/v130/ value are all over the place. They begin with <literal/EQn/ labels
-   where <emphasis/n/ is the value of <literal/v130/ at which the corresponding
-   command block is to be executed. These blocks load the resources
-   required to illustrate the recently printed text and run the required
-   animations.
+   <parameter/v130/ value are all over the place. They begin with
+   <literal/EQn/ labels where <parameter/n/ is the value of
+   <parameter/v130/ at which the corresponding command block is to be
+   executed. These blocks load the resources required to illustrate the
+   recently printed text and run the required animations.
 </para><para>
    Note that in order to repeatedly play an animation associated with an
    object (for example, a shining sun -- object 1), it is not necessary to
-   play its animation using <literal/end_of_loop/ command and then, when the
+   play its animation using <function/end_of_loop/ command and then, when the
    animation end flag is set, issue the command again. It is enough to
-   turn on cyclic animation using <literal/start_cycling/ and display the object on
-   the screen using draw command. The interpreter will take care of the
-   rest if you have not forgotten to include the object into the list of
-   objects the interpreter controls using the command <literal/animate_obj/.
+   turn on cyclic animation using <function/start_cycling/ and display
+   the object on the screen using draw command. The interpreter will
+   take care of the rest if you have not forgotten to include the object
+   into the list of objects the interpreter controls using the command
+   <function/animate_obj/.
 </para><para>
    The lesson is finished by printing a question and three possible
    answers (<literal/MENU/ label) using print command with the number of the
@@ -7275,14 +7295,15 @@ A:   ..............
    by other logics.
 </para><para>
    The actions in room 7, where the processes inside a cloud are
-   illustrated, are described in the LOGIC resource 7 (see source code in
-   <literal/log07.asm/. Logic 7 is loaded in memory automatically when this room is
-   set as the current using <literal/new_room 7/ command issued from logic 5. Logic
-   7 also has a message selection variable (<literal/v130/), the value of which is
-   incremented each time a message is issued. When the logic is invoked
-   in a cycle, only the block for which the variable value and the block
-   number are the same executes. Tests are performed by the commands
-   labelled <literal/EQn/ where <emphasis/n/ is the block number.
+   illustrated, are described in the logic resource 7 (see source code in
+   <filename/log07.asm/. Logic 7 is loaded in memory automatically when
+   this room is set as the current using <function/new_room 7/ command
+   issued from logic 5. Logic 7 also has a message selection variable
+   (<parameter/v130/), the value of which is incremented each time a
+   message is issued. When the logic is invoked in a cycle, only the
+   block for which the variable value and the block number are the same
+   executes. Tests are performed by the commands labelled <lieteral/EQn/
+   where <parameter/n/ is the block number.
 </para><para>
    This logic manages text windows differently. A window goes away
    automatically after a time period set in variable 21. For example, the
@@ -7302,55 +7323,57 @@ A:   ..............
 </para><para>
    Room 7 shows the structure of the cloud and how three raindrops are
    formed. Let is consider how this is done in greater detail. The cloud
-   itself is drawn as a backdrop (PICTURE resource 7). How a drop is
-   formed is in VIEW resource 14. The drops are described as objects
+   itself is drawn as a backdrop (picture resource 7). How a drop is
+   formed is in view resource 14. The drops are described as objects
    controlled by the interpreter with IDs 1, 2, and 3. These objects are
    moved from the top side of the cloud downwards to the specified point
-   using <literal/move_obj/ command. When the destination point is reached the flag
-   specified in <literal/move_obj/ is set. The moment the motion begins, playback
-   of the VIEW resource associated with the object using set_view command
-   is started with <literal/end_of_loop/ command. The time delay between the frames
-   (set with <literal/cycle_time/), step size -- number of pixels the object moves
-   each interpreter cycle (set with <literal/step_size/) <emphasis>(I suspect they may
-   actually mean ``each step'' --VB)</emphasis> and the time delay between the steps
-   (set with <literal/step_time/) were determined by trial and error so that
-   animation finishes by the time the object reaches the destination.
+   using <function/move_obj/ command. When the destination point is
+   reached the flag specified in <function/move_obj/ is set. The moment
+   the motion begins, playback of the view resource associated with the
+   object using the <function/set_view/ command is started with the
+   <function/end_of_loop/ command. The time delay between the frames
+   (set with <literal/cycle_time/), step size -- number of pixels the
+   object moves each interpreter cycle (set with <function/step_size/)
+   <footnote>I suspect they may actually mean ``each step'' (VB)</footnote>
+   and the time delay between the steps (set with <function/step_time/)
+   were determined by trial and error so that animation finishes by the
+   time the object reaches the destination.
 </para><para>
    The drops moving down create air flow (objects 4 and 5 with cycles 1
-   and 2 of the VIEW resource 22 associated with them playing
+   and 2 of the view resource 22 associated with them playing
    repeatedly). After all three drops have formed we show how they move
    out of the cloud (it starts raining). This is accompanied by cold air
    flows (object 6, 7 and 8 -- left, centre. and right arrows) directed
    towards the ground. After all drops fall down we move to the room 9
-   using <literal/new_room 9/.
+   using <function/new_room 9/.
 </para><para>
    This command destroys all loaded logics and resources in the
    interpreter memory used in room 7 (except logic 0) and loads logic 9
-   (see its source in <literal/log09.asm/) controlling the animation of
+   (see its source in <filename/log09.asm/) controlling the animation of
    thunderstorm and the situation after it finishes.
 </para><para>
    While you study that logic's source note the following:
    <simplelist>
-   <member>How the rain is displayed.
-   <member>How the sound of rain drops is imitated.
-   <member>How lightnings are displayed between the clouds and between a
+    <listitem><para>How the rain is displayed.
+    <listitem><para>How the sound of rain drops is imitated.
+    <listitem><para>How lightnings are displayed between the clouds and between a
        cloud and the ground.
-   <member>How the sound of thunder is imitated.
-   <member>How the time delay between a lightning and a thunder is
+    <listitem><para>How the sound of thunder is imitated.
+    <listitem><para>How the time delay between a lightning and a thunder is
        implemented and how the thunder is played as if it consists of two
        distinct sounds.
-   <member>How the scenery is changed to that after the thunderstorm.
+    <listitem><para>How the scenery is changed to that after the thunderstorm.
    </simplelist>
 </para><para>
    The rain is displayed as eight drops (objects 8 to 15), the algorithm
-   of their motion is in logic 10 (source file <literal/log10.asm/). The drops are
-   moved across the screen randomly, and in every starting point for
-   every drop the playback of the associated animation is started. Study
-   the source of this logic referring to its commends.
+   of their motion is in logic 10 (source file <filename/log10.asm/).
+   The drops are moved across the screen randomly, and in every starting
+   point for every drop the playback of the associated animation is
+   started. Study the source of this logic referring to its commends.
 </para><para>
    There is no ready-made sound resource with the sound of rain drops.
    The sound is generated programmatically from the sound which
-   accompanies the rain drops falling down in logic 7 (SOUND resource 12
+   accompanies the rain drops falling down in logic 7 (sound resource 12
    -- two high-pitched beeps with a pause in between). The trick is to not
    let the sound play until completion and restart it on every cycle,
    ignoring the flag associated with that sound.
@@ -7358,16 +7381,17 @@ A:   ..............
    The type of a lightning (between the clouds or between the cloud and
    the ground) is chosen randomly. Y coordinate of the lightning between
    the clouds, and both coordinates and the priority (relative to the
-   lake shore in PICTURE resource 9) of the lightning striking the
+   lake shore in picture resource 9) of the lightning striking the
    ground, are also random within a certain range. This creates an effect
    of the lightning striking close to us or far away, as well as moving
    vertically and horizontally.
 </para><para>
-   There is no prefabricated SOUND resource for thunder as well. I chose
+   There is no prefabricated sound resource for thunder as well. I chose
    the sound with the lowest pitch and stop the playback from the program
    before it terminates normally. Bellowing thunder effect is created by
    allowing the sound to play for a random period of time. The sound is
-   also accompanied by the screen shaking using <literal/shake_screen/ command.
+   also accompanied by the screen shaking using the <function/shake_screen/
+   command.
 </para><para>
    To create a delay between the events (lightning, then thunder) we
    analyse variable 153 which is incremented on each iteration cycle.
@@ -7375,8 +7399,8 @@ A:   ..............
    everything starts over.
 </para><para>
    <emphasis/Thunderstorm/ can be stopped at any time (after at least three
-   lightning strikes counted in variable 154) by pressing <literal/ENTER/ key.
-   After that PICTURE resource 10 is loaded in memory using variable 30
+   lightning strikes counted in variable 154) by pressing <keycap/ENTER/ key.
+   After that picture resource 10 is loaded in memory using variable 30
    -- the same scenery but after the storm, with the sun, rainbow, and
    seagulls. Speaking of bird watching, logic 112 controlling the gulls
    is not loaded from the initialisation code of logic 9. But logic 112
@@ -7384,12 +7408,12 @@ A:   ..............
    is set. We do just that and immediately reset it after the first call
    to logic 112.
 </para><para>
-   After you have seen enough rainbow and seagulls press <literal/ENTER/ and try
-   answering the question. After a correct answer the room is changed to
-   11 using <literal/new_room 11/ command, where we tell a bit about electricity,
-   lightning and repeat Franklin's experiment.
+   After you have seen enough rainbow and seagulls press <keycap/ENTER/
+   and try answering the question. After a correct answer the room is
+   changed to 11 using <function/new_room 11/ command, where we tell a
+   bit about electricity, lightning and repeat Franklin's experiment.
 </para><para>
-   The source code is in <literal/log11.asm/ and is, as usual, extensively
+   The source code is in <filename/log11.asm/ and is, as usual, extensively
    commented. There are no new tricks in that logic. Pay your attention
    to the new test commands that check whether the user-controlled object
    0 (Ego, a cloud) is in a certain area of the screen. Ego is controlled
@@ -7408,10 +7432,10 @@ A:   ..............
    allowed to move only within a rectangular area set using block
    command, and the area is positioned in such a way that the cloud
    cannot move vertically. The cloud location is checked using
-   <literal/center_position/ command (the result is true if the object base's
+   <function/center_position/ command (the result is true if the object base's
    center is within the block area). When the test conditions are true
    input line 23 shows a message, for example, ``The kite is in the cloud''
-   indicating to the user that the condition set by <literal/center_position/
+   indicating to the user that the condition set by <function/center_position/
    command is true.
 </para><para>
    When we illustrate how electric charges collect on an object under a
@@ -7423,22 +7447,22 @@ A:   ..............
    centre of Ego (the cloud) is in the area. This would cause flickering
    of, for example, the message in the line 23 ``The cloud is over the
    ground''. It would flicker as it is displayed on each iteration of the
-   cycle. SOUND 15 would also be restarted on each cycle.
+   cycle. sound resource 15 would also be restarted on each cycle.
 </para><para>
    This is why when you display messages using display command, keep in
    mind that the command will display the message on each cycle. This
    will cause the message to flicker unless you guard against multiple
    execution with extra tests. If you use print command, the text in the
    message window would not flicker, of course, but any animation stops
-   until the window is closed by pressing <literal/ENTER/ key.
+   until the window is closed by pressing <keycap/ENTER/ key.
 </para><para>
    Execution of logic 11 finishes by asking the student a question. A
-   correct answer moves us to a new room with <literal/new_room 13/ command.
+   correct answer moves us to a new room with <function/new_room 13/ command.
 </para><para>
    Room 13 illustrates ionisation process in the cloud according to the
-   program in logic 13 (see the source code in <literal/log13.asm/). This logic is
-   mostly built just like those we have already discussed, but the
-   following may be interesting to you:
+   program in logic 13 (see the source code in <filename/log13.asm/).
+   This logic is mostly built just like those we have already discussed,
+   but the following may be interesting to you:
 </para><para>
    We have already discussed the necessity of balancing the artist's and
    programmer's work: the more effort the artist puts in PICTURE and VIEW
@@ -7480,7 +7504,7 @@ A:   ..............
    turns the latter into a positive ion), and capturing of the electron
    by another atom which turns into a negative ion. The observer can view
    each process in a slow motion which is accomplished by increasing the
-   time delay between frames (in interpreter cycles) using <literal/cycle_time/
+   time delay between frames (in interpreter cycles) using <function/cycle_time/
    command. To illustrate all three stages of ionisation the three parts
    of the animation play repeatedly, changing each other without any
    accompanying text. After each playback of all three animations, a
@@ -7492,16 +7516,16 @@ A:   ..............
    example, the stars on the background stop blinking).
 </para><para>
    The display of the three ionisation stages can be interrupted at any
-   moment by pressing the <literal/ENTER/ key, which moves us into a new room with
-   a <literal/new_room 15/ command. The new room illustrates how a lightning leader
-   is formed and the measures of lightning protection.
+   moment by pressing the <keycap/ENTER/ key, which moves us into a new
+   room with a <function/new_room 15/ command. The new room illustrates
+   how a lightning leader is formed and the measures of lightning protection.
 </para><para>
    Events taking place in room 15 are coded in logic 15 (see the source
-   in log15.asm. This logic follows the programming approach we have
-   already discussed, so I shall explain just a few details.
+   in <filename/log15.asm/. This logic follows the programming approach
+   we have already discussed, so I shall explain just a few details.
 </para><para>
    This is how the destruction of an unprotected house by a lightning
-   strike was implemented. Two VIEW resources of the same size were
+   strike was implemented. Two view resources of the same size were
    created, showing a house being destroyed and a fire. The picture of an
    undamaged house initially displayed is cel 0 or view 16. Then, when
    the centre of the base of the cloud controlled from the keyboard is
@@ -7520,19 +7544,20 @@ A:   ..............
 </para><para>
    Note another issue related to illustrating lightning protection, when
    the cloud passes over a lightning pole and discharges through it. This
-   moment is chosen by the result of <literal/center_position/ test command for the
-   cloud (object 0), using a rectangular line small enough to be a
-   vertical line fragment. This is why the actions associated with the
-   lightning strike are executed only once. That vertical line passes
-   through the tip of the lightning pole. Because the moment for the
-   lightning strike is chosen when the cloud base centre crosses this
-   line, we have to calculate the coordinates of the point where the
-   lightning should be positioned for its end to hit the tip of the
-   lightning pole. This is accomplished by setting an offset between the
-   base points of the cloud and the lightning (<literal/v66/). Besides, the
-   direction of the cloud motion (left or right) relative to the
-   lightning pole is important. This direction is retrieved using <literal/get_dir/
-   command and is later used to programmatically move the cloud one pixel
+   moment is chosen by the result of <function/center_position/ test
+   command for the cloud (object 0), using a rectangular line small
+   enough to be a vertical line fragment. This is why the actions
+   associated with the lightning strike are executed only once. That
+   vertical line passes through the tip of the lightning pole. Because
+   the moment for the lightning strike is chosen when the cloud base
+   centre crosses this line, we have to calculate the coordinates of
+   the point where the lightning should be positioned for its end to
+   hit the tip of the lightning pole. This is accomplished by setting
+   an offset between the base points of the cloud and the lightning
+   (<parameter/v66/). Besides, the direction of the cloud motion
+   (left or right) relative to the lightning pole is important. This
+   direction is retrieved using the <function/get_dir/ command and is
+   later used to programmatically move the cloud one pixel
    each step after the strike (during the strike the cloud is stopped).
    If we didn't do that after the strike, the condition would be true
    again on the next interpreter cycle and the lightning would strike
@@ -7548,9 +7573,9 @@ A:   ..............
    congratulations.
 </para><para>
    Now a few words about the principle of distributing resources across
-   the volumes I used. File <literal/vol.0/ holds the LOGIC resources, <literal/vol.1/
-   the PICTURE resources, <literal/view.2/ the VIEW resources and <literal/vol.3/ the
-   SOUND resources.
+   the volumes I used. File <filename/vol.0/ holds the logic resources,
+   <filename/vol.1/ the picture resources, <filename/view.2/ the view
+   resources and <filename/vol.3/ the sound resources.
 </para><para>
    Finally, note that as you study the sources you will probably notice
    many pieces that could be coded more efficiently. In particular, many
@@ -7567,164 +7592,276 @@ A:   ..............
 <sect3><title>To the Programmer</title>
 <para>
    Remember that:
-   <simplelist>
-   <member>The interpreter works in a cycle described in The Interpreter Work
-       Cycle.
-   <member>There are reserved variables and flags.
-   <member>Logic 0 is loaded in memory at all times and controls your program
-       in general, while all other logics control specific rooms you get
-       into as the game unfolds.
-   <member>Your program is executed by the interpreter in a loop, so do not
-       introduce any cycles that would move objects, change their views,
-       or play sounds yourself. The interpreter itself will any such
-       action and will notify you of completion by setting a flag
-       associated with it. The interpreter checks the conditions you
-       specify using test commands and executes only the actions with
-       true conditions; without the tests, all the commands would execute
-       on each cycle. This might slow down the program or break it at
-       all. In general, once you have started an action, let it run to
-       completion by returning control to the interpreter until the flag
-       signalling completion is set -- unless you after after some special
-       effects.
-   <member>Remember the effect of <literal/new_room/ and <literal/new_room_v/.
-   <member>Interpreter's memory is limited! Do not load many resources
-       simultaneously, especially if they are not used at the same time.
-       Load them as they are needed and keep an eye (during the
-       debugging) on the amount of free memory, displaying variable 8 in
-       line 23 or 24 using display. If free memory is low, if possible,
-       manipulate resources loading them and unloading, or change the
-       program structure to introduce more rooms. Make (together with the
-       artist) VIEW resources smaller and use shorter sounds. Remember
-       that the interpreter loads a SOUND resource only once even if
-       there are many commands to load it within the current room. Be
-       careful when you discard resources. For example, discard_view
-       command discards all resources loaded after the one being
-       discarded.
-   <member>Include the error handler in your program (logic 97 in the
-       example) and do not forget to check if variable 17 is 0.
-   <member>You can accidentally associate an inexistent VIEW resource with an
-       object as its picture. The interpreter will fail without
-       signalling an error. You can avoid this situation if you check the
-       number of loops in the resource with <literal/number_of_loops/ command. Use
-       this command when you set the object cycle number using
-       <literal/set_loop_v/.
-   <member>Large VIEW resources not only take more memory but are also slower
-       to display. This may even lead to their distortion (gaps in the
-       picture). Keep cels as small as possible, best of all -- only large
-       enough to fit the object.
-   <member>Don't overload the program with controlled objects, especially if
-       they are large. The more objects there are, the slower they draw.
-       The interpreter can control at most 15 objects at any time.
-   <member>About the built-in debugger. If its table <literal/log.dbg/ is loaded in
-       memory, the debugger can be turned on using the <literal/Scroll Lock/ key. It
-       can help you trace the program logic.
-   <member>The logic called with <literal/call/ command is loaded temporarily and
-       removed after the call. If it is called often, this wastes time.
-       Load often called logics explicitly using <literal/load_logic/ command.
-   <member>All variables and flags are accessible from any logic.
-   <member>Before you change rooms clear all variables and flags you work
-       with. This will save you some nasty surprises. You may select a
-       fixed group of variables and flags and use it as work variables
-       everywhere. Cleanup procedure can then be a subroutine called
-       before entering any new room.
-   <member>There is no tool in the package (maybe you can create such
-       yourself using the interpreter as the foundation) to combine
-       PICTURE and VIEW resources on the screen to see them against each
-       other and arrange objects in the best way. This should be done by
-       trial and error, adjusting the program and interacting with the
-       artist.
-   <member>The interpreter cannot process images (VIEW resources): it is
-       impossible to resize them, rotate, etc. All that should be painted
-       by the artist.
-   <member>The parser works only with Roman letters and is biased towards
-       English, i.e. the input can include only English words unless you
-       do something special, like replace regular ASCII table with
-       Cyrillic but even that will unlikely give the desired result as
-       the interpreter ignores certain codes, so you will not be able to
-       use them. <emphasis>(I should say this is overly pessimistic as I saw myself
-       KQ3 hacked by someone to be in Russian: it printed all messages in
-       Russian and understood Russian commands! --VB)</emphasis>
-   <member>Messages in Russian are printed fine, except you should use a
-       capital Roman A instead of a capital Cyrillic A. <emphasis>(The shape of the
-       letter ``A'' is the same in Cyrillic but it is represented with a
-       different byte value. --VB)</emphasis>
-   <member>Distribute resources over volumes so that their size is about the
-       same. This will speed up the access.
-   <member>No explanations are worth as much as you own experience and
-       studying the source of Sierra games. You can extract their logics
-       using VM utility and disassemble the source using SM utility. You
-       may have to search for text in many files, I recommend <literal/ts.exe/ from
-       Norton Utilities for that. <emphasis>(This is what is actually called
-       ``grepping the source'' and <literal/grep(1)/ is tool to use. --VB)</emphasis>
-   </simplelist>
+   <itemizedlist>
+    <listitem><para>
+      The interpreter works in a cycle described in The Interpreter Work
+      Cycle.
+    </para><listitem>
+
+    <listitem><para>
+      There are reserved variables and flags.
+    </para><listitem>
+
+    <listitem><para>
+      Logic 0 is loaded in memory at all times and controls your program
+      in general, while all other logics control specific rooms you get
+      into as the game unfolds.
+    </para><listitem>
+
+    <listitem><para>
+      Your program is executed by the interpreter in a loop, so do not
+      introduce any cycles that would move objects, change their views,
+      or play sounds yourself. The interpreter itself will any such
+      action and will notify you of completion by setting a flag
+      associated with it. The interpreter checks the conditions you
+      specify using test commands and executes only the actions with
+      true conditions; without the tests, all the commands would execute
+      on each cycle. This might slow down the program or break it at
+      all. In general, once you have started an action, let it run to
+      completion by returning control to the interpreter until the flag
+      signalling completion is set -- unless you after after some special
+      effects.
+    </para><listitem>
+
+    <listitem><para>
+      Remember the effect of <literal/new_room/ and <literal/new_room_v/.
+    </para><listitem>
+
+    <listitem><para>
+      Interpreter's memory is limited! Do not load many resources
+      simultaneously, especially if they are not used at the same time.
+      Load them as they are needed and keep an eye (during the
+      debugging) on the amount of free memory, displaying variable 8 in
+      line 23 or 24 using display. If free memory is low, if possible,
+      manipulate resources loading them and unloading, or change the
+      program structure to introduce more rooms. Make (together with the
+      artist) VIEW resources smaller and use shorter sounds. Remember
+      that the interpreter loads a SOUND resource only once even if
+      there are many commands to load it within the current room. Be
+      careful when you discard resources. For example, discard_view
+      command discards all resources loaded after the one being
+      discarded.
+    </para><listitem>
+
+    <listitem><para>
+      Include the error handler in your program (logic 97 in the
+      example) and do not forget to check if variable 17 is 0.
+    </para><listitem>
+
+    <listitem><para>
+      You can accidentally associate an inexistent VIEW resource with an
+      object as its picture. The interpreter will fail without
+      signalling an error. You can avoid this situation if you check the
+      number of loops in the resource with <function/number_of_loops/
+      command. Use this command when you set the object cycle number using
+      <function/set_loop_v/.
+    </para><listitem>
+
+    <listitem><para>
+      Large VIEW resources not only take more memory but are also slower
+      to display. This may even lead to their distortion (gaps in the
+      picture). Keep cels as small as possible, best of all -- only large
+      enough to fit the object.
+    </para><listitem>
+
+    <listitem><para>
+      Don't overload the program with controlled objects, especially if
+      they are large. The more objects there are, the slower they draw.
+      The interpreter can control at most 15 objects at any time.
+    </para><listitem>
+
+    <listitem><para>
+      About the built-in debugger. If its table <filename/log.dbg/ is
+      loaded in memory, the debugger can be turned on using the
+      <keycap/Scroll Lock/ key. It can help you trace the program logic.
+    </para><listitem>
+
+    <listitem><para>
+      The logic called with <function/call/ command is loaded temporarily
+      and removed after the call. If it is called often, this wastes time.
+      Load often called logics explicitly using <function/load_logic/
+      command.
+    </para><listitem>
+
+    <listitem><para>
+      All variables and flags are accessible from any logic.
+    </para><listitem>
+
+    <listitem><para>
+      Before you change rooms clear all variables and flags you work
+      with. This will save you some nasty surprises. You may select a
+      fixed group of variables and flags and use it as work variables
+      everywhere. Cleanup procedure can then be a subroutine called
+      before entering any new room.
+    </para><listitem>
+
+    <listitem><para>
+      There is no tool in the package (maybe you can create such
+      yourself using the interpreter as the foundation) to combine
+      PICTURE and VIEW resources on the screen to see them against each
+      other and arrange objects in the best way. This should be done by
+      trial and error, adjusting the program and interacting with the
+      artist.
+    </para><listitem>
+
+    <listitem><para>
+      The interpreter cannot process images (VIEW resources): it is
+      impossible to resize them, rotate, etc. All that should be painted
+      by the artist.
+    </para><listitem>
+
+    <listitem><para>
+      The parser works only with Roman letters and is biased towards
+      English, i.e. the input can include only English words unless you
+      do something special, like replace regular ASCII table with
+      Cyrillic but even that will unlikely give the desired result as
+      the interpreter ignores certain codes, so you will not be able to
+      use them.<footnote>I should say this is overly pessimistic as I saw
+      myself KQ3 hacked by someone to be in Russian: it printed all
+      messages in Russian and understood Russian commands! (VB)</footnote>
+    </para><listitem>
+
+    <listitem><para>
+      Messages in Russian are printed fine, except you should use a
+      capital Roman A instead of a capital Cyrillic A.<footnote>(The
+      shape of the letter ``A'' is the same in Cyrillic but it is
+      represented with a different byte value. (VB)</footnote>
+    </para><listitem>
+
+    <listitem><para>
+      Distribute resources over volumes so that their size is about the
+      same. This will speed up the access.
+    </para><listitem>
+
+    <listitem><para>
+      No explanations are worth as much as you own experience and
+      studying the source of Sierra games. You can extract their logics
+      using VM utility and disassemble the source using SM utility. You
+      may have to search for text in many files, I recommend
+      <filename/ts.exe/ from Norton Utilities for that.<footnote>This is
+      what is actually called ``grepping the source'' and <literal/grep(1)/
+      is tool to use. (VB)</footnote>
+    </para><listitem>
+   </itemizedlist>
 </para>
 
 <sect3><title>To the Artist</title>
 <para>
    Remember that:
-   <simplelist>
-   <member>You should be able to use an IBM PC.
-   <member>Your tools are PV and VIM utilities. Their manuals are detailed
-       enough.
-   <member>PM is used to create backdrops, VIM to create animations.
-   </simplelist>
-</para><para>
-   When you use PM:
-   <simplelist>
-   <member>If the mouse cursor is ``jumpy'', try to use a Microsoft mouse
-       driver.
-   <member>Don't use long lines, the interpreter may have problems drawing
-       them. Break such lines into segments.
-   <member>If you have to draw round objects, don't use round dots. Most
-       often than not, they are drawn incorrectly.
-   <member>It doesn't matter how you draw the backdrop, what goes first and
-       what next. Only the result is important because PICTURE resources
-       are first drawn in an internal buffer and only then displayed on
-       the screen. The process of drawing is not visible and you don't
-       have to prettify otherwise good picture. <emphasis>(Interpreters on Apple II
-       did not have an internal buffer because of the lack of RAM and did
-       draw PICTURE resource directly on the screen, so the process was
-       visible. --VB)</emphasis> But you might be interested how Sierra artists drew
-       their pictures, so extract some of PICTURE resources from the
-       games and trace them using PM.
-   <member>Fine details are better created as bitmaps (VIEWs) using VIM
-       because they would take too many PM commands. The programmer will
-       overlay these images on the backdrop using <literal/add_to_pic/ command. But
-       be careful about that. <emphasis>(Why? --VB)</emphasis>
-   <member>Every once in a while, save using <literal/W/ key.
-   <member>To correct already existing commands you have to be familiar with
-       their format. Be careful.
-   </simplelist>
+   <itemizedlist>
+    <listitem><para>
+      You should be able to use an IBM PC.
+    </para><listitem>
+
+    <listitem><para>
+      Your tools are PV and VIM utilities. Their manuals are detailed
+      enough.
+    </para><listitem>
+
+    <listitem><para>
+      PM is used to create backdrops, VIM to create animations.
+    </para><listitem>
+   </itemizedlist>
+</para>
+<para>
+   When you use PM
+
+   <itemizedlist>
+   
+    <listitem><para>
+      If the mouse cursor is ``jumpy'', try to use a Microsoft mouse
+      driver.
+    </para></listitem>
+
+    <listitem><para>
+      Don't use long lines, the interpreter may have problems drawing
+      them. Break such lines into segments.
+    </para></listitem>
+
+    <listitem><para>
+      If you have to draw round objects, don't use round dots. Most
+      often than not, they are drawn incorrectly.
+    </para></listitem>
+
+    <listitem><para>
+      It doesn't matter how you draw the backdrop, what goes first and
+      what next. Only the result is important because PICTURE resources
+      are first drawn in an internal buffer and only then displayed on
+      the screen. The process of drawing is not visible and you don't
+      have to prettify an otherwise good picture.<footnote>Interpreters on
+      Apple II did not have an internal buffer because of the lack of
+      RAM and did draw PICTURE resources directly on the screen, so
+      the process was visible. (VB))</footnote> But you might be
+      interested on how Sierra artists drew their pictures, so extract
+      some of the PICTURE resources from the games and trace them using PM.
+    </para></listitem>
+
+    <listitem><para>
+      Fine details are better created as bitmaps (VIEWs) using VIM
+      because they would take too many PM commands. The programmer will
+      overlay these images on the backdrop using the <function/add_to_pic/
+      command. But be careful about that. <emphasis>(Why? --VB)</emphasis>
+    </para></listitem>
+
+    <listitem><para>
+      Every once in a while, save using the <keycap/W/ key.
+    </para></listitem>
+
+    <listitem><para>
+      To correct already existing commands you have to be familiar with
+      their format. Be careful.
+    </para></listitem>
+
+   </itemizedlist>
 </para>
 
-<sect3><title>Using VIM:</title>
 <para>
-   <simplelist>
-   <member>Use 0 (black) as the cel background! Due to an editor bug
-       only 0 can actually be transparent. Of course, that means you cannot
-       use black for drawing. This advice will probably be obsolete when
-       an updated editor is released.
-   <member>Don't ``bloat'' the cels, make them just large enough to fit the
-       image. If possible, create loops of cels of variable size to make
-       them as small as possible. Note that <emphasis/Thunderstorm/ view resources
-       are not an example in this respect.
-   <member>When you create a VIEW resource, the first command line argument
-       is the number of loops in the resource. It may happen that you
-       have to change the number of loops in the resource as you work on
-       a program. To do that you will have to save all cels using the S
-       command (issued for each individual cel because it saves the cels
-       in separate files under automatically generated names), then
-       create a new VIEW with the required number of loops and load all
-       cels back using L command. See VIM manual how the cel file names
-       are generated.
-   <member>Drawing an animation, use colour reference points in each cel. Use
-       the fact that as cels are changed the cursor stays where it was in
-       the previous cel. <emphasis>(He means changing cels in the editor, not
-       during playback by the interpreter. --VM)</emphasis>
-   <member>Do not create animations with more than 23--24 cels. The editor may
-       crash, at least the version we have.
-   <member>The best advisor is your experience.
-   </simplelist>
+   Using VIM:</title>
+</para>
+<para>
+   <itemizedlist>
+    <listitem><para>
+      Use 0 (black) as the cel background! Due to an editor bug
+      only 0 can actually be transparent. Of course, that means you cannot
+      use black for drawing. This advice will probably be obsolete when
+      an updated editor is released.
+    </para></listitem>
+
+    <listitem><para>
+      Don't ``bloat'' the cels, make them just large enough to fit the
+      image. If possible, create loops of cels of variable size to make
+      them as small as possible. Note that <emphasis/Thunderstorm/ view
+      resources are not an example in this respect.
+    </para></listitem>
+
+    <listitem><para>
+      When you create a VIEW resource, the first command line argument
+      is the number of loops in the resource. It may happen that you
+      have to change the number of loops in the resource as you work on
+      a program. To do that you will have to save all cels using the S
+      command (issued for each individual cel because it saves the cels
+      in separate files under automatically generated names), then
+      create a new VIEW with the required number of loops and load all
+      cels back using L command. See VIM manual how the cel file names
+      are generated.
+    </para></listitem>
+
+    <listitem><para>
+      Drawing an animation, use colour reference points in each cel. Use
+      the fact that as cels are changed the cursor stays where it was in
+      the previous cel.<footnote>He means changing cels in the editor, not
+      during playback by the interpreter. (VM)</footnote>
+    </para></listitem>
+
+    <listitem><para>
+      Do not create animations with more than 23--24 cels. The editor may
+      crash, at least the version we have.
+    </para></listitem>
+
+    <listitem><para>
+      The best advisor is your experience.
+    </para></listitem>
+   </itemizedlist>
 </para>
 </sect3>
 
@@ -7811,25 +7948,18 @@ A:   ..............
 <sect2><title>License Agreement</title>
 <para>
 <quote>
-     By receiving <emphasis/Thunderstorm/ educational program you acknowledge my
-     exclusive rights to all source code of its logics (except logics 10
-     and 112). Any modification of the source code with the purpose
-     other than study, as well as distribution of such source, or the
-     text of accompanying documents without purchasing AGDS package is
-     considered a copyright infringement. <emphasis/Thunderstorm/ Copyright (C)
-     Intep Corp, Cheboksary City. All rights reserved. <emphasis/Thunderstorm/ can
-     be purchased with the source code from Intep Corp, Cheboksary City,
-     or from Elias Corp, Moscow, as a demo code of AGDS package.
+     By receiving the <emphasis/Thunderstorm/ educational program you
+     acknowledge my exclusive rights to all source code of its logics
+     (except logics 10 and 112). Any modification of the source code
+     with the purpose other than study, as well as distribution of such
+     source, or the text of accompanying documents without purchasing
+     the AGDS package is considered a copyright infringement.
+     <emphasis/Thunderstorm/ Copyright (C) Intep Corp, Cheboksary City.
+     All rights reserved. <emphasis/Thunderstorm/ can be purchased with
+     the source code from Intep Corp, Cheboksary City, or from Elias Corp,
+     Moscow, as a demo code of AGDS package.
 </quote>
-
-<quote>
-     <emphasis>(Hmm, and what about logics 10 and 112 based on KQ3 code, as well
-     as AGI itself, reverse-engineered and resold? What about Sierra's
-     rights? Funny how people talk about copyright and try to sell
-     something built on someone else's reverse-engineered program.
-     Apparently the whole passage cannot be taken too close to heart.
-     --VB)</emphasis>
-</quote>
+</para>
 
 <quote>
                                                               August 1991
@@ -7894,7 +8024,6 @@ A:   ..............
    </variablelist>
 </para>
 </sect1>
-
 </chapter>
 
 </Book>
