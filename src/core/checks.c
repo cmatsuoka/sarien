@@ -27,7 +27,7 @@ static int check_position (struct vt_entry *v)
 	if (	v->x_pos < 0 ||
 		v->x_pos + v->x_size > _WIDTH ||
 		v->y_pos + v->y_size + 1 < 0 ||
-		v->y_pos < v->y_size ||
+		/* v->y_pos < v->y_size || -- not in AGI 2.917 */
 		v->y_pos >= _HEIGHT ||
 		((~v->flags & IGNORE_HORIZON) && v->y_pos <= game.horizon))
 	{
