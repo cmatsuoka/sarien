@@ -1,7 +1,7 @@
 # $Id$
 
-XCFLAGS	= -I../../include
-OBJS	= dive.o
+XCFLAGS	= -I../../include -I/home/claudio/emu/microwin/src/include/
+OBJS	= nanox.o
 DFILES	= Makefile $(OBJS:.o=.c)
 CFILES	=
 DDIRS	=
