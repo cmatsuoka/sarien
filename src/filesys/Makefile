@@ -4,7 +4,7 @@ XCFLAGS = -I../include
 OBJS	=
 DFILES	= Makefile
 CFILES	=
-DDIRS	= msdos win32 unix macos amiga
+DDIRS	= msdos win32 unix macos amiga dc
 XDFILES =
 LIB	=
 

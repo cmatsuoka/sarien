@@ -11,8 +11,8 @@ PKG	= sarien
 XCFLAGS	= -Iloaders/include
 DIST	= $(PKG)-$(VERSION)
 DFILES	= configure configure.in Makefile Makefile.wat Makefile.dj \
-	  Makefile.tc Sarien.make Sarien.DICE Rules.in Rules.dj Rules.wat \
-	  Version README
+	  Makefile.tc Makefile.dc Sarien.make Sarien.DICE Rules.in \
+	  Rules.dj Rules.wat Version README
 DDIRS	= VC++6.0 OSX-ProjectBuilder eVC3 doc scripts bin debian etc lib \
 	  src rulesets
 CFILES	=
