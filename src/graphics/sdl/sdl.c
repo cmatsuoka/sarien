@@ -86,6 +86,7 @@ extern struct gfx_driver *gfx;
 static void process_events ()
 {
 	SDL_Event event;
+	int key;
 
 	while (SDL_PollEvent (&event) > 0) {
 		switch (event.key.type) {
