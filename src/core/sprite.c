@@ -369,7 +369,7 @@ static INLINE int prio_to_y (int p)
 	if (p == 0)
 		return -1;
 
-	for (i = 168; i; i--) {
+	for (i = 167; i >= 0; i--) {
 		if (game.pri_table[i] < p)
 			return i;
 	}
