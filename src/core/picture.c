@@ -30,15 +30,60 @@ static UINT8	scr_on;
 static UINT8	scr_colour;
 static UINT8	pri_colour;
 
+static UINT8 circles[][15] = {		/* agi circle bitmaps */
+	{ 0x80 },
+	{ 0xfc },
+	{ 0x5f, 0xf4 },
+	{ 0x66, 0xff, 0xf6, 0x60 },
+	{ 0x23, 0xbf, 0xff, 0xff, 0xee, 0x20 },
+	{ 0x31, 0xe7, 0x9e, 0xff, 0xff, 0xde, 0x79, 0xe3, 0x00 },
+	{ 0x38, 0xf9, 0xf3, 0xef, 0xff, 0xff,
+	  0xff, 0xfe, 0xf9, 0xf3, 0xe3, 0x80 },
+	{ 0x18, 0x3c, 0x7e, 0x7e, 0x7e, 0xff, 0xff,
+	  0xff, 0xff, 0xff, 0x7e, 0x7e, 0x7e, 0x3c, 0x18 }
+};
 
-static void put_virt_pixel (int x, int y)
+static UINT8 splatterMap[32] = {	/* splatter brush bitmaps */
+	0x20, 0x94, 0x02, 0x24, 0x90, 0x82, 0xa4, 0xa2,
+	0x82, 0x09, 0x0a, 0x22, 0x12, 0x10, 0x42, 0x14,
+	0x91, 0x4a, 0x91, 0x11, 0x08, 0x12, 0x25, 0x10,
+	0x22, 0xa8, 0x14, 0x24, 0x00, 0x50, 0x24, 0x04
+};
+
+static UINT8 splatterStart[128] = {	/* starting bit position */
+	0x00, 0x18, 0x30, 0xc4, 0xdc, 0x65, 0xeb, 0x48,
+	0x60, 0xbd, 0x89, 0x05, 0x0a, 0xf4, 0x7d, 0x7d,
+	0x85, 0xb0, 0x8e, 0x95, 0x1f, 0x22, 0x0d, 0xdf,
+	0x2a, 0x78, 0xd5, 0x73, 0x1c, 0xb4, 0x40, 0xa1,
+	0xb9, 0x3c, 0xca, 0x58, 0x92, 0x34, 0xcc, 0xce,
+	0xd7, 0x42, 0x90, 0x0f, 0x8b, 0x7f, 0x32, 0xed,
+	0x5c, 0x9d, 0xc8, 0x99, 0xad, 0x4e, 0x56, 0xa6,
+	0xf7, 0x68, 0xb7, 0x25, 0x82, 0x37, 0x3a, 0x51,
+	0x69, 0x26, 0x38, 0x52, 0x9e, 0x9a, 0x4f, 0xa7,
+	0x43, 0x10, 0x80, 0xee, 0x3d, 0x59, 0x35, 0xcf,
+	0x79, 0x74, 0xb5, 0xa2, 0xb1, 0x96, 0x23, 0xe0,
+	0xbe, 0x05, 0xf5, 0x6e, 0x19, 0xc5, 0x66, 0x49,
+	0xf0, 0xd1, 0x54, 0xa9, 0x70, 0x4b, 0xa4, 0xe2,
+	0xe6, 0xe5, 0xab, 0xe4, 0xd2, 0xaa, 0x4c, 0xe3,
+	0x06, 0x6f, 0xc6, 0x4a, 0xa4, 0x75, 0x97, 0xe1
+};
+
+static void fix_pixel_bothsides (int x, int y);
+
+
+static void put_virt_pixel (int x, int y, int res)
 {
 	UINT8 *p;
+	int width = _WIDTH * res;
 
-	if (x >= _WIDTH || y >= _HEIGHT)
+	if (x < 0 || y < 0 || x >= width || y >= _HEIGHT)
 		return;
 
-	p = &game.sbuf[y * _WIDTH + x];
+	p = 
+#ifdef USE_HIRES
+		res > 1 ? &game.hires[y * width + x] :
+#endif
+		&game.sbuf[y * width + x];
 
 	if (pri_on) *p = (pri_colour << 4) | (*p & 0x0f);
 	if (scr_on) *p = scr_colour | (*p & 0xf0);
@@ -59,7 +104,6 @@ static INLINE void _PUSH (UINT16 c)
 	stack_ptr++;
 }
 
-
 static INLINE UINT16 _POP ()
 {
 	if (stack_ptr == 0)
@@ -70,22 +114,25 @@ static INLINE UINT16 _POP ()
 }
 
 
-/**************************************************************************
-** drawline
-** Draws an AGI line.
-**
-** line drawing routine sent to me by joshua neal
-** modified by stuart george, fixed >>2 to >>1 and some other bugs
-** like x1 instead of y1, etc
-**************************************************************************/
-static void draw_line (int x1, int y1, int x2, int y2)
+/**
+ * Draw an AGI line.
+ * A line drawing routine sent by Joshua Neal, modified by Stuart George
+ * (fixed >>2 to >>1 and some other bugs like x1 instead of y1, etc.)
+ * @param x1  x coordinate of start point
+ * @param y1  y coordinate of start point
+ * @param x2  x coordinate of end point
+ * @param y2  y coordinate of end point
+ * @param res horizontal resolution multiplier
+ */
+static void draw_line (int x1, int y1, int x2, int y2, int res)
 {
 	int i, x, y, deltaX, deltaY, stepX, stepY, errorX, errorY, detdelta;
+	int width = _WIDTH * res;
 
 	/* CM: Do clipping */
 #define clip(x, y) if((x)>=(y)) (x)=(y)
-	clip (x1, _WIDTH-1);
-	clip (x2, _WIDTH-1);
+	clip (x1, width - 1);
+	clip (x2, width - 1);
 	clip (y1, _HEIGHT-1);
 	clip (y2, _HEIGHT-1);
 
@@ -98,8 +145,13 @@ static void draw_line (int x1, int y1, int x2, int y2)
 			y2 = y;
 		}
 
-		for ( ; y1 <= y2; y1++)
-			put_virt_pixel (x1, y1);
+		for ( ; y1 <= y2; y1++) {
+			put_virt_pixel (x1, y1, res);
+#ifdef USE_HIRES
+			if (res > 1)
+				fix_pixel_bothsides (x1, y1);
+#endif
+		}
 
 		return;
 	}
@@ -113,8 +165,20 @@ static void draw_line (int x1, int y1, int x2, int y2)
 			x2 = x;
 		}
 
+#ifdef USE_HIRES
+		if (res > 1)
+			fix_pixel_bothsides (x1, y1);
+#endif
+
    		for( ; x1 <= x2; x1++)
-   			put_virt_pixel (x1, y1);
+   			put_virt_pixel (x1, y1, res);
+
+#ifdef USE_HIRES
+		if (res > 1) {
+			put_virt_pixel (x1, y1, res);
+			fix_pixel_bothsides (x1, y1);
+		}
+#endif
 
 		return;
 	}
@@ -122,33 +186,35 @@ static void draw_line (int x1, int y1, int x2, int y2)
 	y = y1;
   	x = x1;
 
-	stepY = 1;
-	deltaY = y2-y1;
+	stepY = 1; deltaY = y2-y1;
 	if (deltaY < 0) {
 		stepY = -1;
 		deltaY = -deltaY;
 	}
 
-	stepX = 1;
-	deltaX = x2 - x1;
+	stepX = 1; deltaX = x2 - x1;
 	if (deltaX < 0) {
 		stepX = -1;
 		deltaX = -deltaX;
 	}
 
-	if(deltaY > deltaX) {
-		i=deltaY;
-		detdelta=deltaY;
-		errorX=deltaY/2;
-		errorY=0;
+	if (deltaY > deltaX) {
+		i = deltaY;
+		detdelta = deltaY;
+		errorX = deltaY / 2;
+		errorY = 0;
 	} else {
-		i=deltaX;
-		detdelta=deltaX;
-		errorX=0;
-		errorY=deltaX/2;
+		i = deltaX;
+		detdelta = deltaX;
+		errorX = 0;
+		errorY = deltaX / 2;
 	}
 
-	put_virt_pixel (x, y);
+	put_virt_pixel (x, y, res);
+#ifdef USE_HIRES
+	if (res > 1)
+		fix_pixel_bothsides (x, y);
+#endif
 
 	do {
 		errorY += deltaY;
@@ -163,11 +229,20 @@ static void draw_line (int x1, int y1, int x2, int y2)
 			x += stepX;
 		}
 
-		put_virt_pixel(x, y);
+		put_virt_pixel (x, y, res);
+#ifdef USE_HIRES
+		if (res > 1)
+			fix_pixel_bothsides (x, y);
+#endif
 		i--;
 	} while (i > 0);
 
-	/* put_virt_pixel (x, y); */
+#ifdef USE_HIRES
+	if (res > 1) {
+		put_virt_pixel (x, y, res);
+		fix_pixel_bothsides (x, y);
+	}
+#endif
 }
 
 /**************************************************************************
@@ -175,14 +250,14 @@ static void draw_line (int x1, int y1, int x2, int y2)
 **
 ** Draws short lines relative to last position.  (drawing action 0xF7)
 **************************************************************************/
-static void dynamic_draw_line ()
+static void dynamic_draw_line (int res)
 {
 	int x1, y1, disp, dx, dy;
 
-	x1 = next_byte;
+	x1 = next_byte * res;
 	y1 = next_byte;
 
-	put_virt_pixel (x1, y1);
+	put_virt_pixel (x1, y1, res);
 
 	while (42) {
 		if ((disp = next_byte) >= 0xf0)
@@ -197,7 +272,9 @@ static void dynamic_draw_line ()
 	      	if (dy & 0x08)
 			dy = -(dy & 0x07);
 
-		draw_line (x1, y1, x1 + dx, y1 + dy);
+		dx *= res;
+
+		draw_line (x1, y1, x1 + dx, y1 + dy, res);
 		x1 += dx;
 		y1 += dy;
 	}
@@ -209,13 +286,13 @@ static void dynamic_draw_line ()
 **
 ** Draws long lines to actual locations (cf. relative) (drawing action 0xF6)
 **************************************************************************/
-static void absolute_draw_line ()
+static void absolute_draw_line (int res)
 {
 	int x1, y1, x2, y2;
 
-	x1 = next_byte;
+	x1 = next_byte * res;
 	y1 = next_byte;
-	put_virt_pixel (x1, y1);
+	put_virt_pixel (x1, y1, res);
 
 	while (42) {
 		if ((x2 = next_byte) >= 0xf0)
@@ -224,7 +301,9 @@ static void absolute_draw_line ()
 		if ((y2 = next_byte) >= 0xf0)
 			break;
 
-		draw_line (x1, y1, x2, y2);
+		x2 *= res;
+
+		draw_line (x1, y1, x2, y2, res);
 		x1 = x2;
 		y1 = y2;
 	}
@@ -274,7 +353,7 @@ static void fill_scanline (int x, int y)
 	
 	newspan_up = newspan_down = 1;
 	for (c++; is_ok_fill_here (c, y); c++) {
-		put_virt_pixel (c, y);
+		put_virt_pixel (c, y, 1);
 		if (is_ok_fill_here (c, y - 1)) {
 			if (newspan_up) {
 				_PUSH (c + 320 * (y - 1));
@@ -320,28 +399,30 @@ static void agiFill (int x, int y)
 **
 ** Draws an xCorner  (drawing action 0xF5)
 **************************************************************************/
-static void x_corner ()
+static void x_corner (int res)
 {
 	int x1, x2, y1, y2;
 
-	x1 = next_byte;
+	x1 = next_byte * res;
 	y1 = next_byte;
-   	put_virt_pixel (x1, y1);
+   	put_virt_pixel (x1, y1, res);
 
 	while (42) {
-		x2=next_byte;
+		x2 = next_byte;
 
 		if (x2 >= 0xf0)
 			break;
 
-		draw_line (x1, y1, x2, y1);
+		x2 *= res;
+
+		draw_line (x1, y1, x2, y1, res);
 		x1 = x2;
 		y2 = next_byte;
 
-		if (y2 >= 0xF0)
+		if (y2 >= 0xf0)
 			break;
 
-		draw_line (x1, y1, x1, y2);
+		draw_line (x1, y1, x1, y2, res);
 		y1 = y2;
 	}
 	foffs--;
@@ -353,13 +434,13 @@ static void x_corner ()
 **
 ** Draws an yCorner  (drawing action 0xF4)
 **************************************************************************/
-static void y_corner ()
+static void y_corner (int res)
 {
 	int x1, x2, y1, y2;
 
-	x1 = next_byte;
+	x1 = next_byte * res;
 	y1 = next_byte;
-	put_virt_pixel (x1, y1);
+	put_virt_pixel (x1, y1, res);
 
 	while (42) {
 		y2 = next_byte;
@@ -367,14 +448,16 @@ static void y_corner ()
 		if (y2 >= 0xF0)
 			break;
 
-		draw_line (x1, y1, x1, y2);
+		draw_line (x1, y1, x1, y2, res);
 		y1 = y2;
 		x2 = next_byte;
 
-		if (x2 >= 0xF0)
+		if (x2 >= 0xf0)
 			break;
 
-		draw_line (x1, y1, x2, y1);
+		x2 *= res;
+
+		draw_line (x1, y1, x2, y1, res);
 		x1 = x2;
 	}
 
@@ -399,12 +482,12 @@ static void fill ()
 
 #define plotPatternPoint() do {						\
 	if (patCode & 0x20) {						\
-		if ((splatterMap[bitPos>>3] >> (7-(bitPos&7))) & 1)	\
-			put_virt_pixel(x1, y1);				\
+		if ((splatterMap[bitPos>>3] >> (7-(bitPos&7))) & 1) 	\
+			put_virt_pixel(x1, y1, 1);			\
 		bitPos++;						\
 		if (bitPos == 0xff)					\
 			bitPos=0;					\
-	} else put_virt_pixel(x1, y1);					\
+	} else put_virt_pixel(x1, y1, 1);				\
 } while (0)
 
 /**************************************************************************
@@ -415,44 +498,6 @@ static void fill ()
 **************************************************************************/
 void plotPattern(unsigned int x, unsigned int y)
 {
-	static UINT8 circles[][15] = {		/* agi circle bitmaps */
-		{ 0x80 },
-		{ 0xfc },
-		{ 0x5f, 0xf4 },
-		{ 0x66, 0xff, 0xf6, 0x60 },
-		{ 0x23, 0xbf, 0xff, 0xff, 0xee, 0x20 },
-		{ 0x31, 0xe7, 0x9e, 0xff, 0xff, 0xde, 0x79, 0xe3, 0x00 },
-		{ 0x38, 0xf9, 0xf3, 0xef, 0xff, 0xff,
-		  0xff, 0xfe, 0xf9, 0xf3, 0xe3, 0x80 },
-		{ 0x18, 0x3c, 0x7e, 0x7e, 0x7e, 0xff, 0xff,
-		  0xff, 0xff, 0xff, 0x7e, 0x7e, 0x7e, 0x3c, 0x18 }
-	};
-
-	static UINT8 splatterMap[32] = {	/* splatter brush bitmaps */
-		0x20, 0x94, 0x02, 0x24, 0x90, 0x82, 0xa4, 0xa2,
-		0x82, 0x09, 0x0a, 0x22, 0x12, 0x10, 0x42, 0x14,
-		0x91, 0x4a, 0x91, 0x11, 0x08, 0x12, 0x25, 0x10,
-		0x22, 0xa8, 0x14, 0x24, 0x00, 0x50, 0x24, 0x04
-	};
-
-	static UINT8 splatterStart[128] = {	/* starting bit position */
-		0x00, 0x18, 0x30, 0xc4, 0xdc, 0x65, 0xeb, 0x48,
-		0x60, 0xbd, 0x89, 0x05, 0x0a, 0xf4, 0x7d, 0x7d,
-		0x85, 0xb0, 0x8e, 0x95, 0x1f, 0x22, 0x0d, 0xdf,
-		0x2a, 0x78, 0xd5, 0x73, 0x1c, 0xb4, 0x40, 0xa1,
-		0xb9, 0x3c, 0xca, 0x58, 0x92, 0x34, 0xcc, 0xce,
-		0xd7, 0x42, 0x90, 0x0f, 0x8b, 0x7f, 0x32, 0xed,
-		0x5c, 0x9d, 0xc8, 0x99, 0xad, 0x4e, 0x56, 0xa6,
-		0xf7, 0x68, 0xb7, 0x25, 0x82, 0x37, 0x3a, 0x51,
-		0x69, 0x26, 0x38, 0x52, 0x9e, 0x9a, 0x4f, 0xa7,
-		0x43, 0x10, 0x80, 0xee, 0x3d, 0x59, 0x35, 0xcf,
-		0x79, 0x74, 0xb5, 0xa2, 0xb1, 0x96, 0x23, 0xe0,
-		0xbe, 0x05, 0xf5, 0x6e, 0x19, 0xc5, 0x66, 0x49,
-		0xf0, 0xd1, 0x54, 0xa9, 0x70, 0x4b, 0xa4, 0xe2,
-		0xe6, 0xe5, 0xab, 0xe4, 0xd2, 0xaa, 0x4c, 0xe3,
-		0x06, 0x6f, 0xc6, 0x4a, 0xa4, 0x75, 0x97, 0xe1
-	};
-
 	SINT32 circlePos = 0;
 	UINT32 x1, y1, penSize, bitPos = splatterStart[patNum];
 
@@ -550,16 +595,16 @@ static void draw_picture ()
 			pri_on = FALSE;
 			break;
 		case 0xf4:			/* y-corner */
-			y_corner ();
+			y_corner (1);
 			break;
 		case 0xf5:			/* x-corner */
-			x_corner ();
+			x_corner (1);
 			break;
 		case 0xf6:			/* absolute draw lines */
-			absolute_draw_line ();
+			absolute_draw_line (1);
 			break;
 		case 0xf7:			/* dynamic draw lines */
-			dynamic_draw_line ();
+			dynamic_draw_line (1);
 			break;
 		case 0xf8:			/* fill */
 			fill ();
@@ -598,16 +643,16 @@ static void draw_picture ()
 			pri_on = FALSE;
 			break;
 		case 0xf4:			/* y-corner */
-			hires_y_corner ();
+			y_corner (2);
 			break;
 		case 0xf5:			/* x-corner */
-			hires_x_corner ();
+			x_corner (2);
 			break;
 		case 0xf6:			/* absolute draw lines */
-			absolute_hires_line ();
+			absolute_draw_line (2);
 			break;
 		case 0xf7:			/* dynamic draw lines */
-			dynamic_hires_line ();
+			dynamic_draw_line (2);
 			break;
 		case 0xf8:			/* fill */
 			hires_fill ();
