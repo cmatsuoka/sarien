@@ -194,7 +194,7 @@ void inventory ()
 
 	/* use wait_key instead of get_key() to be console aware */
 	if (!getflag (F_status_selects_items))
-		report("Scancode: %d\n", wait_any_key());
+		wait_any_key();
 
 	clear_screen (0);
 	write_status ();
