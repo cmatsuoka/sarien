@@ -274,7 +274,7 @@ static void process_events ()
 		case SDL_MOUSEBUTTONDOWN:
 			key = (event.button.button == 1) ?
 				BUTTON_LEFT : BUTTON_RIGHT;
-			mouse.button = TRUE;
+			mouse.button = (event.button.button == 1) ? 1 : 2;
 			key_enqueue (key);
 			/* fall through */
 		case SDL_MOUSEMOTION:

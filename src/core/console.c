@@ -682,8 +682,9 @@ int console_keyhandler (int k)
 	char m[2];
 
 	/* Right button switches console on/off*/
-	if (k == BUTTON_RIGHT)
-		k = CONSOLE_ACTIVATE_KEY;
+	if (!opt.agimouse)	/* AGI Mouse uses right button */
+		if (k == BUTTON_RIGHT)
+			k = CONSOLE_ACTIVATE_KEY;
 
 	if (!console.active) {
 		if (k == CONSOLE_ACTIVATE_KEY) {

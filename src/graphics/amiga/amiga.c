@@ -126,10 +126,14 @@ static void process_events ()
 			switch (Code)
 			{
 				case IECODE_RBUTTON:
+					key = BUTTON_RIGHT
+					mouse.button = 2;
+					mouse.x = (imsg->MouseX - window->BorderLeft) / opt.scale;
+					mouse.y = (imsg->MouseY - window->BorderTop) / opt.scale;
+					break;
 				case IECODE_LBUTTON:
-					key = Code == IECODE_LBUTTON ?
-						BUTTON_LEFT : BUTTON_RIGHT;
-					mouse.button = TRUE;
+					key = BUTTON_LEFT
+					mouse.button = 1;
 					mouse.x = (imsg->MouseX - window->BorderLeft) / opt.scale;
 					mouse.y = (imsg->MouseY - window->BorderTop) / opt.scale;
 					break;

@@ -264,13 +264,13 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_LBUTTONDOWN:
 		key = BUTTON_LEFT;
-		mouse.button = TRUE;
+		mouse.button = 1;
 		update_mouse_pos(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 
 	case WM_RBUTTONDOWN:
 		key = BUTTON_RIGHT;
-		mouse.button = TRUE;
+		mouse.button = 2;
 		update_mouse_pos(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		break;
 

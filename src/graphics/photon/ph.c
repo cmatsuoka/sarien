@@ -707,7 +707,7 @@ static int ph_mouse_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 
 	if (cb->event->type == Ph_EV_BUT_PRESS)
 	{
-		ph_mouse.sarien_mouse.button = TRUE;
+		ph_mouse.sarien_mouse.button = (mouse_event->buttons == Ph_BUTTON_SELECT) ? 1 : 2;
 		pthread_sleepon_lock();
 
 		key_enqueue ((mouse_event->buttons == Ph_BUTTON_SELECT) 

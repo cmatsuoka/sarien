@@ -279,7 +279,7 @@ static void process_events ()
 		case ButtonPress:
 			key = event.xbutton.button == Button1 ?
 				BUTTON_LEFT : BUTTON_RIGHT;
-			mouse.button = TRUE;
+			mouse.button = event.xbutton.button == Button1 ? 1 : 2;
 			mouse.x = event.xbutton.x / opt.scale;
 			mouse.y = event.xbutton.y / opt.scale;
 			if (opt.fixratio)
