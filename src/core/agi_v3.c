@@ -12,16 +12,9 @@
 
 #include <stdio.h>
 #include <string.h>
-
 #include "sarien.h"
 #include "agi.h"
 #include "lzw.h"
-#include "picture.h"
-#include "view.h"
-#include "logic.h"
-#include "sound.h"
-#include "gfx_agi.h"
-#include "console.h"
 
 static int agi_v3_init (void);
 static int agi_v3_deinit (void);
@@ -30,11 +23,6 @@ static int agi_v3_load_resource (int, int);
 static int agi_v3_unload_resource (int, int);
 static int agi_v3_load_objects(char *);
 static int agi_v3_load_words(char *);
-
-extern struct agi_picture pictures[];
-extern struct agi_logic logics[];
-extern struct agi_view views[];
-extern struct agi_sound sounds[];
 
 struct agi_loader agi_v3 = {
 	3,
@@ -192,20 +180,20 @@ int agi_v3_deinit ()
 }
 
 
-int agi_v3_unload_resource (int restype, int resnum)
+int agi_v3_unload_resource (int t, int n)
 {
-	switch (restype) {
+	switch (t) {
 	case rLOGIC:
-		unload_logic (resnum);
+		unload_logic (n);
 		break;
 	case rPICTURE:
-		unload_picture (resnum);
+		unload_picture (n);
 		break;
 	case rVIEW:
-		unload_view (resnum);
+		unload_view (n);
 		break;
 	case rSOUND:
-		unload_sound(resnum);
+		unload_sound(n);
 		break;
 	}
 
@@ -235,8 +223,10 @@ UINT8* agi_v3_load_vol_res (struct agi_dir *agid)
 		fread (&x, 1, 7, fp);
 
 		if (hilo_getword(x) != 0x1234) {
+#if 0
 			/* FIXME */
 			deinit_video_mode();
+#endif
 			printf("ACK! BAD RESOURCE!!!\n");
 			exit(0);
 		}
@@ -285,76 +275,73 @@ UINT8* agi_v3_load_vol_res (struct agi_dir *agid)
  * with above routine, then further decoded here.
  */
 
-int agi_v3_load_resource (int restype, int resnum)
+int agi_v3_load_resource (int t, int n)
 {
 	int ec = err_OK;
 	UINT8 *data = NULL;
 
-	if (resnum > MAX_DIRS)
+	if (n > MAX_DIRS)
 		return err_BadResource;
 
-	switch (restype) {
+	switch (t) {
 	case rLOGIC:
 		/* load resource into memory, decrypt messages at the end
 		 * and build the message list (if logic is in memory)
 		 */
-		if (~game.dir_logic[resnum].flags & RES_LOADED) {
+		if (~game.dir_logic[n].flags & RES_LOADED) {
 			/* if logic is already in memory, unload it */
-			agi_v3.unload_resource (rLOGIC, resnum);
+			agi_v3.unload_resource (rLOGIC, n);
 
 			/* load raw resource into data */
-			data = agi_v3_load_vol_res (&game.dir_logic[resnum]);
-			logics[resnum].data=data;
+			data = agi_v3_load_vol_res (&game.dir_logic[n]);
+			game.logics[n].data=data;
 
 			/* uncompressed logic files need to be decrypted */
 			if (data != NULL) {
 				/* resloaded flag gets set by decode logic */
 				/* needed to build string table */
-				ec = decode_logic(resnum);
-				logics[resnum].sIP=2;
+				ec = decode_logic(n);
+				game.logics[n].sIP=2;
 			} else {
 				ec=err_BadResource;
 			}
 
-			/*logics[resnum].sIP=2;*/	/* saved IP = 2 */
-			/*logics[resnum].cIP=2;*/	/* current IP = 2 */
+			/*logics[n].sIP=2;*/	/* saved IP = 2 */
+			/*logics[n].cIP=2;*/	/* current IP = 2 */
 
-			logics[resnum].cIP = logics[resnum].sIP;
+			game.logics[n].cIP = game.logics[n].sIP;
        		}
 
 		/* if logic was cached, we get here */
 		/* reset code pointers incase it was cached */
 
-		/* we start at 2 to skip the size of the logic */
-		/*logics[resnum].sIP=2;*/	/* saved IP = 2 */
-		/*logics[resnum].cIP=2;*/	/* current IP = 2 */
-		logics[resnum].cIP=logics[resnum].sIP;
+		game.logics[n].cIP = game.logics[n].sIP;
 		break;
 	case rPICTURE:
 		/* if picture is currently NOT loaded *OR* cacheing is off,
 		 * unload the resource (caching==off) and reload it
 		 */
-		if (~game.dir_pic[resnum].flags & RES_LOADED) {
-			agi_v3.unload_resource (rPICTURE, resnum);
-			data = agi_v3_load_vol_res (&game.dir_pic[resnum]);
+		if (~game.dir_pic[n].flags & RES_LOADED) {
+			agi_v3.unload_resource (rPICTURE, n);
+			data = agi_v3_load_vol_res (&game.dir_pic[n]);
 			if (data != NULL) {
-				data = convert_v2_v3_pic (data,
-					game.dir_pic[resnum].len);
-				pictures[resnum].rdata = data;
-				game.dir_pic[resnum].flags |= RES_LOADED;
+				data = convert_v3_pic (data,
+					game.dir_pic[n].len);
+				game.pictures[n].rdata = data;
+				game.dir_pic[n].flags |= RES_LOADED;
 			} else {
 				ec=err_BadResource;
 			}
 		}
 		break;
 	case rSOUND:
-		if (game.dir_sound[resnum].flags & RES_LOADED)
+		if (game.dir_sound[n].flags & RES_LOADED)
 			break;
 
-		if ((data = agi_v3_load_vol_res (&game.dir_sound[resnum])) != NULL) {
-			sounds[resnum].rdata = data;
-			game.dir_sound[resnum].flags |= RES_LOADED;
-			decode_sound (resnum);
+		if ((data = agi_v3_load_vol_res (&game.dir_sound[n])) != NULL) {
+			game.sounds[n].rdata = data;
+			game.dir_sound[n].flags |= RES_LOADED;
+			decode_sound (n);
 		} else {
 			ec = err_BadResource;
 		}
@@ -365,14 +352,14 @@ int agi_v3_load_resource (int restype, int resnum)
 		 * cache the view? or must we reload it all the time?
 		 */
 		/* load a raw view from a VOL file into data */
-		if (game.dir_view[resnum].flags & RES_LOADED)
+		if (game.dir_view[n].flags & RES_LOADED)
 			break;
 
-		agi_v3.unload_resource (rVIEW, resnum);
-		if ((data = agi_v3_load_vol_res (&game.dir_view[resnum])) != NULL) {
-			views[resnum].rdata = data;
-			game.dir_view[resnum].flags |= RES_LOADED;
-			ec = decode_view(resnum);
+		agi_v3.unload_resource (rVIEW, n);
+		if ((data = agi_v3_load_vol_res (&game.dir_view[n])) != NULL) {
+			game.views[n].rdata = data;
+			game.dir_view[n].flags |= RES_LOADED;
+			ec = decode_view(n);
 		} else {
 			ec = err_BadResource;
 		}

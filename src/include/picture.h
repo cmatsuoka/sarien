@@ -15,37 +15,21 @@
 extern "C"{
 #endif
 
+/**
+ * AGI picture resource.
+ */
 struct agi_picture {
-	UINT32	flen;			/* size of raw data */
-	UINT8	*rdata;			/* raw vector image data */
+	UINT32	flen;			/**< size of raw data */
+	UINT8	*rdata;			/**< raw vector image data */
 };
 
-/* kludge */
-extern UINT8	sprite_data[];
-extern UINT8	screen_data[];
-extern UINT8	screen2[];
-extern UINT8	xdata_data[];
-//extern UINT8	control_data[];
-//extern UINT8	priority_data[];
-extern UINT8	pic_clear_flag;
-
-
-int	decode_picture (int);
-int	unload_picture (int);
-
-/* FIXME: too many dump_ functions!! */
-void	dump_screen (int);
-void	dump_pri (void);
-void	dump_pri_screen (void);
-void	dump_con_screen (void);
-void	dump_x_screen (void);
-void	dump_screenX (void);
-void	dump_screen2 (void);
-UINT8* 	convert_v2_v3_pic (UINT8 *data, UINT32 len);
-void 	reset_graphics(void);
-void	show_buffer (int);
+int	decode_picture	(int, int);
+int	unload_picture	(int);
+void	show_pic	(void);
+UINT8* 	convert_v3_pic	(UINT8 *data, UINT32 len);
 
 #ifdef __cplusplus
 };
 #endif
-#endif
+
+#endif /* __AGI_PICTURE_H */

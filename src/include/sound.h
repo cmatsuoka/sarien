@@ -21,7 +21,6 @@ extern "C"{
 #define ENV_DECAY	800
 #define ENV_SUSTAIN	160
 #define NUM_CHANNELS	16
-#define USE_INTERPOLATION
 
 #define SOUND_EMU_NONE	0
 #define SOUND_EMU_PC	1
@@ -29,47 +28,24 @@ extern "C"{
 #define SOUND_EMU_MAC	3
 #define SOUND_EMU_AMIGA	4
 
-struct agi_note {
-	UINT8 dur_lo;
-	UINT8 dur_hi;
-	UINT8 frq_0;
-	UINT8 frq_1;
-	UINT8 vol;
-};
-
-struct channel_info {
-#define AGI_SOUND_SAMPLE	0x0001
-#define AGI_SOUND_MIDI		0x0002
-#define AGI_SOUND_4CHN		0x0008
-	UINT32 type;
-	struct agi_note *ptr;
-	SINT16 *ins;
-	SINT32 size;
-#define AGI_SOUND_LOOP		0x0001
-#define AGI_SOUND_ENVELOPE	0x0002
-	UINT32 flags;
-	SINT32 timer;
-	UINT32 end;
-	UINT32 freq;
-	UINT32 phase;
-	UINT32 vol;
-	UINT32 env;
-};
-
+/**
+ * Sarien sound driver structure.
+ */
 struct sound_driver {
 	char *description;
 	int (*init)(SINT16 *buffer);
 	void (*deinit)(void);
 };
 
+/**
+ * AGI sound resource structure.
+ */
 struct agi_sound {
-	UINT32	flen;			/* size of raw data */
-	UINT8	*rdata;			/* raw sound data */
-	UINT8	flags;			/* sound flags */
-	UINT16	type;			/* sound resource type */
+	UINT32	flen;			/**< size of raw data */
+	UINT8	*rdata;			/**< raw sound data */
+	UINT8	flags;			/**< sound flags */
+	UINT16	type;			/**< sound resource type */
 };
-
-extern	struct sound_driver	*snd;
 
 void	decode_sound		(int);
 void	unload_sound		(int);
@@ -82,10 +58,11 @@ UINT32	mix_sound		(void);
 void	__init_sound		(void);
 int	load_instruments	(char *fname);
 
+extern	struct sound_driver	*snd;
+
 #ifdef __cplusplus
 };
 #endif
 
 #endif /* __AGI_SOUND_H */
-
 

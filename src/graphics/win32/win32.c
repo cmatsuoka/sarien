@@ -22,7 +22,7 @@
 #include <process.h>
 
 #include "sarien.h"
-#include "gfx_base.h"
+#include "graphics.h"
 #include "keyboard.h"
 #include "console.h"
 
@@ -84,16 +84,16 @@ static struct{
 volatile UINT32 c_ticks;
 volatile UINT32 c_count;
 
-static int	init_vidmode	(void);
-static int	deinit_vidmode	(void);
-static void	win32_put_block	(int, int, int, int);
-static void	win32_put_pixel	(int, int, int);
-static int	win32_keypress	(void);
+static int	init_vidmode		(void);
+static int	deinit_vidmode		(void);
+static void	win32_put_block		(int, int, int, int);
+static void	win32_put_pixels	(int, int, int, BYTE *);
+static int	win32_keypress		(void);
 static int	win32_get_key		(void);
-static void	win32_new_timer	(void);
+static void	win32_new_timer		(void);
 
-static void	gui_put_block	(int, int, int, int);
-static int	set_palette	(UINT8 *, int, int);
+static void	gui_put_block		(int, int, int, int);
+static int	set_palette		(UINT8 *, int, int);
 
 
 static unsigned int __stdcall GuiThreadProc(void *);
@@ -102,7 +102,7 @@ static struct gfx_driver GFX_WIN32 = {
 	init_vidmode,
 	deinit_vidmode,
 	win32_put_block,
-	win32_put_pixel,
+	win32_put_pixels,
 	win32_new_timer,
 	win32_keypress,
 	win32_get_key
@@ -234,12 +234,14 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		case VK_ESCAPE:
 			key = 0x1b;
 			break;
+#ifdef USE_CONSOLE
 		case 192:
 			key = CONSOLE_ACTIVATE_KEY;
 			break;
-//		case 193:
-//			key = CONSOLE_SWITCH_KEY;
-//			break;
+		case 193:
+			key = CONSOLE_SWITCH_KEY;
+			break;
+#endif
 		default:
 			if (!isalpha (key))
 				break;
@@ -413,7 +415,6 @@ static unsigned int __stdcall GuiThreadProc(void *param)
 	} else {
 		ShowWindow (hwndMain, TRUE);
 		UpdateWindow (hwndMain);
-		screen_mode = GFX_MODE;      
 		g_err = err_OK;
 	}
 
@@ -432,8 +433,6 @@ static int deinit_vidmode (void)
 	PostMessage(hwndMain, WM_QUIT, 0, 0);
 	CloseHandle(g_hThread);
 	DeleteObject( g_screen.screen_bmp );
-	screen_mode = TXT_MODE;
-
 	return err_OK;
 }
 
@@ -499,26 +498,45 @@ static void gui_put_block (int x1, int y1, int x2, int y2) //1
 
 /* put pixel routine */
 /* Some errors! Handle color depth */
-static void win32_put_pixel (int x, int y, int c)
+static void win32_put_pixels (int x, int y, int w, BYTE *p)
 {
 	register int i, j;
         int offset;
-        BYTE *screen_surface = g_screen.screen_pixels; /* Word aligned! */
+        BYTE *p1, *p0 = g_screen.screen_pixels; /* Word aligned! */
 	EnterCriticalSection(&g_screen.cs);
 
         y = GFX_HEIGHT - y - 1;
 
 	if (scale == 1) {
-		*(screen_surface + x + (y * GFX_WIDTH)) = c;
-	} else {
-		x = x * scale; 
-		y = y * scale;
+		p0 += x + y * GFX_WIDTH;
+		while (w--) {
+			*p0++ = *p++;
+		}
+	} else if (scale == 2) {
+		x <<= 1; y <<= 1;
+		p0 += x + y * (GFX_WIDTH << 1);
+		p1 = p0 + (GFX_WIDTH << 1);
 
-		for (i = 0; i < scale; i++) {
-                        for (j = 0; j < scale; j++) {
-                                offset = (x + i) + (y + j) * GFX_WIDTH * 2;
-                                *(screen_surface +  offset) = c;
-                        }
+		while (w--) {
+			*p0++ = *p;
+			*p0++ = *p;
+			*p1++ = *p;
+			*p1++ = *p;
+			p++;
+		}
+	} else {
+		x *= scale; 
+		y *= scale;
+
+		while (w--) {
+			for (i = 0; i < scale; i++) {
+                       		for (j = 0; j < scale; j++) {
+                                	offset = (x + i) + (y + j) * GFX_WIDTH * scale;
+                                	*(p0 +  offset) = *p;
+                        	}
+			}
+			x += scale;
+			p++;
 		}
 	}
 	LeaveCriticalSection(&g_screen.cs);

@@ -10,8 +10,7 @@
 
 #include <stdio.h>
 #include "sarien.h"
-#include "console.h"
-#include "sound.h"
+#include "agi.h"
 
 static int dummy_init_sound (SINT16 *);
 static void dummy_close_sound (void);

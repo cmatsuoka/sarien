@@ -15,13 +15,16 @@
 extern "C"{
 #endif
 
+/**
+ * AGI logic resource structure.
+ */
 struct agi_logic {
-	UINT8 *data;		/* loaded logic is here */
-	int sIP;		/* saved IP */
-	int cIP;		/* current IP */
-	int size;		/* size of data */
-	int num_texts;		/* number of messages */
-	char **texts;		/* message list */
+	UINT8 *data;		/**< raw resource data */
+	int size;		/**< size of data */
+	int sIP;		/**< saved IP */
+	int cIP;		/**< current IP */
+	int num_texts;		/**< number of messages */
+	char **texts;		/**< message list */
 };
 
 int	decode_logic	(int);
@@ -31,4 +34,4 @@ void	unload_logic	(int);
 };
 #endif
 
-#endif
+#endif /* __AGI_LOGIC_H */

@@ -28,7 +28,7 @@ static XShmSegmentInfo shminfo;
 #endif
 
 #include "sarien.h"
-#include "gfx_base.h"
+#include "graphics.h"
 #include "keyboard.h"
 
 extern struct sarien_options opt;
@@ -57,30 +57,30 @@ static char **__argv;
 
 
 #define KEY_QUEUE_SIZE 16
+
 static int key_queue[KEY_QUEUE_SIZE];
 static int key_queue_start = 0;
 static int key_queue_end = 0;
+
 #define key_enqueue(k) do { key_queue[key_queue_end++] = (k); \
 	key_queue_end %= KEY_QUEUE_SIZE; } while (0)
 #define key_dequeue(k) do { (k) = key_queue[key_queue_start++]; \
 	key_queue_start %= KEY_QUEUE_SIZE; } while (0)
 
-static void kill_mode ();
-static int init_vidmode (void);
-static int deinit_vidmode (void);
-static int set_palette (UINT8 *, int, int);
-static void x11_put_block (int, int, int, int);
-static void x11_put_pixel (int, int, int);
-static int x11_keypress (void);
-static int x11_get_key (void);
 
-static void x11_timer (void);
+static int	init_vidmode	(void);
+static int	deinit_vidmode	(void);
+static void	x11_put_block	(int, int, int, int);
+static void	x11_put_pixels	(int, int, int, UINT8 *);
+static int	x11_keypress	(void);
+static int	x11_get_key	(void);
+static void	x11_timer	(void);
 
-static struct gfx_driver GFX_x11 = {
+static struct gfx_driver gfx_x11 = {
 	init_vidmode,
 	deinit_vidmode,
 	x11_put_block,
-	x11_put_pixel,
+	x11_put_pixels,
 	x11_timer,
 	x11_keypress,
 	x11_get_key
@@ -89,6 +89,150 @@ static struct gfx_driver GFX_x11 = {
 #ifdef XF86DGA
 #include "dga.c"
 #endif
+
+
+
+/* ===================================================================== */
+ 
+/* Optimized wrappers to access the X image directly.
+ * From my raster star wars scroller screensaver.
+ */
+
+/* In the normal 8/15/16/24/32 bpp cases idx indexes the data item directly.
+ * x and y are available for the other depths.
+ */
+static inline void putpixel_32 (XImage *img, int idx, int p)
+{
+	((int *)img->data)[idx] = p;
+}
+
+static inline void putpixel_16 (XImage *img, int idx, int p)
+{
+	((short *)img->data)[idx] = p;
+}
+
+static inline void putpixel_8 (XImage *img, int idx, int p)
+{
+	((char *)img->data)[idx] = p;
+}
+
+static void x11_putpixels_8bits_scale1 (int x, int y, int w, UINT8 *p)
+{
+	if (w == 0) return;
+	x += y * GFX_WIDTH;
+	while (w--) { putpixel_8 (ximage, x++, rgb_palette[*p++]); }
+}
+
+static void x11_putpixels_8bits_scale2 (int x, int y, int w, UINT8 *p)
+{
+	register int c;
+
+	if (w == 0) return;
+
+	x <<= 1; y <<= 1;
+	x += y * (GFX_WIDTH << 1);
+	y = x + (GFX_WIDTH << 1);
+
+	while (w--) {
+		c = rgb_palette[*p++];
+		putpixel_8 (ximage, x++, c);
+		putpixel_8 (ximage, x++, c);
+		putpixel_8 (ximage, y++, c);
+		putpixel_8 (ximage, y++, c);
+	}
+}
+
+static void x11_putpixels_16bits_scale1 (int x, int y, int w, UINT8 *p)
+{
+	if (w == 0) return;
+	x += y * GFX_WIDTH;
+	while (w--) { putpixel_16 (ximage, x++, rgb_palette[*p++]); }
+}
+
+static void x11_putpixels_16bits_scale2 (int x, int y, int w, UINT8 *p)
+{
+	int c;
+
+	if (w == 0) return;
+
+	x <<= 1; y <<= 1;
+	x += y * (GFX_WIDTH << 1);
+	y = x + (GFX_WIDTH << 1);
+
+	while (w--) {
+		c = rgb_palette[*p++];
+		putpixel_16 (ximage, x++, c);
+		putpixel_16 (ximage, x++, c);
+		putpixel_16 (ximage, y++, c);
+		putpixel_16 (ximage, y++, c);
+	}
+}
+
+static void x11_putpixels_32bits_scale1 (int x, int y, int w, UINT8 *p)
+{
+	if (w == 0) return;
+	x += y * GFX_WIDTH;
+	while (w--) { putpixel_32 (ximage, x++, rgb_palette[*p++]); }
+}
+
+static void x11_putpixels_32bits_scale2 (int x, int y, int w, UINT8 *p)
+{
+	int c;
+
+	if (w == 0) return;
+
+	x <<= 1; y <<= 1;
+	x += y * (GFX_WIDTH << 1);
+	y = x + (GFX_WIDTH << 1);
+
+	while (w--) {
+		c = rgb_palette[*p++];
+		putpixel_32 (ximage, x++, c);
+		putpixel_32 (ximage, x++, c);
+		putpixel_32 (ximage, y++, c);
+		putpixel_32 (ximage, y++, c);
+	}
+}
+
+/* ===================================================================== */
+
+
+static void x11_put_pixels (int x, int y, int w, UINT8 *p)
+{
+	register int cp;
+	register int i, j;
+
+	if (w == 0)
+		return;
+
+	if (scale == 1) {
+		while (w--) {
+			cp = rgb_palette[*p++];
+			x += y * GFX_WIDTH;
+			if (depth == 8) putpixel_8 (ximage, x++, cp);
+		}
+	} else if (scale == 2) {
+		x <<= 1;
+		y <<= 1;
+		while (w--) {
+			cp = rgb_palette[*p++];
+			XPutPixel (ximage, x, y, cp);
+			XPutPixel (ximage, x++, y + 1, cp);
+			XPutPixel (ximage, x, y, cp);
+			XPutPixel (ximage, x++, y + 1, cp);
+		}
+	} else {
+		x *= scale;
+		y *= scale;
+		while (w--) {
+			cp = rgb_palette[*p++];
+			for (i = 0; i < scale; i++)
+				for (j = 0; j < scale; j++)
+					XPutPixel (ximage, x + i, y + j, cp);
+		}
+	}
+}
+
 
 static void process_events ()
 {
@@ -264,23 +408,6 @@ static void process_events ()
 	XFlush (display);
 }
 
-
-int init_machine (int argc, char **argv)
-{
-	gfx = &GFX_x11;
-
-	__argc = argc;
-	__argv = argv;
-	scale = opt.scale;
-
-	return err_OK;
-}
-
-
-int deinit_machine (void)
-{
-	return err_OK;
-}
 
 
 static int set_palette (UINT8 *pal, int scol, int numcols)
@@ -471,6 +598,48 @@ static int init_vidmode ()
 		return err_Unk;
 	}
 
+	switch (scale) {
+	case 1:
+		switch (depth) {
+		case 8:
+			gfx_x11.put_pixels = x11_putpixels_8bits_scale1;
+			break;
+		case 16:
+			gfx_x11.put_pixels = x11_putpixels_16bits_scale1;
+			break;
+		case 24:
+			/* fall-through */
+		case 32:
+			gfx_x11.put_pixels = x11_putpixels_32bits_scale1;
+			break;
+		default:
+			gfx_x11.put_pixels = x11_put_pixels;
+			break;
+		}
+		break;
+	case 2:
+		switch (depth) {
+		case 8:
+			gfx_x11.put_pixels = x11_putpixels_8bits_scale2;
+			break;
+		case 16:
+			gfx_x11.put_pixels = x11_putpixels_16bits_scale2;
+			break;
+		case 24:
+			/* fall-through */
+		case 32:
+			gfx_x11.put_pixels = x11_putpixels_32bits_scale2;
+			break;
+		default:	
+			gfx_x11.put_pixels = x11_put_pixels;
+			break;
+		}
+		break;
+	default:
+		gfx_x11.put_pixels = x11_put_pixels;
+		break;
+	}
+
 	XMapWindow (display, window);
 	XSetWindowBackground (display, window, BlackPixel (display, screen));
 	XClearWindow (display, window);
@@ -480,8 +649,6 @@ init_done:
 #endif
 	set_palette (palette, 0, 32);
 	XSync (display, False);
-
-	screen_mode = GFX_MODE;
 
 	return err_OK;
 }
@@ -505,8 +672,6 @@ static int deinit_vidmode ()
 #endif
 	XDestroyImage (ximage);
 	XCloseDisplay (display);
-
-	screen_mode = TXT_MODE;
 
 	return err_OK;
 }
@@ -534,43 +699,18 @@ static void x11_put_block (int x1, int y1, int x2, int y2)
 #ifdef MITSHM
 	if (opt.mitshm) {
 		XShmPutImage (display, window, gc, ximage, x1, y1, x1, y1,
-			x2 - x1 + scale, y2 - y1 + scale, 0);
+			x2 - x1 + scale - 1, y2 - y1 + 1, 0);
 	}
 	else
 #endif
 	{
 		XPutImage (display, window, gc, ximage, x1, y1, x1, y1,
-			x2 - x1 + scale, y2 - y1 + scale);
+			x2 - x1 + scale - 1, y2 - y1 + 1);
 	}
 	
 	XSync (display, False);
 }
 
-
-/* put pixel routine */
-/* will optimize this later */
-static void x11_put_pixel (int x, int y, int c)
-{
-	register int cp = rgb_palette[c];
-	register int i, j;
-
-	if (scale == 1) {
-		XPutPixel (ximage, x, y, cp);
-	} else if (scale == 2) {
-		x <<= 1;
-		y <<= 1;
-		XPutPixel (ximage, x, y, cp);
-		XPutPixel (ximage, x, y + 1, cp);
-		XPutPixel (ximage, x + 1, y, cp);
-		XPutPixel (ximage, x + 1, y + 1, cp);
-	} else {
-		x *= scale;
-		y *= scale;
-		for (i = 0; i < scale; i++)
-			for (j = 0; j < scale; j++)
-				XPutPixel (ximage, x + i, y + j, cp);
-	}
-}
 
 
 static int x11_keypress ()
@@ -611,5 +751,27 @@ static void x11_timer ()
 	msec = m; 
 
 	process_events ();
+}
+
+
+/*
+ * Public functions
+ */
+
+int init_machine (int argc, char **argv)
+{
+	gfx = &gfx_x11;
+
+	__argc = argc;
+	__argv = argv;
+	scale = opt.scale;
+
+	return err_OK;
+}
+
+
+int deinit_machine (void)
+{
+	return err_OK;
 }
 

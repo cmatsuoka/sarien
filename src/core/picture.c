@@ -13,13 +13,9 @@
 
 #include "sarien.h"
 #include "agi.h"
-#include "gfx_agi.h"
-#include "gfx_base.h"
-#include "picture.h"
+#include "graphics.h"
 
 #define next_byte data[foffs++]
-
-struct agi_picture pictures[MAX_DIRS];
 
 static UINT8	*data;
 static UINT32	flen;
@@ -32,47 +28,19 @@ static UINT8	scr_on;
 static UINT8	scr_colour;
 static UINT8	pri_colour;
 
-UINT8	screen2[_WIDTH * _HEIGHT];
-UINT8	screen_data[_WIDTH * _HEIGHT];
-UINT8	xdata_data[_WIDTH * _HEIGHT];
-
-UINT8	layer1_data[GFX_WIDTH * GFX_HEIGHT];
-
-#ifdef USE_CONSOLE
-UINT8	layer2_data[GFX_WIDTH * GFX_HEIGHT];
-#endif
-
-UINT8	pic_clear_flag = TRUE;
 
 
-
-extern UINT8 old_prio;		/* Used in add_to_pic() */
-
-
-void dump_x_screen ()
+static void put_virt_pixel (int x, int y)
 {
-	put_block_buffer (xdata_data);
-	put_screen ();
-}
+	UINT8 *p;
 
-
-void dump_screenX ()
-{
-	memmove (screen_data, screen2, _WIDTH*_HEIGHT);
-	put_block_buffer (screen_data);
-	put_screen ();
-}
-
-
-static void put_virt_pixel (UINT16 x, UINT16 y)
-{
 	if (x >= _WIDTH || y >= _HEIGHT)
 		return;
 
-	if (pri_on)
-		xdata_data[y * _WIDTH + x] = pri_colour;
-	if (scr_on)
-		screen2[y * _WIDTH + x] = scr_colour;
+	p = &game.sbuf[y * _WIDTH + x];
+
+	if (pri_on) *p = (pri_colour << 4) | (*p & 0x0f);
+	if (scr_on) *p = scr_colour | (*p & 0xf0);
 }
 
 
@@ -80,39 +48,19 @@ static void put_virt_pixel (UINT16 x, UINT16 y)
 
 #define STACK_SEG_SIZE 0x1000
 
-struct point {
+struct point_xy {
 	struct point *next;
 	int x, y;
 };
 
 static int stack_ptr;
 
-#ifdef PALMOS
-
-static struct point stack[STACK_SEG_SIZE];
-
-static INLINE void _PUSH (struct point *c)
-{
-	stack[stack_ptr].x = c->x;
-	stack[stack_ptr].y = c->y;
-	stack_ptr++;
-}
-
-static INLINE void _POP (struct point *c)
-{
-	stack_ptr--;
-	c->x = stack[stack_ptr].x;
-	c->y = stack[stack_ptr].y;
-}
-
-#else
-
 #define MAX_STACK_SEGS 16
-static struct point *stack[MAX_STACK_SEGS];
+static struct point_xy *stack[MAX_STACK_SEGS];
 static int stack_num_segs;
 static int stack_seg;
 
-static INLINE void _PUSH (struct point *c)
+static INLINE void _PUSH (struct point_xy *c)
 {
 	if (stack_ptr >= STACK_SEG_SIZE) {
 		/* Allocate new stack segment */
@@ -122,7 +70,7 @@ static INLINE void _PUSH (struct point *c)
 		}
 		if (stack_num_segs <= ++stack_seg) {
 			_D ("new stack (#%d)", stack_num_segs);
-			stack[stack_num_segs++] = malloc (sizeof (struct point)
+			stack[stack_num_segs++] = malloc (sizeof (struct point_xy)
 				* STACK_SEG_SIZE);
 		}
 		stack_ptr = 0;
@@ -134,7 +82,7 @@ static INLINE void _PUSH (struct point *c)
 }
 
 
-static INLINE void _POP (struct point *c)
+static INLINE void _POP (struct point_xy *c)
 {
 	if (stack_ptr == 0) {
 		if (stack_seg == 0)
@@ -149,7 +97,6 @@ static INLINE void _POP (struct point *c)
 	c->x = stack[stack_seg][stack_ptr].x;
 	c->y = stack[stack_seg][stack_ptr].y;
 }
-#endif /* PALMOS */
 
 
 /**************************************************************************
@@ -321,19 +268,21 @@ static void absolute_draw_line ()
 static INLINE int is_ok_fill_here (int x, int y)
 {
 	int i;
+	UINT8 p;
 
 	if (!scr_on && !pri_on)
 		return FALSE;
 
 	i = y * _WIDTH + x;
+	p = game.sbuf[i];
 
 	if (!pri_on && scr_on && scr_colour != 15)
-		return screen2[i] == 15;
+		return (p & 0x0f) == 15;
 
 	if (pri_on && !scr_on && pri_colour != 4)
-		return xdata_data[i] == 4;
+		return (p >> 4) == 4;
 
-	return (scr_on && screen2[i] == 15 && scr_colour != 15);
+	return (scr_on && (p & 0x0f) == 15 && scr_colour != 15);
 }
 
 /**************************************************************************
@@ -341,7 +290,7 @@ static INLINE int is_ok_fill_here (int x, int y)
 **************************************************************************/
 static void agiFill (int x, int y)
 {
-	struct point c;
+	struct point_xy c;
 
 	c.x = x;
 	c.y = y;
@@ -372,9 +321,7 @@ static void agiFill (int x, int y)
 	}
 
 	stack_ptr = 0;
-#ifndef PALMOS
 	stack_seg = 0;
-#endif
 }
 
 /**************************************************************************
@@ -566,100 +513,6 @@ static void plot_brush ()
    	foffs--;
 }
 
-
-UINT8* convert_v2_v3_pic (UINT8 *data, UINT32 len)
-{
-	UINT8	d, old = 0, x, *in, *xdata, *out, mode = 0;
-	UINT32	i, ulen;
-
-	xdata = malloc (len + len / 2);
-
-	out = xdata;
-	in = data;
-
-	for (i = ulen = 0; i < len; i++, ulen++) {
-		d = *in++;
-
-		*out++ = x = mode ? ((d & 0xF0) >> 4) + ((old & 0x0F) << 4) : d;
-
-		if (x == 0xFF) {
-			ulen++;
-			break;
-		}
-
-		if (x == 0xf0 || x == 0xf2) {
-			if (mode) {
-				*out++ = d & 0x0F;
-				ulen++;
-			} else {
-				d = *in++;
-				*out++ = (d & 0xF0) >> 4;
-				i++, ulen++;
-			}
-
-			mode = !mode;
-		}
-
-		old = d;
-	}
-
-	free (data);
-	xdata = realloc (xdata, ulen);
-
-	return xdata;
-}
-
-
-#if 0
-/**************************************************************************
-** splitPriority
-**
-** Purpose: To split the priority colours from the control colours. It
-** determines the priority information for pixels that are overdrawn by
-** control lines by the same method used in Sierras interpreter (at this
-** stage). This could change later on.
-**************************************************************************/
-void splitPriority (int resnum)
-{
-	int x, y;
-	register UINT8 *p, *c;
-
-	_D ("(%d)", resnum);
-
-	p = xdata_data;
-	c = control_data;
-
-	for (x = 0; x < _WIDTH; x++) {
-		for (y = 0; y < _HEIGHT; y++, p++, c++) {
-			if (*p == 3) {
-				*c = *p;
-#if 0
-				*p = 4;
-#endif
-		 	}
-
-			if (*p >= 3)
-				continue;
-
-			*c = *p;
-#if 0
-			for (pp = p + _WIDTH, dy = y + 1;
-				dy < _HEIGHT; dy++, pp += _WIDTH) {
-				if (*pp > 3) {
-					*p = *pp;
-					break;
-				}
-			}
-#endif
-		}
-	}
-}
-#endif
-
-
-/* FIXME */
-extern UINT8 show_screen_mode;
-
 static void draw_picture ()
 {
 	UINT8 act;
@@ -671,23 +524,16 @@ static void draw_picture ()
  	pri_on = scr_on = FALSE;
  	scr_colour = 0xf;
  	pri_colour = 0x4;
-	old_prio = 4;
 
 	if (opt.showscreendraw == 3)
 		opt.showscreendraw = TRUE;
 
-	if (pic_clear_flag == TRUE) {
-		memset (&screen2, 0x0F, _WIDTH * _HEIGHT);
-		memset (&xdata_data, 0x4, _WIDTH * _HEIGHT);
-	}
 
 	drawing = 1;
 
-#ifndef PALMOS
-	stack[0] = calloc (sizeof (struct point), STACK_SEG_SIZE);
+	stack[0] = calloc (sizeof (struct point_xy), STACK_SEG_SIZE);
 	stack_ptr = stack_seg = 0;
 	stack_num_segs = 1;
-#endif
 
 	_D (_D_WARN "Drawing picture");
 	for (drawing = 1; drawing && foffs < flen; ) {
@@ -738,19 +584,71 @@ static void draw_picture ()
 		}
 	}
 
-#ifndef PALMOS
 	for (i = 0; i < stack_num_segs; i++)
 		free (stack[i]);
-#endif
 }
 
 
-/* load a pic and decode it into the correct slot */
-int decode_picture (int resnum)
-{
-	int ec = err_OK;
+/*
+ * Public functions
+ */
 
-	_D (_D_WARN "(%d)", resnum);
+/**
+ *
+ */
+UINT8* convert_v3_pic (UINT8 *data, UINT32 len)
+{
+	UINT8	d, old = 0, x, *in, *xdata, *out, mode = 0;
+	UINT32	i, ulen;
+
+	xdata = malloc (len + len / 2);
+
+	out = xdata;
+	in = data;
+
+	for (i = ulen = 0; i < len; i++, ulen++) {
+		d = *in++;
+
+		*out++ = x = mode ? ((d & 0xF0) >> 4) + ((old & 0x0F) << 4) : d;
+
+		if (x == 0xFF) {
+			ulen++;
+			break;
+		}
+
+		if (x == 0xf0 || x == 0xf2) {
+			if (mode) {
+				*out++ = d & 0x0F;
+				ulen++;
+			} else {
+				d = *in++;
+				*out++ = (d & 0xF0) >> 4;
+				i++, ulen++;
+			}
+
+			mode = !mode;
+		}
+
+		old = d;
+	}
+
+	free (data);
+	xdata = realloc (xdata, ulen);
+
+	return xdata;
+}
+
+/**
+ * Decode an AGI picture resource.
+ * This function decodes an AGI picture resource into the correct slot
+ * and draws it on the AGI screen, optionally cleaning the screen before
+ * drawing.
+ * @param n      AGI picture resource number
+ * @param clear  clear AGI screen before drawing
+ */
+int decode_picture (int n, int clear)
+{
+	_D (_D_WARN "(%d)", n);
 
 	patCode = 0;
 	patNum = 0;
@@ -758,34 +656,52 @@ int decode_picture (int resnum)
 	scr_colour = 0xF;
 	pri_colour = 0x4;
 
-	data = pictures[resnum].rdata;
-	flen = game.dir_pic[resnum].len;
+	data = game.pictures[n].rdata;
+	flen = game.dir_pic[n].len;
 	foffs = 0;
 
-	/* ancillary buffers removed to reduce complexity and memory
-	 * footprint. check if it control lines "painted over" with
-	 * priority data still work!
-	 */
+	if (clear)
+		memset (game.sbuf, 0x4f, _WIDTH * _HEIGHT);
 
 	draw_picture ();
 
-	/* control lines/priority data splitting removed, this is now
-	 * made at runtime by the blitting routines
-	 */
-	//splitPriority (resnum);
-
-	return ec;
+	return err_OK;
 }
 
 
-int unload_picture (int resnum)
+/**
+ * Unload an AGI picture resource.
+ * This function unloads an AGI picture resource and deallocates
+ * resource data.
+ * @param n AGI picture resource number
+ */
+int unload_picture (int n)
 {
 	/* remove visual buffer & priority buffer if they exist */
-	if (game.dir_pic[resnum].flags & RES_LOADED) {
-		free (pictures[resnum].rdata);	
-		game.dir_pic[resnum].flags &= ~RES_LOADED;
+	if (game.dir_pic[n].flags & RES_LOADED) {
+		free (game.pictures[n].rdata);	
+		game.dir_pic[n].flags &= ~RES_LOADED;
 	}
 
 	return err_OK;
 }
 
+/**
+ * Show AGI picture.
+ * This function copies a ``hidden'' AGI picture to the output device.
+ */
+void show_pic ()
+{
+	int i, y; //, y0;
+
+	i = 0;
+	//y0 = game.line_min_print ? 8 : 0;
+	for (y = 0; y < _HEIGHT; y++) {
+		put_pixels_a (0, y, _WIDTH, &game.sbuf[i]);
+		i += _WIDTH;
+	}
+
+	flush_screen ();
+}
+
+/* end: picture.c */

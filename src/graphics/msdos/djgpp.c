@@ -17,14 +17,14 @@
 #include <allegro.h>
 
 #include "sarien.h"
-#include "gfx_base.h"
+#include "graphics.h"
 
 static BITMAP *screen_buffer;
 
 static int	init_vidmode	(void);
 static int	deinit_vidmode	(void);
 static void	blit_block	(int, int, int, int);
-static void	put_pixel	(int x, int y, int c);
+static void	put_pixels	(int x, int y, int w, UINT8 *c);
 static void	dummy		(void);
 static int	get_key		(void);
 static int	keypress	(void);
@@ -35,7 +35,7 @@ static struct gfx_driver GFX_ibm= {
 	init_vidmode,
 	deinit_vidmode,
 	blit_block,
-	put_pixel,
+	put_pixels,
 	dummy,
 	keypress,
 	get_key
@@ -144,10 +144,10 @@ static void blit_block (int x1, int y1, int x2, int y2)
 }
 
 
-static void put_pixel (int x, int y, int c)
+static void put_pixels (int x, int y, int w, UINT8 *p)
 {
-	//screen_buffer[y * 320 + x] = (c & 0xFF);
-	screen_buffer->line[y][x]=(c&0xFF);
+	UINT8 *s = &screen_buffer->line[y][x];
+	while (w--) *s++ = *p++;
 }
 
 

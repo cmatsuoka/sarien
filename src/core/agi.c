@@ -14,21 +14,16 @@
 
 #include "sarien.h"
 #include "agi.h"
-#include "gfx_agi.h"
 #include "keyboard.h"
 #include "rand.h"
-#include "picture.h"
-#include "view.h"
-#include "logic.h"
 #include "menu.h"
-#include "console.h"
 
 
 static struct agi_loader *loader;		/* loader */
 
 struct agi_game game;
 
-volatile UINT32	msg_box_secs2;		/* message box timeout in sec/2 */
+//volatile UINT32	msg_box_secs2;		/* message box timeout in sec/2 */
 
 #if !defined PALMOS && !defined FAKE_PALMOS
 extern struct agi_loader agi_v2;
@@ -37,9 +32,6 @@ extern struct agi_loader agi_v3;
 extern struct agi_loader agi_v4;
 #endif
 
-extern struct agi_picture pictures[];
-extern struct agi_logic logics[];
-extern struct agi_view views[];
 extern UINT8 *font;
 extern UINT8 font_english[];
 #ifdef AGDS_SUPPORT
@@ -66,13 +58,12 @@ int agi_init ()
 		setvar(i, 0);
 
 	/* clear all logics, pictures, views and events */
-	memset (&logics, 0, MAX_DIRS * sizeof (struct agi_logic));
-	memset (&pictures, 0, MAX_DIRS * sizeof (struct agi_picture));
-	memset (&views, 0x0, MAX_DIRS * sizeof (struct agi_view));
+	memset (&game.logics, 0, MAX_DIRS * sizeof (struct agi_logic));
+	memset (&game.pictures, 0, MAX_DIRS * sizeof (struct agi_picture));
+	memset (&game.views, 0x0, MAX_DIRS * sizeof (struct agi_view));
 	memset (&game.events, 0x0, MAX_DIRS * sizeof (struct agi_event));
 
 	init_words ();
-	init_view_table ();
 	set_rnd_seed ();
 	init_menus ();
 
@@ -195,7 +186,7 @@ int agi_deinit ()
 {
 	int ec;
 
-	reset_graphics ();		/* clean out video memory */
+	//reset_graphics ();		/* clean out video memory */
 	clean_input ();			/* remove all words from memory */
 
 	deinit_menus ();		/* unload the menus */
@@ -254,7 +245,15 @@ void agi_set_release (int n)
 
 int agi_load_resource (int r, int n)
 {
-	return loader->load_resource (r, n);
+	int i;
+
+	i = loader->load_resource (r, n);
+#ifdef DISABLE_COPYPROTECTION
+	if (r == rLOGIC)
+		break_copy_protection (n);
+#endif
+
+	return i;
 }
 
 

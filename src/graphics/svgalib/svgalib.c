@@ -24,7 +24,7 @@
 #include <vgakeyboard.h>
 
 #include "sarien.h"
-#include "gfx_base.h"
+#include "graphics.h"
 #include "keyboard.h"
 
 static UINT8 *video_buffer;
@@ -52,7 +52,7 @@ UINT32 clock_count;
 static int	init_vidmode	(void);
 static int	deinit_vidmode	(void);
 static void	put_block	(int, int, int, int);
-static void	_put_pixel	(int, int, int);
+static void	put_pixels	(int, int, int, UINT8 *);
 static void	new_timer	(void);
 static int	keypress	(void);
 static int	get_key		(void);
@@ -61,7 +61,7 @@ static struct gfx_driver GFX_svgalib = {
 	init_vidmode,
 	deinit_vidmode,
 	put_block,
-	_put_pixel,
+	put_pixels,
 	new_timer,
 	keypress,
 	get_key
@@ -373,10 +373,13 @@ static void put_block (int x1, int y1, int x2, int y2)
 
 
 /* put pixel routine */
-static void _put_pixel (int x, int y, int c)
+static void put_pixels (int x, int y, int w, UINT8 *p)
 {
 	/* XoXus: FIXME: Is this a 16-bit color? */
-	video_buffer[y * 320 + x] = (c & 0xFF);
+	UINT8 *s = &video_buffer[y * 320 + x];
+
+	while (w--)
+		*s++ = *p++;
 }
 
 

@@ -29,6 +29,9 @@ struct view_loop {
 	struct view_cel *cel;
 };
 
+/**
+ * AGI view resource structure.
+ */
 struct agi_view {
 	int num_loops;
 	struct view_loop *loop;
@@ -36,27 +39,29 @@ struct agi_view {
 	UINT8 *rdata;
 };
 
-struct agi_view_table {
+/**
+ * AGI view table entry
+ */
+struct vt_entry {
 	UINT8		step_time;
 	UINT8		step_time_count;
 	UINT8		entry;
-
 	SINT16		x_pos;
 	SINT16		y_pos;
-
 	UINT8		current_view;
+	struct agi_view	*view_data;
 	UINT8		current_loop;
+	UINT8		num_loops;
+	struct view_loop *loop_data;
 	UINT8		current_cel;
-
-#define VT_VIEW(x)	views[(x).current_view]  
-#define VT_LOOP(x)	VT_VIEW(x).loop[(x).current_loop]
-#define VT_CEL(x)	VT_LOOP(x).cel[(x).current_cel]
-
+	UINT8		num_cels;
+	struct view_cel	*cel_data;
+	struct view_cel	*cel_data_2;
 	SINT16		x_pos2;
 	SINT16		y_pos2;
-#define VT_WIDTH(x)	VT_CEL(x).width
-#define VT_HEIGHT(x)	VT_CEL(x).height
-
+	void		*s;
+	SINT16		x_size;
+	SINT16		y_size;
 	UINT8		step_size;
 	UINT8		cycle_time;
 	UINT8		cycle_time_count;
@@ -71,8 +76,9 @@ struct agi_view_table {
 #define	CYCLE_NORMAL		0
 #define CYCLE_END_OF_LOOP	1
 #define	CYCLE_REV_LOOP 		2
-#define	CYCLE_REV		3
+#define	CYCLE_REVERSE		3
 	UINT8		cycle;
+
 	UINT8		priority;
 
 #define DRAWN		0x0001
@@ -85,55 +91,45 @@ struct agi_view_table {
 #define MOTION		0x0080
 #define ON_WATER	0x0100
 #define IGNORE_OBJECTS	0x0200
+#define FLAG10		0x0400		/* ?!? */
 #define ON_LAND		0x0800
+#define DONTUPDATE	0x1000		/* ?!? */
 #define FIX_LOOP	0x2000
+#define DIDNT_MOVE	0x4000		/* ?!? */
 	UINT16		flags;
 
 	UINT8		parm1;
 	UINT8		parm2;
 	UINT8		parm3;
 	UINT8		parm4;
+}; /* struct vt_entry */
 
-	/* extras */
-	UINT8		*bg_scr;
-	UINT8		*bg_pri;
-	UINT16		bg_x;
-	UINT16		bg_y;
-	UINT16		bg_x_size;
-	UINT16		bg_y_size;
+#define for_each_vt_entry(x) \
+	for (x = game.view_table; (x) < &game.view_table[MAX_VIEWTABLE]; (x)++)
+#define if_is_ego_view(x) \
+	if ((x) == game.view_table)
 
-#if 0
-	UINT8		step_time_count;
-	UINT8		cycle_time_count;
-#endif
+/* Motion */
+void    check_all_motions (void);
+void    move_obj	(struct vt_entry *);
+void	in_destination	(struct vt_entry *);
+void	fix_position	(int);
+void	update_position	(void);
 
-};
+/* View table management */
+void	set_cel		(struct vt_entry *, int);
+void	set_loop	(struct vt_entry *, int);
+void	set_view	(struct vt_entry *, int);
+void	start_update	(struct vt_entry *);
+void	stop_update	(struct vt_entry *);
 
-#if 0
-struct view_list {
-	struct view_list *up;
-	struct view_list *down;
-	struct agi_view_table *vt;
-};
-#endif
-
-
-void	init_view_table	(void);
 void	unload_view	(int);
 int	decode_view	(int);
-void	add_view_table	(int, int);
-void	set_loop	(int, int);
-void	set_cel		(int, int);
 void	add_to_pic	(int, int, int, int, int, int, int);
-void	reset_views	(void);
-void	reset_view	(int);
-void	calc_direction	(int);
-void    adj_direction   (struct agi_view_table *, int, int);
 void	draw_obj	(int);
 
 #ifdef __cplusplus
 };
 #endif
 
-#endif
-
+#endif /* __AGI_VIEW_H */

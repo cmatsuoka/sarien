@@ -28,6 +28,8 @@ extern "C"{
 #define KEY_UP_LEFT	0x4700
 #define KEY_UP_RIGHT	0x4900
 
+#define KEY_PRIORITY	0xff61
+
 /* FIXME SHOULD BE IN x11.c, ibm.c, etc in graphics */
 #ifdef _M_MSDOS
 /* duplicated in src/graphics/msdos/ibm.c */

@@ -16,7 +16,7 @@
 #include <i86.h>
 
 #include "sarien.h"
-#include "gfx_base.h"
+#include "graphics.h"
 
 #define KEY_PGUP	0x4A2D	/* keypad + */
 #define KEY_PGDN	0x4E2B  /* keypad - */
@@ -43,7 +43,7 @@ void	__interrupt __far new_timer	(void);
 static int	IBM_init_vidmode	(void);
 static int	IBM_deinit_vidmode	(void);
 static void	IBM_blit_block		(int, int, int, int);
-static void	IBM_put_pixel		(int, int, int);
+static void	IBM_put_pixels		(int, int, int, UINT8 *);
 static void	IBM_dummy		(void);
 static int	IBM_get_key		(void);
 static int	IBM_keypress		(void);
@@ -55,7 +55,7 @@ static struct gfx_driver GFX_ibm = {
 	IBM_init_vidmode,
 	IBM_deinit_vidmode,
 	IBM_blit_block,
-	IBM_put_pixel,
+	IBM_put_pixels,
 	IBM_dummy,
 	IBM_keypress,
 	IBM_get_key
@@ -154,10 +154,10 @@ static void IBM_blit_block(UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
 			screen_buffer + 320 * (y1 + i) + x1, x2 - x1 + 1);
 }
 
-static void IBM_put_pixel(UINT16 x, UINT16 y, UINT16 c)
+static void IBM_put_pixels(int x, int y, int w, UINT8 *p)
 {
-//	*(screen_buffer+(y*GFX_WIDTH)+x)=c;
-	screen_buffer[y * 320 + x] = (c & 0xFF);
+	UINT8 *s = &screen_buffer[y * 320 + x];
+	while (w--) *s++ = *p++;
 }
 
 

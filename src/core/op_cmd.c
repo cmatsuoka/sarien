@@ -8,714 +8,594 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-/*
- * Dark Minister provided some info:
- * variable v24 == max chars you can enter on the command line
- *
- * opcode 173 + 181
- * unknown173 ()
- * --- Activate keypressed control (ego only moves when a key is pressed)
- * unknown181 ()
- * --- Desactivate keypressed control (default control of ego)
- *
- * commands to FINISH o_O;;
- *
- * add to pic (view.cc)
- * draw
- *
- * log
- * script size
- * echo line
- * cancel line
- * menu input
- * init disk
- * trace on
- * trace info
- * close dialogue
- * open dialogue
- * obj status v
- * set upper left
- * block
- * unblock
- */
- 
 #include <stdio.h>
 #include <string.h>
-
 #include "sarien.h"
 #include "agi.h"
 #include "rand.h"
-#include "gfx_agi.h"
-#include "gfx_base.h"		/* FIXME: hmm.. */
+#include "sprite.h"
+#include "graphics.h"
 #include "keyboard.h"
 #include "opcodes.h"
-#include "picture.h"
-#include "view.h"
-#include "logic.h"
-#include "sound.h"
 #include "menu.h"
 #include "savegame.h"
-#include "console.h"
 #include "text.h"	/* remove later */
 
-/* shw msgs boxes on commands 171+ */
-/*#define DISPLAY_DUDCODE*/
+#define p0	(p[0])
+#define p1	(p[1])
+#define p2	(p[2])
+#define p3	(p[3])
+#define p4	(p[4])
+#define p5	(p[5])
+#define p6	(p[6])
+
+#define CENTER	-1, -1, -1
+
+#define ip	cur_logic->cIP
+#define vt	game.view_table[p0]
+
+static struct agi_logic *cur_logic;
+
+#define _v game.vars
+#define cmd(x) static void cmd_##x (UINT8 *p)
+
+cmd(inc)		{ if (_v[p0] != 0xff) ++_v[p0]; }
+cmd(dec)		{ if (_v[p0] != 0) --_v [p0]; }
+cmd(assign)		{ _v[p0] = p1; }
+cmd(add)		{ _v[p0] += p1; }
+cmd(sub)		{ _v[p0] -= p1; }
+cmd(mul)		{ _v[p0] *= p1; }
+cmd(div)		{ _v[p0] /= p1; }
+cmd(assign_v)		{ _v[p0] = _v[p1]; }
+cmd(add_v)		{ _v[p0] += _v[p1]; }
+cmd(sub_v)		{ _v[p0] -= _v[p1]; }
+cmd(mul_v)		{ _v[p0] *= _v[p1]; }
+cmd(div_v)		{ _v[p0] /= _v[p1]; }
+cmd(rand_num)		{ _v[p2] = rnd (1 + (p1 - p0)) + p0; }
+cmd(lindirect_v)	{ _v[_v[p0]] = _v[p1]; }
+cmd(rindirect)		{ _v[p0] = _v[_v[p1]]; }
+cmd(lindirect)		{ _v[_v[p0]] = p1; }
+cmd(set)		{ setflag (*p, TRUE); }
+cmd(reset)		{ setflag (*p, FALSE); }
+cmd(toggle)		{ setflag (*p, !getflag (*p)); }
+cmd(set_v)		{ setflag (_v[p0], TRUE); }
+cmd(reset_v)		{ setflag (_v[p0], FALSE); }
+cmd(toggle_v)		{ setflag (_v[p0], !getflag (*p)); }
+cmd(new_room)		{ new_room (p0); }
+cmd(new_room_v)		{ new_room (_v[p0]); }
+cmd(load_view)		{ agi_load_resource (rVIEW, p0); }
+cmd(load_logic)		{ agi_load_resource (rLOGIC, p0); }
+cmd(load_sound)		{ agi_load_resource (rSOUND, p0); }
+cmd(load_view_v)	{ agi_load_resource (rVIEW, _v[p0]); }
+cmd(load_logic_v)	{ agi_load_resource (rLOGIC, _v[p0] ); }
+cmd(discard_view)	{ agi_unload_resource (rVIEW, p0); }
+cmd(object_on_any)	{ _D ("p0 = %d", p0); vt.flags &= ~(ON_WATER | ON_LAND); }
+cmd(object_on_land)	{ _D ("p0 = %d", p0); vt.flags |= ON_LAND; }
+cmd(object_on_water)	{ _D ("p0 = %d", p0); vt.flags |= ON_WATER; }
+cmd(observe_horizon)	{ _D ("p0 = %d", p0); vt.flags &= ~IGNORE_HORIZON; }
+cmd(ignore_horizon)	{ _D ("p0 = %d", p0); vt.flags |= IGNORE_HORIZON; }
+cmd(observe_objs)	{ _D ("p0 = %d", p0); vt.flags &= ~IGNORE_OBJECTS; }
+cmd(ignore_objs)	{ _D ("p0 = %d", p0); vt.flags |= IGNORE_OBJECTS; }
+cmd(observe_blocks)	{ _D ("p0 = %d", p0); vt.flags &= ~IGNORE_BLOCKS; }
+cmd(ignore_blocks)	{ _D ("p0 = %d", p0); vt.flags |= IGNORE_BLOCKS; }
+cmd(set_horizon)	{ _D ("p0 = %d", p0); game.horizon = p0; }
+cmd(get_priority)	{ _v[p1] = vt.priority; }
+cmd(set_priority)	{ vt.flags |= FIXED_PRIORITY; vt.priority = p1; }
+cmd(set_priority_v)	{ vt.flags |= FIXED_PRIORITY; vt.priority = _v[p1]; }
+cmd(release_priority)	{ vt.flags &= ~FIXED_PRIORITY; }
+cmd(set_upper_left)	{ /* do nothing (AGI 2.917) */ }
+cmd(start_update)	{ start_update (&vt); }
+cmd(stop_update)	{ stop_update (&vt); }
+cmd(cur_view)		{ _v[p1] = vt.current_view; }
+cmd(cur_cel)		{ _v[p1] = vt.current_cel; }
+cmd(last_cel)		{ _v[p1] = vt.loop_data->num_cels - 1; }
+cmd(set_cel)		{ set_cel (&vt, p1); vt.flags &= ~DONTUPDATE; }
+cmd(set_cel_v)		{ set_cel (&vt, _v[p1]); vt.flags &= ~DONTUPDATE; }
+cmd(cur_loop)		{ _v[p1] = vt.current_loop; }
+cmd(set_view)		{ set_view (&vt, p1); }
+cmd(set_view_v)		{ set_view (&vt, _v[p1]); }
+cmd(set_loop)		{ set_loop (&vt, p1); }
+cmd(set_loop_v)		{ set_loop (&vt, _v[p1]); }
+cmd(set_num_loops)	{ vt.num_loops = p1; }
+cmd(fix_loop)		{ vt.flags |= FIX_LOOP; }
+cmd(release_loop)	{ vt.flags &= ~FIX_LOOP; }
+cmd(step_size)		{ vt.step_size = _v[p1]; }
+cmd(step_time)		{ vt.step_time = vt.step_time_count = _v[p1]; }
+cmd(cycle_time)		{ vt.cycle_time = vt.cycle_time_count = _v[p1]; }
+cmd(stop_cycling)	{ vt.flags &= ~CYCLING; }
+cmd(start_cycling)	{ vt.flags |= CYCLING; }
+cmd(normal_cycle)	{ vt.cycle = CYCLE_NORMAL; vt.flags |= CYCLING; }
+cmd(reverse_cycle)	{ vt.cycle = CYCLE_REVERSE; vt.flags |= CYCLING; }
+cmd(set_dir)		{ vt.direction = p1; }
+cmd(get_dir)		{ _v[p1] = vt.direction; }
+cmd(reposition_to)	{ vt.x_pos = p1; vt.y_pos = p2; vt.flags |= FLAG10; }
+cmd(reposition_to_v)	{ vt.x_pos=_v[p1]; vt.y_pos=_v[p2]; vt.flags|=FLAG10; }
+cmd(get_room_v)		{ _v[p1] = object_get_location (p0); }
+cmd(put)		{ _D ("p0 = %d", p0); object_set_location (p0, p1); }
+cmd(put_v)		{ object_set_location (_v[p0], _v[p1]); }
+cmd(drop)		{ _D ("p0 = %d", p0); object_set_location (p0, 0); }
+cmd(get)		{ object_set_location (p0, EGO_OWNED); }
+cmd(get_v)		{ object_set_location (_v[p0], EGO_OWNED); }
+cmd(parse)		{ dictionary_words (agi_sprintf(game.strings[p1],p0)); }
+cmd(set_text_attr)	{ game.color_fg = p0; game.color_bg = p1; }
+cmd(shake_screen)	{ shake_screen (p0); }
+cmd(word_to_string)	{ strcpy (game.strings[p0], game.ego_words[p1].word); }
+cmd(status_line_on)	{ game.status_line = TRUE; write_status (); }
+cmd(status_line_off)	{ game.status_line = FALSE; write_status (); }
+cmd(open_dialogue)	{ _D ("p0 = %d", p0); game.has_window = TRUE; }
+cmd(close_dialogue)	{ _D ("p0 = %d", p0); game.has_window = FALSE; }
+cmd(close_window)	{ close_window (); }
+cmd(print)		{ print (cur_logic->texts[p0 - 1], 0, 0, 0); }
+cmd(print_v)		{ print (cur_logic->texts[_v[p0] - 1], 0, 0, 0); }
+cmd(print_at)		{ print (cur_logic->texts[p0 - 1], p1, p2, p3); }
+cmd(print_at_v)		{ print (cur_logic->texts[_v[p0] - 1], p1, p2, p3); }
+cmd(play_sound)		{ start_sound (p0, p1); }
+cmd(stop_sound)		{ stop_sound (); }
+cmd(accept_input)	{ new_input_mode (INPUT_NORMAL); }
+cmd(prevent_input)	{ new_input_mode (INPUT_NONE); }
+cmd(menu_input)		{ new_input_mode (INPUT_MENU); }
+cmd(enable_item)	{ menu_set_item (p0, TRUE); }
+cmd(disable_item)	{ menu_set_item (p0, FALSE); }
+cmd(submit_menu)	{ submit_menu (); }
+cmd(set_scan_start)	{ cur_logic->sIP = cur_logic->cIP; }
+cmd(reset_scan_start)	{ cur_logic->sIP = 2; }
+cmd(save_game)		{ savegame_dialog (); }
+cmd(load_game)		{ loadgame_dialog (); }
+cmd(init_disk)		{ /* do nothing */ }
+cmd(log)		{ /* do nothing */ }
+cmd(trace_on)		{ /* do nothing */ }
+cmd(trace_info)		{ /* do nothing */ }
+cmd(show_mem)		{ message_box ("Enough memory", CENTER); }
+cmd(toggle_monitor)	{ report ("Not implemented: toggle.monitor\n"); }
+cmd(init_joystick)	{ report ("Not implemented: init.joystick\n"); }
+cmd(script_size)	{ report ("Not implemented: script.size(%d)\n", p0); }
+cmd(echo_line)		{ report ("Not implemented: echo.line\n"); }
+cmd(cancel_line)	{ report ("Not implemented: cancel.line\n"); }
+cmd(obj_status_v)	{ report ("Not implemented: obj.status.v\n"); }
+
+/* unknown commands:
+ * unk_173: Activate keypressed control (ego only moves when a key is pressed)
+ * unk_181: Desactivate keypressed control (default control of ego)
+ */
+cmd(unk_170)		{ message_box ("cmd_unk_170", CENTER); }
+cmd(unk_171)		{ message_box ("cmd_unk_171", CENTER); }
+cmd(unk_172)		{ message_box ("cmd_unk_172", CENTER); }
+cmd(unk_173)		{ message_box ("cmd_unk_173", CENTER); }
+cmd(unk_174)		{ message_box ("cmd_unk_174", CENTER); }
+cmd(unk_175)		{ message_box ("cmd_unk_175", CENTER); }
+cmd(unk_176)		{ message_box ("cmd_unk_176", CENTER); }
+cmd(unk_177)		{ message_box ("cmd_unk_177", CENTER); }
+cmd(unk_178)		{ message_box ("cmd_unk_178", CENTER); }
+cmd(unk_179)		{ message_box ("cmd_unk_179", CENTER); }
+cmd(unk_180)		{ message_box ("cmd_unk_180", CENTER); }
+cmd(unk_181)		{ message_box ("cmd_unk_181", CENTER); }
 
 
-#define ip	logics[lognum].cIP
-#define code	logics[lognum].data
-#define vt	view_table[entry]
 
-static int window_nonblocking = 0;	/* Yuck! Remove it later! */
+cmd(call) {
+	struct agi_logic *old_logic;
+	int old_cIP;
 
-extern struct agi_logic logics[];
-extern struct agi_view views[];
-extern struct agi_view_table view_table[];
-
-
-
-
-void cmd_position (UINT8 entry, UINT8 x, UINT8 y)
-{
-	vt.x_pos = x;
-	vt.y_pos = y;
-}
-
-
-void cmd_set_loop (UINT8 entry, UINT8 loop)
-{
-	set_loop (entry, loop);
-}
-
-
-void cmd_set_view (UINT8 entry, UINT8 view)
-{
-	add_view_table (entry, view);
-}
-
-
-void cmd_call (UINT8 log)
-{
-	UINT16 oip;
+#ifndef NO_DEBUG
+	if (opt.debug == 4) opt.debug = TRUE;
+#endif
 
 	/* CM: we don't save sIP because set.scan.start can be
 	 *     used in a called script (fixes xmas demo)
 	 */
-
-#ifndef NO_DEBUG
-	if (opt.debug == 4)
-		opt.debug = TRUE;
-#endif
-	oip = logics[log].cIP;
-	run_logic (log);
-	logics[log].cIP = oip;
+	old_cIP = cur_logic->cIP;
+	old_logic = cur_logic;
+	run_logic (p0);
+	cur_logic = old_logic;
+	cur_logic->cIP = old_cIP;
 }
 
+cmd(call_v) {
+	cmd_call (&_v[p0]);
+}
 
-void cmd_load_view (UINT8 entry)
-{
-	_D("(view = %d)", entry);
-	agi_load_resource (rVIEW, entry);
+cmd(draw_pic) {
+	_D (_D_WARN "--- draw pic %d ---", _v[p0]);
+	erase_both ();
+	decode_picture (_v[p0], TRUE);
+	blit_both ();
+	game.picture_shown = 0;
+}
 
-	if(entry == 0 && game.control_mode == CONTROL_PLAYER) {
+cmd(show_pic) {
+	_D (_D_WARN "--- show pic ---");
+	setflag (F_output_mode, FALSE);
+	cmd_close_window (NULL);
+	show_pic ();
+	game.picture_shown = 1;
+}
+
+cmd(load_pic) {
+	erase_both ();
+	agi_load_resource (rPICTURE, _v[p0]);
+	blit_both ();
+}
+
+cmd(discard_pic) {
+	_D (_D_WARN "--- discard pic ---");
+	/* do nothing */
+}
+
+cmd(overlay_pic) {
+	_D (_D_WARN "--- overlay pic ---");
+	erase_both ();
+	decode_picture (_v[p0], FALSE);
+	blit_both ();
+	checkmove_both ();
+	game.picture_shown = 0;
+}
+
+cmd(show_pri_screen) {
+	debug.priority = 1;
+	erase_both();
+	show_pic ();
+	blit_both ();
+	wait_key ();
+	debug.priority = 0;
+	erase_both();
+	show_pic ();
+	blit_both ();
+}
+
+cmd(animate_obj) {
+	if (~vt.flags & ANIMATED) {
+		_D (_D_WARN "animate vt entry #%d", p0);
+		vt.flags = ANIMATED | UPDATE | CYCLING;
+		vt.motion = MOTION_NORMAL;
+		vt.cycle = CYCLE_NORMAL;
 		vt.direction = 0;
-		setvar (V_ego_dir, 0);
 	}
 }
 
-
-void cmd_load_logic (UINT8 log)
-{
-	_D("(logic = %d", log);
-	agi_load_resource (rLOGIC, log);
-#ifdef DISABLE_COPYPROTECTION
-	break_copy_protection (log);
-#endif
+cmd(unanimate_all) {
+	int i;
+	for (i = 0; i < MAX_VIEWTABLE; i++)
+		game.view_table[i].flags &= ~(ANIMATED | DRAWN);
 }
 
-
-void cmd_new_room (UINT8 room)
-{
-	_D (_D_WARN "(room = %d)", room);
-	game.new_room_num = room;
-	game.ego_in_new_room = TRUE;
-	clear_buffer ();
-	window_nonblocking = 0;	/***************************/
-	game.exit_all_logics = TRUE;
-}
-
-
-void cmd_assign (UINT8 var, UINT8 val)
-{
-	setvar (var, val);
-}
-
-
-void cmd_add_to_pic (UINT8 view, UINT8 loop, UINT8 cel, UINT8 x, UINT8 y, UINT8 pri, UINT8 mar)
-{
-	add_to_pic (view, loop, cel, x, y, pri, mar);
-}
-
-
-void cmd_add (UINT8 var, UINT8 val)
-{
-	setvar (var, getvar (var)+val);
-}
-
-
-void cmd_sub (UINT8 var, UINT8 val)
-{
-	setvar (var, getvar (var) - val);
-}
-
-
-void cmd_lindirect (UINT8 var, UINT8 val)
-{
-	setvar (getvar (var), val);
-}
-
-
-void cmd_rindirect (UINT8 var, UINT8 val)
-{
-	setvar (var, getvar (val));
-}
-
-
-void cmd_set (UINT8 flag)
-{
-	setflag (flag, TRUE);
-}
-
-
-void cmd_reset (UINT8 flag)
-{
-	setflag (flag, FALSE);
-}
-
-
-void cmd_toggle (UINT8 flag)
-{
-	setflag (flag, !getflag (flag));
-}
-
-
-void cmd_inc (UINT8 var)
-{
-	if (getvar (var) != 0xFF)
-		setvar (var, getvar (var) + 1);
-}
-
-
-void cmd_dec (UINT8 var)
-{
-	if (getvar (var) != 0)
-		setvar (var, getvar (var) - 1);
-}
-
-
-void cmd_force_update (UINT8 entry)
-{
-	/* update obj (entry); */
-	report ("Hack: force.update (%d)\n", entry);
-
-	redraw_sprites ();
-	erase_sprites ();
-	set_cel (entry, vt.current_cel);
-	draw_sprites ();
-	release_sprites ();
-
-}
-
-
-void cmd_draw (UINT8 entry)
-{
-	_D ("(%d)", entry);
-	
-	redraw_sprites ();	/* KQ4 draws behind non-updating views */
-	erase_sprites ();
-	vt.flags |= DRAWN | UPDATE;
-	set_cel (entry, vt.current_cel);
-	draw_sprites ();
-	release_sprites ();
-}
-
-
-void cmd_erase (UINT8 entry)
-{
-	_D ("(%d)", entry);
-	redraw_sprites ();
-	erase_sprites ();
-	vt.flags &= ~(DRAWN | UPDATE);
-	draw_sprites ();
-	release_sprites ();
-
-   	if (entry == EGO_VIEW_TABLE) {
-   		vt.direction = 0;
-   		setvar (V_ego_dir, 0);
-	}
-}
-
-
-void cmd_reposition (UINT8 entry, UINT8 x, UINT8 y)
-{
-	vt.x_pos += (SINT8)getvar (x);
-	vt.y_pos += (SINT8)getvar (y);
-	_D (_D_WARN "reposition to %d, %d", vt.x_pos, vt.y_pos);
-}
-
-
-void cmd_fix_loop (UINT8 entry)
-{
-	vt.flags |= FIX_LOOP;
-}
-
-
-void cmd_object_on_any (UINT8 entry)
-{
-	_D (_D_WARN "(%d)", entry);
-	vt.flags &= ~(ON_WATER | ON_LAND);
-}
-
-
-void cmd_object_on_land (UINT8 entry)
-{
-	_D (_D_WARN "(%d)", entry);
-	vt.flags &= ~ON_WATER;		/* Not in Sierra AGI */
-	vt.flags |= ON_LAND;
-}
-
-
-void cmd_object_on_water (UINT8 entry)
-{
-	_D (_D_WARN "(%d)", entry);
-	vt.flags &= ~ON_LAND;		/* Not in Sierra AGI */
-	vt.flags |= ON_WATER;
-	
-}
-
-
-void cmd_set_horizon (UINT8 h)
-{
-	report ("horizon set to %d", h);
-	game.horizon = h;
-}
-
-
-void cmd_ignore_horizon (UINT8 entry)
-{
-	vt.flags |= IGNORE_HORIZON;
-}
-
-
-void cmd_observe_horizon (UINT8 entry)
-{
-	vt.flags &= ~IGNORE_HORIZON;
-}
-
-
-void cmd_start_update (UINT8 entry)
-{
-	if (vt.flags & UPDATE)
-		return;
-
+cmd(draw) {
 	if (~vt.flags & DRAWN) {
 		vt.flags |= UPDATE;
-		return;
+		fix_position (p0);
+		vt.x_pos2 = vt.x_pos;
+		vt.y_pos2 = vt.y_pos;
+		vt.cel_data_2 = vt.cel_data;
+		erase_upd_sprites ();
+		vt.flags |= DRAWN;
+		blit_upd_sprites ();
+		//adjustpos_putblock (&vt);
+		vt.flags &= ~DONTUPDATE;
+		_D ("vt entry #%d flags = %02x", p0, vt.flags);
 	}
-
-	redraw_sprites ();
-	vt.flags |= UPDATE;
-	release_sprites ();
 }
 
-
-void cmd_stop_update (UINT8 entry)
-{
-	if (~vt.flags & UPDATE)
-		return;
-
-	if (~vt.flags & DRAWN) {
-		vt.flags &= ~UPDATE;
-		return;
+cmd(erase) {
+	if (vt.flags & DRAWN) {
+		erase_upd_sprites ();
+		if (vt.flags & UPDATE) {
+			vt.flags &= ~DRAWN;
+		} else {
+			erase_nonupd_sprites ();
+			vt.flags &= ~DRAWN;
+			blit_nonupd_sprites ();
+		}
+		blit_upd_sprites ();
+		//adjustpos_putblock (&vt);
 	}
-
-	redraw_sprites ();
-	vt.flags &= ~UPDATE;
-	release_sprites ();
 }
 
-
-void cmd_get_priority (UINT8 entry, UINT8 v)
-{
-	setvar (v, vt.priority);
+cmd(position) {
+	vt.x_pos = vt.x_pos2 = p1;
+	vt.y_pos = vt.y_pos2 = p2;
 }
 
-
-void cmd_release_priority (UINT8 entry)
-{
-	vt.flags &= ~FIXED_PRIORITY;
+cmd(position_v) {
+	vt.x_pos = vt.x_pos2 = _v[p1];
+	vt.y_pos = vt.y_pos2 = _v[p2];
 }
 
-
-void cmd_set_priority (UINT8 entry, UINT8 p)
-{
-	_D ("(%d, %d)", entry, p);
-
-	vt.flags |= FIXED_PRIORITY;
-
-	/* CM: can't set priority smaller than 4 */
-	if (p < 4)
-		p = 4;
-	vt.priority = p;
+cmd(get_posn) {
+	game.vars[p1] = vt.x_pos;
+	game.vars[p2] = vt.y_pos;
 }
 
+cmd(reposition) {
+	int dx = (SINT8)_v[p1], dy = (SINT8)_v[p2];
 
-void cmd_set_num_loops (UINT8 entry, UINT8 l)
-{
-	/*vt.num_loops=l;*/
-	/* setvar (l, vt.num_loops); ******/
-	setvar (l, VT_VIEW(vt).num_loops);
+	_D ("dx=%d, dy=%d", dx, dy);
+	vt.flags |= FLAG10;
+
+	if (dx < 0 && vt.x_pos < dx)
+		vt.x_pos = 0;
+	else
+		vt.x_pos += dx;
+
+	if (dy < 0 && vt.y_pos < dy)
+		vt.y_pos = 0;
+	else
+		vt.y_pos += dy;
+
+	fix_position (p0);
 }
 
-
-void cmd_cur_view (UINT8 entry, UINT8 v)
-{
-	setvar (v, vt.current_view);
+cmd(add_to_pic) {
+	add_to_pic (p0, p1, p2, p3, p4, p5, p6);
 }
 
-
-void cmd_cur_loop (UINT8 entry, UINT8 v)
-{
-	setvar (v, vt.current_loop);
+cmd(add_to_pic_v) {
+	add_to_pic (_v[p0], _v[p1], _v[p2], _v[p3], _v[p4], _v[p5], _v[p6]);
 }
 
-
-void cmd_cur_cel (UINT8 entry, UINT8 v)
-{
-	setvar (v, vt.current_cel);
+cmd(force_update) {
+	erase_both ();
+	blit_both ();
+	checkmove_both ();
 }
 
-
-void cmd_last_cel (UINT8 entry, UINT8 v)
-{
-	setvar (v, VT_LOOP(vt).num_cels > 0 ? VT_LOOP(vt).num_cels - 1 : 0);
-}
-
-
-void cmd_set_cel (UINT8 entry, UINT8 c)
-{
-	set_cel (entry, c);
-}
-
-
-void cmd_release_loop (UINT8 entry)
-{
-	vt.flags &= ~FIX_LOOP;
-}
-
-
-void cmd_reverse_loop (UINT8 entry, UINT8 p1)
-{
-	_D ("(%d, %d)", entry, p1);
-	vt.parm1 = p1;
+cmd(reverse_loop) {
 	vt.cycle = CYCLE_REV_LOOP;
-	vt.flags |= UPDATE | CYCLING;
-}
-
-
-void cmd_reverse_cycle (UINT8 entry)
-{
-	vt.cycle = CYCLE_REV;
-	vt.flags |= UPDATE | CYCLING;
-}
-
-
-void cmd_end_of_loop (UINT8 entry, UINT8 p1)
-{
-	_D ("(%d, %d)", entry, p1);
+	vt.flags |= (DONTUPDATE|UPDATE|CYCLING);
 	vt.parm1 = p1;
+	setflag (p1, FALSE);
+}
+
+cmd(end_of_loop) {
+	_D (_D_WARN "p0 = %d", p0);
+	vt.flags |= (DONTUPDATE|UPDATE|CYCLING);
 	vt.cycle = CYCLE_END_OF_LOOP; 
-	vt.flags |= UPDATE | CYCLING;
+	vt.parm1 = p1;
 }
 
-
-void cmd_distance (UINT8 ob1, UINT8 ob2, UINT8 v)
-{
-	UINT8 x1, y1, x2, y2;
-
-	/* if ob1 & ob2 on screen, else v=255 */
-	if (view_table[ob1].flags & DRAWN && view_table[ob2].flags & DRAWN) {
-		x1 = view_table[ob1].x_pos;
-		y1 = view_table[ob1].y_pos;
-		x2 = view_table[ob2].x_pos;
-		y2 = view_table[ob2].y_pos;
-		setvar (v, abs (x1 - x2) + abs (y1 - y2));
-	} else {
-		setvar (v, 0xff);
-	}
+cmd(block) {
+	_D (_D_WARN "x1=%d, y1=%d, x2=%d, y2=%d", p0, p1, p2, p3);
+	game.block.active = TRUE;
+	game.block.x1 = p0;
+	game.block.y1 = p1;
+	game.block.x2 = p2;
+	game.block.y2 = p4;
 }
 
-
-void cmd_observe_objs (UINT8 entry)
-{
-	vt.flags &= ~IGNORE_OBJECTS;
+cmd(unblock) {
+	game.block.active = FALSE;
 }
 
-
-void cmd_ignore_objs (UINT8 entry)
-{
-	vt.flags |= IGNORE_OBJECTS;
-}
-
-
-void cmd_word_to_string (UINT8 sn, UINT8 wn)
-{
-	strcpy (game.strings[sn], game.ego_words[wn].word);
-}
-
-
-/* FIXME: remove lowlevel print_text() call from here */
-void cmd_get_num (UINT8 logic, UINT8 msg, UINT8 num)
-{
-	_D (_D_CRIT "Commented out!");
-#if 0
-	char *p;
-
-	game.input_mode = INPUT_GETSTRING;
-
-	if (logics[logic].texts != NULL && (msg-1) <= logics[logic].num_texts) {
-		p = agi_printf (logics[logic].texts[msg-1], logic);
-		print_text (p, 0, 0, 23 * CHAR_LINES, strlen (p) + 1,
-			txt_fg, txt_bg);
-		p = get_string ((strlen (p) - 1) * CHAR_COLS, 23 * CHAR_LINES, 4);
-		while (*p == ' ')
-			p++;
-		setvar (num, (UINT8)atoi (p));
-	}
-#endif
-}
-
-
-void cmd_parse (UINT8 logic, UINT8 str)
-{
-	UINT8	*p;
-
-	_D ("(%d, %d)\n", logic, str);
-	p = agi_printf (game.strings[str], logic);
-	dictionary_words (p);
-}
-
-
-void cmd_cycle_time (UINT8 entry, UINT8 v)
-{
-	vt.cycle_time = getvar (v);
-}
-
-
-void cmd_block (UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
-{
-	report ("Not implemented: block (%d,%d,%d,%d)\n", x1, y1, x2, y2);
-}
-
-
-void cmd_unblock ()
-{
-	report ("Not implemented: unblock ()\n");
-}
-
-
-void cmd_follow_ego (UINT8 entry, UINT8 sv, UINT8 f)
-{
-	_D ("(%d, %d, %d)", entry, sv, f);
-	vt.step_size = sv;
-	vt.parm1 = vt.step_size;
-	vt.parm2 = f;
-	vt.motion = MOTION_FOLLOW_EGO;
-	vt.flags |= MOTION;
-}
-
-
-void cmd_wander (UINT8 entry)
-{
-	vt.motion = MOTION_WANDER;
-	vt.flags |= MOTION;
-}
-
-
-void cmd_norm_motion (UINT8 entry)
-{
+cmd(normal_motion) {
 	vt.motion = MOTION_NORMAL;
-	vt.flags |= MOTION;
 }
 
-
-void cmd_set_dir (UINT8 entry, UINT8 d)
-{
-	vt.direction = getvar (d);
-	calc_direction (entry);
-}
-
-
-void cmd_get_dir (UINT8 entry, UINT8 v)
-{
-	setvar (v, vt.direction);
-}
-
-
-void cmd_ignore_blocks (UINT8 entry)
-{
-	_D (_D_WARN "(%d)", entry);
-	vt.flags |= IGNORE_BLOCKS;
-}
-
-
-void cmd_observe_blocks (UINT8 entry)
-{
-	_D (_D_WARN "(%d)", entry);
-	vt.flags &= ~IGNORE_BLOCKS;
-}
-
-
-void cmd_move_obj (UINT8 entry, UINT8 x, UINT8 y, UINT8 step, UINT8 flag)
-{
-	_D("(entry=%d, x=%d, y=%d, step=%d, flag=%d)", entry, x, y, step, flag);
-
-	/* CM: I don't know if this is the correct behaviour, but
-	 *     KQ2 demo needs this in the lion sequence. This test
-	 *     won't permit move.obj() if you're already at the
-	 *     destination point!
-	 */
-	if (vt.parm1 == x && vt.parm2 == y && vt.x_pos == x && vt.y_pos == y) {
-		_D (_D_WARN "Already at destination point!");
-		setflag (flag, TRUE);
-		return;
+cmd(stop_motion) {
+	vt.direction = 0;
+	vt.motion = MOTION_NORMAL;
+	if (p0 == 0) {		/* ego only */
+		_v[V_ego_dir] = 0;
+		game.player_control = TRUE;
 	}
+}
 
-	vt.parm1 = x;
-	vt.parm2 = y;
-	vt.parm3 = vt.step_size;
-	if (step > 0)
-		vt.step_size = step;
-	vt.parm4 = flag;
+cmd(start_motion) {
+	vt.motion = MOTION_NORMAL;
+	if (p0 == 0) {		/* ego only */
+		_v[V_ego_dir] = 0;
+		game.player_control = TRUE;
+	}
+}
+
+cmd(player_control) {
+	game.player_control = TRUE;
+	game.view_table[0].motion = MOTION_NORMAL;
+}
+
+cmd(program_control) {
+	game.player_control = TRUE;
+}
+
+cmd(follow_ego) {
+	vt.motion = MOTION_FOLLOW_EGO;
+	vt.step_size = p1;
+	vt.parm1 = vt.step_size;
+	vt.parm2 = p2;
+	vt.parm3 = 0xff;
+	setflag (p2, FALSE);
+	vt.flags |= UPDATE;
+}
+
+cmd(move_obj) {
+	_D (_D_WARN "o=%d, x=%d, y=%d, s=%d, f=%d", p0, p1, p2, p3, p4);
+
 	vt.motion = MOTION_MOVE_OBJ;
+	vt.parm1 = p1;
+	vt.parm2 = p2;
+	vt.parm3 = vt.step_size;
+	vt.parm4 = p4;
 
-	setflag (flag, FALSE);		/* Needed for KQ2 demo!! */
-
-	vt.flags |= MOTION;
-	vt.cycle = CYCLE_NORMAL;
-
-	/* FR: Guess the direction of the movement (should call adj_direction)
-	 * CM: Ok, calling adj_direction
-	 */
-	adj_direction (&vt, y - vt.y_pos, x - vt.x_pos);
-
-	/* CM: added according to AGDS docs */
-	if (!entry)
-		cmd_prog_control ();
-}
-
-
-void cmd_get_roomv (UINT8 o, UINT8 v)
-{
-	setvar (v, object_get_location (o));
-}
-
-
-void cmd_put (UINT8 o, UINT8 v)
-{
-	object_set_location (o, v);
-}
-
-
-void cmd_drop (UINT8 o)
-{
-	object_set_location (o, 0);
-}
-
-
-void cmd_get (UINT8 o)
-{
-	object_set_location (o, EGO_OWNED);
-}
-
-
-void cmd_set_cur_char (UINT8 logic, UINT8 msg)
-{
-	UINT8	*p=NULL;
-
-	if (logics[logic].texts != NULL && (msg-1) <= logics[logic].num_texts) {
-		p = agi_printf (logics[logic].texts[msg-1], logic);
-		txt_char = *p;
-	} else {
-		txt_char='_';
-	}
-}
-
-
-void cmd_set_text_attr (UINT8 fg, UINT8 bg)
-{
-	_D ("(%d, %d)", fg, bg);
-	txt_fg = fg;
-	txt_bg = bg;
-}
-
-
-void cmd_shake_screen (UINT8 n)
-{
-	redraw_sprites ();
-	shake_screen (n);
-	release_sprites ();
-}
-
-
-void cmd_accept_input ()
-{
-	_D (_D_WARN "accepting input");
-	new_input_mode (INPUT_NORMAL);
-}
-
-
-void cmd_stop_input ()
-{
-	_D (_D_WARN "not accepting input");
-	new_input_mode (INPUT_NONE);
-	cmd_clear_lines (game.line_user_input, game.line_user_input + 1, 0 );
-}
-
-
-void cmd_set_key (UINT8 ac, UINT8 sc, UINT8 ec)
-{
-	if (ac == 0) {
-		game.events[ec].event = eSCAN_CODE;
-		game.events[ec].data = sc;
-		game.events[ec].occured = FALSE;
-	} else {
-		game.events[ec].event = eKEY_PRESS;
-		game.events[ec].data = ac;
-		game.events[ec].occured = FALSE;
-	}
-}
-
-
-void cmd_get_posn (UINT8 entry, UINT8 x1, UINT8 y1)
-{
-	setvar (x1, vt.x_pos);
-	setvar (y1, vt.y_pos);
-}
-
-
-void cmd_get_string (UINT8 logic, UINT8 str, UINT8 msg, UINT8 y, UINT8 x, UINT8 len)
-{
-	char *p;	/* Prompt message */
+	if (p3 != 0)
+		vt.step_size = p3;
 	
-	new_input_mode (INPUT_GETSTRING);
-	x *= CHAR_COLS;
-	y *= CHAR_LINES;
+	setflag (p4, FALSE);
+	vt.flags |= UPDATE;
 
-	if (logics[logic].texts != NULL && logics[logic].num_texts >= (msg - 1)) {
-		p = agi_printf (logics[logic].texts[msg-1], logic);
-		print_text (p, 0, x, y, strlen (p), txt_fg, txt_bg);
-		get_string (x + (strlen (p) - 1) * CHAR_COLS, y, len, str);
+	if (p0 == 0)
+		game.player_control = FALSE;
+
+	move_obj (&vt);
+}
+
+cmd(move_obj_v) {
+	vt.motion = MOTION_MOVE_OBJ;
+	vt.parm1 = _v[p1];
+	vt.parm2 = _v[p2];
+	vt.parm3 = vt.step_size;
+	vt.parm4 = p4;
+
+	if (p3 != 0)
+		vt.step_size = _v[p3];
+	
+	setflag (p4, FALSE);
+	vt.flags |= UPDATE;
+
+	if (p0 == 0)
+		game.player_control = FALSE;
+
+	//move_obj (&vt);
+}
+	
+cmd(wander) {
+	if (p0 == 0)
+		game.player_control = FALSE;
+	vt.motion = MOTION_WANDER;
+	vt.flags |= UPDATE;
+}
+
+
+cmd(set_game_id) {
+	if (cur_logic->texts && (p0 - 1) <= cur_logic->num_texts)
+		strncpy (game.id, cur_logic->texts[p0 - 1], 8);
+	else
+		game.id[0] = 0;
+
+	report ("Game ID: \"%s\"\n", game.id);
+}
+
+cmd(pause) {
+	int tmp = game.clock_enabled;
+	game.clock_enabled = FALSE;
+	message_box ("    Game is Paused.\nPress ENTER to continue.", CENTER);
+	game.clock_enabled = tmp;
+}
+
+cmd(set_menu) {
+	_D ("text %02x of %02x", p0, cur_logic->num_texts);
+	if (cur_logic->texts != NULL && p0 < cur_logic->num_texts)
+		add_menu (cur_logic->texts[p0 - 1]);
+}
+
+cmd(set_menu_item) {
+	_D ("text %02x of %02x", p0, cur_logic->num_texts);
+	if (cur_logic->texts != NULL && p0 < cur_logic->num_texts)
+		add_menu_item (cur_logic->texts[p0 - 1], p1);
+}
+
+cmd(version) {
+	char ver_msg[] = TITLE " v" VERSION;
+	char ver2_msg[] =
+		"\n"
+		"                             \n\n"
+        	"Emulating Sierra AGI v%x.%03x\n";
+	char ver3_msg[]=
+    		"\n"
+       		"                             \n\n"
+       		"  Emulating AGI v%x.002.%03x\n";
+		/* no Sierra as it wraps textbox */
+	char *r, *q;
+	int ver, maj, min;
+	char msg[256];
+
+	ver = agi_get_release ();
+	maj = (ver >> 12) & 0xf;
+	min = ver & 0xfff;
+
+	q = maj == 2 ? ver2_msg : ver3_msg;
+	r = strchr (q+1, '\n');
+
+	strncpy (q+1 + ((r-q > 0 ? r - q : 1) / 4), ver_msg, strlen (ver_msg));
+	sprintf (msg, q, maj, min);
+	message_box (msg, CENTER);
+}
+
+cmd(config_screen) {
+	game.line_min_print = p0;
+	game.line_user_input = p1;
+	game.line_status = p2;
+}
+
+cmd(text_mode) {
+	if (game.gfx_mode) {
+		//save_screen ();
+		game.gfx_mode = FALSE;
+		if (game.color_bg == 7)
+			game.color_bg = 15;
+		clear_screen (0);
+	}
+}
+
+cmd(graphics_mode) {
+	if (!game.gfx_mode) {
+		//restore_screen ();
+		game.gfx_mode = TRUE;
+		show_pic ();
+ 		write_status ();
+	}
+}
+
+cmd(status) {
+	inventory();
+	setvar (25, 0xFF);	/* ??!? */
+}
+
+cmd(quit) {
+	if (p0) {
+		game.quit_prog_now = TRUE;
+	} else {
+		message_box ("   Press ENTER to quit.\n"
+			"Press ESC to keep playing.", CENTER);
+
+		switch (KEY_ASCII (game.keypress)) {
+		case 'Y':
+		case 'y':
+		case 0x0d:
+		case 0x0a:
+			game.quit_prog_now = TRUE;
+			break;
+		}
+	}
+}
+
+cmd(restart_game) {
+	message_box ("Press ENTER to restart the game.\n"
+		"Press ESC to continue this game.", -1, -1, 24);
+	switch (wait_key ()) {
+	case 0x0a:
+	case 0x0d:
+		game.quit_prog_now = 0xFF;
+		setflag (F_restart_game, TRUE);
+		break;
+	default:
+		break;
+	}
+}
+
+cmd(distance) {
+	SINT16 x1, y1, x2, y2, d;
+	struct vt_entry *v0 = &game.view_table[p0];
+	struct vt_entry *v1 = &game.view_table[p1];
+
+	if (v0->flags & DRAWN && v1->flags & DRAWN) {
+		x1 = v0->x_pos + v0->x_size / 2;
+		y1 = v0->y_pos;
+		x2 = v1->x_pos + v1->x_size / 2;
+		y2 = v1->y_pos;
+		d = abs (x1 - x2) + abs (y1 - y2);
+		if (d > 0xfe) d = 0xfe;
+	} else {
+		d = 0xff;
+	}
+	_v[p2] = d;
+}
+
+cmd(get_string) {
+	_D ("p0 = %d", p0);
+	new_input_mode (INPUT_GETSTRING);
+
+	if (cur_logic->texts != NULL && cur_logic->num_texts >= (p1 - 1)) {
+		print_text (cur_logic->texts[p1 - 1], 0, 0,
+			p3, p2, game.color_fg, game.color_bg);
+		get_string (p3 + strlen (cur_logic->texts[p1 - 1]) - 1,
+			p2, p4, p0);
 	}
 
 	do {
@@ -724,248 +604,80 @@ void cmd_get_string (UINT8 logic, UINT8 str, UINT8 msg, UINT8 y, UINT8 x, UINT8 
 }
 
 
-void cmd_config_screen (UINT8 mpl, UINT8 upl, UINT8 sl)
-{
-	game.line_status = sl;
-	game.line_user_input = upl;
-	game.line_min_print = mpl;
-}
+/* FIXME: remove lowlevel print_text() call from here */
+cmd(get_num) {
+#if 0
+	game.input_mode = INPUT_GETSTRING;
 
-
-/* FIXME: should call function in gfx_agi.h
- */
-void cmd_clear_lines (UINT8 sl, UINT8 el, UINT8 c)
-{
-	UINT16	x, y, z;
-
-	/* do we need to adjust for +8 on topline?
-	 * inc for endline so it mateches the correct num
-	 * ie, from 22 to 24 is 3 lines, not 2 lines.
-	 */
-
-	if (c != 0)
-		c = 15;
-
-	z = (1+el)*CHAR_LINES;
-
-	for (y = sl * CHAR_LINES; y < z; y++)
-		for (x = 0; x < GFX_WIDTH; x++)
-			put_pixel (x, y, c);
-
-	put_block (0, sl * CHAR_LINES, GFX_WIDTH - 1, sl * CHAR_LINES + z - 1);
-}
-
-
-void cmd_txt ()
-{
-	if (screen_mode != TXT_MODE)
-		save_screen ();
-
-	screen_mode = TXT_MODE;
-
-	if (txt_bg == 7)
-		txt_bg = 15;
-
-	clear_buffer ();
-	put_screen ();
-}
-
-
-void cmd_gfx ()
-{
-	if (screen_mode == TXT_MODE)
-		restore_screen ();
-
-	screen_mode = GFX_MODE;
-	put_screen ();
- 	update_status_line (TRUE);
-}
-
-
-void cmd_status ()
-{
-	inventory();
-	setvar (25, 0xFF);
-}
-
-
-void cmd_status_line_on ()
-{
-	game.status_line = TRUE;
-
-	/* MK: I re-inserted (un-commented) the call to update_status_line
-	 * here (and in cmd_status_line_off()), because any AGI script call to
-	 * get.string() (cf. the computer scene in Police Quest) would mean
-	 * that the status line wouldn't be updated before the next interpreter
-	 * cycle. This was also necessary as I previously removed the call to
-	 * update_status_line in cmd_show_pic() :-).
-	 */
-	update_status_line (TRUE);
-}
-
-
-void cmd_status_line_off ()
-{
-	game.status_line = FALSE;
-	update_status_line (TRUE);
-}
-
-
-void cmd_load_sound (UINT8 s)
-{
-	_D ("(sound = %d)", s);
-	agi_load_resource (rSOUND, s);
-}
-
-
-void cmd_play_sound (UINT8 s, UINT8 f)
-{
-	_D ("(%d, %d)", s, f);
-	start_sound (s, f);
-}
-
-
-void cmd_stop_sound ()
-{
-	_D ("()");
-	stop_sound ();
-}
-
-
-void cmd_print (UINT8 logic, UINT8 msg)
-{
-	_D ("(%d, %d)", logic, msg);
-	cmd_print_at (logic, msg, -1, -1, -1);
-}
-
-
-void cmd_print_at (UINT8 logic, UINT8 msg, SINT8 y, SINT8 x, SINT8 len)
-{
-	UINT8	*p;
-
-	_D ("(%d, %d, %d, %d, %d)", logic, msg, y, x, len);
-	if (logics[logic].texts==NULL || logics[logic].num_texts< (msg-1))
-		return;
-
-	if (window_nonblocking) {
-		_D (_D_WARN "window_nonblocking=1 => remove window");
-		restore_screen_area ();	/* Yuck! */
-		window_nonblocking = 0;
+	if (cur_logic->texts != NULL && (p0 - 1) <= cur_logic->num_texts) {
+		char *prompt = agi_printf (cur_logic->texts[p0 - 1]);
+		print_text (prompt, 0, 0, 23 * CHAR_LINES, strlen (prompt) + 1,
+			game.color_fg, game.color_bg);
+		p = get_string (strlen (prompt) - 1) * CHAR_COLS,
+			23 * CHAR_LINES, 4);
+		_v[p1] = atoi (prompt);
 	}
+#endif
+}
 
-	save_screen ();
-	redraw_sprites ();
-
-	p = agi_printf (logics[logic].texts[msg-1], logic);
-	if (len != -1)
-		textbox (p, (x-1) * CHAR_COLS, y * CHAR_LINES, len);
-	else
-		textbox (p, -1, -1, -1);
-
-	/* From the specs:
-	 *
-	 * f15 determines the output mode of `print' and `print_at' commands: 
-	 *    1 - message window is left on the screen 
-	 *    0 - message window is closed when ENTER or ESC key are pressed.
-	 *        If v21 is not 0, the window is closed automatically after
-	 *	  1/2 * Var (21) seconds.
-	 * 
-	 * So 1 is nonblocking, and 0 is blocking!
-	 */
- 
-	if (getflag (15) && !getvar (V_window_reset)) {
-		_D (_D_WARN "f15==1, v21==0 => nonblocking");
-		window_nonblocking = 1;
-		release_sprites ();
+cmd(set_cursor_char) {
+	if (cur_logic->texts != NULL && (p0 - 1) <= cur_logic->num_texts) {
+		txt_char = *cur_logic->texts[p0 - 1];
 	} else {
-		if (getvar (V_window_reset) > 0) {
-			_D (_D_WARN "f15==0, v21==%d => timed", getvar (21));
-			setvar (V_key, 0);
-			msg_box_secs2 = getvar (V_window_reset);
-			_D (_D_WARN "msg_box_secs2 = %ld", msg_box_secs2);
-
-			do {
-				main_cycle ();
-				if (game.keypress == KEY_ENTER) {
-					_D (_D_WARN "KEY_ENTER");
-					setvar (V_window_reset, 0);
-					game.keypress = 0;
-					break;
-				}
-			} while (game.msg_box_ticks > 0);
-		} else {
-			_D (_D_WARN "f15==0, v21==0 ==> waitkey");
-			setvar (V_key, 0);
-			wait_key ();
-		}
-		release_sprites ();
-		restore_screen_area ();
+		txt_char = '_';
 	}
 }
 
+cmd(set_key) {
+	game.events[p2].event = p0 ? eKEY_PRESS : eSCAN_CODE;
+	game.events[p2].data = p0 ? p0 : p1;
+	game.events[p2].occured = FALSE;
+}
 
-void cmd_stop_motion (UINT8 entry)
-{
-	vt.flags &= ~MOTION;
-	vt.direction = 0;
-	vt.motion = MOTION_NORMAL;
+cmd(set_string) {
+	/* CM: to avoid crash in Groza (str = 150) */
+	if (p0 > MAX_WORDS1) return;
+	strcpy (game.strings[p0], cur_logic->texts[p1 - 1]);
+}
 
-	/* CM: added to fix LSL1 from room11 <-> room12
-	 */
-	if (!entry) {
-		setvar (V_ego_dir, 0);
-		cmd_prog_control ();
-	}
+cmd(display) {
+	print_text (cur_logic->texts[p2 - 1], p1, 0, p0, 40,
+		game.color_fg, game.color_bg);
+}
+
+cmd(display_v) {
+	_D ("p0 = %d", p0);
+	print_text (cur_logic->texts[_v[p2] - 1], _v[p1], 0, _v[p0], 40,
+		game.color_fg, game.color_bg);
+}
+
+cmd(clear_text_rect) {
+	int c, x1, y1, x2, y2;
+
+	if ((c = p4) != 0) c = 15;
+	x1 = p1 * CHAR_COLS;
+	y1 = p0 * CHAR_LINES;
+	x2 = (p3 + 1) * CHAR_COLS - 1;
+	y2 = (p2 + 1) * CHAR_LINES - 1;
+
+	draw_rectangle (x1, y1, x2, y2, c);
+	flush_block (x1, y1, x2, y2);
+}
+
+/* FIXME: should call function in gfx_agi.h */
+cmd(clear_lines) {
+	clear_lines (p0, p1, p2);
+	flush_lines (p0, p1);
 }
 
 
-void cmd_start_motion (UINT8 entry)
-{
-	vt.flags |= MOTION;
-	vt.direction = 0;
-	vt.motion = MOTION_NORMAL;
-
-	/* CM: added these to fix LSL1 from room11 <-> room12
-	 */
-	if (!entry) {
-		setvar (V_ego_dir, 0);
-		//view_table[EGO_VIEW_TABLE].direction = 0;
-		cmd_ego_control ();
-	}
-}
-
-
-void cmd_close_window ()
-{
-	report ("Hack: close.window ()\n");
-	if (!window_nonblocking)		/* CM: Fixes 'flashback' bug */
-		return;
-	restore_screen_area ();
-	window_nonblocking = 0;
-}
-
-
-void cmd_close_dialogue ()
-{
-	/* FIXME see open_dialogue */
-	report ("Not implemented: close.dialogue ()\n");
-}
-
-
-void cmd_open_dialogue ()
-{
-	report ("Not implemented: open.dialogue ()\n");
-}
-
-
-/* FIXME: ugliest function in the world */
-void cmd_show_obj (UINT8 n)
-{
+/* FIXME: ugly, shouldn't manage bg */
+cmd(show_obj) {
+#if 0
 	struct view_cel *c;
 	UINT8 *bg;
 	int x, y, w, h, x_, y_, w_, i, j;
-
-	report ("TEST: cmd_show_obj(%i)\n", n);
+	int n = p0;
 
 	agi_load_resource (rVIEW, n);
 	if (! (c = &views[n].loop[0].cel[0]))
@@ -980,7 +692,6 @@ void cmd_show_obj (UINT8 n)
 	y = game.line_min_print ? y_ + 8 : y_;
 	bg = malloc (w * h);
 
-
 	/* FIXME: flush_block () coordinates */
 
 	for (i = w - 1; i >= 0; i--)
@@ -993,8 +704,7 @@ void cmd_show_obj (UINT8 n)
 	flush_block (x, y, x + w, y + h);
 
 	/* FIXME: should call agi_printf */
-	report("TEST: cmd_show_obj : descr [%s]\n", views[n].descr);
-	message_box (views[n].descr);
+	message_box (views[n].descr, CENTER);
 
 	for (i = w - 1; i >= 0; i--)
 		for (j = h - 1; j >= 0; j--)
@@ -1002,1182 +712,264 @@ void cmd_show_obj (UINT8 n)
 	flush_block (x, y, x + w, y + h);
 
 	free (bg);
-}
-
-
-void cmd_obj_statusv ()
-{
-	report ("Not implemented: obj.status.v ()\n");
-}
-
-
-void cmd_set_upper_left ()
-{
-	/* change basepoint from bottom right to upper left */
-	/* x, y ? */
-	_D(_D_CRIT "Not implemented: set.upper.left()\n");
-}
-
-
-void cmd_clear_text_rect (UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2, UINT8 c)
-{
-	_D ("(%d, %d, %d, %d, %d)", x1, y1, x2, y2, c);
-/*
-	if (screen_mode==GFX_MODE)
-		c=0xF;
-	else
-		c=txt_bg;
-*/
-	if (c!=0)
-		c=15;
-
-	/*y1++;*/
-	x2++;
-	y2++;
-	draw_box (y1 * CHAR_COLS, x1 * CHAR_LINES, y2 * CHAR_COLS, x2 * CHAR_LINES, c, c,
-		BX_SAVE | NO_LINES, game.line_min_print * CHAR_LINES);
-	put_block (y1 * CHAR_COLS, x1 * CHAR_LINES, y2 * CHAR_COLS, x2 * CHAR_LINES);
-}
-
-
-void cmd_unanimate_all ()
-{
-	UINT16 num;
-
-	for (num=0; num<MAX_VIEWTABLE; num++)
-		view_table[num].flags &= ~(UPDATE | MOTION | ANIMATED | DRAWN);
-}
-
-
-void cmd_stop_cycling (UINT8 entry)
-{
-	vt.flags &= ~CYCLING;
-}
-
-
-void cmd_start_cycling (UINT8 entry)
-{
-	vt.flags |= CYCLING;
-}
-
-
-void cmd_normal_cycling (UINT8 entry)
-{
-	vt.cycle = CYCLE_NORMAL;
-}
-
-
-void cmd_step_time (UINT8 entry, UINT8 v)
-{
-	vt.step_time = getvar (v);
-}
-
-
-void cmd_step_size (UINT8 entry, UINT8 v)
-{
-	vt.step_size = getvar (v);
-}
-
-
-void cmd_show_mem ()
-{
-	message_box ("Free memory is irrelevant, "
-		"we have plenty of it to go around.");
-}
-
-
-void cmd_quit (UINT8 f)
-{
-	if (f) {
-		game.quit_prog_now = TRUE;
-	} else {
-		message_box ("   Press ENTER to quit.\n"
-			"Press ESC to keep playing.");
-
-		switch (KEY_ASCII (game.keypress)) {
-		case 'Y':
-		case 'y':
-		case 0x0d:
-		case 0x0a:
-			game.quit_prog_now = TRUE;
-			break;
-		}
-	}
-}
-
-
-void cmd_display (UINT8 logic, UINT8 y, UINT8 x, UINT8 msg)
-{
-	char *p;
-
-	if (logics[logic].texts != NULL && (msg-1) <= logics[logic].num_texts) {
-		p = agi_printf (logics[logic].texts[msg-1], logic);
-		print_text (p, x * CHAR_COLS, 0, y * CHAR_LINES, 40,
-			txt_fg, txt_bg);
-	}
-}
-
-
-/* CM: why are these reversed ?? */
-void cmd_ego_control ()
-{
-	view_table[0].flags |= MOTION;
-	game.control_mode = CONTROL_PROGRAM;
-}
-
-
-void cmd_prog_control ()
-{
-	game.control_mode = CONTROL_PLAYER;
-}
-
-
-void cmd_repos_to (UINT8 entry, UINT8 x, UINT8 y)
-{
-	vt.x_pos = x;
-	vt.y_pos = y;
-}
-
-
-void cmd_trace_on ()
-{
-}
-
-
-void cmd_trace_info ()
-{
-}
-
-
-void cmd_animate_obj (UINT8 entry)
-{
-	/* Object is included in the list of object controlled by the
-	 * interpreter. OBJECTS NOT INCLUDED IN THAT LIST ARE CONSIDERED
-	 * INEXISTENT!
-	 */
-
-	_D ("(%d)", entry);
-	vt.flags = ANIMATED | UPDATE | CYCLING | MOTION;
-
-	/* from meka, unknown */
-	vt.motion = MOTION_NORMAL;
-	vt.cycle = CYCLE_NORMAL;
-
-	if (entry !=EGO_VIEW_TABLE)
-		vt.direction = 0;
-
-	/* This can't be right! Ego will walk backwards if this sequence of commands 
-    * Is issued (go right room, return to left room */
-	/* ?? vt.direction = 0;  */ 
-}
-
-
-void cmd_menu_input ()
-{
-	_D (_D_WARN "activating menu");
-	new_input_mode (INPUT_MENU);
-}
-
-
-void cmd_enable_item (UINT8 event)
-{
-	menu_set_item (event, TRUE);
-}
-
-
-void cmd_disable_item (UINT8 event)
-{
-	menu_set_item (event, FALSE);
-}
-
-
-void cmd_unk_170 ()
-{
-#ifdef DISPLAY_DUDCODE
-	message_box (logic_names_cmd[170].name);
 #endif
 }
 
 
-void cmd_unk_171 ()
+static void (*agi_command[182])(UINT8 *) = {
+	NULL,				/* 0x00 */
+	cmd_inc,
+	cmd_dec,
+	cmd_assign,
+	cmd_assign_v,
+	cmd_add,
+	cmd_add_v,
+	cmd_sub,
+	cmd_sub_v,			/* 0x08 */
+	cmd_lindirect_v,
+	cmd_rindirect,
+	cmd_lindirect,
+	cmd_set,
+	cmd_reset,
+	cmd_toggle,
+	cmd_set_v,
+	cmd_reset_v,			/* 0x10 */
+	cmd_toggle_v,
+	cmd_new_room,
+	cmd_new_room_v,
+	cmd_load_logic,
+	cmd_load_logic_v,
+	cmd_call,
+	cmd_call_v,
+	cmd_load_pic,			/* 0x18 */
+	cmd_draw_pic,
+	cmd_show_pic,
+	cmd_discard_pic,
+	cmd_overlay_pic,
+	cmd_show_pri_screen,
+	cmd_load_view,
+	cmd_load_view_v,
+	cmd_discard_view,		/* 0x20 */
+	cmd_animate_obj,
+	cmd_unanimate_all,
+	cmd_draw,
+	cmd_erase,
+	cmd_position,
+	cmd_position_v,
+	cmd_get_posn,
+	cmd_reposition,			/* 0x28 */
+	cmd_set_view,
+	cmd_set_view_v,
+	cmd_set_loop,
+	cmd_set_loop_v,
+	cmd_fix_loop,
+	cmd_release_loop,
+	cmd_set_cel,
+	cmd_set_cel_v,			/* 0x30 */
+	cmd_last_cel,
+	cmd_cur_cel,
+	cmd_cur_loop,
+	cmd_cur_view,
+	cmd_set_num_loops,
+	cmd_set_priority,
+	cmd_set_priority_v,
+	cmd_release_priority,		/* 0x38 */
+	cmd_get_priority,
+	cmd_stop_update,
+	cmd_start_update,
+	cmd_force_update,
+	cmd_ignore_horizon,
+	cmd_observe_horizon,
+	cmd_set_horizon,
+	cmd_object_on_water,		/* 0x40 */
+	cmd_object_on_land,
+	cmd_object_on_any,
+	cmd_ignore_objs,
+	cmd_observe_objs,
+	cmd_distance,
+	cmd_stop_cycling,
+	cmd_start_cycling,
+	cmd_normal_cycle,		/* 0x48 */
+	cmd_end_of_loop,
+	cmd_reverse_cycle,
+	cmd_reverse_loop,
+	cmd_cycle_time,
+	cmd_stop_motion,
+	cmd_start_motion,
+	cmd_step_size,
+	cmd_step_time,			/* 0x50 */
+	cmd_move_obj,
+	cmd_move_obj_v,
+	cmd_follow_ego,
+	cmd_wander,
+	cmd_normal_motion,
+	cmd_set_dir,
+	cmd_get_dir,
+	cmd_ignore_blocks,		/* 0x58 */
+	cmd_observe_blocks,
+	cmd_block,
+	cmd_unblock,
+	cmd_get,
+	cmd_get_v,
+	cmd_drop,
+	cmd_put,
+	cmd_put_v,			/* 0x60 */
+	cmd_get_room_v,
+	cmd_load_sound,
+	cmd_play_sound,
+	cmd_stop_sound,
+	cmd_print,
+	cmd_print_v,
+	cmd_display,
+	cmd_display_v,			/* 0x68 */
+	cmd_clear_lines,
+	cmd_text_mode,
+	cmd_graphics_mode,
+	cmd_set_cursor_char,
+	cmd_set_text_attr,
+	cmd_shake_screen,
+	cmd_config_screen,
+	cmd_status_line_on,		/* 0x70 */
+	cmd_status_line_off,
+	cmd_set_string,
+	cmd_get_string,
+	cmd_word_to_string,
+	cmd_parse,
+	cmd_get_num,
+	cmd_prevent_input,
+	cmd_accept_input,		/* 0x78 */
+	cmd_set_key,
+	cmd_add_to_pic,
+	cmd_add_to_pic_v,
+	cmd_status,
+	cmd_save_game,
+	cmd_load_game,
+	cmd_init_disk,
+	cmd_restart_game,		/* 0x80 */
+	cmd_show_obj,
+	cmd_rand_num,
+	cmd_program_control,
+	cmd_player_control,
+	cmd_obj_status_v,
+	cmd_quit,
+	cmd_show_mem,
+	cmd_pause,			/* 0x88 */
+	cmd_echo_line,
+	cmd_cancel_line,
+	cmd_init_joystick,
+	cmd_toggle_monitor,
+	cmd_version,
+	cmd_script_size,
+	cmd_set_game_id,
+	cmd_log,			/* 0x90 */
+	cmd_set_scan_start,
+	cmd_reset_scan_start,
+	cmd_reposition_to,
+	cmd_reposition_to_v,
+	cmd_trace_on,
+	cmd_trace_info,
+	cmd_print_at,
+	cmd_print_at_v,			/* 0x98 */
+	cmd_discard_view,
+	cmd_clear_text_rect,
+	cmd_set_upper_left,
+	cmd_set_menu,
+	cmd_set_menu_item,
+	cmd_submit_menu,
+	cmd_enable_item,
+	cmd_disable_item,		/* 0xa0 */
+	cmd_menu_input,	
+	cmd_show_obj /*_v*/,	/* *** FIXME *** */
+	cmd_open_dialogue,
+	cmd_close_dialogue,
+	cmd_mul,
+	cmd_mul_v,
+	cmd_div,
+	cmd_div_v,			/* 0xa8 */
+	cmd_close_window,
+	cmd_unk_170,
+	cmd_unk_171,
+	cmd_unk_172,
+	cmd_unk_173,
+	cmd_unk_174,
+	cmd_unk_175,
+	cmd_unk_176,
+	cmd_unk_177,
+	cmd_unk_178,
+	cmd_unk_179,
+	cmd_unk_180,
+	cmd_unk_181
+};
+
+
+#define CMD_BSIZE 12
+
+int run_logic (int n)
 {
-#ifdef DISPLAY_DUDCODE
-	message_box (logic_names_cmd[171].name);
-#endif
-}
-
-
-void cmd_unk_172 ()
-{
-#ifdef DISPLAY_DUDCODE
-	message_box (logic_names_cmd[172].name);
-#endif
-}
-
-
-void cmd_unk_173 ()
-{
-#ifdef DISPLAY_DUDCODE
-	message_box (logic_names_cmd[173].name);
-#endif
-}
-
-
-void cmd_unk_174 ()
-{
-#ifdef DISPLAY_DUDCODE
-	message_box (logic_names_cmd[174].name);
-#endif
-}
-
-
-void cmd_unk_175 ()
-{
-#ifdef DISPLAY_DUDCODE
-	message_box (logic_names_cmd[175].name);
-#endif
-}
-
-
-void cmd_unk_176 ()
-{
-#ifdef DISPLAY_DUDCODE
-	message_box (logic_names_cmd[176].name);
-#endif
-}
-
-
-void cmd_unk_177 ()
-{
-#ifdef DISPLAY_DUDCODE
-	message_box (logic_names_cmd[177].name);
-#endif
-}
-
-
-void cmd_unk_178 ()
-{
-#ifdef DISPLAY_DUDCODE
-	message_box (logic_names_cmd[178].name);
-#endif
-}
-
-
-void cmd_unk_179 ()
-{
-#ifdef DISPLAY_DUDCODE
-	message_box (logic_names_cmd[179].name);
-#endif
-}
-
-
-void cmd_unk_180 ()
-{
-#ifdef DISPLAY_DUDCODE
-	message_box (logic_names_cmd[180].name);
-#endif
-}
-
-
-void cmd_unk_181 ()
-{
-#ifdef DISPLAY_DUDCODE
-	message_box (logic_names_cmd[181].name);
-#endif
-}
-
-
-void cmd_set_string (UINT8 logic, UINT8 str, UINT8 txt)
-{
-	_D ("(%d, %d, %d)", logic, str, txt);
-	txt--;
-
-	/* CM: to avoid crash in Groza (str = 150) */
-	if (str > MAX_WORDS1)
-		return;
-
-	strcpy (game.strings[str], logics[logic].texts[txt]);
-}
-
-
-void cmd_save_game ()
-{
-	savegame_dialog ();
-}
-
-
-void cmd_load_game ()
-{
-	loadgame_dialog ();
-}
-
-
-void cmd_init_disk ()
-{
-}
-
-
-void cmd_restart_game ()
-{
-	/* implement restart game */
-	save_screen ();
-	textbox ("Press ENTER to restart the game.\n"
-		"Press ESC to continue this game.", -1, -1, 24);
-	switch (wait_key ()) {
-	case 0x0A:
-	case 0x0D:
-		game.quit_prog_now = 0xFF;
-		setflag (F_restart_game, TRUE);
-		break;
-	default:
-		break;
-	}
-	restore_screen ();
-}
-
-
-void cmd_show_pri_screen ()
-{
-	save_screen ();
-	dump_x_screen ();
-	wait_key ();
-	restore_screen ();
-	/* MK: Doesn't seem to be necessary.
-	 * update_status_line (TRUE);
-	 */
-}
-
-void cmd_discard_view (UINT8 vw)
-{
-	agi_unload_resource (rVIEW, vw);
-}
-
-
-void cmd_set_scan_start (UINT8 logic, UINT16 xip)
-{
-	_D (_D_WARN "%d:sIP = %d", logic, xip);
-	logics[logic].sIP = xip;
-}
-
-
-void cmd_reset_scan_start (UINT8 logic)
-{
-	logics[logic].sIP = 2;
-	_D (_D_WARN "%d:sIP = %d", logic, logics[logic].sIP);
-}
-
-
-void cmd_log ()
-{
-}
-
-
-void cmd_set_game_id (UINT8 logic, UINT8 msg)
-{
-#if 0
-	if (gid != NULL)
-		free (gid);
-#endif
-
-	if (logics[logic].texts && (msg - 1) <= logics[logic].num_texts)
-		strncpy (game.id, logics[logic].texts[msg - 1], 8);
-	else
-		game.id[0] = 0;
-
-	report ("Game ID: \"%s\"\n", game.id);
-}
-
-
-void cmd_toggle_monitor ()
-{
-	report ("Nani?! You want to toggle your monitor?\n");
-}
-
-
-void cmd_init_joystick ()
-{
-	report ("Nan desu ka... Joystick not implemented yet.\n");
-}
-
-
-void cmd_script_size (UINT8 n)
-{
-	report ("Not implemented: script.size (%d)\n", n);
-}
-
-
-void cmd_echo_line ()
-{
-	report ("Not implemented: echo.line ()\n");
-}
-
-
-void cmd_cancel_line ()
-{
-	report ("Not implemented: cancel.line ()\n");
-}
-
-
-void cmd_pause ()
-{
-	int clock;
-
-	clock = game.clock_enabled;
-	game.clock_enabled = FALSE;
-	message_box ("    Game is Paused.\nPress ENTER to continue.");
-	game.clock_enabled = clock;
-}
-
-
-void cmd_submit_menu ()
-{
-	_D ("()");
-	submit_menu ();
-}
-
-
-void cmd_set_menu (UINT8 logic, UINT8 msg)
-{
-	_D ("(%d, %d)", logic, msg);
-	if (logics[logic].texts != NULL && (msg - 1) <= logics[logic].num_texts)
-		add_menu (logics[logic].texts[msg - 1]);
-}
-
-
-void cmd_set_menu_item (UINT8 logic, UINT8 msg, UINT8 cont)
-{
-	_D ("(%d, %d, %d)", logic, msg, cont);
-	if (logics[logic].texts != NULL && (msg - 1) <= logics[logic].num_texts)
-		add_menu_item (logics[logic].texts[msg - 1], cont);
-}
-
-
-void cmd_mul (UINT8 var, UINT8 val)
-{
-	setvar (var, getvar (var) * val);
-}
-
-
-void cmd_div (UINT8 var, UINT8 val)
-{
-	setvar (var, val ? getvar (var) / val : 0);
-}
-
-
-void cmd_rand_num (UINT8 n0, UINT8 n1, UINT8 var)
-{
-	setvar (var, rnd (1 + (n1 - n0)) + n0);
-}
-
-
-void cmd_load_pic (UINT8 pic)
-{
-	_D("(pic = %d)", pic);
-	agi_load_resource (rPICTURE, getvar (pic));
-}
-
-
-extern int greatest_kludge_of_all_time;
-
-void cmd_draw_pic (UINT8 pic)
-{
-	_D (_D_WARN "(pic = %d)", getvar(pic));
-	pic_clear_flag = TRUE;
-	decode_picture (getvar (pic));
-	/* CM: needed for nonblocking window removal
-	 */
-	window_nonblocking = 0;
-	greatest_kludge_of_all_time = 1;
-}
-
-
-void cmd_overlay_pic (UINT8 pic)
-{
-	pic_clear_flag = FALSE;
-	decode_picture (getvar (pic));
-	pic_clear_flag = TRUE;
-}
-
-
-void cmd_show_pic ()
-{
-	dump_screenX ();
-	greatest_kludge_of_all_time = 0;
-	put_screen ();
-	update_status_line (TRUE);
-}
-
-
-void cmd_discard_pic ()
-{
-}
-
-
-void cmd_version ()
-{
-	/* FIXME */
-	char ver_msg[] = TITLE " v" VERSION;
-	char ver2_msg[] =
-			"\n"
-			"                             \n\n"
-        	"Emulating Sierra AGI v%x.%03x\n";
-	char ver3_msg[]=
-    		"\n"
-       		"                             \n\n"
-       		"  Emulating AGI v%x.002.%03x\n";
-		/* no Sierra as it wraps textbox */
-	char *p, *q;
-	int ver, maj, min;
-
-	ver = agi_get_release ();
-	maj = (ver >> 12) & 0xf;
-	min = ver & 0xfff;
-
-	q = maj == 2 ? ver2_msg : ver3_msg;
-	p = strchr (q+1, '\n');
-
-	strncpy (q+1 + ((p-q>0 ? p-q : 1)/4), ver_msg, strlen (ver_msg));
-	message_box (q, maj, min);
-}
-
-
-/* FIXME: change to array of function pointers? */
-void execute_agi_command (UINT8 op, UINT16 lognum, UINT8 *p)
-{
-	switch (op) {
-	case 0x01:				/* inc */
-		cmd_inc (p[0]);
-		break;
-	case 0x02:				/* dec */
-		cmd_dec (p[0]);
-		break;
-	case 0x03:				/* assign.n */
-		cmd_assign (p[0], p[1]);
-		break;
-	case 0x04:				/* assign.v */
-		cmd_assign (p[0], getvar (p[1]));
-		break;
-	case 0x05:				/* add.n */
-		cmd_add (p[0], p[1]);
-		break;
-	case 0x06:				/* add.v */
-		cmd_add (p[0], getvar (p[1]));
-		break;
-	case 0x07:				/* sub.n */
-		cmd_sub (p[0], p[1]);
-		break;
-	case 0x08:				/* sub.v */
-		cmd_sub (p[0], getvar (p[1]));
-		break;
-	case 0x09:				/* lindirect.v */
-		cmd_lindirect (p[0], getvar (p[1]));
-		break;
-	case 0x0A:				/* ridirect */
-		/* FR
-		 * According to the specs, should be : v30 = *v31
-		 */
-		cmd_rindirect (p[0], getvar (p[1]));
-		break;
-	case 0x0B:				/* lindirect.n */
-		cmd_lindirect (p[0], p[1]);
-		break;
-	case 0x0C:				/* set */
-		cmd_set (p[0]);
-		break;
-	case 0x0D:				/* reset */
-		cmd_reset (p[0]);
-		break;
-	case 0x0E:				/* toggle */
-		cmd_toggle (p[0]);
-		break;
-	case 0x0F:				/* set.v */
-		cmd_set (getvar (p[0]));
-		break;
-	case 0x10:				/* reset.v */
-		cmd_reset (getvar (p[0]));
-		break;
-	case 0x11:				/* toggle.v */
-		cmd_toggle (getvar (p[0]));
-		break;
-	case 0x12:				/* new.room */
-		cmd_new_room (p[0]);
-		break;
-	case 0x13:				/* new.room.v */
-		cmd_new_room (getvar (p[0]));
-		break;
-	case 0x14:				/* load.logic */
-		cmd_load_logic (p[0]);
-		break;
-	case 0x15:				/* load.logic.v */
-		cmd_load_logic (getvar (p[0]));
-		break;
-	case 0x16:				/* call */
-		cmd_call (p[0]);
-		break;
-	case 0x17:				/* call.v */
-		cmd_call (getvar (p[0]));
-		break;
-	case 0x18:				/* load pic */
-		cmd_load_pic (p[0]);
-		break;
-	case 0x19:				/* show pic */
-		_D (_D_WARN "-----------------------");
-		cmd_draw_pic (p[0]);
-		break;
-	case 0x1A:				/* show pic */
-		cmd_show_pic ();
-		break;
-	case 0x1B:				/* discard pic */
-		cmd_discard_pic ();
-		break;
-	case 0x1C:				/* overlay pic */
-		cmd_overlay_pic (p[0]);
-		break;
-	case 0x1D:				/* show priority */
-		cmd_show_pri_screen ();
-		break;
-	case 0x1E:				/* load.view */
-   		cmd_load_view (p[0]);
-		break;
-	case 0x1F:				/* load.view.v */
-   		cmd_load_view (getvar (p[0]));
-		break;
-	case 0x20:				/* discard view */
-		cmd_discard_view (p[0]);
-		break;
-	case 0x21:				/* animate obj */
-		cmd_animate_obj (p[0]);
-		break;
-	case 0x22:				/* stop all anim */
-		cmd_unanimate_all ();
-		break;
-	case 0x23:				/* draw */
-		cmd_draw (p[0]);
-		break;
-	case 0x24:				/* erase */
-		cmd_erase (p[0]);
-		break;
-	case 0x25:				/* position */
-		cmd_position (p[0], p[1], p[2]);
-		break;
-	case 0x26:				/* position.v */
-		cmd_position (p[0], getvar (p[1]), getvar (p[2]));
-		break;
-	case 0x27:				/* get position */
-		cmd_get_posn (p[0], p[1], p[2]);
-		break;
-	case 0x28:				/* set position */
-		cmd_reposition (p[0], p[1], p[2]);
-		break;
-	case 0x29:				/* set.view */
-		cmd_set_view (p[0], p[1]);
-		break;
-	case 0x2A:				/* set.view.v */
-		cmd_set_view (p[0], getvar (p[1]));
-		break;
-	case 0x2B:				/* set.loop */
-		cmd_set_loop (p[0], p[1]);
-		break;
-	case 0x2C:				/* set.loop.v */
-		cmd_set_loop (p[0], getvar (p[1]));
-		break;
-	case 0x2D:				/* fix loop */
-		cmd_fix_loop (p[0]);
-		break;
-	case 0x2E:				/* release loop */
-		cmd_release_loop (p[0]);
-		break;
-	case 0x2F:				/* set cel */
-		cmd_set_cel (p[0], p[1]);
-		break;
-	case 0x30:				/* set cel v */
-		cmd_set_cel (p[0], getvar (p[1]));
-		break;
-	case 0x31:				/* set last cel */
-		cmd_last_cel (p[0], p[1]);
-		break;
-	case 0x32:				/* set cur cel */
-		cmd_cur_cel (p[0], p[1]);
-		break;
-	case 0x33:				/* set cur loop */
-		cmd_cur_loop (p[0], p[1]);
-		break;
-	case 0x34:				/* set cur view */
-		cmd_cur_view (p[0], p[1]);
-		break;
-	case 0x35:				/* set num loops */
-		cmd_set_num_loops (p[0], p[1]);
-		break;
-	case 0x36:				/* set pri */
-		cmd_set_priority (p[0], p[1]);
-		break;
-	case 0x37:				/* set priv*/
-		cmd_set_priority (p[0], getvar (p[1]));
-		break;
-	case 0x38:				/* release priority */
-		cmd_release_priority (p[0]);
-		break;
-	case 0x39:				/* get priority */
-		cmd_get_priority (p[0], p[1]);
-		break;
-	case 0x3A:				/* stop update */
-		cmd_stop_update (p[0]);
-		break;
-	case 0x3B:				/* start update */
-		cmd_start_update (p[0]);
-		break;
-	case 0x3C:				/* force update */
-		cmd_force_update (p[0]);
-		break;
-	case 0x3D:				/* ignore horizon */
-		cmd_ignore_horizon (p[0]);
-		break;
-	case 0x3E:				/* obsv horizon */
-		cmd_observe_horizon (p[0]);
-		break;
-	case 0x3F:				/* set horizon */
-		cmd_set_horizon (p[0]);
-		break;
-	case 0x40:				/* obj on water */
-		cmd_object_on_water (p[0]);
-		break;
-	case 0x41:				/* obj on land */
-		cmd_object_on_land (p[0]);
-		break;
-	case 0x42:				/* obj on any */
-		cmd_object_on_any (p[0]);
-		break;
-	case 0x43:				/* ignore objs */
-		cmd_ignore_objs (p[0]);
-		break;
-	case 0x44:				/* objserve objs */
-		cmd_observe_objs (p[0]);
-		break;
-	case 0x45:				/* distance */
-		cmd_distance (p[0], p[1], p[2]);
-		break;
-	case 0x46:				/* stop cycle */
-		cmd_stop_cycling (p[0]);
-		break;
-	case 0x47:				/* start cycle */
-		cmd_start_cycling (p[0]);
-		break;
-	case 0x48:				/* normal cycle */
-		cmd_normal_cycling (p[0]);
-		break;
-	case 0x49:				/* end of loop */
-		cmd_end_of_loop (p[0], p[1]);
-		break;
-	case 0x4A:				/* reverse cycle */
-		cmd_reverse_cycle (p[0]);
-		break;
-	case 0x4B:				/* reverse loop */
-		cmd_reverse_loop (p[0], p[1]);
-		break;
-	case 0x4C:				/* cycle time */
-		cmd_cycle_time (p[0], p[1]);
-		break;
-	case 0x4D:				/* stop motion */
-		cmd_stop_motion (p[0]);
-		break;
-	case 0x4E:				/* start motion */
-		cmd_start_motion (p[0]);
-		break;
-	case 0x4F:				/* step size */
-		cmd_step_size (p[0], p[1]);
-		break;
-	case 0x50:				/* step time */
-		cmd_step_time (p[0], p[1]);
-		break;
-	case 0x51:				/* move obj */
-		cmd_move_obj (p[0], p[1], p[2], p[3], p[4]);
-		break;
-	case 0x52:				/* move objv */
-		cmd_move_obj (p[0], getvar (p[1]),
-			getvar (p[2]), getvar (p[3]), p[4]);
-		break;
-	case 0x53:				/* follow ego */
-		cmd_follow_ego (p[0], p[1], p[2]);
-		break;
-	case 0x54:				/* wander */
-		cmd_wander (p[0]);
-		break;
-	case 0x55:				/* normal motion */
-		cmd_norm_motion (p[0]);
-		break;
-	case 0x56:				/* set dir */
-		cmd_set_dir (p[0], p[1]);
-		break;
-	case 0x57:				/* get dir */
-		cmd_get_dir (p[0], p[1]);
-		break;
-	case 0x58:				/* ignore blocks */
-		cmd_ignore_blocks (p[0]);
-		break;
-	case 0x59:				/* obsrve blocks */
-		cmd_observe_blocks (p[0]);
-		break;
-	case 0x5A:				/* block */
-		cmd_block (p[0], p[1], p[2], p[3]);
-		break;
-	case 0x5B:				/* unblock */
-		cmd_unblock ();
-		break;
-	case 0x5C:				/* get */
-		cmd_get (p[0]);
-		break;
-	case 0x5D:				/* getv */
-		cmd_get (getvar (p[0]));
-		break;
-	case 0x5E:				/* drop */
-		cmd_drop (p[0]);
-		break;
-	case 0x5F:				/* put */
-		cmd_put (p[0], p[1]);
-		break;
-	case 0x60:				/* putv */
-		cmd_put (p[0], getvar (p[1]));
-		break;
-	case 0x61:				/* get roomv */
-		cmd_get_roomv (p[0], p[1]);
-		break;
-	case 0x62:				/* load sound */
-		cmd_load_sound (p[0]);
-		break;
-	case 0x63:				/* play sound */
-		cmd_play_sound (p[0], p[1]);
-		break;
-	case 0x64:				/* stop sound */
-		cmd_stop_sound ();
-		break;
-	case 0x65:				/* print */
-		cmd_print (lognum, p[0]);
-		break;
-	case 0x66:				/* printv */
-		cmd_print (lognum, getvar (p[0]));
-		break;
-	case 0x67:				/* display */
-		cmd_display (lognum, p[0], p[1], p[2]);
-		break;
-	case 0x68:				/* displayv */
-		cmd_display (lognum, getvar (p[0]),
-			getvar (p[1]), getvar (p[2]));
-		break;
-	case 0x69:				/* clear lines */
-		cmd_clear_lines (p[0], p[1], p[2]);
-		break;
-	case 0x6A:				/* text mode */
-		cmd_txt ();
-		break;
-	case 0x6B:				/* graphics */
-		cmd_gfx ();
-		break;
-	case 0x6C:				/* cursor char */
-		cmd_set_cur_char (lognum, p[0]);
-		break;
-	case 0x6D:				/* text attribute */
-		cmd_set_text_attr (p[0], p[1]);
-		break;
-	case 0x6E:				/* shake screen */
-		cmd_shake_screen (p[0]);
-		break;
-	case 0x6F:				/* config screen */
-		cmd_config_screen (p[0], p[1], p[2]);
-		break;
-	case 0x70:				/* status on */
-		cmd_status_line_on ();
-		break;
-	case 0x71:				/* status off */
-		cmd_status_line_off ();
-		break;
-	case 0x72:				/* set string */
-		cmd_set_string (lognum, p[0], p[1]);
-		break;
-	case 0x73:				/* get string */
-		cmd_get_string (lognum, p[0], p[1], p[2], p[3], p[4]);
-		break;
-	case 0x74:				/* word 2 string */
-		cmd_word_to_string (p[0], p[1]);
-		break;
-	case 0x75:				/* parse */
-		cmd_parse (lognum, p[0]);
-		break;
-	case 0x76:				/* get number */
-		cmd_get_num (lognum, p[0], p[1]);
-		break;
-	case 0x77:				/* stop input */
-		cmd_stop_input ();
-		break;
-	case 0x78:				/* accept input */
-		cmd_accept_input ();
-		break;
-	case 0x79:				/* set key */
-		cmd_set_key (p[0], p[1], p[2]);
-		break;
-	case 0x7A:				/* add.to.pic */
-		cmd_add_to_pic (p[0], p[1], p[2], p[3], p[4], p[5], p[6]);
-		break;
-	case 0x7B:				/* add.to.pic.v */
-		cmd_add_to_pic (getvar (p[0]), getvar (p[1]),
-			getvar (p[2]), getvar (p[3]), getvar (p[4]),
-			getvar (p[5]), getvar (p[6]));
-		break;
-	case 0x7C:				/* status */
-		cmd_status ();
-		break;
-	case 0x7D:				/* save game */
-		cmd_save_game ();
-		break;
-	case 0x7E:				/* load game */
-		cmd_load_game ();
-		break;
-	case 0x7F:				/* init disk */
-		cmd_init_disk ();
-		break;
-	case 0x80:				/* restart */
-		cmd_restart_game ();
-		break;
-	case 0x81:				/* show object */
-		cmd_show_obj (p[0]);
-		break;
-	case 0x82:				/* random */
-		cmd_rand_num (p[0], p[1], p[2]);
-		break;
-	case 0x83:				/* prog control */
-		cmd_prog_control ();
-		break;
-	case 0x84:				/* ego control */
-		cmd_ego_control ();
-		break;
-	case 0x85:				/* obj status v */
-		cmd_obj_statusv ();
-		break;
-	case 0x86:				/* quit */
-		if (logic_names_cmd[0x86].num_args == 0)
-			cmd_quit (1);
-		else
-			cmd_quit (p[0]);
-		break;
-	case 0x87:				/* show mem */
-		cmd_show_mem ();
-		break;
-	case 0x88:				/* pause */
-		cmd_pause ();
-		break;
-	case 0x89:				/* echo line */
-		cmd_echo_line ();
-		break;
-	case 0x8A:				/* cancle line */
-		cmd_cancel_line ();
-		break;
-	case 0x8B:				/* joystick */
-		cmd_init_joystick ();
-		break;
-	case 0x8C:				/* toggle monitor */
-		cmd_toggle_monitor ();
-		break;
-	case 0x8D:				/* version */
-		cmd_version ();
-		break;
-	case 0x8E:				/* script size */
-		cmd_script_size (p[0]);
-		break;
-	case 0x8F:				/* game id */
-		cmd_set_game_id (lognum, p[0]);
-		break;
-	case 0x90:				/* log */
-		cmd_log ();
-		break;
-	case 0x91:				/* set start */
-		cmd_set_scan_start (lognum, ip +
-			logic_names_cmd[op].num_args);
-		break;
-	case 0x92:				/* reset start */
-		cmd_reset_scan_start (lognum);
-		break;
-	case 0x93:				/* repos */
-		cmd_repos_to (p[0], p[1], p[2]);
-		break;
-	case 0x94:				/* repos v */
-		cmd_repos_to (p[0], getvar (p[1]), getvar (p[2]));
-		break;
-	case 0x95:				/* trace on */
-		cmd_trace_on ();
-		break;
-	case 0x96:				/* trace info */
-		cmd_trace_info ();
-		break;
-	case 0x97:				/* print at */
-		if (logic_names_cmd[0x97].num_args==3)
-			cmd_print_at (lognum, p[0], p[1], p[2], 0);
-		else
-			cmd_print_at (lognum, p[0], p[1], p[2], p[3]);
-		break;
-	case 0x98:				/* print at v */
-		if (logic_names_cmd[0x98].num_args == 3)
-			cmd_print_at (lognum, getvar (p[0]),
-				p[1], p[2], 0);
-		else
-			cmd_print_at (lognum, getvar (p[0]),
-				p[1], p[2], p[3]);
-		break;
-	case 0x99:				/* discard view v */
-		cmd_discard_view (getvar (p[0]));
-		break;
-	case 0x9A:				/* clr text rect */
-		cmd_clear_text_rect (p[0], p[1], p[2], p[3], p[4]);
-		break;
-	case 0x9B:				/* upper left */
-		cmd_set_upper_left ();
-		break;
-	case 0x9C:				/* set menu */
-		cmd_set_menu (lognum, p[0]);
-		break;
-	case 0x9D:				/* set menu item */
-		cmd_set_menu_item (lognum, p[0], p[1]);
-		break;
-	case 0x9E:				/* submit menu */
-		cmd_submit_menu ();
-		break;
-	case 0x9F:				/* enable menu */
-		cmd_enable_item (p[0]);
-		break;
-	case 0xA0:				/* disable menu */
-		cmd_disable_item (p[0]);
-		break;
-	case 0xA1:				/* menu input */
-		cmd_menu_input ();
-		break;
-	case 0xA2:				/* show.object.v */
-		cmd_show_obj (getvar (p[0]));
-		break;
-	case 0xA3:				/* open dialogue */
-		cmd_open_dialogue ();
-		break;
-	case 0xA4:				/* close dialogue */
-		cmd_close_dialogue ();
-		break;
-	case 0xA5:				/* muln */
-		cmd_mul (p[0], p[1]);
-		break;
-	case 0xA6:				/* mulv */
-		cmd_mul (p[0], getvar (p[1]));
-		break;
-	case 0xA7:				/* divn */
-		cmd_div (p[0], p[1]);
-		break;
-	case 0xA8:				/* divv */
-		cmd_div (p[0], getvar (p[1]));
-		break;
-	case 0xA9:				/* close window */
-		cmd_close_window ();
-		break;
-	case 0xAA:
-		cmd_unk_170 ();
-		break;
-	case 0xAB:
-		cmd_unk_171 ();
-		break;
-	case 0xAC:
-		cmd_unk_172 ();
-		break;
-	case 0xAD:
-		cmd_unk_173 ();
-		break;
-	case 0xAE:
-		cmd_unk_174 ();
-		break;
-	case 0xAF:
-		cmd_unk_175 ();
-		break;
-	case 0xB0:
-		cmd_unk_176 ();
-		break;
-	case 0xB1:
-		cmd_unk_177 ();
-		break;
-	case 0xB2:
-		cmd_unk_178 ();
-		break;
-	case 0xB3:
-		cmd_unk_179 ();
-		break;
-	case 0xB4:
-		cmd_unk_180 ();
-		break;
-	case 0xB5:
-		cmd_unk_181 ();
-		break;
-	}
-}
-
-
-void run_logic (int lognum)
-{
-	UINT16	saved_ip;
-	UINT16	last_ip;
-	UINT8	op;
-	UINT8	p[16];
+	UINT8 op, p[CMD_BSIZE];
+	UINT8 *code;
+	int num;
 
 	/* If logic not loaded, load it */
-	if (~game.dir_logic[lognum].flags & RES_LOADED) {
-		agi_load_resource (rLOGIC, lognum);
-#ifdef DISABLE_COPYPROTECTION
-		break_copy_protection (lognum);
-#endif
+	if (~game.dir_logic[n].flags & RES_LOADED) {
+		_D (_D_WARN "logic %d not loaded!", n);
+		agi_load_resource (rLOGIC, n);
 	}
 
-	if (getflag (F_new_room_exec)) {
-		_D (_D_WARN "new room, horizon = %d", game.horizon);
-		if (view_table[EGO_VIEW_TABLE].y_pos <= game.horizon)
-			view_table[EGO_VIEW_TABLE].y_pos = game.horizon + 1;
-	}
+	cur_logic = &game.logics[n];
 
-	saved_ip = logics[lognum].cIP;
-	logics[lognum].cIP = logics[lognum].sIP;
-	last_ip = ip;
+	code = cur_logic->data;
+	cur_logic->cIP = cur_logic->sIP;
 
-	while (ip < logics[lognum].size && !game.quit_prog_now) {
+	while (ip < game.logics[n].size && !game.quit_prog_now) {
 #ifdef USE_CONSOLE
 		if (debug.enabled) {
 			if (debug.steps > 0) {
-				if (debug.logic0 || lognum) {
-					debug_console (lognum,
+				if (debug.logic0 || n) {
+					debug_console (n,
 						lCOMMAND_MODE, NULL);
 					debug.steps--;
 				}
 			} else {
-				redraw_sprites ();
+				blit_both ();
 				console_prompt ();
 				do {
 					main_cycle ();
 				} while (!debug.steps && debug.enabled);
 				console_lock ();
-				release_sprites ();
+				erase_both ();
 			}
 		}
 #endif
 
-		last_ip = ip;
-		op = *(code + ip++);
-
-		memmove (&p, (code + ip), 16);
-
-		switch (op) {
+		switch (op = *(code + ip++)) {
 		case 0xff:			/* if (open/close) */
-			test_if_code (lognum);
+			test_if_code (n);
 			break;
 		case 0xfe:			/* goto */
-			ip += 2 + ((SINT16)lohi_getword (code+ip));	/* +2 covers goto size*/
+			ip += 2 + ((SINT16)lohi_getword (code + ip));
+			/* +2 covers goto size */
 			break;
 		case 0x00:			/* return */
-			return;
+			return 1;
 		default:
-			execute_agi_command (op, lognum, p);
-			ip += logic_names_cmd[op].num_args;
+			num = logic_names_cmd[op].num_args;
+			memmove (p, code + ip, num);
+			memset (p + num, 0, CMD_BSIZE - num);
+			agi_command[op](p);
+			ip += num;
 		}
 
 		if (game.exit_all_logics)
 			break;
 	}
+
+	return 0;	/* after executing new.room() */
 }
+
+
+void execute_agi_command (UINT8 op, UINT8 *p)
+{
+	agi_command[op](p);
+}
+

@@ -11,24 +11,15 @@
 #ifndef __AGI_CONSOLE_H
 #define __AGI_CONSOLE_H
 
+#ifdef	__cplusplus
+extern "C" {
+#endif
+
 #ifdef USE_CONSOLE
 
-#define CONSOLE_LINES_ONSCREEN	20
-#define CONSOLE_LINES_BUFFER	128
-#define CONSOLE_PROMPT		"$"
-#define CONSOLE_CURSOR_HOLLOW	1
-#define CONSOLE_CURSOR_SOLID	2
-#define CONSOLE_CURSOR_EMPTY	3
-#define CONSOLE_COLOR		14
-
+#define CONSOLE_LINES_BUFFER    128
 #define	CONSOLE_ACTIVATE_KEY	'`'
 #define CONSOLE_SWITCH_KEY	'~'
-#define CONSOLE_SCROLLUP_KEY	KEY_PGUP
-#define CONSOLE_SCROLLDN_KEY	KEY_PGDN
-#define CONSOLE_START_KEY	KEY_HOME
-#define CONSOLE_END_KEY		KEY_END
-
-#define CONSOLE_INPUT_SIZE	39
 
 struct sarien_console {
 	int active;
@@ -40,15 +31,13 @@ struct sarien_console {
 	char *line[CONSOLE_LINES_BUFFER];
 };
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
-
-
-#ifdef __cplusplus
-}
-#endif
-
+struct sarien_debug {
+	int enabled;
+	int opcodes;
+	int logic0;
+	int steps;
+	int priority;
+};
 
 extern struct sarien_console console;
 
@@ -60,5 +49,9 @@ void	console_cycle	(void);
 void	console_lock	(void);
 void	console_prompt	(void);
 void	report		(char *, ...);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* __AGI_CONSOLE_H */

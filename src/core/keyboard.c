@@ -14,12 +14,9 @@
 
 #include "sarien.h"
 #include "agi.h"
-#include "gfx_base.h"
+#include "graphics.h"
 #include "keyboard.h"
-#include "view.h"
 #include "menu.h"
-#include "opcodes.h"	/* remove later */
-#include "console.h"
 #include "text.h"	/* remove later */
 
 UINT8  buffer[40];
@@ -28,8 +25,6 @@ UINT8  last_sentence[40];
 #ifdef USE_CONSOLE
 extern struct sarien_console console;
 #endif
-
-extern struct agi_view_table view_table[];
 
 /* FIXME */
 extern int open_dialogue;
@@ -105,80 +100,6 @@ void get_string (int x, int y, int len, int str)
 }
 
 
-/* Called if ego enters a new room */
-/* FIXME: remove lowlevel print_text call! */
-
-void print_line_prompt ()
-{
-	int k;
-
-	if (game.input_mode == INPUT_NORMAL) {
-		/* Command prompt */
-
-      		print_text (agi_printf (game.strings[0], 0), 0, 0,
-    			game.line_user_input * CHAR_LINES, 40, txt_fg, txt_bg );
-
-
-    		/* internal keyboard buffer */
-    		for (k = 0; buffer[k]; k++) {
-    			print_character ((k + 1) * CHAR_COLS,
-				game.line_user_input * CHAR_LINES,
-    				buffer[k], txt_fg, txt_bg );
-    		}
-
-    		/* cursor prompt */
-    		if (game.input_mode == INPUT_GETSTRING) {
-    			print_character (stringdata.x + (k + 1) * CHAR_COLS,
-				stringdata.y, txt_char, txt_fg, txt_bg );
-    		} else {
-    			print_character ((k + 1) * CHAR_COLS,
-				game.line_user_input * CHAR_LINES,
-    				txt_char, txt_fg, txt_bg );
-    		}
-	}
-}
-
-
-static void move_ego (UINT8 direction)
-{
-	static UINT8 last_ego_dir = 0xFF;
-
-	_D ("(%d)", direction);
-	_D (_D_WARN "last_ego_dir = %d", last_ego_dir);
-
-	if (view_table[EGO_VIEW_TABLE].flags & MOTION) {
-		if (last_ego_dir != direction) {
-			last_ego_dir = direction;
-			view_table[EGO_VIEW_TABLE].direction = last_ego_dir;
-
-			/* FR:
-			 * Set the loop (in ego view table) corresponding to
-			 * this direction
-			 */
-			calc_direction (EGO_VIEW_TABLE);
-		} else {
-			/* stop ego from moving in same direction */
-			last_ego_dir = 0;
-		}
-		setvar (V_ego_dir, last_ego_dir);
-	}
-}
-
-
-#if 0
-
-not used?
-
-void clean_keyboard ()
-{
-	clean_input ();
-	setvar (V_key, 0);
-	setflag (F_entered_cli, FALSE);
-	setflag (F_said_accepted_input, FALSE);
-}
-#endif
-
-
 /*
  * poll_keyboard() is the raw key grabber (above the gfx driver, that is).
  * It handles console keys and insulates AGI from the console. In the main
@@ -202,11 +123,6 @@ void handle_controller (int key)
 {
 	int i;
 
-#if 0
-	for (i = 0; i < MAX_DIRS; i++)
-		game.events[i].occured = FALSE;
-#endif
-
 	for (i = 0; i < MAX_DIRS; i++){
 		int data = game.events[i].data;
 		switch (game.events[i].event) {
@@ -228,16 +144,23 @@ void handle_controller (int key)
 	}
 
 	if (!KEY_ASCII (key)) {
+		int d = 0;
 		switch (key) {
-		case KEY_UP:         move_ego (1); break;
-		case KEY_DOWN:       move_ego (5); break;
-		case KEY_LEFT:       move_ego (7); break;
-		case KEY_RIGHT:      move_ego (3); break;
-		case KEY_UP_RIGHT:   move_ego (2); break;
-		case KEY_DOWN_RIGHT: move_ego (4); break;
-		case KEY_UP_LEFT:    move_ego (8); break;
-		case KEY_DOWN_LEFT:  move_ego (6); break;
+		case KEY_UP:         d = 1; break;
+		case KEY_DOWN:       d = 5; break;
+		case KEY_LEFT:       d = 7; break;
+		case KEY_RIGHT:      d = 3; break;
+		case KEY_UP_RIGHT:   d = 2; break;
+		case KEY_DOWN_RIGHT: d = 4; break;
+		case KEY_UP_LEFT:    d = 8; break;
+		case KEY_DOWN_LEFT:  d = 6; break;
 		}
+
+		if (d) {
+			game.view_table[0].direction = 
+				game.view_table[0].direction == d ? 0 : d;
+		}
+
 		return;
 	}
 }
@@ -269,8 +192,8 @@ void handle_getstring (int key)
 			break;
 
 		/* Echo */
-		print_character (stringdata.x + (pos + 1) * CHAR_COLS,
-			stringdata.y, txt_char, txt_bg, txt_bg );
+		print_character (stringdata.x + (pos + 1),
+			stringdata.y, txt_char, game.color_bg, game.color_bg );
 
 		pos--;
 		buffer[pos] = 0;
@@ -286,8 +209,8 @@ void handle_getstring (int key)
 		buffer[pos] = 0;
 
 		/* Echo */
-		print_character (stringdata.x + (pos * CHAR_COLS),
-			stringdata.y, buffer[pos - 1], txt_fg, txt_bg);
+		print_character (stringdata.x + pos, stringdata.y,
+			buffer[pos - 1], game.color_fg, game.color_bg);
 		break;
 	}
 }
@@ -346,9 +269,8 @@ void handle_keys (int key)
 		/* Ignore backspace at start of line */
 		if (pos == 0) break;
 
-		print_character ((pos + 1) * CHAR_COLS,
-			game.line_user_input * CHAR_LINES,
-			txt_char, txt_bg, txt_bg);
+		print_character (pos + 1, game.line_user_input,
+			txt_char, game.color_bg, game.color_bg);
 
 		buffer[--pos] = 0;
 		break;
@@ -364,8 +286,9 @@ void handle_keys (int key)
 		buffer[pos++] = key;
 		buffer[pos] = 0;
 
-		print_character (pos * CHAR_COLS, game.line_user_input *
-			CHAR_LINES, buffer[pos - 1], txt_fg, txt_bg);
+		print_character (pos, game.line_user_input,
+			buffer[pos - 1], game.color_fg,
+			game.color_bg);
 		break;
 	}
 
@@ -374,19 +297,21 @@ void handle_keys (int key)
 		print_line_prompt();
 	} else {
 		if (new_line) {
-			new_line = 0;
+			int l = game.line_user_input;
 
-	   		cmd_clear_lines (game.line_user_input,
-				game.line_user_input, txt_bg);
-	   		print_text (agi_printf (game.strings[0], 0), 0, 0,
-				game.line_user_input * CHAR_LINES,
-				40, txt_fg, txt_bg);
+			new_line = 0;
+	   		clear_lines (l, l + 1, game.color_bg);
+			flush_lines (l, l + 1);
+
+	   		print_text (agi_sprintf (game.strings[0], 0), 0, 0,
+				l * CHAR_LINES, 40, game.color_fg,
+				game.color_bg);
 		}
 
 		/* Print txt_char */
-		print_character ((pos + 1) * CHAR_COLS,
-			game.line_user_input * CHAR_LINES, txt_char,
-			txt_fg, txt_bg );
+		print_character (pos + 1,
+			game.line_user_input, txt_char,
+			game.color_fg, game.color_bg );
 	}
 }
 
@@ -398,20 +323,27 @@ int wait_key ()
 	_D (_D_WARN "waiting...");
 	while (42) {
 		poll_timer ();		/* msdos driver -> does nothing */
-
 		key = poll_keyboard ();
-
 		if (!console_keyhandler (key)) {
 			if (key == KEY_ENTER || key == KEY_ESCAPE)
 				break;
 		}
-
 		console_cycle ();
 	}
-
-	release_sprites ();
-	restore_screen ();
-
 	return key;
+}
+
+
+/**
+ * Print command prompt
+ */
+void print_line_prompt ()
+{
+	if (game.input_mode == INPUT_NORMAL) {
+		print_text (agi_sprintf (game.strings[0], 0), 0, 0,
+    			game.line_user_input, 40,
+			game.color_fg, game.color_bg);
+		//flush_lines (game.line_user_input, game.line_user_input);
+	}
 }
 

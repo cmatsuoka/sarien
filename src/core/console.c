@@ -28,17 +28,30 @@
 #include <stdarg.h>
 
 #include "agi.h"
-#include "gfx_base.h"
+#include "graphics.h"
 #include "text.h"
 #include "keyboard.h"
 #include "opcodes.h"
 #include "console.h"
 
+#define CONSOLE_LINES_ONSCREEN	20
+#define CONSOLE_PROMPT		"$"
+#define CONSOLE_CURSOR_HOLLOW	1
+#define CONSOLE_CURSOR_SOLID	2
+#define CONSOLE_CURSOR_EMPTY	3
+#define CONSOLE_COLOR		14
+#define CONSOLE_SCROLLUP_KEY	KEY_PGUP
+#define CONSOLE_SCROLLDN_KEY	KEY_PGDN
+#define CONSOLE_START_KEY	KEY_HOME
+#define CONSOLE_END_KEY		KEY_END
+#define CONSOLE_INPUT_SIZE	39
+
+
 struct console_command {
+	struct console_command *next;
 	char *cmd;
 	char *dsc;
 	void (*handler)();
-	struct console_command *next;
 };
 
 struct sarien_console console;
@@ -52,18 +65,10 @@ static char *_p0, *_p1, *_p2, *_p3, *_p4, *_p5;	/* FIXME: array */
 static char _p[80];
 static int _pn;
 
-void console_prompt ()
-{
-	report (CONSOLE_PROMPT);
-	console_input = 1;
-}
 
-
-void console_lock ()
-{
-	console_input = 0;
-}
-
+/*
+ * Console command parsing
+ */
 
 static UINT8 console_parse (char *b)
 {
@@ -146,7 +151,7 @@ static UINT8 console_parse (char *b)
 			p[3] = _p4 ? strtoul (_p4, NULL, 0) : 0;
 			p[4] = _p5 ? strtoul (_p5, NULL, 0) : 0;
 
-			execute_agi_command (i, getvar (0), p); 
+			execute_agi_command (i, p); 
 
 			return 0;
 		}
@@ -159,6 +164,7 @@ static UINT8 console_parse (char *b)
 /*
  * Console commands
  */
+
 static void ccmd_help ()
 {
 	struct console_command *d;
@@ -181,12 +187,10 @@ static void ccmd_help ()
 	report ("Unknown command or no help available\n");
 }
 
-
 static void ccmd_ver ()
 {
 	report (VERSION "\n");
 }
-
 
 static void ccmd_agiver ()
 {
@@ -198,7 +202,6 @@ static void ccmd_agiver ()
 
 	report (maj == 2 ? "%x.%03x\n" : "%x.002.%03x\n", maj, min);
 }
-
 
 static void ccmd_flags ()
 {
@@ -218,7 +221,6 @@ static void ccmd_flags ()
 	}
 }
 
-
 static void ccmd_vars ()
 {
 	int i, j;
@@ -231,13 +233,11 @@ static void ccmd_vars ()
 	}
 }
 
-
 static void ccmd_say ()
 {
 	setflag (F_entered_cli, TRUE);
 	dictionary_words (_p);
 }
-
 
 static void ccmd_inv ()
 {
@@ -259,7 +259,6 @@ static void ccmd_inv ()
 		report ("\n");
 }
 
-
 static void ccmd_objs ()
 {
 	int i;
@@ -269,7 +268,6 @@ static void ccmd_objs ()
 			object_get_location (i));
 	}
 }
-
 
 static void ccmd_opcode ()
 {
@@ -281,7 +279,6 @@ static void ccmd_opcode ()
 	debug.opcodes = !strcmp (_p1, "on");
 }
 
-
 static void ccmd_logic0 ()
 {
 	if (_pn != 1 || (strcmp (_p1, "on") && strcmp (_p1, "off"))) {
@@ -291,7 +288,6 @@ static void ccmd_logic0 ()
 
 	debug.logic0 = !strcmp (_p1, "on");
 }
-
 
 static void ccmd_step ()
 {
@@ -305,13 +301,11 @@ static void ccmd_step ()
 	debug.steps = strtoul (_p1, NULL, 0);
 }
 
-
 static void ccmd_debug ()
 {
 	debug.enabled = 1;
 	debug.steps = 0;
 }
-
 
 static void ccmd_cont ()
 {
@@ -343,37 +337,6 @@ static void console_cmd (char *cmd, char *dsc, void (*handler))
 }
 
 
-int console_init ()
-{
-	console_cmd ("agiver", "Show emulated Sierra AGI version", ccmd_agiver);
-	console_cmd ("cont",   "Resume interpreter execution", ccmd_cont);
-	console_cmd ("debug",  "Stop interpreter execution", ccmd_debug); 
-	console_cmd ("flags",  "Dump all AGI flags", ccmd_flags);
-	console_cmd ("help",   "List available commands", ccmd_help);
-	console_cmd ("inv",    "List current inventory", ccmd_inv);
-	console_cmd ("logic0", "Turn logic 0 debugging on/off", ccmd_logic0);
-	console_cmd ("objs",   "List all objects and locations", ccmd_objs);
-	console_cmd ("opcode", "Turn opcodes on/off in debug", ccmd_opcode);
-	console_cmd ("say",    "Pass argument to the AGI parser", ccmd_say);
-	console_cmd ("step",   "Execute the next AGI instruction", ccmd_step);
-	console_cmd ("vars",   "Dump all AGI variables", ccmd_vars);
-	console_cmd ("ver",    "Show interpreter version", ccmd_ver);
-
-	console.active = 1;
-	console.input_active = 1;
-	console.index = 0;
-	console.y = 150;
-	console.first_line = CONSOLE_LINES_BUFFER - CONSOLE_LINES_ONSCREEN;
-
-	debug.enabled = 0;
-	debug.opcodes = 0;
-	debug.logic0 = 1;
-
-	has_console = 1;
-
-	return err_OK;
-}
-
 /* Console reporting */
 
 /* A slightly modified strtok() for report() */
@@ -403,14 +366,11 @@ static void build_console_lines (int n)
 {
 	int i, j, y1;
 
-#ifdef USE_CONSOLE
-	memset (layer2_data + (200 - n * 10) * GFX_WIDTH, 0,
-		n * 10 * GFX_WIDTH);
-#endif
+	clear_console_screen (n);
 
 	for (j = CONSOLE_LINES_ONSCREEN - n; j < CONSOLE_LINES_ONSCREEN; j++) {
 		i = console.first_line + j;
-		print_text_layer (console.line[i], 0, 0, j * 10,
+		print_text_console (console.line[i], 0, j,
 			strlen (console.line[i]) + 1, CONSOLE_COLOR, 0);
 	}
 
@@ -431,7 +391,43 @@ static void build_console_lines (int n)
 }
 
 
-void build_console_layer ()
+/*
+ * Public functions
+ */
+
+int console_init ()
+{
+	console_cmd ("agiver", "Show emulated Sierra AGI version", ccmd_agiver);
+	console_cmd ("cont",   "Resume interpreter execution", ccmd_cont);
+	console_cmd ("debug",  "Stop interpreter execution", ccmd_debug); 
+	console_cmd ("flags",  "Dump all AGI flags", ccmd_flags);
+	console_cmd ("help",   "List available commands", ccmd_help);
+	console_cmd ("inv",    "List current inventory", ccmd_inv);
+	console_cmd ("logic0", "Turn logic 0 debugging on/off", ccmd_logic0);
+	console_cmd ("objs",   "List all objects and locations", ccmd_objs);
+	console_cmd ("opcode", "Turn opcodes on/off in debug", ccmd_opcode);
+	console_cmd ("say",    "Pass argument to the AGI parser", ccmd_say);
+	console_cmd ("step",   "Execute the next AGI instruction", ccmd_step);
+	console_cmd ("vars",   "Dump all AGI variables", ccmd_vars);
+	console_cmd ("ver",    "Show interpreter version", ccmd_ver);
+
+	console.active = 1;
+	console.input_active = 1;
+	console.index = 0;
+	console.y = 150;
+	console.first_line = CONSOLE_LINES_BUFFER - CONSOLE_LINES_ONSCREEN;
+
+	debug.enabled = 0;
+	debug.opcodes = 0;
+	debug.logic0 = 1;
+	debug.priority = 0;
+
+	has_console = 1;
+
+	return err_OK;
+}
+
+static void build_console_layer ()
 {
 	build_console_lines (15);
 }
@@ -499,6 +495,8 @@ void report (char *message, ...)
 		else
 			build_console_lines (1);
 	}
+
+	do_update ();
 }
 
 
@@ -530,9 +528,11 @@ void console_cycle ()
 			console.y = 0;
 	}
 
+	/* console shading animation */
 	if (old_y != console.y) {
 		int y1 = old_y, y2 = console.y;
 		if (old_y > console.y) {
+			/* going up */
 			y1 = console.y;
 			y2 = old_y;
 		} 
@@ -554,11 +554,13 @@ void console_cycle ()
 		SINT16 y1 = console.y - 10, y2 = console.y - 1;
 		if (y1 < 0) y1 = 0;
 		if (y2 < 0) y2 = 0;
-		print_text_layer (cursor, 0,
-			(1 + console.index) * 8, 190, 2, CONSOLE_COLOR, 0);
+		print_text_console (cursor,
+			(1 + console.index), 19, 2, CONSOLE_COLOR, 0);
 		flush_block ((1 + console.index) * 8, y1,
-			(1 + console.index) * 8 + 7, y2);
+			(1 + console.index) * 8 + 7, y2 - 1);
 	}
+
+	do_update ();
 }
 
 
@@ -622,7 +624,7 @@ int console_keyhandler (int k)
 			break;
 		console.line[CONSOLE_LINES_BUFFER-1][console.index]=0;
 		*m = CONSOLE_CURSOR_EMPTY;
-		print_text_layer (m, 0, (console.index+1)*8, 190, 2,
+		print_text_console (m, (console.index+1), 19, 2,
 			CONSOLE_COLOR, 0);
 		flush_block ((console.index+1)*8, y1, (console.index+1)*8+7, y2);
        		console.index--;
@@ -684,15 +686,30 @@ int console_keyhandler (int k)
 			console.line[CONSOLE_LINES_BUFFER-1]=strdup(l);
 
 			buffer[console.index] = 0;
-			print_text_layer (m, 0, console.index*8, 190, 2,
+			print_text_console (m, console.index, 19, 2,
 				CONSOLE_COLOR, 0);
 			flush_block (console.index*8, y1, console.index*8+7, y2);
 		}
                	break;
 	}
 
+	do_update ();
+
 	return TRUE;
 }
+
+void console_prompt ()
+{
+	report (CONSOLE_PROMPT);
+	console_input = 1;
+}
+
+
+void console_lock ()
+{
+	console_input = 0;
+}
+
 
 #else
 

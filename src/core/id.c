@@ -250,8 +250,12 @@ int v4id_game (UINT32 crc)
 	agi_set_release (ver);
 	
 	switch ((ver>>12)&0xFF) {
-		case 2: ec=setup_v2_game(ver, crc); break;
-		case 3: ec=setup_v3_game(ver, crc); break;
+	case 2:
+		ec = setup_v2_game (ver, crc);
+		break;
+	case 3:
+		ec = setup_v3_game (ver, crc);
+		break;
 	}
 			
 	return ec;
@@ -262,7 +266,7 @@ int setup_v2_game(int ver, UINT32 crc)
 	int ec=err_OK;
 	
 	if (ver == 0) {
-		printf("Unknown Sierra Game Version: %08lx\n", crc);
+		printf("Unknown Sierra Game Version: %08x\n", crc);
 		agi_set_release (0x2917);
 	}
 
@@ -302,7 +306,7 @@ int setup_v3_game(int ver, UINT32 crc)
 	int ec=err_OK;
 	
 	if (ver == 0) {
-		printf("Unknown Sierra game version: %08lx\n", crc);
+		printf("Unknown Sierra game version: %08x\n", crc);
 		agi_set_release (ver = 0x3149);
 	}
 

@@ -11,16 +11,12 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
-
+#include <assert.h>
 #include "sarien.h"
 #include "agi.h"
-#include "logic.h"
-#include "gfx_agi.h"
-#include "gfx_base.h"
+#include "graphics.h"
 #include "keyboard.h"
 #include "text.h"
-
-extern struct agi_logic logics[];
 
 
 static void print_text2 (int l, char *msg, int foff, int xoff, int yoff,
@@ -82,21 +78,44 @@ static void print_text2 (int l, char *msg, int foff, int xoff, int yoff,
 	maxx *= CHAR_COLS;
 	minx *= CHAR_COLS;
 
-	/* FIXME: move to gfx_base.c and create wrapper function */
-	if (update)
-		put_block (foff+xoff+minx, yoff, ofoff+xoff+maxx+CHAR_COLS-1, yoff+y1*CHAR_LINES+CHAR_LINES+1);
+	if (update) {
+		schedule_update (foff + xoff + minx, yoff,
+			ofoff + xoff + maxx + CHAR_COLS - 1,
+			yoff + y1 * CHAR_LINES + CHAR_LINES + 1);
+		/* Making synchronous text updates reduces CPU load
+		 * when updating status line and input area
+		 */
+		do_update ();
+	}
 }
 
 
-void print_text (char *msg, int foff, int xoff, int yoff, int len, int fg, int bg)
+/*
+ * Public functions
+ */
+
+/**
+ * Print text in the Sarien screen.
+ */
+void print_text (char *msg, int f, int x, int y, int len, int fg, int bg)
 {
-	print_text2 (0, msg, foff, xoff, yoff, len, fg, bg);
+	f *= CHAR_COLS;
+	x *= CHAR_COLS;
+	y *= CHAR_LINES;
+
+	print_text2 (0, msg, f, x, y, len, fg, bg);
 }
 
 
-void print_text_layer (char *msg, int foff, int xoff, int yoff, int len, int fg, int bg)
+/**
+ * Print text in the Sarien console.
+ */
+void print_text_console (char *msg, int x, int y, int len, int fg, int bg)
 {
-	print_text2 (1, msg, foff, xoff, yoff, len, fg, bg);
+	x *= CHAR_COLS;
+	y *= 10;
+
+	print_text2 (1, msg, 0, x, y, len, fg, bg);
 }
 
 
@@ -134,31 +153,46 @@ end:
 }
 
 
+/**
+ *
+ */
+void close_window ()
+{
+	if (game.window.active)
+		show_pic ();		/* remove window */
+	game.has_window = FALSE;
+	game.window.active = FALSE;
+}
+
+
 /* len is in characters, not pixels!!
  */
-void textbox (char *message, int x, int y, int len)
+void message_box (char *p, int y, int x, int len)
 {
 	/* if x | y = -1, then centre the box */
 	int xoff, yoff, lin, h, w;
 	char *msg, *m;
 
-	_D ("(\"%s\", %d, %d, %d)", message, x, y, len);
+	_D ("x=%d, y=%d, len=%d", x, y, len);
+	if (game.window.active)
+		close_window ();
+
+	if (x == 0 && y == 0 && len == 0)
+		x = y = -1;
 
 	if (len <= 0 || len >= 40)
 		len=30;
 
-	xoff = x;
-	yoff = y;
+	xoff = x * CHAR_COLS;
+	yoff = y * CHAR_LINES;
 	len--;
 
-	m = msg = word_wrap_string (message, &len);
+	m = msg = word_wrap_string (p, &len);
 
 	for (lin = 1; *m; m++) {
 		if (*m == '\n')
 			lin++;
 	}
-
-	_D (": lin=%d", lin);
 
 	if (lin * CHAR_LINES > GFX_HEIGHT)
 		lin = (GFX_HEIGHT / CHAR_LINES);
@@ -166,48 +200,73 @@ void textbox (char *message, int x, int y, int len)
 	w = (len + 2) * CHAR_COLS;
 	h = (lin + 2) * CHAR_LINES;
 
-	if (xoff == -1)
+	if (xoff < 0)
 		xoff = (GFX_WIDTH - w) / 2;
 
-	if (yoff == -1)
+	if (yoff < 0)
 		yoff = (GFX_HEIGHT - 2 * CHAR_LINES - h) / 2;
 
-	draw_box (xoff, yoff, xoff + w, yoff + h, MSG_BOX_COLOUR, MSG_BOX_LINE,
-		LINES, game.line_min_print * CHAR_LINES);
+	game.window.active = 1;
+	draw_box (xoff, yoff, xoff + w - 1, yoff + h - 1,
+		MSG_BOX_COLOUR, MSG_BOX_LINE, LINES);
 
 	print_text2 (2, msg, 0, CHAR_COLS + xoff, CHAR_LINES + yoff, len + 1,
 		MSG_BOX_TEXT, MSG_BOX_COLOUR);
 
-	put_block (xoff, yoff, xoff + w, yoff + h);
-
 	free (msg);
+
+	schedule_update (xoff, yoff, xoff + w, yoff + h);
+	do_update ();
 }
 
-
-void message_box (char *message, ...)
+/**
+ *
+ */
+int print (char *p, int lin, int col, int len)
 {
-	char x[512];
-	va_list	args;
+	assert (p != NULL);
 
-	_D ("(message, ...)");
-	va_start (args, message);
+	message_box (p, lin, col, len);
 
-#ifdef HAVE_VSNPRINTF
-	vsnprintf (x, 510, message, args);
-#else
-	vsprintf (x, message, args);
-#endif
+	if (getflag (F_output_mode)) {
+		/* non-blocking window */
+		setflag (F_output_mode, FALSE);
+		return 1;
+	}
+	
+	/* blocking */
 
-	va_end (args);
+	if (game.vars[V_window_reset] == 0) {
+		int k;
+		setvar (V_key, 0);
+		k = wait_key();
+		close_window ();
+		return k;
+	}
 
-	/* FIXME: move message_box to gfx, use a wrapper calling
-	 *        agi_printf() to format the text
-	 */
-	save_screen ();
-	redraw_sprites ();
-	textbox (x, -1, -1, -1);
-	wait_key();
+	/* timed window */
+
+	_D (_D_WARN "f15==0, v21==%d => timed", getvar (21));
+	game.msg_box_ticks = getvar (V_window_reset) * 10;
+	setvar (V_key, 0);
+
+	do {
+		main_cycle ();
+		if (game.keypress == KEY_ENTER) {
+			_D (_D_WARN "KEY_ENTER");
+			setvar (V_window_reset, 0);
+			game.keypress = 0;
+			break;
+		}
+	} while (game.msg_box_ticks > 0);
+
+	setvar (V_window_reset, 0);
+
+	close_window ();
+
+	return 0;
 }
+
 
 
 void print_status (char *message, ...)
@@ -225,12 +284,17 @@ void print_status (char *message, ...)
 
 	va_end (args);
 
-        print_text (x, 0, game.line_status, 0, 41, STATUS_FG, STATUS_BG);
-	put_block (0, 0, GFX_WIDTH, CHAR_LINES);
+        print_text (x, 0, game.line_status, 0, 40, STATUS_FG, STATUS_BG);
+	flush_lines (game.line_status, game.line_status);
 }
 
 
-char *agi_printf (char *msg, int lognum)
+/**
+ * Formats AGI string.
+ * @param s  string containing the format specifier
+ * @param n  logic number
+ */
+char *agi_sprintf (char *s, int n)
 {
 	static char x[256], y[256];
 	char z[16], *p;
@@ -239,23 +303,23 @@ char *agi_printf (char *msg, int lognum)
 	/* turn a AGI string into a real string */
 	p = x;
 
-	for (*p = xx = xy = 0; *msg; ) {
-		switch(*msg) {
+	for (*p = xx = xy = 0; *s; ) {
+		switch (*s) {
 		case '%':
-			msg++;
-			switch(*msg++) {
+			s++;
+			switch(*s++) {
 			case 'v':
-				xx = atoi(msg);
-				while (*msg >= '0' && *msg <= '9')
-					msg++;
+				xx = atoi(s);
+				while (*s >= '0' && *s <= '9')
+					s++;
 				sprintf (z, "%03i", getvar(xx));
 
 				xy=99;
-				if(*msg=='|') {
-					msg++;
-					xy = atoi (msg);
-					while (*msg >= '0' && *msg <= '9')
-						msg++;
+				if(*s=='|') {
+					s++;
+					xy = atoi (s);
+					while (*s >= '0' && *s <= '9')
+						s++;
 				}
 				xx=0;
 				if(xy==99) {
@@ -268,34 +332,31 @@ char *agi_printf (char *msg, int lognum)
 				strcat(p, z + xx);
 				break;
 			case '0':
-				strcat(p, object_name (atol(msg)-1));
+				strcat(p, object_name (atol(s)-1));
 				break;
 			case 'g':
-				strcat(p, logics[0].texts[atol(msg)-1]);
+				strcat(p, game.logics[0].texts[atol(s)-1]);
 				break;
 			case 'w':
-				strcat(p, game.ego_words[atol(msg)-1].word);
+				strcat(p, game.ego_words[atol(s)-1].word);
 				break;
 			case 's':
-				strcat(p, game.strings[atol(msg)]);
+				strcat(p, game.strings[atol(s)]);
 				break;
 			case 'm':
-				strcat(p, logics[lognum].texts[atol(msg)-1]);
+				strcat(p, game.logics[n].texts[atol(s)-1]);
 				break;
 			default:
 				break;
 			}
 
-			while (*msg >= '0' && *msg <= '9')
-				msg++;
-			while(*p!=0x0) p++;
+			while (*s >= '0' && *s <= '9') s++;
+			while (*p) p++;
 			break;
 
 		default:
-			*p=*msg;
-			msg++;
-			p++;
-			*p=0x0;
+			*p++ = *s++;
+			*p = 0;
 			break;
 		}
 	}
@@ -303,49 +364,58 @@ char *agi_printf (char *msg, int lognum)
 	p = x;
 	if (strchr (x, '%') != NULL) {
 		strcpy (y, x);
-		p = agi_printf (y, lognum);
+		p = agi_sprintf (y, n);
 	}
 
 	return p;
 }
 
-
-void update_status_line (int force)
+/**
+ *
+ */
+void write_status ()
 {
-	static int o_score = 255, o_max_score = 0, o_sound = FALSE,
-		o_status = -2;
+	char x[64];
 
-	/* If it's already there and we're not forcing, don't write */
-   	if (!force && o_status == game.status_line &&
-		o_score == getvar (V_score) && 
-		o_max_score == getvar (V_max_score) &&
-		o_sound == getflag (F_sound_on))
+	if (/*game.line_min_print == 0 ||*/ !game.status_line) {
+		clear_lines (0, 0, 0);
 		return;
-
-	o_score = getvar (V_score);
-	o_max_score = getvar (V_max_score);
-   	o_sound = getflag (F_sound_on);
-
-	/* Jump out here if the status line is invisible and was invisible
-	 * the last time. If the score or sound has changed, there is no
-         * reason to re-erase the status line here. Allow force, though...
-         */
-
-	if (!force && o_status == game.status_line && !game.status_line)
-		return;
-
-   	o_status = game.status_line;
-
-	if (game.line_min_print == 0)
-		return;
-
-	if (game.status_line) {
-		char x[64];
-		sprintf (x, " Score:%i of %03i", o_score, getvar(V_max_score));
-		print_status ("%-17s             Sound:%s ", x,
-			o_sound ? "On " : "Off");
 	}
+
+	sprintf (x, " Score:%i of %03i", game.vars[V_score],
+		game.vars[V_max_score]);
+	print_status ("%-17s             Sound:%s ", x,
+		getflag(F_sound_on) ? "On " : "Off");
 }
 
 
+/**
+ * Clear text lines in the screen.
+ * @param l1  start line
+ * @param l2  end line
+ * @param c   color
+ */
+void clear_lines (int l1, int l2, int c)
+{
+	/* do we need to adjust for +8 on topline?
+	 * inc for endline so it matches the correct num
+	 * ie, from 22 to 24 is 3 lines, not 2 lines.
+	 */
 
+	if (c) c = 15;
+	l1 *= CHAR_LINES;
+	l2 *= CHAR_LINES;
+	l2 += CHAR_LINES - 1;
+
+	draw_rectangle (0, l1, GFX_WIDTH - 1, l2, c);
+}
+
+
+void flush_lines (int l1, int l2)
+{
+	l1 *= CHAR_LINES;
+	l2 *= CHAR_LINES;
+	l2 += CHAR_LINES - 1;
+
+	flush_block (0, l1, GFX_WIDTH - 1, l2);
+}

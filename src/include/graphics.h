@@ -8,8 +8,8 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#ifndef __GFX_BASE_H
-#define __GFX_BASE_H
+#ifndef __GRAPHICS_H
+#define __GRAPHICS_H
 
 #ifdef __cplusplus
 extern "C"{
@@ -32,16 +32,13 @@ struct gfx_driver {
 	int	(*init_video_mode)(void);
 	int	(*deinit_video_mode)(void);
 	void	(*put_block)(int x1, int y1, int x2, int y2);
-	void	(*put_pixel)(int x, int y, int c);
+	void	(*put_pixels)(int x, int y, int w, UINT8 *p);
 	void	(*poll_timer)(void);
 	int	(*keypress)(void);
 	int	(*get_key)(void);
 };
 
 extern	UINT8		palette[];
-extern	UINT8		screen_mode;
-extern	UINT8		txt_fg;
-extern	UINT8		txt_bg;
 extern	UINT8		txt_char;
 
 
@@ -49,26 +46,27 @@ extern	UINT8		txt_char;
 extern UINT8	layer1_data[];
 extern UINT8	layer2_data[];
 
-void    put_pixel_buffer(int, int, int);
-void	draw_box	(int, int, int, int, int, int, int, int);
+
 void 	put_text_character(int, int, int, int, int, int);
-void	do_blit		(void);
+void	shake_screen	(int);
+void	save_screen	(void);
+void	restore_screen	(void);
+
+/* documented */
 int	init_video	(void);
 int	deinit_video	(void);
-void	shake_screen	(int);
-void	_save_screen	(void);
-void	_restore_screen	(void);
-void	_restore_screen_area	(void);
-void	_flush_screen	(void);
-void	_flush_screen_area	(void);
+void	schedule_update	(int, int, int, int);
+void	do_update	(void);
 void	put_screen	(void);
-void	put_block	(int, int, int, int);
-void	set_block	(int, int, int, int);
 void	flush_block	(int, int, int, int);
-void	clear_buffer	(void);
+void	flush_block_a	(int, int, int, int);
+void	put_pixels_a	(int, int, int, UINT8 *);
+void	flush_screen	(void);
+void	clear_screen	(int);
+void	draw_box	(int, int, int, int, int, int, int);
+void	draw_rectangle	(int, int, int, int, int);
 
-void	put_pixel	(int, int, int);	/* driver wrapper */
-void	build_console_layer (void);
+void	put_pixel	(int, int, int);	
 
 int	keypress	(void);
 int	get_key		(void);
@@ -81,6 +79,5 @@ void	poll_timer	(void);
 };
 #endif
 
-#endif /* __GFX_BASE_H */
-
+#endif /* __GRAPHICS_H */
 

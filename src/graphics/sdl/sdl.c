@@ -22,15 +22,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
 #include <SDL/SDL.h>
-
-#ifdef _UNIX_DEBUG
-#include <ctype.h>
-#endif
-
 #include "sarien.h"
-#include "gfx_base.h"
+#include "graphics.h"
 #include "keyboard.h"
 
 extern struct sarien_options opt;
@@ -46,35 +40,36 @@ UINT32 clock_ticks;
 UINT32 clock_count;
 
 #define KEY_QUEUE_SIZE 16
+
 static int key_queue[KEY_QUEUE_SIZE];
 static int key_queue_start = 0;
 static int key_queue_end = 0;
+
 #define key_enqueue(k) do { key_queue[key_queue_end++] = (k); \
 	key_queue_end %= KEY_QUEUE_SIZE; } while (0)
 #define key_dequeue(k) do { (k) = key_queue[key_queue_start++]; \
 	key_queue_start %= KEY_QUEUE_SIZE; } while (0)
 
-static int init_vidmode (void);
-static int deinit_vidmode (void);
-static void sdl_put_block (int, int, int, int);
-static void inline sdl_put_pixel (int, int, int);
-
-static void sdl_timer (void);
-static Uint32 timer_function (Uint32);
+static int	init_vidmode	(void);
+static int	deinit_vidmode	(void);
+static void	sdl_put_block	(int, int, int, int);
+static void	sdl_put_pixels	(int, int, int, Uint8 *);
+static void	sdl_timer	(void);
+static Uint32	timer_function	(Uint32);
+int		sdl_is_keypress	(void);
+int		sdl_get_keypress(void);
 
 static volatile UINT32 tick_timer = 0;
 
 
 #define TICK_SECONDS 20
 
-int sdl_is_keypress(void);
-int sdl_get_keypress(void);
 
 static struct gfx_driver GFX_sdl = {
 	init_vidmode,
 	deinit_vidmode,
 	sdl_put_block,
-	sdl_put_pixel,
+	sdl_put_pixels,
 	sdl_timer,
 	sdl_is_keypress,
 	sdl_get_keypress
@@ -223,7 +218,6 @@ int init_machine (int argc, char **argv)
 {
 	gfx = &GFX_sdl;
 	scale = opt.scale;
-	screen_mode = GFX_MODE;
 	clock_count = 0;
 	clock_ticks = 0;
 
@@ -273,8 +267,6 @@ static int init_vidmode ()
 	}
 	SDL_SetColors (screen, color, 0, 32);
 
-	screen_mode = GFX_MODE;
-
 	return err_OK;
 }
 
@@ -283,8 +275,6 @@ static int deinit_vidmode ()
 {
 	_D ("()");
 	SDL_Quit ();
-	screen_mode = TXT_MODE;
-
 	return err_OK;
 }
 
@@ -313,15 +303,11 @@ static void sdl_put_block (int x1, int y1, int x2, int y2)
 
 static void inline _put_pixel (int x, int y, int c)
 {
-	UINT32 pixel;
-	UINT8 *bits, bpp;
+	Uint32 pixel;
+	Uint8 *bits, bpp;
 
 	pixel = SDL_MapRGB (screen->format, color[c].r, color[c].g, color[c].b);
 
-	if (SDL_MUSTLOCK (screen)) {
-		if (SDL_LockSurface (screen) < 0)
-			return;
-	}
 	bpp = screen->format->BytesPerPixel;
 	bits = ((UINT8 *) screen->pixels) + y * screen->pitch + x * bpp;
 
@@ -347,25 +333,50 @@ static void inline _put_pixel (int x, int y, int c)
 		*((UINT32 *) (bits)) = (Uint32) pixel;
 		break;
 	}
-
-	if (SDL_MUSTLOCK (screen)) {
-		SDL_UnlockSurface (screen);
-	}
 }
 
 
 /* put pixel routine */
-static void inline sdl_put_pixel (int x, int y, int c)
+static void sdl_put_pixels (int x, int y, int w, Uint8 *p)
 {
+	register int c;
 	register int i, j;
 
-	if (scale == 1) {
-		_put_pixel (x, y, c);
-	} else {
-		for (i = 0; i < scale; i++)
-			for (j = 0; j < scale; j++)
-				_put_pixel (x * scale + i, y * scale + j, c);
+	if (w == 0)
+		return;
+
+	if (SDL_MUSTLOCK (screen)) {
+		if (SDL_LockSurface (screen) < 0)
+			return;
 	}
+
+	if (scale == 1) {
+		while (w--) {
+			_put_pixel (x++, y, *p++);
+		}
+	} else if (scale == 2) {
+		x <<= 1;
+		y <<= 1;
+		while (w--) {
+			c = *p++;
+			_put_pixel (x, y, c);
+			_put_pixel (x++, y + 1, c);
+			_put_pixel (x, y, c);
+			_put_pixel (x++, y + 1, c);
+		}
+	} else {
+		x *= scale;
+		y *= scale;
+		while (w--) {
+			c = *p++;
+			for (i = 0; i < scale; i++)
+				for (j = 0; j < scale; j++)
+					_put_pixel (x + i, y + j, c);
+		}
+	}
+
+	if (SDL_MUSTLOCK (screen))
+		SDL_UnlockSurface (screen);
 }
 
 
@@ -392,7 +403,6 @@ int sdl_get_keypress ()
 static Uint32 timer_function (Uint32 i)
 {
 	tick_timer++;
-
 	return i;
 }
 

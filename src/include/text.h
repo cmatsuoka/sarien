@@ -15,17 +15,21 @@
 extern "C"{
 #endif
 
-void	message_box	(char *, ...);
+void	message_box	(char *, int, int, int);
+void	close_window	(void);
 void	print_status	(char *, ...);
-void	textbox		(char *, int, int, int);
 void	print_text	(char *, int, int, int, int, int, int);
-void	print_text_layer(char *, int, int, int, int, int, int);
+void	print_text_console
+			(char *, int, int, int, int, int);
+int	print		(char *, int, int, int);
 char	*word_wrap_string (char *, int *);
-char	*agi_printf	(char *, int);
+char	*agi_sprintf	(char *, int);
+void	write_status	(void);
+void	clear_lines	(int, int, int);
+void	flush_lines	(int, int);
 
 #ifdef __cplusplus
 };
 #endif
 
-#endif
-
+#endif /* __AGI_TEXT_H */

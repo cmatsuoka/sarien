@@ -14,11 +14,8 @@
 #include <string.h>
 #include "sarien.h"
 #include "agi.h"
-#include "gfx_base.h"
-#include "picture.h"
-#include "sound.h"
-#include "console.h"
 #include "text.h"
+#include "graphics.h"
 
 
 int	run_game2(void);
@@ -32,9 +29,6 @@ volatile UINT32 clock_count;
 
 extern int optind;
 
-#ifdef USE_CONSOLE
-extern struct sarien_console console;
-#endif
 extern UINT8 *font, font_english[];
 
 struct sarien_options opt;
@@ -49,7 +43,7 @@ static int run_game ()
 {
 	int ec = err_OK;
 
-	_D ("F5 = %d", getflag (5));
+	_D ("let's go");
 	switch (opt.gamerun) {
 	case gLIST_GAMES:
 	case gCRC:
@@ -102,7 +96,9 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 		goto bail_out;
 
 	init_machine (argc, argv);
-	screen_mode = GFX_MODE;
+	game.gfx_mode = TRUE;
+	game.color_fg = 15;
+	game.color_bg = 0;
 
 	font = font_english;
 
@@ -120,13 +116,13 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 	if (opt.gamerun == gCRC) {
 		/* FIXME: broken! */
 		printf("              Game : %s\n", game_info.gName);
-		printf("               CRC : 0x%06lX\n", game_info.crc);
+		printf("               CRC : 0x%06x\n", game_info.crc);
 		printf("Pre-built Switches : %s\n",
 			game_info.switches[0] == 0 ? "(none)" :
 			game_info.switches);
 		printf("AGI Interpret Vers : %s%03X\n",
 			game_info.version >= 0x3000 ? "3.002." :
-			"2.", (int)game_info.version & 0xFFF);
+			"2.", (int)game_info.version & 0xfff);
 		goto bail_out;
 	}
 
@@ -159,7 +155,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
     				setvar (V_monitor, 0x3); /* EGA monitor */
 
     				game.horizon = HORIZON;
-    				game.control_mode = CONTROL_PROGRAM;
+    				game.player_control = FALSE;
     				/* o_status = 5; */	/* FIXME */
 
     				ec = run_game();

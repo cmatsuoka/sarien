@@ -15,13 +15,6 @@
 #include "agi.h"
 #include "keyboard.h"
 #include "opcodes.h"
-#include "view.h"
-#include "logic.h"
-
-extern struct agi_game game;
-extern struct agi_logic logics[];
-extern struct agi_view views[];
-extern struct agi_view_table view_table[];
 
 static UINT8	test_obj_right	(UINT8, UINT8, UINT8, UINT8, UINT8);
 static UINT8	test_obj_centre	(UINT8, UINT8, UINT8, UINT8, UINT8);
@@ -31,8 +24,8 @@ static UINT8	test_said	(UINT8, UINT8 *);
 static UINT8	test_controller	(UINT8);
 static UINT8	test_keypressed	(void);
 
-#define ip (logics[lognum].cIP)
-#define code (logics[lognum].data)
+#define ip (game.logics[lognum].cIP)
+#define code (game.logics[lognum].data)
 
 #define test_equal(v1,v2)	(getvar(v1) == (v2))
 #define test_less(v1,v2)	(getvar(v1) < (v2))
@@ -65,41 +58,49 @@ static UINT8 test_controller (UINT8 cont)
 }
 
 
-static UINT8 test_posn (UINT8 cel, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
+static UINT8 test_posn (UINT8 n, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 {
-	return view_table[cel].x_pos >= x1 &&
-		view_table[cel].y_pos >= y1 &&
-		view_table[cel].x_pos <= x2 &&
-		view_table[cel].y_pos <= y2;
+	struct vt_entry *v = &game.view_table[n];
+
+	return v->x_pos >= x1 &&
+		v->y_pos >= y1 &&
+		v->x_pos <= x2 &&
+		v->y_pos <= y2;
 }
 
 
-static UINT8 test_obj_in_box (UINT8 obj, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
+static UINT8 test_obj_in_box (UINT8 n, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 {
-	return view_table[obj].x_pos >= x1 &&
-		view_table[obj].y_pos >= y1 &&
-		(view_table[obj].x_pos + VT_WIDTH(view_table[obj]) - 1) <= x2 &&
-		view_table[obj].y_pos <= y2;
+	struct vt_entry *v = &game.view_table[n];
+
+	return v->x_pos >= x1 &&
+		v->y_pos >= y1 &&
+		v->x_pos + v->x_size - 1 <= x2 &&
+		v->y_pos <= y2;
 }
 
 
-/* if obj is in centre of box */
-static UINT8 test_obj_centre (UINT8 obj, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
+/* if n is in centre of box */
+static UINT8 test_obj_centre (UINT8 n, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 {
-	return (view_table[obj].x_pos + VT_WIDTH(view_table[obj]) / 2) >= x1 &&
-		(view_table[obj].x_pos + VT_WIDTH(view_table[obj]) / 2) <= x2 &&
-		view_table[obj].y_pos >= y1 &&
-		view_table[obj].y_pos <= y2;
+	struct vt_entry *v = &game.view_table[n];
+
+	return v->x_pos + v->x_size / 2 >= x1 &&
+		v->x_pos + v->x_size / 2 <= x2 &&
+		v->y_pos >= y1 &&
+		v->y_pos <= y2;
 }
 
 
-/* if object N is in right corner */
-static UINT8 test_obj_right(UINT8 obj, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
+/* if nect N is in right corner */
+static UINT8 test_obj_right(UINT8 n, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 {
-	return (view_table[obj].x_pos + VT_WIDTH(view_table[obj]) - 1) >= x1 &&
-		(view_table[obj].x_pos + VT_WIDTH(view_table[obj]) - 1) <= x2 &&
-		view_table[obj].y_pos >= y1 &&
-		view_table[obj].y_pos <= y2;
+	struct vt_entry *v = &game.view_table[n];
+
+	return v->x_pos + v->x_size - 1 >= x1 &&
+		v->x_pos + v->x_size - 1 <= x2 &&
+		v->y_pos >= y1 &&
+		v->y_pos <= y2;
 }
 
 
@@ -123,7 +124,7 @@ static UINT8 test_said (UINT8 nwords, UINT8 *cc)
 	 * where word("rol") = 9999
 	 *
 	 * According to the interpreter code 9999 means that whatever the
-	 * user typed should be correct, but looks like code 9999 means that
+	 * user typed should be correct, but it looks like code 9999 means that
 	 * if the string is empty at this point, the entry is also correct...
 	 * 
 	 * With the removal of this code, the behaviour of the scene was
@@ -187,8 +188,7 @@ int test_if_code (int lognum)
 		op = *(code + ip++);
 		memmove (&p, (code + ip), 16);
 
-		switch(op)
-		{
+		switch(op) {
 		case 0xFF:			/* END IF, TEST TRUE */
 			goto end_test;
 		case 0xFD:

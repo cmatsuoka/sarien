@@ -10,10 +10,8 @@
 
 #include <stdio.h>
 #include <string.h>
-
 #include "sarien.h"
 #include "agi.h"
-#include "console.h"
 
 static struct agi_word *words;			/* words in the game */
 extern int decode_words(UINT8* mem, UINT32 flen);
@@ -135,7 +133,7 @@ void unload_words ()
 }
 
 
-/*
+/**
  * Scan dictionary for word, returning its ID.
  * Uses a fast "Divide and Conquer" routine to get the word your looking for.
  */

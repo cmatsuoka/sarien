@@ -13,27 +13,26 @@
 
 #include "sarien.h"
 #include "agi.h"
-#include "gfx_agi.h"
-#include "gfx_base.h"
+#include "sprite.h"
+#include "graphics.h"
 #include "keyboard.h"
-#include "console.h"
 #include "text.h"
 #include "keyboard.h"
 
-#define NOTHING_X	(15<<3)
-#define NOTHING_Y	(3<<3)
+#define NOTHING_X	15
+#define NOTHING_Y	3
 #define NOTHING_MSG	"Nothing"
 
-#define ANY_KEY_X	(4<<3)
-#define ANY_KEY_Y	(24<<3)
+#define ANY_KEY_X	4
+#define ANY_KEY_Y	24
 #define ANY_KEY_MSG	"Press a Key to return to the game."
 
-#define YOUHAVE_X	(11<<3)
-#define YOUHAVE_Y	(0<<3)
+#define YOUHAVE_X	11
+#define YOUHAVE_Y	0
 #define YOUHAVE_MSG	"You Are Carrying:"
 
-#define SELECT_X	(2<<3)
-#define SELECT_Y	(24<<3)
+#define SELECT_X	2
+#define SELECT_Y	24
 #define SELECT_MSG	"Press ENTER to select, ESC to cancel."
 
 
@@ -43,14 +42,14 @@ void inventory ()
 	UINT8 *intobj = NULL;
 	int objcount;
 	int joffs = 0, jlen = 0;
-
-	save_screen();
+	int old_fg, old_bg;
 
 	/* screen is white with black text */
-	for (x = 0; x < 320; x++) {
-		for (y = 0; y < 200; y++)
-			put_pixel (x, y, STATUS_BG);
-	}
+	old_fg = game.color_fg;
+	old_bg = game.color_bg;
+	game.color_fg = 0;
+	game.color_bg = 15;
+	clear_screen (game.color_bg);
 
 	print_text (YOUHAVE_MSG, 0, YOUHAVE_X, YOUHAVE_Y, 40,
 		STATUS_FG, STATUS_BG);
@@ -65,9 +64,8 @@ void inventory ()
 			intobj[objcount++] = x;
 
 			print_text (object_name (x), 0,
-				(cy % 2 ? 40 - strlen (object_name (x)) :
-				0) << 3, ((cy / 2) + 1) << 3, 40,
-				STATUS_FG, STATUS_BG);
+				cy % 2 ? 40 - strlen (object_name (x)) : 0,
+				(cy / 2) + 1, 40, STATUS_FG, STATUS_BG);
 
 			cy++;
 			y++;
@@ -87,7 +85,7 @@ void inventory ()
 			STATUS_FG, STATUS_BG);
  
 	/* dump to screen. */
-	put_screen ();
+	flush_screen ();
 
 	/*
 	 * test flag(13)
@@ -111,17 +109,18 @@ void inventory ()
 			if (show) {
 			/* nothing is a special case! */
 				if (!objcount) {
-					print_text (NOTHING_MSG, 0, NOTHING_X,
-					NOTHING_Y, 40, STATUS_BG, STATUS_FG);
-					put_block (NOTHING_X, NOTHING_Y,
-					NOTHING_X + strlen (NOTHING_MSG) * 8,
-					NOTHING_Y+8);
+					print_text (NOTHING_MSG, 0,
+						NOTHING_X, NOTHING_Y, 40,
+						STATUS_BG, STATUS_FG);
+					schedule_update (NOTHING_X, NOTHING_Y,
+						NOTHING_X + strlen (NOTHING_MSG)
+						* 8, NOTHING_Y+8);
 				} else {
 					if (ls) {
 						print_text (object_name (intobj[ls-1]),
 						0, lx1, (((ly1/2)+1)<<3),
 						40, STATUS_FG, STATUS_BG);
-						put_block(lx1, ly1, lx2, cy+8);
+						schedule_update (lx1, ly1, lx2, cy+8);
 					}
 
 					jlen = strlen (object_name(intobj[fsel]));
@@ -135,7 +134,7 @@ void inventory ()
 					print_text (object_name (intobj[fsel]),
 						0, lx1, (((cy/2)+1)<<3), 40,
 						STATUS_BG, STATUS_FG);
-					put_block (lx1, ly1, lx2, cy+8);
+					schedule_update (lx1, ly1, lx2, cy+8);
 				}
 				show = 0;
 			}
@@ -190,6 +189,8 @@ void inventory ()
 			default:
 				break;
 			}
+
+			do_update ();
 		}
 	}
 
@@ -199,6 +200,12 @@ void inventory ()
 	if (!getflag (F_status_selects_items))
 		wait_key();
 
-	restore_screen ();
+	clear_screen (0);
+	write_status ();
+	show_pic ();
+	game.color_fg = old_fg;
+	game.color_bg = old_bg;
+	print_line_prompt ();
+	flush_lines (game.line_user_input, 24);
 }
 

@@ -10,97 +10,13 @@
 
 #include <stdio.h>
 #include <string.h>
-
 #include "sarien.h"
 #include "agi.h"
-#include "gfx_agi.h"
 #include "opcodes.h"
-#include "view.h"
-#include "logic.h"
 
 
-#define ip (logics[lognum].cIP)
-#define code (logics[lognum].data)
-
-
-extern struct agi_view_table view_table[];
-extern struct agi_logic logics[];
-extern struct agi_view views[];
-
-
-static void new_room_resources ()
-{
-	int x;
-
-	for (x = 0; x < MAX_DIRS; x++) {
-		/* FR: 
-		 * According to the specs, only the logic resources need to
-		 * be freed (and now freeing the view resources will corrupt
-		 * the program anyway)
-		 *
-		 * agi_unload_resource(rVIEW, x);
-		 * agi_unload_resource(rPICTURE, x);
-		 */
-		agi_unload_resource(rLOGIC, x);
-	}
-
-	for (x = 0; x < MAX_VIEWTABLE; x++)
-		reset_view(x);
-}
-
-
-void new_room (int r)
-{
-	_D (_D_WARN "(%d)", r);
-
-	/* stop all animation */
-
-	/* stop all sounds */
-	cmd_stop_sound ();
-
-	/* reset all VIEWS */
-	/* unload all logic resources */
-	/* turn control over to EGO */
-	/* release all sprite bg info */
-	/* reset views */
-
-	erase_sprites ();
-	new_room_resources ();
-
-	switch (getvar (V_border_touch_ego)) {
-	case 1:
-		view_table[EGO_VIEW_TABLE].y_pos = _HEIGHT - 1;
-		break;
-	case 2:
-		view_table[EGO_VIEW_TABLE].x_pos = 0;
-		break;
-	case 3:
-		view_table[EGO_VIEW_TABLE].y_pos = game.horizon + 1;
-		break; /* horizon + 1*/
-	case 4:
-		view_table[EGO_VIEW_TABLE].x_pos = _WIDTH -
-			VT_WIDTH(view_table[EGO_VIEW_TABLE]);
-		break;
-	}
-
- 	//cmd_set_horizon (HORIZON);
-
-	setvar (V_prev_room, getvar(V_cur_room));
-	setvar (V_cur_room, r);
-	setvar (V_border_touch_obj, 0);
-	setvar (V_border_code, 0);
-	setvar (V_word_not_found, 0);
-	/* Oops. Don't reset ego in new room, it breaks SQ1, KQ1 and others
-	 *
-	 * setvar (V_ego_view_resource, 0);i
-	 */
-
-	/* adjust ego position */
-	setvar (V_border_touch_ego, 0);
-	setflag (F_entered_cli, FALSE);
-	setflag (F_new_room_exec, TRUE);
-	_D ("F5 = %d", getflag (F_new_room_exec));
-}
+#define ip (game.logics[n].cIP)
+#define code (game.logics[n].data)
 
 /*
  * Patches
@@ -170,10 +86,10 @@ static UINT8 mh1data_fix[]= {
 };
 
 
-void break_copy_protection (int lognum)
+void break_copy_protection (int n)
 {
 
-	switch(lognum) {
+	switch(n) {
 	case 6:
 		/* lsl1 bypass questions */
 		if (!strcmp (game.id, "LLLLL")) {

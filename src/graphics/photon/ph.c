@@ -25,7 +25,7 @@
 #include <Ph.h>
 
 #include "sarien.h"
-#include "gfx_base.h"
+#include "graphics.h"
 #include "keyboard.h"
 
 extern struct sarien_options opt;
@@ -53,7 +53,7 @@ static int key_queue_end = 0;
 static int	init_vidmode	(void);
 static int	deinit_vidmode	(void);
 static void	put_block	(int, int, int, int);
-static void	_put_pixel	(int, int, int);
+static void	put_pixels	(int, int, int, UINT8*);
 static int	keypress	(void);
 static int	get_key		(void);
 static void	new_timer	(void);
@@ -78,7 +78,7 @@ static struct gfx_driver GFX_ph = {
 	init_vidmode,
 	deinit_vidmode,
 	put_block,
-	_put_pixel,
+	put_pixels,
 	new_timer,
 	keypress,
 	get_key
@@ -173,11 +173,18 @@ static void put_block (int x1, int y1, int x2, int y2)
 
 
 /* put pixel routine */
-static void _put_pixel (int x, int y, int c)
+static void put_pixels (int x, int y, int w, char *p)
 {
 	register int i, j;
 
 	pthread_mutex_lock (&mut_image);
+
+	/* CM: this is only a kludge to use the new interface.
+	 *     please fix it properly to take advantage of the
+	 *     driver interface change.
+	 */
+while (w--) {
+	int c = *p++;
 
 	if (scale == 1) {
 		PiSetPixel (phimage, x, y, c);
@@ -195,6 +202,7 @@ static void _put_pixel (int x, int y, int c)
 			for (j = 0; j < scale; j++)
 				PiSetPixel (phimage, x + i, y + j, c);
 	}
+}
 	pthread_mutex_unlock (&mut_image);
 }
 

@@ -12,14 +12,8 @@
 
 #include <stdio.h>
 #include <string.h>
-
 #include "sarien.h"
 #include "agi.h"
-#include "picture.h"
-#include "view.h"
-#include "logic.h"
-#include "sound.h"
-#include "console.h"
 
 static int agi_v4_init (void);
 static int agi_v4_deinit (void);
@@ -619,7 +613,7 @@ int agi_v4_load_resource (int restype, int resnum)
 		{
 			data = agi_v4v3_load_vol_res(&game.dir_pic[resnum]);
 			if (data != NULL) {
-				data = convert_v2_v3_pic (data,
+				data = convert_v3_pic (data,
 					game.dir_pic[resnum].len);
 				pictures[resnum].rdata = data;
 				game.dir_pic[resnum].flags |= RES_LOADED;

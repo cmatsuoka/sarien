@@ -13,19 +13,58 @@
 
 #include "sarien.h"
 #include "agi.h"
-#include "sound.h"
-#include "console.h"
 
-/* This code is becoming a mess. It was clean and nice when it only
- * played simple note-based sound resources, but now it recognizes
- * IIgs sample sounds, and IIgs song support will be added soon.
+#define SOUND_PLAYING   0x01
+#define BUFFER_SIZE     410
+#define WAVEFORM_SIZE   64
+#define ENV_DECAY       800
+#define ENV_SUSTAIN     160
+#define NUM_CHANNELS    16
+
+#define USE_INTERPOLATION
+
+/**
+ * AGI sound note structure.
  */
+struct agi_note {
+	UINT8 dur_lo;			/**< LSB of note duration */
+	UINT8 dur_hi;			/**< MSB of note duration */
+	UINT8 frq_0;			/**< LSB of note frequency */
+	UINT8 frq_1;			/**< MSB of note frequency */
+	UINT8 vol;			/**< note volume */
+};
+
+/**
+ * Sarien sound channel structure.
+ */
+struct channel_info {
+#define AGI_SOUND_SAMPLE	0x0001
+#define AGI_SOUND_MIDI		0x0002
+#define AGI_SOUND_4CHN		0x0008
+	UINT32 type;
+	struct agi_note *ptr;
+	SINT16 *ins;
+	SINT32 size;
+#define AGI_SOUND_LOOP		0x0001
+#define AGI_SOUND_ENVELOPE	0x0002
+	UINT32 flags;
+	SINT32 timer;
+	UINT32 end;
+	UINT32 freq;
+	UINT32 phase;
+	UINT32 vol;
+	UINT32 env;
+};
+
 
 /* TODO: add support for variable sampling rate in the output device
  */
 
 #ifdef USE_IIGS_SOUND
 
+/**
+ * Sarien sound envelope structure.
+ */
 struct sound_envelope {
 	UINT8 bp;
 	UINT8 inc_hi;
@@ -83,7 +122,6 @@ static SINT16 *waveform;
 
 
 SINT16 *snd_buffer;
-struct agi_sound sounds[MAX_DIRS];
 struct sound_driver *snd;
 
 extern struct sound_driver sound_dummy;
@@ -152,13 +190,13 @@ static int note_to_period (int note)
 void unload_sound (int resnum)
 {
 	if (game.dir_sound[resnum].flags & RES_LOADED) {
-		if (sounds[resnum].flags & SOUND_PLAYING)
+		if (game.sounds[resnum].flags & SOUND_PLAYING)
 			/* FIXME: Stop playing */
 			;
 
 		/* Release RAW data for sound */
-		free(sounds[resnum].rdata);
-		sounds[resnum].rdata=NULL;
+		free(game.sounds[resnum].rdata);
+		game.sounds[resnum].rdata=NULL;
       		game.dir_sound[resnum].flags &= ~RES_LOADED;
 	}
 }
@@ -200,31 +238,31 @@ void start_sound (int resnum, int flag)
 	struct sound_iigs_sample *smp;
 #endif
 
-	if (sounds[resnum].flags & SOUND_PLAYING)
+	if (game.sounds[resnum].flags & SOUND_PLAYING)
 		return;
 
 	stop_sound ();
 
-	type = lohi_getword ((UINT8 *)sounds[resnum].rdata);
+	type = lohi_getword ((UINT8 *)game.sounds[resnum].rdata);
 
 	if (type != AGI_SOUND_SAMPLE &&
 		type != AGI_SOUND_MIDI &&
 		type != AGI_SOUND_4CHN)
 		return;
 
-	sounds[resnum].flags |= SOUND_PLAYING;
-	sounds[resnum].type = type;
+	game.sounds[resnum].flags |= SOUND_PLAYING;
+	game.sounds[resnum].type = type;
 	playing_sound = resnum;
-	song = (UINT8 *)sounds[resnum].rdata;
+	song = (UINT8 *)game.sounds[resnum].rdata;
 
 	switch (type) {
 #ifdef USE_IIGS_SOUND
 	case AGI_SOUND_SAMPLE:
 		_D (_D_WARN "IIGS sample");
-		smp = (struct sound_iigs_sample *)sounds[resnum].rdata;
+		smp = (struct sound_iigs_sample *)game.sounds[resnum].rdata;
 		for (i = 0; i < NUM_CHANNELS; i++) {
 			chn[i].flags = 0;
-			chn[i].ins = (SINT16 *)&sounds[resnum].rdata[54];
+			chn[i].ins = (SINT16 *)&game.sounds[resnum].rdata[54];
 			chn[i].size = ((int)smp->size_hi << 8) + smp->size_lo;
 			chn[i].ptr = &play_sample[i];
 			chn[i].timer = 0;
@@ -248,8 +286,6 @@ void start_sound (int resnum, int flag)
 		break;
 #endif
 	case AGI_SOUND_4CHN:
-		_D (_D_WARN "AGI four-channel sound resource");
-
 		/* Initialize channel info */
 		for (i = 0; i < NUM_CHANNELS; i++) {
 			chn[i].flags = AGI_SOUND_LOOP;
@@ -266,7 +302,6 @@ void start_sound (int resnum, int flag)
 		break;
 	}
 
-	_D ("ready");
 	memset (snd_buffer, 0, BUFFER_SIZE << 1);
 	endflag = flag;
 
@@ -288,8 +323,6 @@ void stop_sound ()
 {
 	int i;
 
-	_D ("()");
-
 	endflag = -1;
 	for (i = 0; i < NUM_CHANNELS; i++) {
 		chn[i].vol = 0;
@@ -297,7 +330,7 @@ void stop_sound ()
 	}
 
 	if (playing_sound != -1) {
-		sounds[playing_sound].flags &= ~SOUND_PLAYING;
+		game.sounds[playing_sound].flags &= ~SOUND_PLAYING;
 		playing_sound = -1;
 	}
 }
@@ -492,7 +525,7 @@ void play_sound ()
 			setflag (endflag, TRUE);
 
 		if (playing_sound != -1)
-			sounds[playing_sound].flags &= ~SOUND_PLAYING;
+			game.sounds[playing_sound].flags &= ~SOUND_PLAYING;
 		playing_sound = -1;
 		endflag = -1;
 	}

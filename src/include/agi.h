@@ -15,6 +15,68 @@
 extern "C"{
 #endif
 
+/* AGI resources */
+#include "view.h"
+#include "picture.h"
+#include "logic.h"
+#include "sound.h"
+
+
+/**
+ * AGI variables.
+ */
+enum {
+	V_cur_room = 0,			/* 0 */
+	V_prev_room,
+	V_border_touch_ego,
+	V_score,
+	V_border_code,
+	V_border_touch_obj,		/* 5 */
+	V_ego_dir,
+	V_max_score,
+	V_free_pages,
+	V_word_not_found,
+	V_time_delay,                   /* 10 */
+	V_seconds,
+	V_minutes,
+	V_hours,
+	V_days,
+	V_joystick_sensitivity,         /* 15 */
+	V_ego_view_resource,
+	V_agi_err_code,
+	V_agi_err_code_info,
+	V_key,
+	V_computer,                     /* 20 */
+	V_window_reset,
+	V_soundgen,
+	V_Volume,
+	V_max_input_chars,
+	V_sel_item,                     /* 25 */
+	V_monitor
+};
+
+/**
+ * AGI flags
+ */
+enum {
+	F_ego_water = 0,		/* 0 */
+	F_ego_invis,
+	F_entered_cli,
+	F_ego_touched_p2,
+	F_said_accepted_input,
+	F_new_room_exec,		/* 5 */
+	F_restart_game,
+	F_script_blocked,
+	F_joy_sensitivity,
+	F_sound_on,
+	F_debugger_on,			/* 10 */
+	F_logic_zeron_firsttime,
+	F_restore_just_ran,
+	F_status_selects_items,
+	F_menus_work,			/* 14 */
+	F_output_mode
+};
+
 struct agi_event {
 	UINT8	event;
 	UINT8	occured;
@@ -40,50 +102,65 @@ struct agi_dir {
 	 */
 };
 
-/* This structure should contain everything we would want to
- * put in an agi "snapshot" savegame. Later in the cleanup process
- * we'll remove individual global variables and use this struct instead.
+struct agi_block {
+	int active;
+	int x1, y1;
+	int x2, y2;
+};
+
+#define EGO_VIEW_TABLE	0
+#define	HORIZON		36
+#define _WIDTH		160
+#define _HEIGHT		168
+
+/**
+ * AGI game structure.
+ * This structure contains all global data of an AGI game executed
+ * by the interpreter.
  */
 struct agi_game {
-	char name[8];		/* lead in id (eg, goldrush GR */
-	char id[8];		/* game id */	
-	char dir[MAX_PATH];	/* game dir (for v3 games, eg GR<dir>) */
+	char name[8];		/**< lead in id (e.g. `GR' for goldrush) */
+	char id[8];		/**< game id */	
+	char dir[MAX_PATH];	/**< game dir */
 
 	/* game flags and variables */
-	UINT8 flags[MAX_FLAGS];	/* 256 1-bit flags */
-	UINT8 vars[MAX_VARS];	/* 256 variables */
+	UINT8 flags[MAX_FLAGS];	/**< 256 1-bit flags */
+	UINT8 vars[MAX_VARS];	/**< 256 variables */
 
 	/* internal variables */
-	int horizon;		/* horizon marker */
-	int line_status;	/* line num to put status on */
-	int line_user_input;	/* line to put user input on */
-	int line_min_print;	/* num lines to print on */
-	int new_room_num;
+	int horizon;		/**< horizon y coordinate */
+	int line_status;	/**< line number to put status on */
+	int line_user_input;	/**< line to put user input on */
+	int line_min_print;	/**< num lines to print on */
 	int keypress;
 #define INPUT_NORMAL	0x01
 #define INPUT_GETSTRING	0x02
 #define INPUT_MENU	0x03
 #define INPUT_NONE	0x04
-	int input_mode;
+	int input_mode;		/**< keyboard input mode */
 
 	/* internal flags */
-	int ego_in_new_room;	/* new room flag */
-	int control_mode;	/* who's in control */
-	int quit_prog_now;	/* quit now */
-	int status_line;	/* status line on/off */
-	int clock_enabled;	/* clock is on/off */
-	int exit_all_logics;
+	int player_control;	/**< player is in control */
+	int quit_prog_now;	/**< quit now */
+	int status_line;	/**< status line on/off */
+	int clock_enabled;	/**< clock is on/off */
+	int exit_all_logics;	/**< break cycle after new.room */
+	int picture_shown;	/**< show.pic has been issued */
 #define ID_AGDS		0x00000001
 #define ID_AMIGA	0x00000002
-	int game_flags;		/* game flags!! (important) */
+	int game_flags;		/**< Sarien options flags */
 
-	UINT32 msg_box_ticks;	/* timed message box tick counter */
+	/* windows */
+	UINT32 msg_box_ticks;	/**< timed message box tick counter */
+	struct agi_block block;
+	struct agi_block window;
+	int has_window;
 
-	/* directory entries for resources */
-	struct agi_dir dir_logic[MAX_DIRS];
-	struct agi_dir dir_pic[MAX_DIRS];
-	struct agi_dir dir_view[MAX_DIRS];
-	struct agi_dir dir_sound[MAX_DIRS];
+	/* graphics */
+	int gfx_mode;
+	int color_fg;
+	int color_bg;
+	UINT8 sbuf[_WIDTH * _HEIGHT];		/**< 160x168 AGI screen buffer */
 
 	/* player command line */
 	struct agi_word ego_words[MAX_WORDS];
@@ -91,23 +168,28 @@ struct agi_game {
 
 	int num_objects;
 
-	struct agi_event events[MAX_DIRS];	/* keyboard events */
+	struct agi_event events[MAX_DIRS];	/**< keyboard events */
+	char strings[MAX_WORDS1][MAX_WORDS2];	/**< strings */
 
-	char strings[MAX_WORDS1][MAX_WORDS2];	/* strings */
-#if 0
+	/* directory entries for resources */
+	struct agi_dir dir_logic[MAX_DIRS];
+	struct agi_dir dir_pic[MAX_DIRS];
+	struct agi_dir dir_view[MAX_DIRS];
+	struct agi_dir dir_sound[MAX_DIRS];
+
 	/* resources */
-	struct agi_picture pictures[MAX_DIRS];
-	struct agi_logic logics[MAX_DIRS];
-	struct agi_view views[MAX_DIRS];
-	struct agi_sound sounds[MAX_DIRS];
+	struct agi_picture pictures[MAX_DIRS];	/**< AGI picture resources */
+	struct agi_logic logics[MAX_DIRS];	/**< AGI logic resources */
+	struct agi_view views[MAX_DIRS];	/**< AGI view resources */
+	struct agi_sound sounds[MAX_DIRS];	/**< AGI sound resources */
 
 	/* view table */
-	struct agi_view_table view_table[MAX_VIEWTABLE];
-#endif
+	struct vt_entry view_table[MAX_VIEWTABLE];
 };
 
-extern struct agi_game game;
-
+/**
+ *
+ */
 struct agi_loader {
 	int version;
 	int int_version;
@@ -119,6 +201,9 @@ struct agi_loader {
 	int (*load_objects)(char *);
 	int (*load_words)(char *);
 };
+
+
+extern struct agi_game game;
 
 
 int	agi_init		(void);
@@ -148,8 +233,11 @@ void	object_set_location (int, int);
 void	new_input_mode (int);
 void	old_input_mode (void);
 
+int     run_logic               (int);
+
 #ifdef __cplusplus
 };
 #endif
 
 #endif /* __AGI_H */
+

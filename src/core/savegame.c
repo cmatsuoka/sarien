@@ -17,15 +17,13 @@
 #include "agi.h"
 #include "keyboard.h"
 #include "text.h"
-#include "view.h"
 #include "opcodes.h"
 #include "savegame.h"
-#include "gfx_agi.h"
 #include "iff.h"
 
 static int loading_ok;
-extern struct agi_view_table view_table[];
 
+#define CENTER -1, -1, -1
 
 #ifdef WIN32
 
@@ -230,27 +228,28 @@ int save_game (char *s, char *d)
 	}
 
 	for (i = 0; i < MAX_VIEWTABLE; i++) {
+		struct vt_entry *v = &game.view_table[i];
 		iff_newchunk ("VIEW", s_view, f);
 		write32 (i, f);
-		write8 (view_table[i].step_time, f);
-		write8 (view_table[i].step_time_count, f);
-		write8 (view_table[i].x_pos, f);
-		write8 (view_table[i].y_pos, f);
-		write8 (view_table[i].current_view, f);
-		write8 (view_table[i].current_loop, f);
-		write8 (view_table[i].current_cel, f);
-		write8 (view_table[i].step_size, f);
-		write8 (view_table[i].cycle_time, f);
-		write8 (view_table[i].cycle_time_count, f);
-		write8 (view_table[i].direction, f);
-		write8 (view_table[i].motion, f);
-		write8 (view_table[i].cycle, f);
-		write8 (view_table[i].priority, f);
-		write16 (view_table[i].flags, f);
-		write8 (view_table[i].parm1, f);
-		write8 (view_table[i].parm2, f);
-		write8 (view_table[i].parm3, f);
-		write8 (view_table[i].parm4, f);
+		write8 (v->step_time, f);
+		write8 (v->step_time_count, f);
+		write8 (v->x_pos, f);
+		write8 (v->y_pos, f);
+		write8 (v->current_view, f);
+		write8 (v->current_loop, f);
+		write8 (v->current_cel, f);
+		write8 (v->step_size, f);
+		write8 (v->cycle_time, f);
+		write8 (v->cycle_time_count, f);
+		write8 (v->direction, f);
+		write8 (v->motion, f);
+		write8 (v->cycle, f);
+		write8 (v->priority, f);
+		write16 (v->flags, f);
+		write8 (v->parm1, f);
+		write8 (v->parm2, f);
+		write8 (v->parm3, f);
+		write8 (v->parm4, f);
 	}
 
 	fclose (f);
@@ -259,37 +258,40 @@ int save_game (char *s, char *d)
 }
 
 
-static void get_view (int size, UINT8 *buffer)
+static void get_view (int size, UINT8 *b)
 {
 	UINT32 i;
+	struct vt_entry *v;
 
-	_D ("(%d, %p)", size, buffer);
+	_D ("(%d, %p)", size, b);
 
-	i = hilo_getdword (buffer);
- 	buffer += 4;
+	i = hilo_getdword (b);
+ 	b += 4;
 
 	if (i > MAX_VIEWTABLE)
 		return;
 
-	view_table[i].step_time = hilo_getbyte (buffer++);
-	view_table[i].step_time_count = hilo_getbyte (buffer++);
-	view_table[i].x_pos = hilo_getbyte (buffer++);
-	view_table[i].y_pos = hilo_getbyte (buffer++);
-	view_table[i].current_view = hilo_getbyte (buffer++);
-	view_table[i].current_loop = hilo_getbyte (buffer++);
-	view_table[i].current_cel = hilo_getbyte (buffer++);
-	view_table[i].step_size = hilo_getbyte (buffer++);
-	view_table[i].cycle_time = hilo_getbyte (buffer++);
-	view_table[i].cycle_time_count = hilo_getbyte (buffer++);
-	view_table[i].direction = hilo_getbyte (buffer++);
-	view_table[i].motion = hilo_getbyte (buffer++);
-	view_table[i].cycle = hilo_getbyte (buffer++);
-	view_table[i].priority = hilo_getbyte (buffer++);
-	view_table[i].flags = hilo_getword(buffer); buffer+=2;
-	view_table[i].parm1 = hilo_getbyte (buffer++);
-	view_table[i].parm2 = hilo_getbyte (buffer++);
-	view_table[i].parm3 = hilo_getbyte (buffer++);
-	view_table[i].parm4 = hilo_getbyte (buffer++);
+	v = &game.view_table[i];
+
+	v->step_time		= hilo_getbyte (b++);
+	v->step_time_count	= hilo_getbyte (b++);
+	v->x_pos		= hilo_getbyte (b++);
+	v->y_pos		= hilo_getbyte (b++);
+	v->current_view		= hilo_getbyte (b++);
+	v->current_loop		= hilo_getbyte (b++);
+	v->current_cel		= hilo_getbyte (b++);
+	v->step_size		= hilo_getbyte (b++);
+	v->cycle_time		= hilo_getbyte (b++);
+	v->cycle_time_count	= hilo_getbyte (b++);
+	v->direction		= hilo_getbyte (b++);
+	v->motion		= hilo_getbyte (b++);
+	v->cycle		= hilo_getbyte (b++);
+	v->priority		= hilo_getbyte (b++);
+	v->flags		= hilo_getword(b); b+=2;
+	v->parm1		= hilo_getbyte (b++);
+	v->parm2		= hilo_getbyte (b++);
+	v->parm3		= hilo_getbyte (b++);
+	v->parm4		= hilo_getbyte (b++);
 }
 
 
@@ -417,10 +419,11 @@ int load_game (char *s)
 	iff_release ();
 	fclose (f);
 
-	cmd_draw_pic (getvar (V_cur_room));
+	/* FIXME */
+	//cmd_draw_pic (getvar (V_cur_room));
 	/* redraw_sprites (); */
-	game.new_room_num = getvar (V_cur_room);
-	game.ego_in_new_room = TRUE;
+	//game.new_room_num = getvar (V_cur_room);
+	//game.ego_in_new_room = TRUE;
 	game.exit_all_logics = TRUE;
 
 	return loading_ok ? err_OK : err_BadFileOpen;
@@ -433,17 +436,12 @@ int savegame_dialog ()
 	char *desc;
 	int slot = 0;
 
-	save_screen ();
-	redraw_sprites ();
-
 	if (get_app_dir (home, MAX_PATH) < 0) {
-		release_sprites ();
-		restore_screen ();
-		message_box ("Couldn't save game.");
+		message_box ("Couldn't save game.", CENTER);
 		return err_BadFileOpen;
 	}
 
-	textbox (
+	message_box (
 		"Multi-slot savegames are under development and"
 		"will be available in future versions of Sarien."
 		, -1, -1, -1);
@@ -462,9 +460,7 @@ int savegame_dialog ()
 	
 	save_game (path, desc);
 
-	release_sprites ();
-	restore_screen ();
-	message_box ("Game saved.");
+	message_box ("Game saved.", CENTER);
 
 	return err_OK;
 }
@@ -476,13 +472,8 @@ int loadgame_dialog ()
 	int slot = 0;
 	int rc;
 
-	save_screen ();
-	redraw_sprites ();
-
 	if (get_app_dir (home, MAX_PATH) < 0) {
-		release_sprites ();
-		restore_screen ();
-		message_box ("Error loading game.");
+		message_box ("Error loading game.", CENTER);
 		return err_BadFileOpen;
 	}
 
@@ -491,16 +482,12 @@ int loadgame_dialog ()
 	snprintf (path, MAX_PATH, "%s/" DATADIR "/%s/", home, game.id);
 	mkdir (path, 0711);
 	
-	redraw_sprites ();
-	release_sprites ();
-	restore_screen ();
-
 	snprintf (path, MAX_PATH, "%s/" DATADIR "/%s/%08d.iff",
 		home, game.id, slot);
 	if ((rc = load_game (path)) == err_OK)
-		message_box ("Gamed loaded.");
+		message_box ("Gamed loaded.", CENTER);
 	else
-		message_box ("Error loading game.");
+		message_box ("Error loading game.", CENTER);
 
 	return rc;
 }

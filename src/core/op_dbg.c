@@ -8,19 +8,13 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#include <stdio.h>
 #include <string.h>
-
 #include "sarien.h"
+#include "agi.h"
 #include "opcodes.h"
-#include "logic.h"
-#include "console.h"
 
-
-#define USE_DEBUGBOX
-
-#define ip	(logics[lognum].cIP)
-#define code	(logics[lognum].data)
+#define ip	(game.logics[lognum].cIP)
+#define code	(game.logics[lognum].data)
 
 #ifdef _L
 #undef _L
@@ -31,8 +25,6 @@
 #else
 #define _L(a,b,c) { b, c }
 #endif
-
-extern struct agi_logic logics[];
 
 struct agi_logicnames logic_names_test[] = {
         _L("",			0, 0x00),

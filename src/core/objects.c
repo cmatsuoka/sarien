@@ -11,10 +11,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
-
 #include "sarien.h"
 #include "agi.h"
-#include "console.h"
 
 extern struct agi_game game;
 extern int decode_objects(UINT8* mem, UINT32 flen);

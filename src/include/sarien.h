@@ -24,6 +24,8 @@ extern "C"{
 #  endif
 #endif
 
+#include "console.h"
+
 #ifdef DMALLOC
 #  include <dmalloc.h>
 #endif
@@ -64,7 +66,7 @@ extern "C"{
      typedef signed long	SINT32;
 #  else
      typedef unsigned int	UINT32;
-     typedef signed int	SINT32;
+     typedef signed int		SINT32;
 #  endif
 #endif
 
@@ -128,11 +130,6 @@ extern "C"{
 
 #undef OPT_PICTURE_VIEWER
 
-#define EGO_VIEW_TABLE	0
-#define	HORIZON		36
-#define _WIDTH		160
-#define _HEIGHT		168
-
 /* You'll need an ANSI terminal to use these :\ */
 #define _D_INFO "\x1b[33m"
 #define _D_CRIT "\x1b[31m"
@@ -173,7 +170,6 @@ void	setvar		(int, int);
 
 void	decrypt		(UINT8 *mem, int len);
 void	release_sprites	(void);
-void	update_status_line(int);
 
 int main_cycle (void);
 
@@ -212,70 +208,12 @@ char* get_current_directory (void);
 
 extern	void list_games(void);
 
-#ifdef __cplusplus
-extern "C"{
-#endif
-
 int v2id_game (void);
 int v3id_game (void);
-
-#ifdef __cplusplus
-};
-#endif
-
 
 enum {
 	NO_GAMEDIR = 0,
 	GAMEDIR
-};
-
-enum {
-	V_cur_room = 0,
-	V_prev_room,
-	V_border_touch_ego,
-	V_score,
-	V_border_code,
-	V_border_touch_obj,		/* 5 */
-	V_ego_dir,
-	V_max_score,
-	V_free_pages,
-	V_word_not_found,
-	V_time_delay,                   /* 10 */
-	V_seconds,
-	V_minutes,
-	V_hours,
-	V_days,
-	V_joystick_sensitivity,         /* 15 */
-	V_ego_view_resource,
-	V_agi_err_code,
-	V_agi_err_code_info,
-	V_key,
-	V_computer,                     /* 20 */
-	V_window_reset,
-	V_soundgen,
-	V_Volume,
-	V_max_input_chars,
-	V_sel_item,                     /* 25 */
-	V_monitor
-};
-
-enum {
-	F_ego_water = 0,
-	F_ego_invis,
-	F_entered_cli,
-	F_ego_touched_p2,
-	F_said_accepted_input,
-	F_new_room_exec,				/* 5 */
-	F_restart_game,
-	F_script_blocked,
-	F_joy_sensitivity,
-	F_sound_on,
-	F_debugger_on,					/* 10 */
-	F_logic_zeron_firsttime,
-	F_restore_just_ran,
-	F_status_selects_items,
-	F_menus_work,					/* 14 */
-	F_output_mode
 };
 
 enum error {
@@ -295,7 +233,10 @@ enum error {
 	err_Unk = 127
 };
 
-enum RESOURCES {
+/**
+ * AGI resources.
+ */
+enum {
 	rLOGIC = 1,
 	rSOUND,
 	rVIEW,
@@ -329,11 +270,6 @@ enum {
 };
 
 enum {
-	CONTROL_PLAYER = 1,
-	CONTROL_PROGRAM
-};
-
-enum {
 	GFX_MODE = 1,
 	TXT_MODE
 };
@@ -357,7 +293,9 @@ struct game_id_list {
 	char *switches;
 };
 
-
+/**
+ * Command-line options.
+ */
 struct sarien_options {
 	int forceload;		/* force loading of all resources */
 	int cache;		/* cache loaded resources */

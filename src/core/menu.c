@@ -13,8 +13,8 @@
 
 #include "sarien.h"
 #include "agi.h"
-#include "gfx_agi.h"
-#include "gfx_base.h"
+#include "sprite.h"
+#include "graphics.h"
 #include "keyboard.h"
 #include "menu.h"
 #include "text.h"
@@ -31,56 +31,56 @@ struct agi_menu {
 static struct agi_menu *master_menu;
 static struct agi_menu *menu;
 
+/* menu broken due to changes in graphics.c, I'll fix it later */
 
 static void draw_horizontal_menu_bar (int cur_menu, int max_menu)
 {
 	struct agi_menu *men;
-	int cx, cy, z;
+	int col, z;
 
-	/* draw our empty title bar */
-	for (cy = 0; cy < CHAR_LINES; cy++)
-		for (cx = 0; cx < GFX_WIDTH; cx++)
-			put_pixel (cx, cy, MENU_BG);
+	clear_lines (0, 0, MENU_BG);
 
 	/* draw menu titles */
 	men = master_menu->next;
 
-	cx = CHAR_COLS;
+	col = 1;
 	for (z = 0; men; z++, men = men->next) {
+		_D ("searching: %s", men->text);
 		if (men->text) {
 			if(z == cur_menu) {
-				print_text (men->text, 0, cx, 0, 40,
+				print_text (men->text, 0, col, 0, 40,
 					MENU_BG, MENU_FG);
 			} else {
-				print_text (men->text, 0, cx, 0, 40,
+				print_text (men->text, 0, col, 0, 40,
 					MENU_FG, MENU_BG);
 			}
-			cx += (1 + strlen ((char*)men->text)) * CHAR_COLS;
+			col += strlen (men->text) + 1;
 		}
 	}
 
-	/* FIXME: call update_status()? */
-	put_block (0, 0, GFX_WIDTH, CHAR_LINES);
+	flush_lines (0, 0);
 }
 
 
 static void draw_vertical_menu (int h_menu, int cur_men, int max_men)
 {
-	/* draw box and verticle pulldowns. */
-	int cx, cy, x, y, z, l, len;
+	/* draw box and pulldowns. */
+	int col, lin, x, y, z, l, len;
 	struct agi_menu *men = master_menu->next, *down;
 	char menu[64];
 
+	_D (_D_WARN "menu %d, cur %d, max %d", h_menu, cur_men, max_men);
 	/* find which vertical menu it is */
-	for (cx = x = 0; x < h_menu; x++) {
+	for (col = x = 0; x < h_menu; x++) {
 		if (men->text && *men->text)
-			cx += 1 + strlen (men->text);
+			col += 1 + strlen (men->text);
 		men = men->next;
 	}
 
 	down = men->down;
 
 	len = 0;
+	lin = 1;
 	men = down;
 	/* scan size of this vertical menu */
 	while (men) {
@@ -94,19 +94,19 @@ static void draw_vertical_menu (int h_menu, int cur_men, int max_men)
 
 	if (len > 40)
 		len = 38;
-	if (cx + len > 40 && len < 40)
-		cx = 38 - len;
+	if (col + len > 40 && len < 40)
+		col = 38 - len;
 
-	cx *= CHAR_COLS;
-	cy = CHAR_LINES;
-	draw_box (cx, cy, cx + ((2 + len) * CHAR_COLS),
-		((2 + max_men) * CHAR_LINES), MENU_BG, MENU_LINE, LINES, 0);
+	draw_box (col * CHAR_COLS, lin * CHAR_LINES,
+		(col + len + 2) * CHAR_COLS,
+		(max_men + 2) * CHAR_LINES,
+		MENU_BG, MENU_LINE, LINES);
 
 	men = down;
-	x = cx + CHAR_COLS;
-	y = cy + CHAR_LINES;
+	x = col + 1;
+	y = lin + 1;
 
-	for (z = 0; men; z++, y += CHAR_LINES, men = men->down) {
+	for (z = 0; men; z++, y++, men = men->down) {
 		l = strlen (men->text);
 		memmove (menu, men->text, l);
 		memset (menu + l, ' ', len - l);
@@ -118,7 +118,9 @@ static void draw_vertical_menu (int h_menu, int cur_men, int max_men)
 			print_text (menu, 0, x, y, len + 2, MENU_FG, MENU_BG);
 	}
 
-	put_block (cx, cy, cx + ((2 + len) * CHAR_COLS), (2 + max_men) * CHAR_LINES);
+	flush_block (col * CHAR_COLS, lin * CHAR_LINES,
+		(col + len + 2) * CHAR_COLS,
+		(max_men + 2) * CHAR_LINES);
 }
 
 
@@ -160,6 +162,7 @@ void add_menu (char *message)
 {
 	struct agi_menu *m1 = menu;
 
+	_D (_D_WARN "add menu: %s", message);
 	while (m1->next != NULL)
 		m1 = m1->next;
 
@@ -176,6 +179,7 @@ void add_menu_item (char *message, int code)
 {
 	struct agi_menu *m1;
 
+	_D (_D_WARN "Adding menu item: %s", message);
 	for (m1 = menu; m1->next; m1 = m1->next);
 	for (; m1->down; m1 = m1->down);
 
@@ -190,6 +194,7 @@ void add_menu_item (char *message, int code)
 
 void submit_menu ()
 {
+	_D (_D_WARN "Submitting menu");
 	master_menu = menu;
 }
 
@@ -210,10 +215,13 @@ int menu_keyhandler (int key)
 		clock_val = game.clock_enabled;
 		game.clock_enabled = FALSE;
 
+#if 0
 		release_sprites ();
 		save_screen ();
 		redraw_sprites ();
-		put_screen ();
+		update_screen ();
+#endif
+		
 
 		/* calc size of horizontal menu */
 		for (men = master_menu->next; men; h_max_menu++, men=men->next);
@@ -260,10 +268,16 @@ int menu_keyhandler (int key)
     		if (1 + h_cur_menu >= h_max_menu)
 			break;
     		h_cur_menu++;
+
+		erase_both ();
+		show_pic ();
+		blit_both ();
+#if 0
 		release_sprites ();
 		restore_screen_area ();
 		redraw_sprites ();
-		put_screen ();
+		update_screen ();
+#endif
 
 		/* calc size of vertical menus */
 		for(i = 0, men = master_menu->next; i < h_cur_menu; i++)
@@ -277,10 +291,16 @@ int menu_keyhandler (int key)
     		if (h_cur_menu <= 0)
 			break;
     		h_cur_menu--;
+
+		erase_both ();
+		show_pic ();
+		blit_both ();
+#if 0
 		release_sprites ();
 		restore_screen_area ();
 		redraw_sprites ();
-		put_screen ();
+		update_screen ();
+#endif
 
 		/* calc size of vertical menus */
 		for (i = 0, men = master_menu->next; i < h_cur_menu; i++)
@@ -291,12 +311,14 @@ int menu_keyhandler (int key)
     		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
     		break;
     	}
+
 	return TRUE;
 
 exit_menu:
-	release_sprites ();
-	restore_screen ();
-	redraw_sprites ();
+	erase_both ();
+	show_pic ();
+	blit_both ();
+	write_status ();
 
 	setvar (V_key, 0);
 	game.keypress = 0;

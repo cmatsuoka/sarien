@@ -2,10 +2,10 @@
 
 XCFLAGS	= -I../include
 OBJS	= global.o agi_v2.o agi_v3.o agi_v4.o agi.o cli.o words.o objects.o \
-	  picture.o view.o id.o logic.o op_test.o op_misc.o op_cmd.o \
-	  op_dbg.o keyboard.o rand.o menu.o font.o lzw.o getopt.o getopt1.o \
-	  sound.o savegame.o silent.o iff.o console.o cycle.o inv.o text.o \
-	  gfx_base.o gfx_agi.o
+	  picture.o view.o id.o logic.o op_test.o op_cmd.o op_dbg.o patches.o \
+	  keyboard.o rand.o menu.o font.o lzw.o getopt.o getopt1.o savegame.o \
+	  sound.o silent.o iff.o console.o cycle.o inv.o text.o graphics.o \
+	  sprite.o checks.o motion.o
 XDEPS	= main.o
 DFILES	= Makefile $(OBJS:.o=.c) main.c id.c picview.c Makefile.wat Makefile.dj
 CFILES	=
@@ -14,7 +14,7 @@ XLIBS	= -L../../lib -lagi
 
 LIB	= ../../lib/libagi.a
 
-all: fixcr $(LIB) ../../bin/sarien ../../bin/picview
+all: fixcr $(LIB) ../../bin/sarien # ../../bin/picview # currently broken
 
 ../../bin/sarien: main.o ../../lib/libagi.a
 	$(LD) $(LDFLAGS) main.o id.o $(XLIBS) $(X11LIBS) $(LIBS)
