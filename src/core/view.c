@@ -353,7 +353,7 @@ void update_viewtable ()
 		} else
 #endif
 		/* If we're not using the console, updating only
-		 * the active sprites let us save some CPU cycles.
+		 * the active sprites lets us save some CPU cycles.
 		 * This is how the original Sierra AGI works.
 		 */
 		{

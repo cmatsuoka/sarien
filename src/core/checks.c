@@ -12,21 +12,13 @@
 #include "agi.h"
 
 
-static int dir_table_x[9] = {
-	0,  0,  1,  1,  1,  0, -1, -1, -1
-};
-
-static int dir_table_y[9] = {
-	0, -1, -1,  0,  1,  1,  1,  0, -1
-};
-
 static int check_position (struct vt_entry *v)
 {
-	/* _D ("check position @ %d, %d", v->x_pos, v->y_pos); */
+	_D ("check position @ %d, %d", v->x_pos, v->y_pos);
 
 	if (	v->x_pos < 0 ||
 		v->x_pos + v->x_size > _WIDTH ||
-		v->y_pos + v->y_size + 1 < 0 ||
+		v->y_pos - v->y_size + 1 < 0 ||
 		v->y_pos < v->y_size || /* not in AGI 2.917, but MH1 needs it */
 		v->y_pos >= _HEIGHT ||
 		((~v->flags & IGNORE_HORIZON) && v->y_pos <= game.horizon))
@@ -163,7 +155,7 @@ _check_ego:
 void update_position ()
 {
 	struct vt_entry *v;
-	int x, y, old_x, old_y, dir, step, border;
+	int x, y, old_x, old_y, border;
 
 	game.vars[V_border_code] = 0;
 	game.vars[V_border_touch_ego] = 0;
@@ -188,10 +180,10 @@ void update_position ()
 		
 		/* If object has moved, update its position */
 		if (~v->flags & UPDATE_POS) {
-			dir = v->direction;
-			step = v->step_size;
-			x += step * dir_table_x[dir];
-			y += step * dir_table_y[dir];
+			int dx[9] = { 0,  0,  1,  1,  1,  0, -1, -1, -1 };
+			int dy[9] = { 0, -1, -1,  0,  1,  1,  1,  0, -1 };
+			x += v->step_size * dx[v->direction];
+			y += v->step_size * dy[v->direction];
 		}
 
 		/* Now check if it touched the borders */
@@ -218,7 +210,8 @@ void update_position ()
 			y = _HEIGHT - 1;
 			border = 3;
 		} else if ((~v->flags & IGNORE_HORIZON) && y <= game.horizon) {
-			y++;
+			_D (_D_WARN "y = %d, horizon = %d", y, game.horizon);
+			y = game.horizon + 1;
 			border = 1;
 		}
 
@@ -299,7 +292,6 @@ void fix_position (int n)
 		count = tries;
 	}
 
-	_D (_D_WARN "line_min_print = %d", game.line_min_print);
 	/* _D (_D_WARN "view table entry #%d position adjusted to (%d,%d)",
 		n, v->x_pos, v->y_pos); */
 }

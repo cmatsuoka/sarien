@@ -12,11 +12,6 @@
 #include "agi.h"
 #include "rand.h"
 
-static int dir_table[9] = {
-	8, 1, 2,
-	7, 0, 3,
-	6, 5, 4
-};
 
 static int check_step (int delta, int step)
 {
@@ -37,41 +32,15 @@ static int check_block (int x, int y)
 static void changepos (struct vt_entry *v)
 {
 	int b, x, y;
+	int dx[9] = { 0, 0, 1, 1, 1, 0, -1, -1, -1 };
+	int dy[9] = { 0, -1, -1, 0, 1, 1, 1, 0, -1 };
 
 	x = v->x_pos;
 	y = v->y_pos;
 	b = check_block (x, y);
 
-	switch (v->direction) {
-	case 1:
-		y -= v->step_size;
-		break;
-	case 2:
-		x += v->step_size;
-		y -= v->step_size;
-		break;
-	case 3:
-		x += v->step_size;
-		break;
-	case 4:
-		x += v->step_size;
-		y += v->step_size;
-		break;
-	case 5:
-		y += v->step_size;
-		break;
-	case 6:
-		x -= v->step_size;
-		y += v->step_size;
-		break;
-	case 7:
-		x -= v->step_size;
-		break;
-	case 8:
-		x -= v->step_size;
-		y -= v->step_size;
-		break;
-	}
+	x += v->step_size * dx[v->direction];
+	y += v->step_size * dy[v->direction];
 
 	if (check_block (x, y) == b) {
 		v->flags &= ~MOTION;
@@ -213,7 +182,10 @@ void check_all_motions ()
 }
 
 /**
- *
+ * Check if given entry is at destination point.
+ * This function is used to check if an object with move.obj type motion
+ * has reached its final destination coordinates.
+ * @param  v  Pointer to view table entry
  */
 void in_destination (struct vt_entry *v)
 {
@@ -230,14 +202,19 @@ void in_destination (struct vt_entry *v)
  * Wrapper for static function motion_moveobj().
  * This function is used by cmd_move_object() in the first motion cycle
  * after setting the motion mode to MOTION_MOVE_OBJ.
+ * @param  v  Pointer to view table entry
  */
 void move_obj (struct vt_entry *v)
 {
 	motion_moveobj (v);
 }
 
+/**
+ *
+ */
 int get_direction (int x, int y, int x0, int y0, int s)
 {
+	int dir_table[9] = { 8, 1, 2, 7, 0, 3, 6, 5, 4 };
 	return dir_table [check_step(x0 - x, s) + 3 * check_step(y0 - y, s)];
 }
 
