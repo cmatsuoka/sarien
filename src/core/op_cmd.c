@@ -272,18 +272,23 @@ void cmd_fix_loop (UINT8 entry)
 
 void cmd_object_on_any (UINT8 entry)
 {
+	_D (_D_WARN "(%d)", entry);
 	vt.flags &= ~ (ON_WATER | ON_LAND);
 }
 
 
 void cmd_object_on_land (UINT8 entry)
 {
+	_D (_D_WARN "(%d)", entry);
+	vt.flags &= ~ON_WATER;
 	vt.flags |= ON_LAND;
 }
 
 
 void cmd_object_on_water (UINT8 entry)
 {
+	_D (_D_WARN "(%d)", entry);
+	vt.flags &= ~ON_LAND;
 	vt.flags |= ON_WATER;
 }
 
@@ -561,12 +566,14 @@ void cmd_get_dir (UINT8 entry, UINT8 v)
 
 void cmd_ignore_blocks (UINT8 entry)
 {
+	_D (_D_WARN "(%d)", entry);
 	vt.flags |= IGNORE_BLOCKS;
 }
 
 
 void cmd_observe_blocks (UINT8 entry)
 {
+	_D (_D_WARN "(%d)", entry);
 	vt.flags &= ~IGNORE_BLOCKS;
 }
 

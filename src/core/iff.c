@@ -15,7 +15,7 @@
 
 static struct iff_info *iff_head = NULL;
 
-void iff_chunk (FILE * f)
+void iff_chunk (FILE *f)
 {
 	UINT32 size;
 	UINT8 s[4];
@@ -27,6 +27,8 @@ void iff_chunk (FILE * f)
 		return;
 	size = ((UINT32)s[0] << 24) | ((UINT32)s[1] << 16) |
 		((UINT32)s[2] << 8) | s[3];
+
+	_D (_D_WARN "%c%c%c%c %d", id[0], id[1], id[2], id[3], size);
 	iff_process (id, size, f);
 }
 

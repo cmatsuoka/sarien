@@ -190,8 +190,10 @@ if (e) {
 		case 0:	/* unconditional black. no go at all! */
 			return -1;
 		case 1:			/* conditional blue */
-			if (~vt_obj->flags & IGNORE_BLOCKS)
+			if (~vt_obj->flags & IGNORE_BLOCKS) {
+				_D (_D_CRIT "Blocks observed!");
 				return -1;
+			}
 			break;
 		case 2:			/* trigger */
 			if (!e)
@@ -199,6 +201,7 @@ if (e) {
 			setflag (3, TRUE);
 			vt_obj->x_pos = x;
 			vt_obj->y_pos = y;
+			_D (_D_CRIT "Trigger pressed!");
 			return -1;
 		case 3:			/* water */
 			if (!e)
@@ -227,11 +230,15 @@ if (e) {
 
 		z = control_data[y * _WIDTH + i];
 
-		if ((vt_obj->flags & ON_WATER) && z != 3)
+		if ((vt_obj->flags & ON_WATER) && z != 3) {
+			_D (_D_CRIT "failed: must stay ON_WATER");
 			return -1;
+		}
 
-		if ((vt_obj->flags & ON_LAND) && z != 4)
+		if ((vt_obj->flags & ON_LAND) && z != 4) {
+			_D (_D_CRIT "failed: must stay ON_LAND");
 			return -1;
+		}
 	}
 
 	return 0;
@@ -241,6 +248,7 @@ if (e) {
 static void normal_motion (int em, int x, int y)
 {
 	struct agi_view_table *vt_obj;
+	int b;
 
 	if (VT_VIEW(view_table[em]).loop == NULL) {
 		_D(_D_CRIT "Attempt to access NULL view_table[%d].loop", em);
@@ -256,11 +264,19 @@ static void normal_motion (int em, int x, int y)
 
 	vt_obj = &view_table[em];
 
+	/* FIXME: horrid kludge to fix LSL1 honeymoon suite door.
+	 *        if ego is already crossing conditional control line,
+	 *        let it finish even if blocks are observed.
+	 */
+	b = check_boundaries (em, vt_obj->x_pos, vt_obj->y_pos);
+
 	x += vt_obj->x_pos;
 	y += vt_obj->y_pos;
 
-	if (check_boundaries (em, x, y) < 0)
+	if (b == 0 && check_boundaries (em, x, y) < 0) {
+		_D (_D_WARN "object %d bounded", em);
 		return;
+	}
 
 	/* New object direction */
 	adj_direction (em, y - vt_obj->y_pos, x - vt_obj->x_pos);
@@ -458,6 +474,7 @@ static void interpret_cycle ()
 		update_status_line (FALSE);
 
 		if (game.ego_in_new_room) {
+			_D (_D_WARN "ego_in_new_room");
 			new_room (game.new_room_num);
 			update_status_line (TRUE);
 			game.ego_in_new_room = FALSE;

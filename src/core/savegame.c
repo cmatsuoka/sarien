@@ -256,8 +256,7 @@ static void get_flag (int size, UINT8 *buffer)
 	n = hilo_getdword (buffer);
 	buffer += 4;
 
-	for (i = 0; i < n; i++)
-	{
+	for (i = 0; i < n; i++) {
 		b = hilo_getbyte (buffer++);
 		setflag (i, b);
 	}
@@ -274,8 +273,7 @@ static void get_vars (int size, UINT8 *buffer)
 	n = hilo_getdword (buffer);
 	buffer += 4;
 
-	for (i = 0; i < n; i++)
-	{
+	for (i = 0; i < n; i++) {
 		b = hilo_getbyte (buffer++);
 		setvar (i, b);
 	}
@@ -285,6 +283,8 @@ static void get_vars (int size, UINT8 *buffer)
 static void get_objs (int size, UINT8 *buffer)
 {
 	UINT32 i, n;
+
+	_D ("(%d, %p)", size, buffer);
 
 	n = hilo_getdword (buffer);
 	buffer += 4;
