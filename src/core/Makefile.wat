@@ -6,7 +6,7 @@
 # Dependancies for Watcom C/C++ 10.6
 #
 
-!include $(HOME)\src\graphics\msdos\watcom.dep
+!include $(HOME)\rules.wat
 
 OBJS =	main.obj global.obj agi_v2.obj agi_v3.obj agi.obj	&
 		cli.obj words.obj objects.obj picture.obj id.obj	&

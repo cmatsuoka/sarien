@@ -41,9 +41,11 @@ static void help (int argc, char **argv)
 "  -d --list-dictionary\n"
 "                     List dictionary words.\n"
 #endif
+#ifndef __MSDOS__
 "  -E --emulate-sound {type}\n"
 "                     Emulate the sound of Sierra AGI running in different\n"
 "                     computers. Valid emulations are pc, mac and amiga\n"
+#endif
 #if 0
 "  -l -force-loading  Force loading of all volume information at start of\n"
 "                     game which will give you faster play, this also implies\n"
@@ -58,7 +60,9 @@ static void help (int argc, char **argv)
 #endif
 "  -h --help          Display this help screen.\n"
 #ifdef USE_MOUSE
+#ifndef __MSDOS__
 "  -m --agimouse      AGI Mouse 1.0 compatibility mode.\n"
+#endif
 #endif
 "  -n --no-sound      Disable sound output.\n"
 #ifdef OPT_PICTURE_VIEWER
@@ -78,7 +82,9 @@ static void help (int argc, char **argv)
 "                     2.089, 2.272, 2.440, 2.917, 2.936. Valid v3 games are:\n"
 "                     3.002.086, 3.002.149.\n"
 "  -V --version       Display version information.\n"
+#ifndef __MSDOS__
 "  -x --no-x-shm      Disable X shared memory extension (if available).\n"
+#endif
 #if 0
 "  -xd --dga          Use XFree86 DGA extension (if available).\n"
 #endif

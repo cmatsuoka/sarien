@@ -2,9 +2,7 @@
 # Makefile for Watcom C/C++ v10.6
 #
 
-!include $(HOME)\src\graphics\msdos\watcom.dep
-
-
+!include $(HOME)\rules.wat
 
 OBJS = ibm.$(O)
 

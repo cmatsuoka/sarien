@@ -1,5 +1,5 @@
 HOME=.
-!include $(HOME)\src\graphics\msdos\watcom.dep
+!include $(HOME)\rules.wat
 
 all: core drivers sarien
 

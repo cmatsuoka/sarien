@@ -6,7 +6,7 @@
 # Dependancies for Watcom C/C++ 10.6
 #
 
-!include $(HOME)\src\graphics\msdos\watcom.dep
+!include $(HOME)\rules.wat
 
 OBJS = fileglob.obj path.obj
 
