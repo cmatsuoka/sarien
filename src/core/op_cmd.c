@@ -261,6 +261,7 @@ void cmd_reposition (UINT8 entry, UINT8 x, UINT8 y)
 {
 	vt.x_pos += (SINT8)getvar (x);
 	vt.y_pos += (SINT8)getvar (y);
+	_D (_D_WARN "reposition to %d, %d", vt.x_pos, vt.y_pos);
 }
 
 
@@ -1020,7 +1021,7 @@ void cmd_set_upper_left ()
 {
 	/* change basepoint from bottom right to upper left */
 	/* x, y ? */
-	report ("Not implemented: set.upper.left ()\n");
+	_D(_D_CRIT "Not implemented: set.upper.left()\n");
 }
 
 

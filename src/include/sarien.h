@@ -91,7 +91,7 @@ typedef signed long	SINT32;
 
 #define	MAX_DIRS	256
 #define	MAX_VARS	256
-#define	MAX_FLAGS	256
+#define	MAX_FLAGS	(256 >> 3)
 #define MAX_VIEWTABLE	64
 #define MAX_WORDS	20
 #define MAX_WORDS1	24

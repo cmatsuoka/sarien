@@ -221,23 +221,14 @@ static int check_surface (int em, int x, int y)
 		}
 	}
 
-	for (i = x + cel_width - 1; i >= x; i--) {
-		int z;
+	if ((vt_obj->flags & ON_WATER) && !getflag (F_ego_water)) {
+		_D (_D_CRIT "failed: must stay ON_WATER");
+		return -1;
+	}
 
-		if (y < game.horizon || y >= _HEIGHT || i < 0 || i >= _WIDTH)
-			return -1;
-
-		z = xdata_data[y * _WIDTH + i];
-
-		if ((vt_obj->flags & ON_WATER) && z != 3) {
-			_D (_D_CRIT "failed: must stay ON_WATER");
-			return -1;
-		}
-
-		if ((vt_obj->flags & ON_LAND) && z == 3) {
-			_D (_D_CRIT "failed: must stay ON_LAND");
-			return -1;
-		}
+	if ((vt_obj->flags & ON_LAND) && getflag (F_ego_water)) {
+		_D (_D_CRIT "failed: must stay ON_LAND");
+		return -1;
 	}
 
 	return 0;
@@ -294,7 +285,8 @@ static void normal_motion (int em, int x, int y)
 	x += vt_obj->x_pos;
 	y += vt_obj->y_pos;
 
-	if (check_borders (em, x, y) || check_control_lines (em, x, y) ||
+	if (check_borders (em, x, y) ||
+		check_control_lines (em, x, y) ||
 		check_surface (em, x, y))
 		return;
 
@@ -374,13 +366,19 @@ static void calc_obj_motion ()
 		vt_obj = &view_table[em];
 
 		original_direction = vt_obj->direction;
+		check_surface (em, vt_obj->x_pos, vt_obj->y_pos);
 
-		if ((~vt_obj->flags & MOTION) || (~vt_obj->flags & UPDATE))
+		if (~vt_obj->flags & UPDATE)
 			continue;
+
+#if 0
+		if (~vt_obj->flags & MOTION)
+			continue;
+#endif
 
 		vt_obj->step_time_count += vt_obj->step_size;
 
-		if(vt_obj->step_time_count <= vt_obj->step_time)
+		if (vt_obj->step_time_count <= vt_obj->step_time)
 			continue;
 
 		vt_obj->step_time_count=1;
