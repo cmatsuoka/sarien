@@ -45,6 +45,7 @@ dust:
 # 'whatsout' lists the locked files
 # 'diff' creates a diff file
 # 'rpm' generates an RPM package
+# 'nsis' generates a Win32 NSIS installer
 
 dist:
 	rm -Rf $(DIST) $(DIST).tar.gz
@@ -64,6 +65,9 @@ bindist:
 	$(MAKE) _bindist1 CONFIGURE="./configure"
 
 binpkg: bindist $(PORTS)
+
+nsis:
+	makensis /V3 /DVERSION=$(VERSION) etc/sarien.nsi
 
 _bindist1:
 	rm -Rf $(DIST)
