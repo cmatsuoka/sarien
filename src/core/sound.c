@@ -270,6 +270,10 @@ void start_sound (int resnum, int flag)
 	memset (snd_buffer, 0, BUFFER_SIZE << 1);
 	endflag = flag;
 
+	/* Nat Budin reports that the flag should be reset when sound starts,
+	 */
+	setflag (endflag, FALSE);
+
 	/* FIXME: should wait for sound time instead of setting the flag
 	 *	  immediately
 	 */
@@ -483,8 +487,10 @@ void play_sound ()
 
 	if (!playing) {
 		for (i = 0; i < NUM_CHANNELS; chn[i++].vol = 0);
+
 		if (endflag != -1)
 			setflag (endflag, TRUE);
+
 		if (playing_sound != -1)
 			sounds[playing_sound].flags &= ~SOUND_PLAYING;
 		playing_sound = -1;
