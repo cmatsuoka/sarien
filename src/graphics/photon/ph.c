@@ -18,9 +18,13 @@
 #include <unistd.h>
 
 #include <signal.h>
+#ifdef __QNXNTO__
 #include <sys/neutrino.h>
+#else
+#include <sys/kernel.h>
+#include <sys/sendmx.h>
+#endif
 #include <errno.h>
-#include <pthread.h>
 #include <Pt.h>
 #include <Ph.h>
 #include <photon/Pf.h>
@@ -39,6 +43,48 @@ typedef struct
 	struct mouse sarien_mouse;
 } ph_mouse_t;
 
+// Our (incredibly thin) crossplatform compatibility layer
+#ifndef __QNXNTO__
+#define MsgSend(coid, msg, sz, rmsg, rsz)  Send(coid, msg, rmsg, sz, rsz)
+#define MsgSendv(coid, siov, sp, riov, rp) Sendmx(coid, sp, rp, siov, riov)
+#define MsgReceive(chid, msg, sz, info)    Receive(0, msg, sz)
+#define MsgRead(rcvid, msg, sz, off)       Readmsg(rcvid, off, msg, sz)
+#define MsgReply(rcvid, err, msg, sz)      Reply(rcvid, msg, sz)
+#define iov_t                              struct _mxfer_entry
+#define PiSetPixel(img, x, y, c)           do { img->image[(x) + ((y) * img->bpl)] = c; } while (0)
+#endif
+
+typedef enum 
+{ 
+  MSG_PHINIT,
+  MSG_PUTPIXELS,
+  MSG_GETKEY, 
+  MSG_PEEKKEY,
+  MSG_UPDATERECT,
+  MSG_QUIT
+} phsarien_msgtype_t;
+
+typedef struct
+{
+  phsarien_msgtype_t type;
+  union
+  {
+    int ph_chid;
+    struct
+    {
+      int x;
+      int y;
+      int w;
+    } putpixel;
+    PhRect_t updaterect;
+    struct 
+    {
+      int key;
+      struct mouse mouse;
+    } getkey;
+  } data;
+} phsarien_msg_t;
+
 #define PH_MOUSE_CURSOR_W 10
 #define PH_MOUSE_CURSOR_H 16
 #define PH_MOUSE_TRANS_COL 2
@@ -54,8 +100,10 @@ static PgColor_t ph_pal[32];
 static int __argc;
 static char **__argv;
 
+#ifdef __QNXNTO__ // No fullscreen support in QNX4
 static PgDisplaySettings_t oldvidmode;
 static PdDirectContext_t *dc;
+#endif
 
 static ph_mouse_t ph_mouse;
 
@@ -76,23 +124,19 @@ static void	ph_put_pixels	(int, int, int, UINT8*);
 static int	ph_keypress	(void);
 static int	ph_get_key	(void);
 static void	ph_new_timer	(void);
-static void	ph_update_mouse	(void);
 
-void *		photon_thread	(void *);
+void 		photon_thread	(int);
+static void	pht_put_pixels	(phsarien_msg_t *, UINT8 *);
 static void	ph_raw_draw_cb	(PtWidget_t *, PhTile_t *);
 static int	ph_keypress_cb	(PtWidget_t *, void *, PtCallbackInfo_t *);
-static int	ph_cause_damage	(void *, int, void *, size_t);
+static int	ph_handle_msg	(void *, int, void *, size_t);
 static int	ph_mouse_cb	(PtWidget_t *widget, void *data, PtCallbackInfo_t *cb);
 static int	ph_close_cb	(PtWidget_t *widget, void *data, PtCallbackInfo_t *cb);
 static void	ph_setup_mouse_image (void);
 static void	ph_show_mouse_image (void);
 static void	ph_hide_mouse_image (void);
 
-static pthread_t ph_tid;
 static PhImage_t *phimage;
-static pthread_barrier_t barrier;
-static pthread_mutex_t mut_image = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t mut_mouse = PTHREAD_MUTEX_INITIALIZER;
 
 static PtWidget_t *rawwidget;
 
@@ -148,6 +192,10 @@ int deinit_machine (void)
 
 static int init_vidmode (void)
 {
+	phsarien_msg_t msg;
+	int pid;
+	int phpid;
+	int rcvid;
 	int i;
 
 	fprintf (stderr, "ph: Photon support by jeremy@astra.mb.ca\n");
@@ -158,40 +206,50 @@ static int init_vidmode (void)
 			    (palette[i * 3 + 2] << 2);
 	}
 
-	pthread_barrier_init(&barrier, NULL, 2);
-
-	pthread_create (&ph_tid, NULL, photon_thread, (void*)getpid());
-
-	pthread_barrier_wait (&barrier); /* Wait for thread to create a
-                                            channel to send to */
-	
-	ph_coid = ConnectAttach (0, 0, ph_chid, _NTO_SIDE_CHANNEL, 0);
-	return err_OK;
+	// Setup Sarien comm channel (used solely for initialization)
+	pid = getpid();
+#ifdef __QNXNTO__
+	ph_chid = ChannelCreate(0);
+#endif
+	phpid = fork();
+        if (phpid == 0) // Photon process
+        {
+          msg.type = MSG_PHINIT;
+#ifdef __QNXNTO__
+          msg.data.ph_chid = ChannelCreate(0);
+	  ph_coid = ConnectAttach(0, pid, ph_chid, _NTO_SIDE_CHANNEL, 0);
+#else
+	  msg.data.ph_chid = getpid();
+	  ph_coid = pid;
+#endif
+	  MsgSend(ph_coid, &msg, sizeof(msg), NULL, 0);  
+	  ph_chid = msg.data.ph_chid;
+          photon_thread(pid);
+          exit(0);
+        }
+	else
+	{
+	  rcvid = MsgReceive(ph_chid, &msg, sizeof(msg), NULL);
+#ifdef __QNXNTO__
+	  ph_coid = ConnectAttach(0, phpid, msg.data.ph_chid, _NTO_SIDE_CHANNEL, 0);
+#else
+	  ph_coid = phpid;
+#endif
+	  MsgReply(rcvid, EOK, NULL, 0);
+	}
+    return err_OK;
 }
 
 
 static int deinit_vidmode ()
 {
+	phsarien_msg_t msg;
+
 	fprintf (stderr, "ph: deiniting video mode\n");
 
-	PtEnter(0);
+	msg.type = MSG_QUIT;
+	MsgSend(ph_coid, &msg, sizeof (msg), NULL, 0);
 
-	pthread_mutex_lock (&mut_image);
-
-	PhReleaseImage(phimage);
-	phimage = NULL;
-
-	pthread_mutex_unlock (&mut_image);
-
-	if (opt.fullscreen)
-	{
-		PdDirectStop (dc);
-		PdReleaseDirectContext(dc);
-		PgSetVideoMode (&oldvidmode);
-	}
-
-	PtLeave(0);
-	
 	return err_OK;
 }
 
@@ -200,6 +258,7 @@ static int deinit_vidmode ()
 static void ph_put_block (int x1, int y1, int x2, int y2)
 {
 	PhRect_t rect;
+	phsarien_msg_t msg;
 
 	if (x1 >= GFX_WIDTH)
 		x1 = GFX_WIDTH - 1;
@@ -222,81 +281,51 @@ static void ph_put_block (int x1, int y1, int x2, int y2)
 	rect.lr.x = x2;
 	rect.lr.y = y2;
 
-	MsgSend (ph_coid, &rect, sizeof (rect), NULL, 0);
+	msg.type = MSG_UPDATERECT;
+	msg.data.updaterect = rect;
+	MsgSend (ph_coid, &msg, sizeof (msg), NULL, 0);
 }
 
 
 /* put pixel routine */
 static void ph_put_pixels (int x, int y, int w, UINT8 *p)
 {
-	register int i, j;
+	phsarien_msg_t msg;
+	iov_t iov[2];
 
-	pthread_mutex_lock (&mut_image);
+	msg.type = MSG_PUTPIXELS;
+	msg.data.putpixel.x = x;
+	msg.data.putpixel.y = y;
+	msg.data.putpixel.w = w;
+	SETIOV (&iov[0], &msg, sizeof (msg));
+	SETIOV (&iov[1], p, w);
 
-	if (!phimage)
-		return;
-
-	switch (scale) {
-	case 1:
-		while (w--) PiSetPixel (phimage, x++, y, *p++);
-		break;
-	case 2:
-		x <<= 1;
-		y <<= 1;
-		while (w--) {
-			int c = *p++;
-			PiSetPixel (phimage, x, y, c);
-			PiSetPixel (phimage, x++, y + 1, c);
-			PiSetPixel (phimage, x, y, c);
-			PiSetPixel (phimage, x++, y + 1, c);
-		}
-		break;
-	default:
-		x *= scale;
-		y *= scale;
-		while (w--) {
-			int c = *p++;
-			for (i = 0; i < scale; i++) {
-				for (j = 0; j < scale; j++)
-					PiSetPixel (phimage, x + i, y + j, c);
-			}
-			x += scale;
-		}
-	}
-
-	pthread_mutex_unlock (&mut_image);
+	MsgSendv(ph_coid, iov, 2, NULL, 0);
 }
-
 
 static int ph_keypress ()
 {
-	int retcode;
+	phsarien_msg_t msg;
 
-	pthread_sleepon_lock(); /* Watch those threads!  This ain't atomic. */
-	retcode = key_queue_start != key_queue_end ? TRUE : FALSE;
-	pthread_sleepon_unlock();
+	msg.type = MSG_PEEKKEY;
+	MsgSend (ph_coid, &msg, sizeof(msg), &msg, sizeof(msg));
 
-	ph_update_mouse();
+	mouse = msg.data.getkey.mouse;
 
-	return (retcode);
+	return msg.data.getkey.key;
 }
 
 
 static int ph_get_key (void)
 {
-	int k;
+	phsarien_msg_t msg;
 
-	pthread_sleepon_lock ();
-	
-	while (key_queue_start == key_queue_end)	/* block */
-		pthread_sleepon_wait(key_queue);
-	key_dequeue (k);
+	msg.type = MSG_GETKEY;
+	MsgSend (ph_coid, &msg, sizeof(msg), &msg, sizeof(msg));
 
-	pthread_sleepon_unlock ();
+	mouse = msg.data.getkey.mouse;
 
-	ph_update_mouse();
-
-	return k;
+	return msg.data.getkey.key;
 }
 
 static void ph_new_timer ()
@@ -319,18 +348,11 @@ static void ph_new_timer ()
 
 }
 
-static void ph_update_mouse(void)
-{
-	pthread_mutex_lock (&mut_mouse);
-
-	mouse = ph_mouse.sarien_mouse;
-
-	pthread_mutex_unlock (&mut_mouse);
-}
-
 /* PHOTON THREAD */
 
-void *photon_thread (void *pidarg)
+static int getkey_rcvid = 0;
+
+void photon_thread (int recpid)
 {
 	PtArg_t args[8];
 	PtWidget_t *window;
@@ -338,10 +360,12 @@ void *photon_thread (void *pidarg)
 	PhDim_t dim;
 	PhArea_t area;
 	PhRid_t rid;
+#ifdef __QNXNTO__
 	PgVideoModes_t modelist;
 	PgVideoModeInfo_t modeinfo;
 	PgDisplaySettings_t modesettings;
 	PhDrawContext_t *olddc;
+#endif
 	PtRawCallback_t keycb[] = {{ Ph_EV_KEY , ph_keypress_cb, NULL },
                                    { Ph_EV_BUT_PRESS, ph_mouse_cb, NULL },
                                    { Ph_EV_BUT_RELEASE, ph_mouse_cb, NULL },
@@ -349,7 +373,6 @@ void *photon_thread (void *pidarg)
                                    { Ph_EV_PTR_MOTION_BUTTON, ph_mouse_cb, NULL }};
 	PtCallback_t closecb[] = { { ph_close_cb, NULL } };
 
-	int recpid = (int)pidarg;
 	int index;
 	char found;
 
@@ -369,41 +392,50 @@ void *photon_thread (void *pidarg)
 		fprintf (stderr, "ph: Unable to create main widget!");
 		exit (-1);
 	}
-
-	ph_chid = PhChannelAttach (0, -1, NULL);
+#ifdef __QNXNTO__
+	PhChannelAttach (ph_chid, -1, NULL);
 
 	phimage = PhCreateImage(NULL, GFX_WIDTH * scale, GFX_HEIGHT *
 		scale, Pg_IMAGE_PALETTE_BYTE, ph_pal, 32, 1);
-
+#else
+	phimage = calloc (sizeof (PhImage_t), 1);
+	phimage->type = Pg_IMAGE_PALETTE_BYTE;
+	phimage->bpl = GFX_WIDTH * scale;
+	phimage->colors = 32;
+	phimage->flags = Ph_RELEASE_IMAGE;
+	phimage->palette = ph_pal;
+	phimage->image = calloc (GFX_WIDTH * scale * GFX_HEIGHT * scale, 1);
+	phimage->size.w = GFX_WIDTH * scale;
+	phimage->size.h = GFX_HEIGHT * scale;
+#endif
+    
 	if (phimage == NULL)
 	{
 		fprintf (stderr, "ph: can't create image\n");
 		exit (-1);
 	}
 
-	PtAppAddInput (NULL, recpid, ph_cause_damage, NULL);
+	PtAppAddInput (NULL, recpid, ph_handle_msg, NULL);
 
 	area.size = dim;
-	if (!opt.fullscreen)
-	{
-		area.pos.x = 0;
-		area.pos.y = 0;
-	}
-	else
+#ifdef __QNXNTO__
+	if (opt.fullscreen)
 	{
 		PhWindowQueryVisible (Ph_QUERY_INPUT_GROUP | Ph_QUERY_EXACT, 0, 0, &rect);
 		area.pos.x = rect.ul.x;
 		area.pos.y = rect.ul.y;
 	}
+	else
+#endif
+	{
+		area.pos.x = 0;
+		area.pos.y = 0;
+	}
 
 	PtSetArg(&args[0], Pt_ARG_AREA, &area, 0);
 	PtSetArg(&args[1], Pt_ARG_FLAGS, Pt_TRUE, Pt_GETS_FOCUS);
-	if (!opt.fullscreen)
-	{
-		PtSetArg(&args[2], Pt_ARG_RAW_DRAW_F, ph_raw_draw_cb, 0);
-		rawwidget = PtCreateWidget (PtRaw, window, 3, args);
-	}
-	else
+#ifdef __QNXNTO__
+	if (opt.fullscreen)
 	{
 		PtSetArg(&args[2], Pt_ARG_REGION_INFRONT, Ph_DEV_RID, 0);
 		PtSetArg(&args[3], Pt_ARG_REGION_OPAQUE, Pt_TRUE, Ph_EV_KEY | 
@@ -417,8 +449,15 @@ void *photon_thread (void *pidarg)
 		rawwidget = PtCreateWidget (PtRegion, Pt_NO_PARENT, 6, args);
 		PtRealizeWidget (rawwidget);
 	}
+	else
+#endif
+	{
+		PtSetArg(&args[2], Pt_ARG_RAW_DRAW_F, ph_raw_draw_cb, 0);
+		rawwidget = PtCreateWidget (PtRaw, window, 3, args);
+	}
 	PtAddEventHandlers (rawwidget, keycb, 5);
 
+#ifdef __QNXNTO__
 	if (opt.fullscreen)
 	{
 		ph_setup_mouse_image();
@@ -460,20 +499,17 @@ void *photon_thread (void *pidarg)
 		dc = PdCreateDirectContext();
 		PdDirectStart(dc);
 	}
-	pthread_barrier_wait (&barrier); /* sync with original thread */
+#endif
 
 	PtRealizeWidget(window);
 	PtMainLoop();
-
-	return (0);
 }
 
 static void ph_draw_image (PhRect_t *area)
 {
+	PhPoint_t zero = {0, 0};
+	
 	PgSetPalette( ph_pal, 0, 0, 32, Pg_PALSET_SOFT, 0);
-
-	pthread_mutex_lock (&mut_image);
-	pthread_mutex_lock (&mut_mouse);
 
 	if (!phimage)
 		return;
@@ -492,14 +528,16 @@ static void ph_draw_image (PhRect_t *area)
 
 	ph_show_mouse_image();
 
+#ifdef __QNXNTO__
 	PgDrawPhImageRectmx (&(area->ul), phimage, area, 0);
-
-        PgFlush();
+#else
+	PgSetUserClip (area);
+	PgDrawPhImagemx(&zero, phimage, 0);
+	PgSetUserClip (NULL);
+#endif
+	PgFlush();
 
 	ph_hide_mouse_image();
-
-	pthread_mutex_unlock (&mut_mouse);
-	pthread_mutex_unlock (&mut_image);
 }
 
 static void ph_raw_draw_cb (PtWidget_t *widget, PhTile_t *damage)
@@ -507,8 +545,11 @@ static void ph_raw_draw_cb (PtWidget_t *widget, PhTile_t *damage)
 	PhRect_t raw_canvas;
 	PhRect_t draw_area;
 
+#ifdef __QNXNTO__
 	PtCalcCanvas (widget, &raw_canvas);
-
+#else
+	PtBasicWidgetCanvas (widget, &raw_canvas);
+#endif
 	PtClipAdd (widget, &raw_canvas);
 	
 	draw_area = damage->rect;
@@ -531,6 +572,7 @@ static void ph_raw_draw_cb (PtWidget_t *widget, PhTile_t *damage)
 static int ph_keypress_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 {
 	PhKeyEvent_t *key_event;
+	phsarien_msg_t msg;
 	int key = 0;
 
 	key_event = PhGetData(cb->event);
@@ -683,16 +725,22 @@ static int ph_keypress_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 
 
 	if (key) {
-		pthread_sleepon_lock();
-
-		key_enqueue (key);
-
-		pthread_sleepon_signal (key_queue);
-		pthread_sleepon_unlock();
-
+		if (!getkey_rcvid)
+			key_enqueue (key);
+		else
+		{
+			msg.type = MSG_GETKEY;
+			msg.data.getkey.key = key;
+			msg.data.getkey.mouse = ph_mouse.sarien_mouse;
+			MsgReply(getkey_rcvid, EOK, &msg, sizeof(msg));
+			getkey_rcvid = 0;
+		}
 	}
-
+#ifdef __QNXNTO__
 	return (Pt_CONSUME);
+#else
+	return (Pt_CONTINUE); // I'd like to think I consumed the events for a reason..
+#endif
 }
 
 static int ph_mouse_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
@@ -702,18 +750,12 @@ static int ph_mouse_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 
 	mouse_event = PhGetData(cb->event);
 
-	/* Don't modify global variables from the Photon thread! */
-	pthread_mutex_lock (&mut_mouse);
-
 	if (cb->event->type == Ph_EV_BUT_PRESS)
 	{
 		ph_mouse.sarien_mouse.button = (mouse_event->buttons == Ph_BUTTON_SELECT) ? 1 : 2;
-		pthread_sleepon_lock();
 
 		key_enqueue ((mouse_event->buttons == Ph_BUTTON_SELECT) 
 						? BUTTON_LEFT : BUTTON_RIGHT);
-		pthread_sleepon_signal (key_queue);
-		pthread_sleepon_unlock();
 	}
 
         /* If all buttons released */
@@ -729,6 +771,7 @@ static int ph_mouse_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 		ph_mouse.sarien_mouse.y = ph_mouse.sarien_mouse.y * 5 / 6;
 #endif
 
+#ifdef __QNXNTO__
 	if (opt.fullscreen)
 	{
 		// Include old mouse position when updating screen.
@@ -736,52 +779,134 @@ static int ph_mouse_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 		area.lr.x = ph_mouse.pos.x + PH_MOUSE_CURSOR_W;
 		area.lr.y = ph_mouse.pos.y + PH_MOUSE_CURSOR_H;
 		ph_mouse.pos = PhGetRects(cb->event)->ul;
-		pthread_mutex_unlock (&mut_mouse);
 
 		ph_draw_image(&area);
 	}
-	else
-	{
-		pthread_mutex_unlock (&mut_mouse);
-	}
-
         return (Pt_CONSUME);
+#else
+		return (Pt_CONTINUE);
+#endif
+
 }	
 
 static int ph_close_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 {
-	deinit_machine();
-	deinit_vidmode();
-	PtExit(0);
+	// Kill off Sarien somehow, besides crashing horribly
+	exit(0);
 
 	return (Pt_CONTINUE);
 }
 
-static int ph_cause_damage (void *data, int rcvid, void *message, size_t mbsize)
+static int ph_handle_msg (void *data, int rcvid, void *message, size_t mbsize)
 {
-	PhRect_t *rect;
+	phsarien_msg_t *msg;
+        UINT8 *p;
 
-	rect = message;
-	if (opt.fullscreen)
-		ph_draw_image (rect);
-	else
-		PtDamageExtent (rawwidget, rect);
+	msg = message;
+	switch (msg->type)
+	{
+	  case MSG_UPDATERECT:
+#ifdef __QNXNTO__
+	    if (opt.fullscreen)
+	      ph_draw_image(&(msg->data.updaterect));
+	    else
+#endif
+	      PtDamageExtent(rawwidget, &(msg->data.updaterect));
+	    MsgReply(rcvid, EOK, NULL, 0);
+	    break;
+	  case MSG_PUTPIXELS:
+	    p = alloca(msg->data.putpixel.w);
+	    MsgRead(rcvid, p, msg->data.putpixel.w, sizeof(*msg));
+	    pht_put_pixels(msg, p);
+	    MsgReply(rcvid, EOK, NULL, 0);
+	    break;
+	  case MSG_GETKEY:
+	    if (key_queue_start == key_queue_end)
+            {
+	      getkey_rcvid = rcvid;
+	      break;              
+            }
+	    key_dequeue(msg->data.getkey.key);
+	    msg->data.getkey.mouse = ph_mouse.sarien_mouse;
+	    MsgReply(rcvid, EOK, msg, sizeof (*msg));
+	    break;
+	  case MSG_PEEKKEY:
+	    msg->data.getkey.key = key_queue_start != key_queue_end;
+	    msg->data.getkey.mouse = ph_mouse.sarien_mouse;
+	    MsgReply(rcvid, EOK, msg, sizeof (*msg));
+	    break;
+	  case MSG_QUIT:
+	    PhReleaseImage(phimage);
+	    phimage = NULL;
 
-	MsgReply(rcvid, EOK, NULL, 0);
+#ifdef __QNXNTO__
+	    if (opt.fullscreen)
+	    {
+		PdDirectStop (dc);
+		PdReleaseDirectContext(dc);
+		PgSetVideoMode (&oldvidmode);
+	    }
+#endif
+	    exit(0);
+	  case MSG_PHINIT:
+	  default:
+	    MsgReply(rcvid, EINVAL, NULL, 0);
+	}
 
 	return (Pt_CONTINUE);
+}
+
+static void pht_put_pixels(phsarien_msg_t *msg, UINT8 *p)
+{
+	register int i, j;
+	int x, y, w;
+
+	x = msg->data.putpixel.x;
+	y = msg->data.putpixel.y;
+	w = msg->data.putpixel.w;
+
+	switch (scale) {
+	case 1:
+		while (w--) {PiSetPixel (phimage, x++, y, *p++);}
+		break;
+	case 2:
+		x <<= 1;
+		y <<= 1;
+		while (w--) {
+			int c = *p++;
+			PiSetPixel (phimage, x, y, c);
+			PiSetPixel (phimage, x++, y + 1, c);
+			PiSetPixel (phimage, x, y, c);
+			PiSetPixel (phimage, x++, y + 1, c);
+		}
+		break;
+	default:
+		x *= scale;
+		y *= scale;
+		while (w--) {
+			int c = *p++;
+			for (i = 0; i < scale; i++) {
+				for (j = 0; j < scale; j++)
+					PiSetPixel (phimage, x + i, y + j, c);
+			}
+			x += scale;
+		}
+	}
 }
 
 static void ph_setup_mouse_image(void)
 {
+#ifdef __QNXNTO__
 	PhDim_t imgsize = { PH_MOUSE_CURSOR_W, PH_MOUSE_CURSOR_H };
 
 	ph_mouse.behind_img = PhCreateImage (NULL, imgsize.w, imgsize.h,
 		Pg_IMAGE_PALETTE_BYTE, ph_pal, 32, 1);
+#endif
 }
 
 void ph_show_mouse_image(void)
 {
+#ifdef __QNXNTO__
 	static PmMemoryContext_t *behindmc = NULL;
 	int i, j, apos;
 
@@ -814,16 +939,17 @@ void ph_show_mouse_image(void)
 					j + ph_mouse.pos.y, ph_cursor_img_data[apos]);
 		}
 	}
+#endif
 }
 
 void ph_hide_mouse_image (void)
 {
+#ifdef __QNXNTO__
 	static PmMemoryContext_t *imgmc = NULL;
 	PhPoint_t pos = { 0, 0 };
 
 	if (!opt.fullscreen)
 		return;
-
 	if (imgmc == NULL)
 		imgmc = PmMemCreateMC (phimage, &(phimage->size), &pos);
 
@@ -831,4 +957,5 @@ void ph_hide_mouse_image (void)
 	PgDrawPhImage (&(ph_mouse.pos), ph_mouse.behind_img, 0);
 	PmMemFlush (imgmc, phimage);
 	PmMemStop (imgmc);
+#endif
 }

@@ -15,6 +15,10 @@
 extern "C"{
 #endif
 
+#ifdef KEY_DOWN // QNX4 has a KEY_DOWN defined which we don't need to care about
+#undef KEY_DOWN
+#endif
+
 #define KEY_BACKSPACE	0x08
 #define	KEY_ESCAPE	0x1B
 #define KEY_ENTER	0x0D

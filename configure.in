@@ -69,7 +69,7 @@ beos*)
 	CPPFLAGS="$CPPFLAGS -I/boot/develop/tools/gnupro/include"
 	with_sdl="yes"
 	;;
-nto*)
+nto*|qnx*)
 	AC_CHECK_HEADERS(Pt.h Ph.h)
 	;;
 cygwin*|mingw*)
@@ -114,7 +114,11 @@ if test "${with_script}" = "yes"; then
 	CONSOLE_DRIVER="script"
 elif test "${ac_cv_header_Ph_h}" = "yes"; then
 	CONSOLE_DRIVER="photon"
-	LIBS="${LIBS} -lph -lphrender"
+    if test "${target_os}" = "qnx"; then
+      LIBS="${LIBS} -lphoton_s -lphrender_s"
+    else
+      LIBS="${LIBS} -lph -lphrender"
+    fi
 elif test "${with_win32}" = "yes"; then
 	CONSOLE_DRIVER="win32"
 	AC_CHECK_LIB(cygwin, usleep)
@@ -212,6 +216,10 @@ freebsd*)
 	;;
 nto*)
 	AC_CHECK_HEADERS(sys/asoundlib.h)
+	SOUND_DRIVER="qnxalsa"
+	;;
+qnx*)
+	AC_CHECK_HEADERS(sys/audio.h)
 	SOUND_DRIVER="qnx"
 	;;
 hpux*)
@@ -257,7 +265,7 @@ esac
 fi
 
 case "${SOUND_DRIVER}" in
-dummy|win32|sdl|freebsd|qnx|amiga)
+dummy|win32|sdl|freebsd|qnxalsa|amiga)
 	;;
 *)
 	AC_CHECK_LIB(pthread, pthread_create,[
