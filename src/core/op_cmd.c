@@ -584,14 +584,14 @@ cmd(distance) {
 }
 
 cmd(get_string) {
-	_D ("p0 = %d", p0);
+	_D ("%d %d %d %d %d", p0, p1, p2, p3, p4);
 	new_input_mode (INPUT_GETSTRING);
 
 	if (cur_logic->texts != NULL && cur_logic->num_texts >= (p1 - 1)) {
-		print_text (cur_logic->texts[p1 - 1], 0, 0,
-			p3, p2, game.color_fg, game.color_bg);
-		get_string (p3 + strlen (cur_logic->texts[p1 - 1]) - 1,
-			p2, p4, p0);
+		int len = strlen (cur_logic->texts[p1 - 1]);
+		print_text (cur_logic->texts[p1 - 1], 0, p3,
+			p2, len, game.color_fg, game.color_bg);
+		get_string (p3 + len - 1, p2, p4, p0);
 	}
 
 	do {
