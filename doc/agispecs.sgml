@@ -59,7 +59,9 @@
       the Land of the Lounge Lizards.
     </Para></Abstract>
 
-    <ReleaseInfo/$Id$/
+    <ReleaseInfo>
+      $Id$
+    </ReleaseInfo>
 
     <LegalNotice>
      <Para>
@@ -466,12 +468,12 @@ draw (smoke);
 </para>
 <para>
    <simplelist>
-    <listitem><para>Gold Rush: type <command>BIRD MAN</command>.
-    <listitem><para>King's Quest 3: type <command>RATS ASS</command> (in some versions
+    <member>Gold Rush: type <command>BIRD MAN</command>.
+    <member>King's Quest 3: type <command>RATS ASS</command> (in some versions
      <keycombo><keycap>ALT</keycap><keycap>D</keycap></keycombo>
      works instead).
-    <listitem><para>Police Quest: type <command>STINK BUG</command>.
-    <listitem><para>Space Quest 2: type <command>BACKSTAGE</command> or
+    <member>Police Quest: type <command>STINK BUG</command>.
+    <member>Space Quest 2: type <command>BACKSTAGE</command> or
      <command>DBG</command> (type <command>TESTER</command> to
       bring up Roger's screen coordinates).
    </simplelist>
@@ -481,24 +483,24 @@ draw (smoke);
 </para>
 <para>
    <simplelist>
-    <listitem><para><command/TP/: Teleport to another room.
-    <listitem><para><command/SHOW PRIORITY/: Show the current rooms priority bands and
+    <member><command/TP/: Teleport to another room.
+    <member><command/SHOW PRIORITY/: Show the current rooms priority bands and
       control lines.
-    <listitem><para><command/GET OBJECT/: Get any inventory member.
-    <listitem><para><command/GIMME GIMME/: Get all inventory members.
-    <listitem><para><command/SHOW FLAG/: Show one of the 256 flags.
-    <listitem><para><command/SET FLAG/: Set one of the 256 flags.
-    <listitem><para><command/RESET FLAG/: Clear one of the 256 flags.
-    <listitem><para><command/SHOW VAR/: Show one of the 256 variables.
-    <listitem><para><command/SET VAR/: Change the value of one of the 256 variables.
-    <listitem><para><command/POSITION/: Change egos position.
-    <listitem><para><command/SHOW POSITION/: Show egos current screen coordinates.
-    <listitem><para><command/OBJECT NUMBER/: Gives a list of all the objects and their
+    <member><command/GET OBJECT/: Get any inventory member.
+    <member><command/GIMME GIMME/: Get all inventory members.
+    <member><command/SHOW FLAG/: Show one of the 256 flags.
+    <member><command/SET FLAG/: Set one of the 256 flags.
+    <member><command/RESET FLAG/: Clear one of the 256 flags.
+    <member><command/SHOW VAR/: Show one of the 256 variables.
+    <member><command/SET VAR/: Change the value of one of the 256 variables.
+    <member><command/POSITION/: Change egos position.
+    <member><command/SHOW POSITION/: Show egos current screen coordinates.
+    <member><command/OBJECT NUMBER/: Gives a list of all the objects and their
 	object numbers.
-    <listitem><para><command/OBJECT ROOM/: Says which room an object is found in.
-    <listitem><para><command/ROOM/: Says what room number ego is currently in.
-    <listitem><para><command/SET PRIORITY/: Set the priority of ego.
-    <listitem><para><command/RELEASE PRIORITY/: Release the last priority that ego was set to.
+    <member><command/OBJECT ROOM/: Says which room an object is found in.
+    <member><command/ROOM/: Says what room number ego is currently in.
+    <member><command/SET PRIORITY/: Set the priority of ego.
+    <member><command/RELEASE PRIORITY/: Release the last priority that ego was set to.
    </simplelist>
 </para>
 <para>
@@ -789,14 +791,26 @@ draw (smoke);
 </para><para>
    Here is a list of all the existing resources. Resources are used to
    represent:
-   <simplelist>
-    <listitem><para>colour background drawings (PICTURE resource);
-    <listitem><para>colour animated images (VIEW resource);
-    <listitem><para>sound effects (music, noise) (SOUND resource);
-    <listitem><para>inventory members and other objects (OBJECT resource);
-    <listitem><para>system dictionary for communicating with the user (WORD resource);
-    <listitem><para>programs in internal AGI programming language (LOGIC resource).
-   </simplelist>
+   <itemizedlist>
+    <listitem><para>
+      colour background drawings (PICTURE resource);
+    </para></listitem>
+    <listitem><para>
+      colour animated images (VIEW resource);
+    </para></listitem>
+    <listitem><para>
+      sound effects (music, noise) (SOUND resource);
+    </para></listitem>
+    <listitem><para>
+      inventory members and other objects (OBJECT resource);
+    </para></listitem>
+    <listitem><para>
+      system dictionary for communicating with the user (WORD resource);
+    </para></listitem>
+    <listitem><para>
+      programs in internal AGI programming language (LOGIC resource).
+    </para></listitem>
+   </itemizedlist>
 </para>
 </sect2>
 
@@ -812,23 +826,42 @@ draw (smoke);
    <xref linkend="workcycle"> and the block diagram below.
 </para><para>
    In each cycle the interpreter performs the following basic actions:
-   <simplelist>
-    <listitem><para>time delay;
-    <listitem><para>clears the keyboard buffer;
-    <listitem><para>polls the keyboard and the joystick;
-    <listitem><para>analyses some of the reserved variables and flags (see block
-       diagram);
-    <listitem><para>for all controllable objects for which animate_obj, start_update
-       and draw commands were issued, directions of motion are
-       recalculated;
-    <listitem><para>LOGIC resource 0 is executed, as well as any logics it
-       calls--which, in turn, can call other logics. Depending on the
-       state of variables and flags analyzed at step 4 the number of
-       commands interpreted at stage 4 commands varies from one iteration
-       of the cycle to another depending, for example, on a number of
-       LOGIC resources to be called in the current situation;
-    <listitem><para>tests if the <function/new_room/ command has been issued;
-   </simplelist>
+   <orderedlist>
+    <listitem><para>
+      time delay;
+    </para></listitem>
+
+    <listitem><para>
+      clear the keyboard buffer;
+    </para></listitem>
+
+    <listitem><para>
+      poll the keyboard and the joystick;
+    </para></listitem>
+
+    <listitem><para>
+      analyse some of the reserved variables and flags (see block diagram);
+    </para></listitem>
+
+    <listitem><para>
+      for all controllable objects for which <function/animate_obj/,
+      <function/start_update/ and <function/draw/ commands were issued,
+      directions of motion are recalculated;
+    </para></listitem>
+
+    <listitem><para>
+      logic resource 0 is executed, as well as any logics it
+      calls -- which, in turn, can call other logics. Depending on the
+      state of variables and flags analyzed at step 4 the number of
+      commands interpreted at stage 4 commands varies from one iteration
+      of the cycle to another depending, for example, on a number of
+      logic resources to be called in the current situation;
+    </para></listitem>
+
+    <listitem><para>
+      test if the <function/new_room/ command has been issued;
+    </para></listitem>
+   </orderedlist>
 
    then the cycle is repeated.
 </para><para>
@@ -1068,22 +1101,28 @@ print ("Message 34 in logic.0 is %g34.");
 <para>
    On interpreter startup all variables are set to 0.
 
-   <simplelist>
-    <listitem><para>0 - Current room number (parameter new_room cmd), initially 0.
-    <listitem><para>1 - Previous room number.
-    <listitem><para>2 - Code of the border touched by Ego:
-      <simplelist>
-       <listitem><para>0 - Touched nothing;
-       <listitem><para>1 - Top edge of the screen or the horizon;
-       <listitem><para>2 - Right edge of the screen;
-       <listitem><para>3 - Bottom edge of the screen;
-       <listitem><para>4 - Left edge of the screen.
-      </simplelist>
-    <listitem><para>3 - Current score.
-    <listitem><para>4 - Number of object, other than Ego, that touched the border.
-    <listitem><para>5 - The code of border touched by the object in Var (4).
-    <listitem><para>6 - Direction of Ego's motion.
-   <verb>
+   <informaltable>
+    <tgroup cols="2">
+     <thead>
+      <row> <entry>Variable</entry> <entry>Description</entry> </row>
+     </thead>
+     <tbody>
+      <row> <entry>0</entry> <entry>Current room number (parameter new_room cmd), initially 0.</entry> </row>
+      <row> <entry>1</entry> <entry>Previous room number.</entry> </row>
+      <row> <entry>2</entry> <entry>Code of the border touched by Ego:
+        <simplelist>
+         <member>0 - Touched nothing
+         <member>1 - Top edge of the screen or the horizon
+         <member>2 - Right edge of the screen
+         <member>3 - Bottom edge of the screen
+         <member>4 - Left edge of the screen
+        </simplelist>
+       </entry> </row>
+      <row> <entry>3</entry> <entry>Current score.</entry> </row>
+      <row> <entry>4</entry> <entry>Number of object, other than Ego, that touched the border.</entry> </row>
+      <row> <entry>5</entry> <entry>The code of border touched by the object in Var (4).</entry> </row>
+      <row> <entry>6</entry> <entry>Direction of Ego's motion.
+   <literal>
                       1
                 8     |     2
                   \   |   /
@@ -1093,45 +1132,50 @@ print ("Message 34 in logic.0 is %g34.");
                   /   |   \
                 6     |     4
                       5
-   </verb>
-    <listitem><para>7 - Maximum score.
-    <listitem><para>8 - Number of free 256-byte pages of the interpreter's memory.
-    <listitem><para>9 - If == 0, it is the number of the word in the user message that was
+   </literal>
+       </entry> </row>
+      <row> <entry>7</entry> <entry>Maximum score.</entry> </row>
+      <row> <entry>8</entry> <entry>Number of free 256-byte pages of the interpreter's memory.</entry> </row>
+      <row> <entry>9</entry> <entry>If == 0, it is the number of the word in the user message that was</entry> </row>
    not found in the dictionary. <emphasis>(I would assume they mean "if != 0", but
    that's what they say. --VB)</emphasis>
-    <listitem><para>10 - Time delay between interpreter cycles in 1/20 second intervals.
-    <listitem><para>11 - Seconds (interpreter's internal clock)
-    <listitem><para>12 - Minutes (interpreter's internal clock)
-    <listitem><para>13 - Hours (interpreter's internal clock)
-    <listitem><para>14 - Days (interpreter's internal clock)
-    <listitem><para>15 - Joystick sensitivity (if Flag (8) = 1).
-    <listitem><para>16 - ID number of the view-resource associated with Ego.
-    <listitem><para>17 - Interpreter error code (if == 0) <emphasis>(Again I would expect this
+      <row> <entry>10</entry> <entry>Time delay between interpreter cycles in 1/20 second intervals.</entry> </row>
+      <row> <entry>11</entry> <entry>Seconds (interpreter's internal clock)</entry> </row>
+      <row> <entry>12</entry> <entry>Minutes (interpreter's internal clock)</entry> </row>
+      <row> <entry>13</entry> <entry>Hours (interpreter's internal clock)</entry> </row>
+      <row> <entry>14</entry> <entry>Days (interpreter's internal clock)</entry> </row>
+      <row> <entry>15</entry> <entry>Joystick sensitivity (if Flag (8) = 1).</entry> </row>
+      <row> <entry>16</entry> <entry>ID number of the view-resource associated with Ego.</entry> </row>
+      <row> <entry>17</entry> <entry>Interpreter error code (if == 0) <emphasis>(Again I would expect this</entry> </row>
 	to say ``if != 0''. --VB)</emphasis>
-    <listitem><para>18 - Additional information that goes with the error code.
-    <listitem><para>19 - Key pressed on the keyboard.
-    <listitem><para>20 - Computer type. For IBM-PC it is always 0.
-    <listitem><para>21 - If Flag (15) == 0 (command reset 15 was issued) and Var (21) is
+      <row> <entry>18</entry> <entry>Additional information that goes with the error code.</entry> </row>
+      <row> <entry>19</entry> <entry>Key pressed on the keyboard.</entry> </row>
+      <row> <entry>20</entry> <entry>Computer type. For IBM-PC it is always 0.</entry> </row>
+      <row> <entry>21</entry> <entry>If Flag (15) == 0 (command reset 15 was issued) and Var (21) is</entry> </row>
    not equal to 0, the window is automatically closed after 1/2 * Var
    (21) seconds.
-    <listitem><para>22 - Sound generator type:
-      <simplelist>
-       <listitem><para>1 - PC;
-       <listitem><para>3 - Tandy.
-      </simplelist>
-    <listitem><para>23 - 0:F - sound volume (for Tandy).
-    <listitem><para>24 - This variable stores the maximum number that can be entered
+      <row> <entry>22</entry> <entry>Sound generator type:
+        <simplelist>
+         <member>1 - PC
+         <member>3 - Tandy
+        </simplelist>
+       </entry> </row>
+      <row> <entry>23</entry> <entry>0:F - sound volume (for Tandy).</entry> </row>
+      <row> <entry>24</entry> <entry>This variable stores the maximum number that can be entered</entry> </row>
       in the input line. By default, this variable is set to 41 (29h).
       (information by Dark Minister)
-    <listitem><para>25 - ID number of the member selected using status command or 0xFF if ESC
+      <row> <entry>25</entry> <entry>ID number of the member selected using status command or 0xFF if ESC</entry> </row>
    was pressed.
-    <listitem><para>26 - monitor type
-      <simplelist>
-       <listitem><para>0 - CGA;
-       <listitem><para>2 - Hercules;
-       <listitem><para>3 - EGA.
-      </simplelist>
-   </simplelist>
+      <row> <entry>26</entry> <entry>monitor type
+       <simplelist>
+         <member>0 - CGA
+         <member>2 - HCG
+         <member>3 - EGA
+       </simplelist>
+      </entry> </row>
+     </tbody>
+    </tgroup>
+   </informaltable>
 </para>
 </sect1>
 
@@ -1139,33 +1183,41 @@ print ("Message 34 in logic.0 is %g34.");
 <para>
    On the interpreter startup all flags are set to 0.
 </para><para>
-   <simplelist>
-    <listitem><para>0 - Ego base line is completely on pixels with priority = 3 (water
+   <informaltable>
+    <tgroup cols="2">
+     <thead>
+      <row> <entry>Flag</entry> <entry>Description</entry> </row>
+     </thead>
+     <tbody>
+      <row> <entry>0</entry> <entry>Ego base line is completely on pixels with priority = 3 (water</entry> </row>
    surface).
-    <listitem><para>1 - Ego is invisible of the screen (completely obscured by another
+      <row> <entry>1</entry> <entry>Ego is invisible of the screen (completely obscured by another</entry> </row>
    object).
-    <listitem><para>2 - the player has issued a command line.
-    <listitem><para>3 - Ego base line has touched a pixel with priority 2 (signal).
-    <listitem><para>4 - <function/said/ command has accepted the user input.
-    <listitem><para>5 - The new room is executed for the first time.
-    <listitem><para>6 - <function/restart_game/ command has been executed.
-    <listitem><para>7 - if this flag is 1, writing to the script buffer is blocked.
-    <listitem><para>8 - if 1, Var(15) determines the joystick sensitivity.
-    <listitem><para>9 - sound on/off.
-    <listitem><para>10 - 1 turns on the built-in debugger.
-    <listitem><para>11 - Logic 0 is executed for the first time.
-    <listitem><para>12 - `restore_game' command has been executed.
-    <listitem><para>13 - 1 allows the `status' command to select members.
-    <listitem><para>14 - 1 allows the menu to work.
-    <listitem><para>15 - Determines the output mode of `print' and `print_at' commands:
+      <row> <entry>2</entry> <entry>the player has issued a command line.</entry> </row>
+      <row> <entry>3</entry> <entry>Ego base line has touched a pixel with priority 2 (signal).</entry> </row>
+      <row> <entry>4</entry> <entry><function/said/ command has accepted the user input.</entry> </row>
+      <row> <entry>5</entry> <entry>The new room is executed for the first time.</entry> </row>
+      <row> <entry>6</entry> <entry><function/restart_game/ command has been executed.</entry> </row>
+      <row> <entry>7</entry> <entry>if this flag is 1, writing to the script buffer is blocked.</entry> </row>
+      <row> <entry>8</entry> <entry>if 1, Var(15) determines the joystick sensitivity.</entry> </row>
+      <row> <entry>9</entry> <entry>sound on/off.</entry> </row>
+      <row> <entry>10</entry> <entry>1 turns on the built-in debugger.</entry> </row>
+      <row> <entry>11</entry> <entry>Logic 0 is executed for the first time.</entry> </row>
+      <row> <entry>12</entry> <entry>`restore_game' command has been executed.</entry> </row>
+      <row> <entry>13</entry> <entry>1 allows the `status' command to select members.</entry> </row>
+      <row> <entry>14</entry> <entry>1 allows the menu to work.</entry> </row>
+      <row> <entry>15</entry> <entry>Determines the output mode of `print' and `print_at' commands
       <simplelist>
-       <listitem><para>1 - message window is left on the screen
-       <listitem><para>0 - message window is closed when <keycap/ENTER/ or
+       <member>1 - message window is left on the screen
+       <member>0 - message window is closed when <keycap/ENTER/ or
          <keycap/ESC/ key are pressed.
          If Var(21) is not 0, the window is closed automatically after 1/2 *
          Var(21) seconds
       </simplelist>
-   </simplelist>
+      </entry> </row>
+     </tbody>
+    </tgroup>
+   </informaltable>
 </para>
 </sect1>
 
@@ -1246,11 +1298,11 @@ print ("Message 34 in logic.0 is %g34.");
    Here are a few examples of some game ID's and the data following them:
 
    <simplelist>
-    <listitem><para>Police Quest: <literal/'P' 'Q' 0x00 'e' 'I' 'D' 'X'/
-    <listitem><para>Mother Goose: <literal/'M' 'G' 0x00 'e' 'I' 'D' 'X'/
-    <listitem><para>Manhunter 2: <literal/'M' 'H' '2' 0x00 'I' 'D' 'X'/
-    <listitem><para>XMAS Demo: <literal/'X' 'M' 'A' 'S' 0x00 'D' 'X'/
-    <listitem><para>Leisure Suit Larry: <literal/'L' 'L' 'L' 'L' 'L' 0x00 'X'/
+    <member>Police Quest: <literal/'P' 'Q' 0x00 'e' 'I' 'D' 'X'/
+    <member>Mother Goose: <literal/'M' 'G' 0x00 'e' 'I' 'D' 'X'/
+    <member>Manhunter 2: <literal/'M' 'H' '2' 0x00 'I' 'D' 'X'/
+    <member>XMAS Demo: <literal/'X' 'M' 'A' 'S' 0x00 'D' 'X'/
+    <member>Leisure Suit Larry: <literal/'L' 'L' 'L' 'L' 'L' 0x00 'X'/
    </simplelist>
 </para><para>
    The game ID itself is the null terminated string that ends at the 00h.
@@ -1441,10 +1493,10 @@ From the AGDS documentation, translated by Vassili Bykov.
    ends. If all the words have been assigned some codes:
 </para><para>
    <simplelist>
-    <listitem><para>The Interpreter removes from the sequence of codes all zeros (that
+    <member>The Interpreter removes from the sequence of codes all zeros (that
        means all vocabulary words with zero codes are ignored).
-    <listitem><para><literal/f2/ (the user has entered an input line) is set to 1
-    <listitem><para><literal/f4/ (<function/said/ command accepted the user input) is set to 0.
+    <member><literal/f2/ (the user has entered an input line) is set to 1
+    <member><literal/f4/ (<function/said/ command accepted the user input) is set to 0.
    </simplelist>
 </para><para>
    If the sequence of code produced by the interpreter is
@@ -1461,8 +1513,8 @@ From the AGDS documentation, translated by Vassili Bykov.
 </para><para>
    Compare parameters W(i) and codes V(i) as follows:
    <simplelist>
-    <listitem><para>if W(i) = 1, it matches any V(i);
-    <listitem><para>if W(i) = 9999, it matches the whole remaining input i.e. the
+    <member>if W(i) = 1, it matches any V(i);
+    <member>if W(i) = 9999, it matches the whole remaining input i.e. the
        codes V(i), V(i+1),...V(m).
    </simplelist>
 </para><para>
@@ -1589,16 +1641,27 @@ MH2	3.03	AGI	3.002.149	08/17/89
 </programlisting>
 </para><para>
    This table illustrates a number of things:
-   <simplelist>
-    <listitem><para>Firstly, as the interpreter version increased, the number of AGI
-       commands supported increased with it. The last eleven we do not
-       know the names of.
-    <listitem><para>There are two main AGI versions: AGI v2 and AGI v3.
-    <listitem><para>The early AGI v2 games did not encrypt the <filename/object/ file with the
-       ``Avis Durgan'' string.
-    <listitem><para>AGI v3 games use adaptive LZW to compress their LOGIC, VIEW, and
-       SOUND files.
-   </simplelist>
+   <itemizedlist>
+    <listitem><para>
+      Firstly, as the interpreter version increased, the number of AGI
+      commands supported increased with it. The last eleven we do not
+      know the names of.
+    </para></listitem>
+
+    <listitem><para>
+      There are two main AGI versions: AGI v2 and AGI v3.
+    </para></listitem>
+
+    <listitem><para>
+      The early AGI v2 games did not encrypt the <filename/object/ file
+      with the ``Avis Durgan'' string.
+    </para></listitem>
+
+    <listitem><para>
+      AGI v3 games use adaptive LZW to compress their LOGIC, VIEW, and
+      SOUND files.
+    </para></listitem>
+   </itemizedlist>
 </para>
 
 <sect2><title>Command argument number descrepancies</title>
@@ -1606,15 +1669,22 @@ MH2	3.03	AGI	3.002.149	08/17/89
    There are four commands that have changed the number of arguments that
    are passed to them. All this information is based on observations made
    of the above interpreter versions.
-   <simplelist>
-    <listitem><para>The <function/quit/ command had no arguments for version
-       2.089 whereas all the others above have one argument.
-    <listitem><para>The <function/print.at/ and <function/print.at.v/ commands
-       had only three
-       arguments for versions 2.089--2.400 and four for the other versions.
-    <listitem><para>Unknown command number 176 had one argument for version
-       3.002.086 but later versions had no arguments for this command.
-   </simplelist>
+   <itemizedlist>
+    <listitem><para>
+      The <function/quit/ command had no arguments for version
+      2.089 whereas all the others above have one argument.
+    </para></listitem>
+
+    <listitem><para>
+      The <function/print.at/ and <function/print.at.v/ commands had only three
+      arguments for versions 2.089--2.400 and four for the other versions.
+    </para></listitem>
+
+    <listitem><para>
+      Unknown command number 176 had one argument for version
+      3.002.086 but later versions had no arguments for this command.
+    </para></listitem>
+   </itemizedlist>
 </para>
 
 <sect2><title>Number of strings</title>
@@ -1783,19 +1853,19 @@ if (v7 > 0 && !f6) { .....
    There are 9 different types of arguments that commands use:
 
    <simplelist>
-    <listitem><para>Number (no prefix)
-    <listitem><para>Var (prefix ``v'')
-    <listitem><para>Flag (prefix ``f'')
-    <listitem><para>Message (prefix ``m'')
-    <listitem><para>Object (prefix ``o'')
-    <listitem><para>Inventory Item (prefix ``i'')
-    <listitem><para>String (prefix ``s'')
-    <listitem><para>Word (prefix ``w'')
-    <listitem><para>Controller (prefix ``c'')
+    <member>Number (no prefix)
+    <member>Var (prefix ``v'')
+    <member>Flag (prefix ``f'')
+    <member>Message (prefix ``m'')
+    <member>Object (prefix ``o'')
+    <member>Inventory Item (prefix ``i'')
+    <member>String (prefix ``s'')
+    <member>Word (prefix ``w'')
+    <member>Controller (prefix ``c'')
    </simplelist>
 </para><para>
-   The <literal/said/ test command uses its own special arguments which will be
-   described later.
+   The <function/said/ test command uses its own special arguments
+   which will be described later.
 </para><para>
    Each of these types of arguments is given by the prefix and then a
    number from 0--255, e.g. v5, f6, m27, o2.
@@ -2035,7 +2105,7 @@ From the AGDS documentation translated by Vassili Bykov,
       <term><function id="addn">addn(n,m)</function>, <function id="addv">addv(n,m)</function></term>
       <listitem><para>
        The value of variable <parameter/vn/ is incremented by <parameter/m/
-       (<parameter/vm/), i.e. <parameter/vn/ = <parameter/vn/ + <paramter/m/
+       (<parameter/vm/), i.e. <parameter/vn/ = <parameter/vn/ + <parameter/m/
        (<parameter/vm/).
       </para><para>
        If the value is greater than 255 the result wraps over 0
@@ -2190,7 +2260,7 @@ From the AGDS documentation translated by Vassili Bykov,
    it <emphasis>are also automatically unloaded</emphasis>!
 
    <variablelist>
-<function id="load.logic">load.logic(n)</function>
+   <function id="load.logic">load.logic(n)</function>
    Load into memory the LOGIC resource number <emphasis/n/, i.e. Logic(n)
 
    <function>load.logic.v(n)</function>
@@ -2312,10 +2382,10 @@ From the AGDS documentation translated by Vassili Bykov,
     <listitem><para>
      Set Ego coordinates according to <literal/v2/:
        <simplelist>
-        <listitem><para>if Ego touched the bottom edge, put it on the horizon;
-        <listitem><para>if Ego touched the top edge, put it on the bottom edge of the
+        <member>if Ego touched the bottom edge, put it on the horizon;
+        <member>if Ego touched the top edge, put it on the bottom edge of the
           screen;
-        <listitem><para>if Ego touched the right edge, put it at the left and vice
+        <member>if Ego touched the right edge, put it at the left and vice
           versa.
        </simplelist>
     </para></listitem>
@@ -2373,20 +2443,33 @@ From the AGDS documentation translated by Vassili Bykov,
    The interpreter controls the movement of objects in the screen
    automatically checking the following conditions:
 
-   <simplelist>
-    <listitem><para>If an object priority is 0 it cannot cross an unconditional barrier
-   (pixels with priority 0).
+   <orderedlist>
+    <listitem><para>
+      If an object priority is 0 it cannot cross an unconditional barrier
+      (pixels with priority 0).
+    </para></listitem>
 
-    <listitem><para>If an object priority is 15 and a command <literal/ignore.block/ has not
-   been given to it, it cannot cross a conditional barrier (pixels with
-   priority 1) and leave the block set using the <literal><ulink name="block"/block/</literal> command.
+    <listitem><para>
+      If an object priority is 15 and a command <function/ignore.block/ has not
+      been given to it, it cannot cross a conditional barrier (pixels with
+      priority 1) and leave the block set using the
+      <function><ulink name="block"/block/</function> command.
+    </para></listitem>
 
-    <listitem><para>If an object has not been given <literal><ulink name="ignore.horizon"/ignore.horizon/</literal> command, it cannot
-   move above the horizon set using the <literal><ulink name="set.horizon"/set.horizon/</literal> command.
+    <listitem><para>
+      If an object has not been given
+      <function><ulink name="ignore.horizon"/ignore.horizon/</function>
+      command, it cannot move above the horizon set using the 
+      <function><ulink name="set.horizon"/set.horizon/</function> command.
+    </para></listitem>
 
-    <listitem><para>An object should follow the conditions set using <literal><ulink name="object.on.water"/object.on.water/</literal>
-   and <literal><ulink name="object.on.land"/object.on.land/</literal> commands (see below).
-   </simplelist>
+    <listitem><para>
+      An object should follow the conditions set using
+      <function><ulink name="object.on.water"/object.on.water/</function>
+      and <function><ulink name="object.on.land"/object.on.land/</function>
+      commands (see below).
+    </para></listitem>
+   </orderedlist>
 
    Object number 0 is called Ego. It is different from others in that the
    player may move it around using the keyboard.
@@ -2432,13 +2515,13 @@ From the AGDS documentation translated by Vassili Bykov,
    Automatic choice of the loop is done according to the table:
 
    <simplelist>
-    <listitem><para>for objects with fewer than 4 but more than 1 loops:
+    <member>for objects with fewer than 4 but more than 1 loops:
 <programlisting>
 Direction  0  1  2  3  4  5  6  7  8
   Loop     x  x  0  0  0  x  1  1  1
 </programlisting>
 
-    <listitem><para>for objects with more than 4 loops:
+    <member>for objects with more than 4 loops:
 <programlisting>
 Direction  0  1  2  3  4  5  6  7  8
   Loop     x  3  0  0  0  2  1  1  1
@@ -2751,13 +2834,13 @@ Direction  0  1  2  3  4  5  6  7  8
 
    Parameters are:
    <simplelist>
-    <listitem><para><parameter/a/ (<parameter/va/): number of the VIEW resource;
-    <listitem><para><parameter/b/ (<parameter/vb/): loop number;
-    <listitem><para><parameter/c/ (<parameter/vc/): cel number;
-    <listitem><para><parameter/d/ (<parameter/vd/): x coordinate;
-    <listitem><para><parameter/e/ (<parameter/ve/): y coordinate;
-    <listitem><para><parameter/f/ (<parameter/vf/): priority;
-    <listitem><para><parameter/g/ (<parameter/vg/): margin.
+    <member><parameter/a/ (<parameter/va/): number of the VIEW resource;
+    <member><parameter/b/ (<parameter/vb/): loop number;
+    <member><parameter/c/ (<parameter/vc/): cel number;
+    <member><parameter/d/ (<parameter/vd/): x coordinate;
+    <member><parameter/e/ (<parameter/ve/): y coordinate;
+    <member><parameter/f/ (<parameter/vf/): priority;
+    <member><parameter/g/ (<parameter/vg/): margin.
    </simplelist>
 
    If margin is 0, 1, 2, or 3, the base of the cel is surrounded with a
@@ -2814,20 +2897,20 @@ show.pic();
    letters, digits, and other symbols, the string may contain:
 
    <simplelist>
-    <listitem><para>Newline character (0x0A);
-    <listitem><para>Format element:
+    <member>Newline character (0x0A);
+    <member>Format element:
      <simplelist>
-      <listitem><para><literal/%v&lt;decimal number>/: at this place the output will include a
+      <member><literal/%v&lt;decimal number>/: at this place the output will include a
        decimal value of variable with the given number.
-      <listitem><para><literal/%m &lt;number>/: the text of the message with the given number is
+      <member><literal/%m &lt;number>/: the text of the message with the given number is
        inserted at this place.
-      <listitem><para><literal/%0 &lt;number>/: the name of the member with the given number is
+      <member><literal/%0 &lt;number>/: the name of the member with the given number is
        inserted at this place.
-      <listitem><para><literal/%w &lt;number>/: a vocabulary word with the given number is
+      <member><literal/%w &lt;number>/: a vocabulary word with the given number is
        inserted at this place.
-      <listitem><para><literal/%s &lt;number>/: a string variable with the given number is
+      <member><literal/%s &lt;number>/: a string variable with the given number is
        inserted at this place.
-      <listitem><para><literal/%g &lt;number>/: a message with this number from message field of
+      <member><literal/%g &lt;number>/: a message with this number from message field of
        Logic(0) is inserted at this place.
      </simplelist>
    </simplelist>
@@ -3091,8 +3174,8 @@ Room <current room> Input line <current input line> ... message ...
 <function id="controller">controller(n)</function>
    TRUE if the event with code <parameter/n/ has occurred:
    <simplelist>
-    <listitem><para>a key with the code <parameter/n/ was pressed (set using <literal/set_key/);
-    <listitem><para>menu member with code <parameter/n/ was selected in command <literal/menu_input/.
+    <member>a key with the code <parameter/n/ was pressed (set using <literal/set_key/);
+    <member>menu member with code <parameter/n/ was selected in command <literal/menu_input/.
    </simplelist>
    </variablelist>
 </para>
@@ -3698,20 +3781,20 @@ Byte  Meaning
    standard LZW algorithm. There are plenty of places on the net where
    you can find a description of the LZW algorithm if you are not
    familiar with it.
-
+</para><para>
    AGIv3 uses an adaptive form of LZW that starts by using 9 bit codes
    and when the code space is full, it progresses on to 10 bits and so
    on. As with normal LZW, codes 0-255 represent the standard ASCII
    characters. The next two codes have a special meaning:
-
+</para><para>
    <simplelist>
-    <listitem><para>256 is used as a start over code. The table is cleared, the number
+    <member>256 is used as a start over code. The table is cleared, the number
    of bits set back to 9, and the process begins again with the next code
    being 258.
-    <listitem><para>257 tells the interpreter that it has reached the end of the
+    <member>257 tells the interpreter that it has reached the end of the
    resource.
    </simplelist>
-
+</para><para>
    Code 256 seems to be the first code stored in all compressed
    resources. This is probably just to make sure everything is
    initialized for beginning the compression process. As was mentioned
@@ -3725,7 +3808,7 @@ Byte  Meaning
    prevents it from switching to 12 bits anyway. Whether there is ever a
    case where code 256 does not intervene, it has not yet been
    determined.
-
+</para><para>
    Note: I should point out that Carl and myself both arrived at the
    above algorithm independently which confirms that the compression used
    in the early SCI games was identical to that used in AGIv3.
@@ -3740,9 +3823,9 @@ Byte  Meaning
    priority colour respectively. Since there are only 16 colours, there
    need not be a whole byte set aside for storing the colour. All the
    picture compression does is store these colours in 4 bits rather than 8.
-
+</para><para>
    Example:
-
+</para><para>
 <programlisting>
 Original picture codes: F0 06 F8 12 45 F0 07 F2 05 F8 14 67 ...
 Compressed picture code: F0 6F 81 24 5F 07 F2 5F 81 46 7 ...
@@ -3756,20 +3839,20 @@ Compressed picture code: F0 6F 81 24 5F 07 F2 5F 81 46 7 ...
    The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
 
    <simplelist>
-    <listitem><para><literal><ulink name="examples/files/agifiles.c"/agifiles.c/</literal>
+    <member><literal><ulink name="examples/files/agifiles.c"/agifiles.c/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: routines to handle loading of resources
-    <listitem><para><literal><ulink name="examples/files/agifiles.h"/agifiles.h/</literal>
+    <member><literal><ulink name="examples/files/agifiles.h"/agifiles.h/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: header file for <literal/agifiles.c/
-    <listitem><para><literal><ulink name="examples/files/general.h"/general.h/</literal>
+    <member><literal><ulink name="examples/files/general.h"/general.h/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: general definitions
-    <listitem><para><literal><ulink name="examples/files/volx2.c"/volx2.c/</literal>
+    <member><literal><ulink name="examples/files/volx2.c"/volx2.c/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz" name="Lance Ewing">, <ulink name="mailto:jmoller@algonet.se" name="Joakim Möller"> and <ulink name="mailto:mrtn@rocketmail.com"/Martin Tillenius/: program to extract
       resources from AGI version 2 games (UNIX version available in
       the <ulink name="http://agi.helllabs.org/#utils/"/AGI Utils/ package).
-    <listitem><para><literal><ulink name="examples/files/xv3.pas"/xv3.pas/</literal>
+    <member><literal><ulink name="examples/files/xv3.pas"/xv3.pas/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: program to extract resources from AGI version 3 games
       (UNIX version available in the <ulink name="http://agi.helllabs.org/#utils/"/AGI Utils/ package).
-    <listitem><para><literal><ulink name="examples/files/agiver.pas"/agiver.pas/</literal>
+    <member><literal><ulink name="examples/files/agiver.pas"/agiver.pas/</literal>
       by <ulink name="mailto:mikeph@concentric.net"/Jeremy Hayes/: displays version number of game and interpreter
    </simplelist>
 </para>
@@ -3789,14 +3872,14 @@ Written by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/
 
 <sect1 id="logicfmt"><title>Introduction</title>
 <para>
-
    At the heart of Sierra's Adventure Game Interpreter is the LOGIC file.
    These files contain the code that makes up the game. Each room has a
    logic script that goes with it. This logic script governs what can
    take place in that room. Here is an example of what the programmer
    writes when a game is being created.
-
+</para><para>
    Example 0: KQ4. Room 7.
+</para><para>
 <programlisting>
 if (said( open, door))       [ must be close enough
 {
@@ -3828,6 +3911,7 @@ if (said( open, door))       [ must be close enough
 }
 </programlisting>
 
+</para><para>
    The logic script is not stored like this in the game files though.
    Instead each AGI command is stored as a bytecode and the resulting data
    doesn't look much like the above example at all. This document will
@@ -4274,8 +4358,8 @@ command( arg1, arg2, arg3, arg4, arg5, arg6, arg7); (unknown)
 
    Examples:
    <simplelist>
-    <listitem><para>0x80 Says that the commands first argument is a variable.
-    <listitem><para>0x60 Says that the second and third arguments are variable numbers.
+    <member>0x80 Says that the commands first argument is a variable.
+    <member>0x60 Says that the second and third arguments are variable numbers.
    </simplelist>
 </para>
 
@@ -4640,15 +4724,15 @@ do {
    The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
 
    <simplelist>
-    <listitem><para><literal><ulink name="examples/logic/logic.c"/logic.c/</literal>
+    <member><literal><ulink name="examples/logic/logic.c"/logic.c/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: loads LOGIC resources into LOGICFile structure
-    <listitem><para><literal><ulink name="examples/logic/logic.h"/logic.h/</literal>
+    <member><literal><ulink name="examples/logic/logic.h"/logic.h/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: header file for <literal/logic.c/
-    <listitem><para><literal><ulink name="examples/files/agifiles.c"/agifiles.c/</literal>
+    <member><literal><ulink name="examples/files/agifiles.c"/agifiles.c/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: routines to handle loading of resources
-    <listitem><para><literal><ulink name="examples/files/agifiles.h"/agifiles.h/</literal>
+    <member><literal><ulink name="examples/files/agifiles.h"/agifiles.h/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: header file for <literal/agifiles.c/
-    <listitem><para><literal><ulink name="examples/logic/agicommands.pas"/agicommands.pas/</literal>
+    <member><literal><ulink name="examples/logic/agicommands.pas"/agicommands.pas/</literal>
       by <ulink name="mailto:ptrkelly@ozemail.com.au"/Peter Kelly/: Delphi/Pascal unit with a list of all commands and
       argument types
    </simplelist>
@@ -4680,18 +4764,18 @@ based on the AGDS documentation translated by <ulink name="mailto:nest@rtsnet.ru
    are given values from 0xF0 to 0xFA and are defined as follows:
 
    <simplelist>
-    <listitem><para>0xF0: Change picture colour and enable picture draw.
-    <listitem><para>0xF1: Disable picture draw.
-    <listitem><para>0xF2: Change priority colour and enable priority draw.
-    <listitem><para>0xF3: Disable priority draw.
-    <listitem><para>0xF4: Draw a Y corner.
-    <listitem><para>0xF5: Draw an X corner.
-    <listitem><para>0xF6: Absolute line (long lines).
-    <listitem><para>0xF7: Relative line (short lines).
-    <listitem><para>0xF8: Fill.
-    <listitem><para>0xF9: Change pen size and style.
-    <listitem><para>0xFA: Plot with pen.
-    <listitem><para>0xFB--0xFE: Unused in most AGI games.
+    <member>0xF0: Change picture colour and enable picture draw.
+    <member>0xF1: Disable picture draw.
+    <member>0xF2: Change priority colour and enable priority draw.
+    <member>0xF3: Disable priority draw.
+    <member>0xF4: Draw a Y corner.
+    <member>0xF5: Draw an X corner.
+    <member>0xF6: Absolute line (long lines).
+    <member>0xF7: Relative line (short lines).
+    <member>0xF8: Fill.
+    <member>0xF9: Change pen size and style.
+    <member>0xFA: Plot with pen.
+    <member>0xFB--0xFE: Unused in most AGI games.
    </simplelist>
 
    Note: SQ2 appears to be the only AGI version 2 game that uses 0xF9 and
@@ -5227,9 +5311,9 @@ Tool:Line V:A P:o C:o X=199 Y=55 Pri:2
    The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
 
    <simplelist>
-    <listitem><para><literal><ulink name="examples/picture/picv3-v2.c"/picv3-v2.c/</literal>
+    <member><literal><ulink name="examples/picture/picv3-v2.c"/picv3-v2.c/</literal>
        by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: converts version 3 pictures to version 2 pictures
-    <listitem><para><literal><ulink name="examples/picture/showpic.c"/showpic.c/</literal>
+    <member><literal><ulink name="examples/picture/showpic.c"/showpic.c/</literal>
        by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: displays pictures
    </simplelist>
 </para>
@@ -5348,10 +5432,10 @@ Byte  Meaning
 
    This line will have:
    <simplelist>
-    <listitem><para>X pixels of colour A (<literal/AX/)
-    <listitem><para>Y pixels of colour B (<literal/BY/)
-    <listitem><para>Z pixels of colour C (<literal/CZ/)
-    <listitem><para>(then that will be the end of the line) (<literal/00/)
+    <member>X pixels of colour A (<literal/AX/)
+    <member>Y pixels of colour B (<literal/BY/)
+    <member>Z pixels of colour C (<literal/CZ/)
+    <member>(then that will be the end of the line) (<literal/00/)
    </simplelist>
 
    If the color of the last chunk on the line is the transparent color,
@@ -5475,20 +5559,20 @@ Written by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/
    View objects appear to have the following properties:
 
    <simplelist>
-    <listitem><para>x position
-    <listitem><para>y position
-    <listitem><para>current view
-    <listitem><para>current loop
-    <listitem><para>current cel
-    <listitem><para>priority
-    <listitem><para>cycle time (1/n gives the fraction of the maximum speed)
-    <listitem><para>step time (1/n gives the fraction of the maximum speed)
-    <listitem><para>x size (in pixels)
-    <listitem><para>y size (in pixels)
-    <listitem><para>step size
-    <listitem><para>direction
-    <listitem><para>number of loops
-    <listitem><para>number of cels
+    <member>x position
+    <member>y position
+    <member>current view
+    <member>current loop
+    <member>current cel
+    <member>priority
+    <member>cycle time (1/n gives the fraction of the maximum speed)
+    <member>step time (1/n gives the fraction of the maximum speed)
+    <member>x size (in pixels)
+    <member>y size (in pixels)
+    <member>step size
+    <member>direction
+    <member>number of loops
+    <member>number of cels
    </simplelist>
 
    There are probably other properties that aren't listed here which they
@@ -5642,7 +5726,7 @@ X........
    The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
 
    <simplelist>
-    <listitem><para><literal><ulink name="examples/view/viewview.pas"/viewview.pas/</literal>
+    <member><literal><ulink name="examples/view/viewview.pas"/viewview.pas/</literal>
       by <ulink name="mailto:ptrkelly@ozemail.com.au"/Peter Kelly/: unit from AGIhack that displays VIEWs
    </simplelist>
 </chapter>
@@ -5855,14 +5939,14 @@ Written by <ulink name="mailto:irsman@iag.net"/Ian Schmidt/ (Last updated: 3 Nov
    When oscillators are paired to create generators, there are 4 possible
    modes:
    <simplelist>
-    <listitem><para>Free-run: the oscillator simply plays the waveform and stops. No
+    <member>Free-run: the oscillator simply plays the waveform and stops. No
        interaction with it's 'twin' occurs.
-    <listitem><para>Swap: Only one oscillator of the pair is active at a time. When
+    <member>Swap: Only one oscillator of the pair is active at a time. When
        one stops, the other immediately starts.
-    <listitem><para>Loop: The oscillator simply plays the waveform and if it hits the
+    <member>Loop: The oscillator simply plays the waveform and if it hits the
        end without encounter.cgiing a zero, it starts over at the
        beginning.
-    <listitem><para>Sync/AM: This actually has 2 possible effects: either one
+    <member>Sync/AM: This actually has 2 possible effects: either one
        oscillator of the pair modulates the volume of the other with the
        waveform it's playing, or both oscillators sync up perfectly,
        causing a louder and more 'solid' sound.
@@ -5943,10 +6027,10 @@ Byte  Meaning
    note entries of the following format:
 
    <simplelist>
-    <listitem><para>First and second byte: Note duration
-    <listitem><para>Third byte
+    <member>First and second byte: Note duration
+    <member>Third byte
       <simplelist>
-       <listitem><para>In the case of a tone voice,
+       <member>In the case of a tone voice,
 <verb>
 7  6  5  4  3  2  1  0
 
@@ -5954,11 +6038,11 @@ Byte  Meaning
 .  X  .  .  .  .  .  .      Unused, ignored.
 .  .  F0 F1 F2 F3 F4 F5     6 of 10-bits in frequency count.
 </verb>
-       <listitem><para>In the case of the noise voice, this byte is equal to zero.
+       <member>In the case of the noise voice, this byte is equal to zero.
       </simplelist>
-    <listitem><para>Fourth byte
+    <member>Fourth byte
       <simplelist>
-       <listitem><para>In the case of a tone voice,
+       <member>In the case of a tone voice,
 <verb>
 7  6  5  4  3  2  1  0
 
@@ -5969,7 +6053,7 @@ Byte  Meaning
 F = frequency = 111860 / (((Byte3 & 0x3f) << 4) + (Byte4 & 0x0f))
 R = register address
 </verb>
-       <listitem><para>In the case of the noise voice,
+       <member>In the case of the noise voice,
 <verb>
 7  6  5  4  3  2  1  0
 
@@ -5986,7 +6070,7 @@ NF0  NF1       Noise Frequency
  1    0         1,193,180 / 2048 = 583
 </verb>
       </simplelist>
-    <listitem><para>Fifth byte
+    <member>Fifth byte
 <verb>
    7  6  5  4  3  2  1  0
 
@@ -6223,14 +6307,14 @@ A wave count: 1, B wave count: 1
    all but the lowest 3 bits and it gives you the basic wave size as follows:
 
    <simplelist>
-    <listitem><para>%000 = 1 page (256 bytes)
-    <listitem><para>%001 = 2 pages (512 bytes)
-    <listitem><para>%010 = 4 pages (1k bytes)
-    <listitem><para>%011 = 8 pages (2k bytes)
-    <listitem><para>%100 = 16 pages (4k bytes)
-    <listitem><para>%101 = 32 pages (8k bytes)
-    <listitem><para>%110 = 64 pages (16k bytes)
-    <listitem><para>%111 = 128 pages (32k bytes)
+    <member>%000 = 1 page (256 bytes)
+    <member>%001 = 2 pages (512 bytes)
+    <member>%010 = 4 pages (1k bytes)
+    <member>%011 = 8 pages (2k bytes)
+    <member>%100 = 16 pages (4k bytes)
+    <member>%101 = 32 pages (8k bytes)
+    <member>%110 = 64 pages (16k bytes)
+    <member>%111 = 128 pages (32k bytes)
    </simplelist>
 
    Note that if a zero is encountered in the wave before that size you still
@@ -6256,9 +6340,9 @@ A wave count: 1, B wave count: 1
 
    Where:
    <simplelist>
-    <listitem><para><literal/c/ - stereo output channel. Odd values mean left, even mean right.
-    <listitem><para><literal/m/ - mode, as described previously.
-    <listitem><para><literal/h/ - halt bit. 0 to start the oscillator, 1 to halt it.
+    <member><literal/c/ - stereo output channel. Odd values mean left, even mean right.
+    <member><literal/m/ - mode, as described previously.
+    <member><literal/h/ - halt bit. 0 to start the oscillator, 1 to halt it.
       This is handled specially in swap mode.
    </simplelist>
 
@@ -6366,16 +6450,16 @@ f = 111860 / (((Byte2 & 0x3F) << 4) + (Byte3 & 0x0F))
    The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
 
    <simplelist>
-    <listitem><para><literal><ulink name="examples/sound/adlib.c"/adlib.c/</literal>
+    <member><literal><ulink name="examples/sound/adlib.c"/adlib.c/</literal>
       by Kevin A. Lee: low level adlib routines
-    <listitem><para><literal><ulink name="examples/sound/adlib.h"/adlib.h/</literal>
+    <member><literal><ulink name="examples/sound/adlib.h"/adlib.h/</literal>
       by Kevin A. Lee: header for <literal/adlib.c/
-    <listitem><para><literal><ulink name="examples/sound/oldplay.c"/oldplay.c/</literal>
+    <member><literal><ulink name="examples/sound/oldplay.c"/oldplay.c/</literal>
       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: old program to play AGI sounds
-    <listitem><para><literal><ulink name="examples/sound/play.c"/play.c/</literal>
+    <member><literal><ulink name="examples/sound/play.c"/play.c/</literal>
       by <ulink name="mailto:jchrr@hrz.uni-bielefeld.de"/Jens Christian Restemeier/: new program for playing AGI sounds (plays as a MIDI
       file)
-    <listitem><para><literal><ulink name="examples/sound/agiplay.c"/agiplay.c/</literal>
+    <member><literal><ulink name="examples/sound/agiplay.c"/agiplay.c/</literal>
       by <ulink name="mailto:claudio@helllabs.org"/Claudio Matsuoka/: program to play PCjr AGI sound resources in Linux using
       software mixing and <literal>/dev/dsp</literal>
    </simplelist>
@@ -6548,9 +6632,9 @@ if (said(take, anyword)) {
    The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
 
    <simplelist>
-    <listitem><para><literal><ulink name="examples/otherdata/object.pas"/object.pas/</literal>
+    <member><literal><ulink name="examples/otherdata/object.pas"/object.pas/</literal>
       by <ulink name="mailto:ptrkelly@ozemail.com.au"/Peter Kelly/: displays contents of the <literal/object/ file
-    <listitem><para><literal><ulink name="examples/otherdata/words.pas"/words.pas/</literal>
+    <member><literal><ulink name="examples/otherdata/words.pas"/words.pas/</literal>
       by <ulink name="mailto:ptrkelly@ozemail.com.au"/Peter Kelly/: displays contents of the <literal/words.tok/ file
    </simplelist>
 </chapter>
@@ -6733,20 +6817,26 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
 </para><para>
    Programming for AGI is fairly unusual because of the specifics of how
    the interpreter works:
-   <simplelist>
+   <itemizedlist>
     <listitem><para>The cyclic nature of the interpreter operation completely defines
        the style of AGI programming. The style is rather unusual and
        requires understanding and getting used to it. We shall discuss,
        using the source of of <emphasis/Thunderstorm/ as an example, how to write
        programs executing in that cyclic manner.
+    </para></listitem>
+
     <listitem><para>A common set of variables, flags, and strings for all the
        subroutines loaded in the interpreter memory, which means any
        variable or flag is accessible from any part of the program (this
        includes the reserved variables and flags).
+    </para></listitem>
+
     <listitem><para>Data elements of any type (variable, flag, resource) are
        identified with a unique ID number (0..255, string variable -
        0..11). At first this seems inconvenient, but later you get used
        to it.
+    </para></listitem>
+
     <listitem><para>Command name determines the data type it operates on, the nature
        of its operation, and the result. For example, consider assignment
        commands: <literal/assignn 10, 2/ means store the value 2 into the variable
@@ -6754,6 +6844,8 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
        the variable 10; <literal/set 10/ mean set flag 10 to 1. Most often you will
        have to memorize what each command does and the type of its
        operands.
+    </para></listitem>
+
     <listitem><para>Small internal interpreter memory occasionally overflows. This is
        annoying because there may be lots of free RAM at the same time.
     <listitem><para>There are powerful commands new_room and <literal/new_room_v/ used to
@@ -6764,6 +6856,8 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
        drawn on the background (for example, control barriers or water
        surface). The result of tests determines the progress of the game
        according to the design.
+    </para></listitem>
+
     <listitem><para>The ability to fairly easily animate objects on the screen. Note
        that all the images programmatically associated with objects the
        interpreter or the user can control, have to be first created
@@ -6774,10 +6868,14 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
        object for which the animation is played (this creates a walking
        figure). We shall later discuss the interaction between the
        designer, the artist and the programmer.
+    </para></listitem>
+
     <listitem><para>The ability to use a built-in debugger, invoked using Scroll Lock
        if the debugger table log.dbg is loaded into the interpreter
        memory.
-   </simplelist>
+    </para></listitem>
+
+   </itemizedlist>
 </para><para>
    I want to warn you that most probably you will not be able to use the
    debugger on IBM PC XTs because DUU and VM utilities (of the versions
@@ -6855,33 +6953,44 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
    We have distracted from the design a bit. The design should completely
    and in details describe the plot. Using the interpreter's terminology,
    the following should be included:
-   <simplelist>
+   <itemizedlist>
     <listitem><para>All rooms and conditions when the rooms are changed, i.e. when the
        background art and the controlling programs change.
+    </para></listitem>
     <listitem><para>All actions taking place in each room and conditions determining
        when each particular action takes place.
+    </para></listitem>
     <listitem><para>All objects in the room, and whether an object is a part of the
        scenery (PICTURE resource) or a separate thing (VIEW resource)
        controllable from the program; this is important to the artist.
+    </para></listitem>
     <listitem><para>Position, at least approximate, of all objects created as VIEW
        resources; this is important to the programmer.
+    </para></listitem>
     <listitem><para>All members the player can get as the result of certain actions, and
        those actions themselves.
+    </para></listitem>
     <listitem><para>Approximate priorities of the objects, both parts of scenery and
        VIEW resources, which creates an illusion of depth; this is
        important to the artist and the programmer.
+    </para></listitem>
     <listitem><para>Interactions between the objects: for example, whether the object
        treats other objects as obstacles, whether it can cross the
        horizon or leave a certain area, etc.; this is important to the
        programmer.
+    </para></listitem>
     <listitem><para>Conditions when the on-screen image of an object may change. For
        example, when a walking person crosses a brook, the images should
        change to the image knee-deep in water, etc.
+    </para></listitem>
     <listitem><para>All messages and dialogue that occur in each room under certain
        conditions, and those conditions.
+    </para></listitem>
     <listitem><para>Game vocabulary including the words the game understand.
+    </para></listitem>
     <listitem><para>Sentences used to control the objects and reactions to them, etc.
-   </simplelist>
+    </para></listitem>
+   </itemizedlist>
 </para><para>
    Probably you can extend this list yourself. How detailed the design
    should be is subjective, but you have to be specific.
@@ -7107,15 +7216,19 @@ A:   ..............
 
    <literal/new_room/ is a complex and powerful command, it executes a lot of
    actions. For now, it is important to understand the following:
-   <simplelist>
+   <itemizedlist>
     <listitem><para><literal/new_room n/ stores the command operand in <literal/v0/, i.e. the
        value of <emphasis/n/, 2 in our case.
+    </para></listitem>
     <listitem><para>All logics in the interpreter memory are discarded and logic n (2
        in this case) is loaded.
+    </para></listitem>
     <listitem><para>flag 5 is set (<literal/f5/ -> 1)!
+    </para></listitem>
     <listitem><para>Control is returned to the interpreter which starts logic 0 from
        the beginning (see the <emphasis/Interpreter Work Cycle/).
-   </simplelist>
+    </para></listitem>
+   </itemizedlist>
 </para><para>
    After <literal/new_room 2/ <literal/log0.asm/ checks if any reserved keys have been
    pressed, using controller command. Then we check if we are in the
@@ -7130,14 +7243,18 @@ A:   ..............
    command is issued. In this room the game (education) session begins.
 </para><para>
    Thus logic 0 should contain:
-   <enum>
+   <orderedlist>
     <listitem><para>A test for an error (using <literal/v17/) and a call to the error handler.
+    </para></listitem>
     <listitem><para>A call to the initialization logic.
+    </para></listitem>
     <listitem><para>Actions common to all logics.
+    </para></listitem>
     <listitem><para><literal/call_v 0/ command that calls the logic corresponding to the last
        room set using <literal/new_room v/, which has to be executed each
        interpreter cycle.
-   </enum>
+    </para></listitem>
+   </orderedlist>
 </para><para>
    Let us return to logic 2 (see <literal/log02.asm/) which describes the actions
    in the second room. I shall not describe the details of how the
@@ -7208,27 +7325,36 @@ A:   ..............
 </para><para>
    Perhaps I won't say anything new, but the following conditions are
    important when you design an educational program.
-   <simplelist>
+   <itemizedlist>
     <listitem><para>Sequential access to the material.
+    </para></listitem>
     <listitem><para>Periodic control of the progress and the possibility to repeat a
        lesson without restarting the program.
+    </para></listitem>
     <listitem><para>Reasonable sound effects with a possibility to turn the sound off.
+    </para></listitem>
     <listitem><para>A brief description of what is going on in the output line rather
        than only in the text windows.
+    </para></listitem>
     <listitem><para>etc.
-   </simplelist>
+    </para></listitem>
+   </itemizedlist>
 </para><para>
    First condition is satisfied naturally if you make the program linear
    so one can go into a new room only after all the actions in the
    previous one are complete. In each room the following actions are
    performed:
-   <simplelist>
+   <itemizedlist>
     <listitem><para>Displaying the explanatory text.
+    </para></listitem>
     <listitem><para>Illustrating the topic using animations, possibly with the
        student's participation.
+    </para></listitem>
     <listitem><para>Checking the student's understanding by asking questions.
+    </para></listitem>
     <listitem><para>Moving to the next room if the answers are correct.
-   </simplelist>
+    </para></listitem>
+   </itemizedlist>
 </para><para>
    There are two possibilities to display the explanation: displaying the
    text in a text mode; an example is the <emphasis/Thunderstorm/ greeting, see
@@ -7353,17 +7479,23 @@ A:   ..............
    thunderstorm and the situation after it finishes.
 </para><para>
    While you study that logic's source note the following:
-   <simplelist>
+   <itemizedlist>
     <listitem><para>How the rain is displayed.
+    </para></listitem>
     <listitem><para>How the sound of rain drops is imitated.
+    </para></listitem>
     <listitem><para>How lightnings are displayed between the clouds and between a
        cloud and the ground.
+    </para></listitem>
     <listitem><para>How the sound of thunder is imitated.
+    </para></listitem>
     <listitem><para>How the time delay between a lightning and a thunder is
        implemented and how the thunder is played as if it consists of two
        distinct sounds.
+    </para></listitem>
     <listitem><para>How the scenery is changed to that after the thunderstorm.
-   </simplelist>
+    </para></listitem>
+   </itemizedlist>
 </para><para>
    The rain is displayed as eight drops (objects 8 to 15), the algorithm
    of their motion is in logic 10 (source file <filename/log10.asm/).
