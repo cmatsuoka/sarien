@@ -18,9 +18,9 @@ glibc running kernel 2.4.5 on a 333 MHz K6 machine. It should work with
 Building
 ========
 
-Run "./configure", then "make". Should any problems happen, have a look
-at the generated Rules file and drop me a note so I could fix it in
-future versions.
+Run "./configure", then "make" (or "gmake"). Should any problems happen,
+have a look at the generated Rules file and drop me a note so I could fix
+it in future versions.
 
 
 Problems

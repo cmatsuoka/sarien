@@ -523,9 +523,10 @@ static int set_palette (UINT8 *pal, int scol, int numcols)
 }
 
 
-static int kill_flag = 0;	/* Yuck */
 static void kill_mode (int i)
 {
+	static int kill_flag = 0;	/* Yuck */
+
 	if (kill_flag)
 		exit (0);
 

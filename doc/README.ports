@@ -17,6 +17,7 @@ Tested ports:
  Solaris |  gcc  |   X11   | solaris |   yes   |    no   |         |
  AIX 4   |  gcc  |   X11   |  dummy  |   yes   |    no   |         |
  IRIX    |MIPSpro|   X11   |   sgi   |   yes   |    no   | aheikin |
+ Tru64   |  gcc  |   X11   |  dummy  |   yes   |    no   |  aakis  |
 ---------+-------+---------+---------+---------+---------+---------+
  QNX	 |  gcc  |  Photon |  ALSA   |   yes   |   yes   | jpenner |
 ---------+-------+---------+---------+---------+---------+---------+
