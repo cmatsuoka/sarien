@@ -40,9 +40,6 @@ static SDL_Surface *screen;
 SDL_Color color[32];
 Uint32 mapped_color[32];
 
-UINT32 clock_ticks;
-UINT32 clock_count;
-
 #define KEY_QUEUE_SIZE 16
 
 static int key_queue[KEY_QUEUE_SIZE];
