@@ -340,7 +340,8 @@ end_test:
 				ip++;
 				ip += (*(code + ip)) * 2 + 1;
 			} else if (*(code + ip) < 0xfc) {
-				ip += logic_names_test[*(code + ip++)].num_args;
+				ip += logic_names_test[*(code + ip)].num_args;
+				ip++;
 			} else {
 				ip++;
 			}

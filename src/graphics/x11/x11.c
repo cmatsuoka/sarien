@@ -208,8 +208,7 @@ static void _putpixels (int x, int y, int w, UINT8 *p)
 	if (scale == 1) {
 		while (w--) {
 			cp = rgb_palette[*p++];
-			x += y * GFX_WIDTH;
-			if (depth == 8) putpixel_8 (ximage, x++, cp);
+			XPutPixel (ximage, x++, y, cp);
 		}
 	} else if (scale == 2) {
 		x <<= 1;
