@@ -285,9 +285,7 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
-		/* Keycode debug:
-		 * report ("%02x\n", (int)wParam);
-		 */
+		  report ("%02x\n", (int)wParam);
 		switch (key = (int)wParam) {
 		case VK_SHIFT:
 			key = 0;
@@ -296,27 +294,43 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			key = 0;
 			break;
 		case VK_UP:
+			if (lParam & REPEATED_KEYMASK) 
+				return 0;
 			key = KEY_UP;
 			break;
 		case VK_LEFT:
+			if (lParam & REPEATED_KEYMASK) 
+				return 0;
 			key = KEY_LEFT;
 			break;
 		case VK_DOWN:
+			if (lParam & REPEATED_KEYMASK) 
+				return 0;
 			key = KEY_DOWN;
 			break;
 		case VK_RIGHT:
+			if (lParam & REPEATED_KEYMASK) 
+				return 0;
 			key = KEY_RIGHT;
 			break;
 		case VK_HOME:
+			if (lParam & REPEATED_KEYMASK) 
+				return 0;
 			key = KEY_UP_LEFT;
 			break;
 		case VK_PRIOR:
+			if (lParam & REPEATED_KEYMASK) 
+				return 0;
 			key = KEY_UP_RIGHT;
 			break;
 		case VK_NEXT:
+			if (lParam & REPEATED_KEYMASK) 
+				return 0;
 			key = KEY_DOWN_RIGHT;
 			break;
 		case VK_END:
+			if (lParam & REPEATED_KEYMASK) 
+				return 0;
 			key = KEY_DOWN_LEFT;
 			break;
 		case VK_RETURN:
@@ -367,14 +381,35 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		case VK_ESCAPE:
 			key = 0x1b;
 			break;
+		case 0xba:
+			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? ':' : ';';
+			break;
+		case 0xbb:
+			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '+' : '=';
+			break;
 		case 0xbc:
-			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '<' : '.';
+			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '<' : ',';
+			break;
+		case 0xbd:
+			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '_' : '-';
 			break;
 		case 0xbe:
 			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '>' : '.';
 			break;
 		case 0xbf:
 			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '?' : '/';
+			break;
+		case 0xdb:
+			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '{' : '[';
+			break;
+		case 0xdc:
+			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '|' : '\\';
+			break;
+		case 0xdd:
+			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '}' : ']';
+			break;
+		case 0xde:
+			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '"' : '\'';
 			break;
 		case 192:
 			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '~' : '`';
