@@ -11,6 +11,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+/* DF : Whats this? I un-msdos'd it to compile on dos. */
+#ifndef _M_MSDOS
+#include <dirent.h>
+#endif
+
 #include "sarien.h"
 #include "agi.h"
 #include "lzw.h"
@@ -42,15 +48,13 @@ struct agi_loader agi_v3 = {
 	agi_v3_unload_resource
 };
 
-
-
-#include <dirent.h>
-
+#ifndef _M_MSDOS
 int match (char *s)
 {
     struct dirent **namelist;
     int n;
 
+    /* DJGPP has dirent.h but no scandir() */
     n = scandir(".", &namelist, 0, alphasort);
     if (n < 0)
 	return n;
@@ -61,7 +65,7 @@ int match (char *s)
     }
     free(namelist);
 }
-
+#endif
 
 
 int agi_v3_detect_game (char *gn)
