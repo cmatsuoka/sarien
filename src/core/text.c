@@ -388,6 +388,10 @@ int print (char *p, int lin, int col, int len)
 	if (p == NULL)
 		return 0;
 
+	_D (_D_WARN "lin = %d, col = %d, len = %d", lin, col, len);
+	if (len == 0 && col && col < 20)
+		len = (40 - 2 * (col - 1));
+
 	blit_textbox (p, lin, col, len);
 
 	if (getflag (F_output_mode)) {

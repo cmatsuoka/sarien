@@ -202,8 +202,8 @@ int agi_v3_unload_resource (int t, int n)
 
 
 /*
- * This function does noting but load a raw resource into memory,
- * if further decoding is required, it must be done by another
+ * This function does noting but load a raw resource into memory.
+ * If further decoding is required, it must be done by another
  * routine.
  *
  * NULL is returned if unsucsessful.
