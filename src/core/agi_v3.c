@@ -232,7 +232,7 @@ UINT8* agi_v3_load_vol_res (struct agi_dir *agid)
 			printf("ACK! BAD RESOURCE!!!\n");
 			exit(0);
 		}
-	
+
 		agid->len = lohi_getword (x + 3);	/* uncompressed size */
 		agid->clen = lohi_getword (x + 5);	/* compressed len */
 
@@ -260,7 +260,7 @@ UINT8* agi_v3_load_vol_res (struct agi_dir *agid)
 			free (comp_buffer);
 			agid->flags |= RES_COMPRESSED;
 		}
-		
+
 		fclose(fp);
 	} else {
 		/* we have a bad volume resource */
@@ -357,7 +357,7 @@ int agi_v3_load_resource (int restype, int resnum)
 		 * cache the view? or must we reload it all the time?
 		 */
 		/* load a raw view from a VOL file into data */
-		if (~game.dir_view[resnum].flags & RES_LOADED)
+		if (game.dir_view[resnum].flags & RES_LOADED)
 			break;
 
 		agi_v3.unload_resource (rVIEW, resnum);
