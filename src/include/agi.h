@@ -138,6 +138,8 @@ struct agi_game {
 	int line_status;	/**< line number to put status on */
 	int line_user_input;	/**< line to put user input on */
 	int line_min_print;	/**< num lines to print on */
+	int cursor_pos;		/**< column where the input cursor is */
+	UINT8 input_buffer[40];	/**< buffer for user input */
 	int keypress;
 #define INPUT_NORMAL	0x01
 #define INPUT_GETSTRING	0x02
@@ -153,6 +155,7 @@ struct agi_game {
 	int clock_enabled;	/**< clock is on/off */
 	int exit_all_logics;	/**< break cycle after new.room */
 	int picture_shown;	/**< show.pic has been issued */
+	int has_prompt;		/**< input prompt has been printed */
 #define ID_AGDS		0x00000001
 #define ID_AMIGA	0x00000002
 	int game_flags;		/**< Sarien options flags */

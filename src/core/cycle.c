@@ -123,6 +123,23 @@ static void interpret_cycle ()
 	}
 }
 
+/**
+ * Print user input prompt.
+ */
+static void print_line_prompt ()
+{
+	_D (_D_WARN "input mode = %d", game.input_mode);
+	if (game.input_mode == INPUT_NORMAL) {
+		_D (_D_WARN "prompt = '%s'", agi_sprintf (game.strings[0]));
+		print_text (game.strings[0], 0, 0, game.line_user_input, 1,
+			game.color_fg, game.color_bg);
+		print_text (game.input_buffer, 0, 1, game.line_user_input,
+			game.cursor_pos + 1, game.color_fg, game.color_bg);
+		print_character (game.cursor_pos + 1, game.line_user_input,
+			game.cursor_char, game.color_fg, game.color_bg);
+		do_update ();	/* synchronous */
+	}
+}
 
 void update_timer ()
 {
@@ -165,6 +182,7 @@ void old_input_mode ()
 	game.input_mode = old_mode;
 }
 
+
 /* If main_cycle returns FALSE, don't process more events! */
 int main_cycle ()
 {
@@ -192,6 +210,8 @@ int main_cycle ()
 		if (kascii) setvar (V_key, kascii);
 		switch (game.input_mode) {
 		case INPUT_NORMAL:
+			if (key == 0)
+				break;
 			if (!handle_controller (key)) {
 				handle_keys (key);
 				/* commented out to close bug #438872
@@ -230,7 +250,6 @@ int main_cycle ()
 int run_game ()
 {
 	int ec = err_OK;
-	int x, y;
 
 	_D (_D_WARN "initializing...");
 	stop_sound ();
@@ -262,10 +281,11 @@ int run_game ()
 		if (!main_cycle ())
 			continue;
 	
-		x = 1 + clock_count;		/* x = 1..TICK_SECONDS */
-		y = getvar (V_time_delay);	/* 1/20th of second delay */
-	
-		if (y == 0 || (x % y == 0)) {
+		if (getvar (V_time_delay) == 0 || (1 + clock_count) % getvar (V_time_delay) == 0) {
+			if (!game.has_prompt && game.input_mode == INPUT_NORMAL) {
+				print_line_prompt ();
+				game.has_prompt = 1;
+			}
 			interpret_cycle ();
 			setflag (F_entered_cli, FALSE);
 			setflag (F_said_accepted_input, FALSE);

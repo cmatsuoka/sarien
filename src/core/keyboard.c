@@ -19,7 +19,6 @@
 #include "menu.h"
 #include "text.h"	/* remove later */
 
-UINT8  buffer[40];
 UINT8  last_sentence[40];
 
 #ifdef USE_CONSOLE
@@ -169,6 +168,7 @@ int handle_controller (int key)
 void handle_getstring (int key)
 {
 	static int pos = 0;		/* Cursor position */
+	static char buf[40];
 
 	if (KEY_ASCII(key) == 0)
 		return;
@@ -178,9 +178,11 @@ void handle_getstring (int key)
 	switch (key) {
 	case KEY_ENTER:
 		_D ("KEY_ENTER");
-		buffer[pos] = 0;
-		strcpy (game.strings[stringdata.str], buffer);
-		buffer[pos = 0] = 0;
+		game.has_prompt = 0;
+		buf[pos] = 0;
+		strcpy (game.strings[stringdata.str], buf);
+		_D (_D_WARN "buffer=[%s]", buf);
+		buf[pos = 0] = 0;
 		new_input_mode (INPUT_NORMAL);
 		break;
 	case KEY_ESCAPE:
@@ -200,7 +202,7 @@ void handle_getstring (int key)
 		print_character (stringdata.x + (pos + 1), stringdata.y, ' ', game.color_fg, game.color_bg);
 
 		pos--;
-		buffer[pos] = 0;
+		buf[pos] = 0;
 		break;
 	default:
 		if (key < 0x20 || key > 0x7f)
@@ -209,12 +211,12 @@ void handle_getstring (int key)
 		if (pos >= stringdata.len)
 			break;
 
-		buffer[pos++] = key;
-		buffer[pos] = 0;
+		buf[pos++] = key;
+		buf[pos] = 0;
 
 		/* Echo */
 		print_character (stringdata.x + pos, stringdata.y,
-			buffer[pos - 1], game.color_fg, game.color_bg);
+			buf[pos - 1], game.color_fg, game.color_bg);
 
 		break;
 	}
@@ -229,24 +231,11 @@ void handle_keys (int key)
 {
 	UINT8 *p=NULL;
 	int c = 0;
-	static UINT8  formated_entry[256];
-	static UINT16 pos = 0;
-	static int has_prompt = 0;
+	static UINT8 formated_entry[256];
 	int l = game.line_user_input;
 	int fg = game.color_fg, bg = game.color_bg;
 
 	setvar (V_word_not_found, 0);
-
-	if (!KEY_ASCII(key)) {
-		/* Print prompt and cursor if they're not there */
-		if (!has_prompt) {
-			print_line_prompt ();
-			/* Print cursor */
-			print_character (pos + 1, l, game.cursor_char, fg, bg);
-			has_prompt = 1;
-		}
-		return;
-	}
 
 	_D ("handling key: %02x", key);
 
@@ -256,7 +245,7 @@ void handle_keys (int key)
 		game.keypress = 0;
 
 		/* Remove all leading spaces */
-		for (p = buffer; *p && *p == 0x20; p++);
+		for (p = game.input_buffer; *p && *p == 0x20; p++);
 
 		/* Copy to internal buffer */
 		for (; *p; p++) {
@@ -276,12 +265,11 @@ void handle_keys (int key)
 		}
 
 		/* Clear to start a new line*/
-		has_prompt = 0;
-		buffer[pos = 0] = 0;
+		game.has_prompt = 0;
+		game.input_buffer[game.cursor_pos = 0] = 0;
 		_D (_D_WARN "clear lines");
 	   	clear_lines (l, l + 1, bg);
 		flush_lines (l, l + 1);
-		print_line_prompt();
 
 		break;
 	case KEY_ESCAPE:
@@ -290,14 +278,13 @@ void handle_keys (int key)
 		break;
 	case KEY_BACKSPACE:
 		/* Ignore backspace at start of line */
-		if (pos == 0) break;
+		if (game.cursor_pos == 0) break;
 
-		/* Erase cursor */
-		/*print_character (pos + 1, l, game.cursor_char, bg, bg);*/
-
-		/* fix erase, print a space! */
-		print_character (pos + 1, l, ' ', fg, bg);
-		buffer[--pos] = 0;
+		/* erase cursor */
+		print_character (game.cursor_pos + 1, l, ' ', fg, bg);
+		game.input_buffer[--game.cursor_pos] = 0;
+		/* Print cursor */
+		print_character (game.cursor_pos + 1, l, game.cursor_char, fg, bg );
 		break;
 	default:
 		/* Ignore invalid keystrokes */
@@ -305,19 +292,21 @@ void handle_keys (int key)
 			break;
 
 		/* Maximum input size reached */
-		if (pos >= getvar (V_max_input_chars))
+		if (game.cursor_pos >= getvar (V_max_input_chars))
 			break;
 
-		buffer[pos++] = key;
-		buffer[pos] = 0;
+		game.input_buffer[game.cursor_pos++] = key;
+		game.input_buffer[game.cursor_pos] = 0;
 
 		/* echo */
-		print_character (pos, l, buffer[pos - 1], fg, bg);
+		print_character (game.cursor_pos, l,
+			game.input_buffer[game.cursor_pos - 1], fg, bg);
+
+		/* Print cursor */
+		print_character (game.cursor_pos + 1, l, game.cursor_char, fg, bg );
+
 		break;
 	}
-
-	/* Print cursor */
-	print_character (pos + 1, l, game.cursor_char, fg, bg );
 }
 
 
@@ -360,18 +349,4 @@ int wait_any_key ()
 	return key;
 }
 
-
-/**
- * Print user input prompt.
- */
-void print_line_prompt ()
-{
-	_D (_D_WARN "input mode = %d", game.input_mode);
-	if (game.input_mode == INPUT_NORMAL) {
-		_D (_D_WARN "prompt = '%s'", agi_sprintf (game.strings[0]));
-		print_text (game.strings[0], 0, 0,
-			game.line_user_input, 1, game.color_fg, game.color_bg);
-		do_update ();	/* synchronous */
-	}
-}
 

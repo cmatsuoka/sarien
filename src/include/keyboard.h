@@ -54,8 +54,6 @@ UINT16	agi_get_keypress(void);
 int	wait_key	(void);
 int	wait_any_key	(void);
 
-void print_line_prompt(void);
-
 #ifdef __cplusplus
 };
 #endif

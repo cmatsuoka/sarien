@@ -202,7 +202,7 @@ void inventory ()
 	show_pic ();
 	game.color_fg = old_fg;
 	game.color_bg = old_bg;
-	print_line_prompt ();
+	game.has_prompt = 0;
 	flush_lines (game.line_user_input, 24);
 }
 
