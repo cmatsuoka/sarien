@@ -4831,41 +4831,48 @@ Code  Color             R    G    B
 <sect2><title>General actions</title>
 <para>
    <variablelist>
-   <varlistentry/0xF0: Change picture colour and enable picture draw/
+    <varlistentry><term/0xF0: Change picture colour and enable picture draw/
+     <listitem><para>
+       Changes the current drawing colour for the picture screen to that
+       given by the one and only argument, and enables subsequent actions
+       to draw to the picture screen.
+     </para><para>
+       Initially all pixels of the background are white and have priority 4.
+       After this command is executed, all the subsequent graphic commands
+       draw using the colour set by the command.
+     </para><para>
+       Example: <literal/F0 0D/ changes picture screen drawing colour to
+       light magenta and enables drawing to the picture screen.
+     </para></listitem>
+    </varlistentry>
 
-   <emphasis/Function:/ Changes the current drawing colour for the picture
-   screen to that given by the one and only argument, and enables subsequent
-   actions to draw to the picture screen.
+    <varlistentry><term/0xF1: Disable picture draw/
+     <listitem><para>
+       Disables drawing to the picture screen. This is done whenever there
+       is something which only needs to be drawn on the priority screen
+       such as the control lines. There are no arguments for this action.
+     </para></listitem>
+    </varlistentry>
 
-   Initially all pixels of the background are white and have priority 4.
-   After this command is executed, all the subsequent graphic commands
-   draw using the colour set by the command.
+    <varlistentry><term/0xF2: Change priority colour and enable priority draw/
+     <listitem><para>
+       Changes the current drawing colour for the priority screen to that
+       given by the one and only argument, and enables subsequent actions
+       to draw to the priority screen.
+     </para><para>
+       Example: <literal/F0 04/ changes priority screen drawing colour to
+       red and enables drawing to the priority screen.
+     </para></listitem>
+    </varlistentry>
 
-   <emphasis/Example:/ <literal/F0 0D/ changes picture screen drawing colour to
-   light magenta and enables drawing to the picture screen.
-
-   <varlistentry/0xF1: Disable picture draw/
-
-   <emphasis/Function:/ Disables drawing to the picture screen. This is done
-   whenever there is something which only needs to be drawn on the
-   priority screen such as the control lines. There are no arguments for
-   this action.
-
-   <varlistentry/0xF2: Change priority colour and enable priority draw/
-
-   <emphasis/Function:/ Changes the current drawing colour for the priority screen
-   to that given by the one and only argument, and enables subsequent
-   actions to draw to the priority screen.
-
-   <emphasis/Example:/ <literal/F0 04/ changes priority screen drawing colour to
-   red and enables drawing to the priority screen.
-
-   <varlistentry/0xF3: Disable priority draw/
-
-   <emphasis/Function:/ Disables drawing to the priority screen. This is done
-   whenever there is something which only needs to be drawn on the
-   picture screen such as the finer details of the picture. There are no
-   arguments for this action.
+    <varlistentry><term/0xF3: Disable priority draw/
+     <listitem><para>
+       Disables drawing to the priority screen. This is done whenever there
+       is something which only needs to be drawn on the picture screen such
+       as the finer details of the picture. There are no arguments for this
+       action.
+     </para></listitem>
+    </varlistentry>
    </variablelist>
 </para>
 
@@ -4889,18 +4896,19 @@ Code  Color             R    G    B
    because the X or horizontal component is changed first.
 
    <variablelist>
-   <varlistentry/0xF4: Draw a Y corner/
-
-   <emphasis/Function:/ The first two arguments for this action are the
-   coordinates of the starting position on the screen in the order x and
-   then y. The remaining arguments are in the order y1, x1, y2, x2, ...
-
-   Note that the y component is the first to be changed and also note
-   that this action does not necessarily end on either component, it just
-   ends when the next byte of 0xF0 or above is encountered. A line is
-   drawn after each byte is processed.
-
-   <emphasis/Example:/ <literal/F4 16 16 18 12 16 F?/
+    <varlistentry><term/0xF4: Draw a Y corner/
+     <listitem><para>
+       The first two arguments for this action are the coordinates of the
+       starting position on the screen in the order x and then y. The
+       remaining arguments are in the order y1, x1, y2, x2, ...
+     </para><para>
+       Note that the y component is the first to be changed and also note
+       that this action does not necessarily end on either component, it just
+       ends when the next byte of 0xF0 or above is encountered. A line is
+       drawn after each byte is processed.
+     </para><para>
+       Example: <literal/F4 16 16 18 12 16 F?/
+     </para><para>
 <programlisting>
  (0x12, 0x16)     (0x16, 0x16)
              E   S                  S = Start
@@ -4908,19 +4916,23 @@ Code  Color             R    G    B
              XXXXX                  X = normal piXel
  (0x12, 0x18)     (0x16, 0x18)
 </programlisting>
+     </para></listitem>
+    </varlistentry>
 
-   <varlistentry/0xF5: Draw an X corner/
+    <varlistentry><term/0xF5: Draw an X corner/
+     <listitem><para>
+       The first two arguments for this action are the coordinates of the
+       starting position on the screen in the order x and then y.
+       The remaining arguments are in the order x1, y1, x2, y2, ...
+     </para><para>
+       Note that the x component is the first to be changed and also note
+       that this action does not necessarily end on either component, it just
+       ends when the next byte of 0xF0 or above is encountered. A line is
+       drawn after each byte is processed.
+     </para><para>
 
-   <emphasis/Function:/ The first two arguments for this action are the
-   coordinates of the starting position on the screen in the order x and
-   then y. The remaining arguments are in the order x1, y1, x2, y2, ...
-
-   Note that the x component is the first to be changed and also note
-   that this action does not necessarily end on either component, it just
-   ends when the next byte of 0xF0 or above is encountered. A line is
-   drawn after each byte is processed.
-
-   <emphasis/Example:/ <literal/F5 16 16 18 12 16 F?/
+       Example: <literal/F5 16 16 18 12 16 F?/
+     </para><para>
 <programlisting>
   (0x16, 0x12)   (0x18, 0x12)
               EXX
@@ -4930,27 +4942,31 @@ Code  Color             R    G    B
               SXX
   (0x16, 0x16)   (0x18, 0x16)
 </programlisting>
+     </para></listitem>
+    </varlistentry>
 
-   <varlistentry/0xF6: Absolute line/
+    <varlistentry><term/0xF6: Absolute line/
+     <listitem><para>
+       Draws lines between points. The first two arguments are the
+       starting coordinates. The remaining arguments are in groups of two
+       which give the coordinates of the next location to draw a line to.
+       There can be any number of arguments but there should always be an
+       even number.
+     </para><para>
+       Example: <literal/F6 30 50 34 51 38 53 F?/
+     </para><para>
+       This sequence draws a line from (48, 80) to (52, 81), and a line from
+       (52, 81) to (56, 83).
+     </para></listitem>
+    </varlistentry>
 
-   <emphasis/Function:/ Draws lines between points. The first two arguments
-   are the starting coordinates. The remaining arguments are in groups of two
-   which give the coordinates of the next location to draw a line to.
-   There can be any number of arguments but there should always be an
-   even number.
-
-   <emphasis/Example:/ <literal/F6 30 50 34 51 38 53 F?/
-
-   This sequence draws a line from (48, 80) to (52, 81), and a line from
-   (52, 81) to (56, 83).
-
-   <varlistentry/0xF7: Relative line/
-
-   <emphasis/Function:/ Draw short relative lines. By relative we mean that
-   the data gives displacements which are relative from the current location.
-   The first argument gives the standard starting coordinates. All the
-   arguments which follow these first two are of the following format:
-
+    <varlistentry><term/0xF7: Relative line/
+     <listitem><para>
+       Draw short relative lines. By relative we mean that the data
+       gives displacements which are relative from the current location.
+       The first argument gives the standard starting coordinates. All the
+       arguments which follow these first two are of the following format:
+     </para><para>
 <programlisting>
 +---+-----------+---+-----------+
 | S |   Xdisp   | S |   Ydisp   |
@@ -4958,12 +4974,12 @@ Code  Color             R    G    B
 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
 +---+---+---+---+---+---+---+---+
 </programlisting>
-
-   This gives a displacement range of between -7 and +7 for both the X
-   and the Y direction.
-
-   <emphasis/Example:/ <literal/F7 10 10 22 40 06 CC F?/
-
+     </para><para>
+       This gives a displacement range of between -7 and +7 for both the X
+       and the Y direction.
+     </para><para>
+       Example: <literal/F7 10 10 22 40 06 CC F?/
+     </para><para>
 <programlisting>
               S
                +              S = Start
@@ -4975,27 +4991,31 @@ Code  Color             R    G    B
                    ++
                     X
 </programlisting>
+     </para></listitem>
+    </varlistentry>
 
-   <varlistentry/0xF8: Fill/
-
-   <emphasis/Function:/ Flood fill from the locations given. Arguments are
-   given in groups of two bytes which give the coordinates of the location to
-   start the fill at. If picture drawing is enabled then it flood fills
-   from that location on the picture screen to all pixels locations that
-   it can reach which are white in colour. The boundary is given by any
-   pixels which are not white.
-
-   If priority drawing is enabled, and picture drawing is not enabled,
-   then it flood fills from that location on the priority screen to all
-   pixels that it can reach which are red in colour. The boundary in this
-   case is given by any pixels which are not red.
-
-   If both picture drawing and priority drawing are enabled, then a flood
-   fill naturally enough takes place on both screens. In this case there
-   is a difference in the way the fill takes place in the priority
-   screen. The difference is that it not only looks for its own boundary,
-   but also stops if it reaches a boundary that exists in the picture
-   screen but does not necessarily exist in the priority screen.
+    <varlistentry><term/0xF8: Fill/
+     <listitem><para>
+       Flood fill from the locations given. Arguments are given in
+       groups of two bytes which give the coordinates of the location to
+       start the fill at. If picture drawing is enabled then it flood fills
+       from that location on the picture screen to all pixels locations that
+       it can reach which are white in colour. The boundary is given by any
+       pixels which are not white.
+     </para><para>
+       If priority drawing is enabled, and picture drawing is not enabled,
+       then it flood fills from that location on the priority screen to all
+       pixels that it can reach which are red in colour. The boundary in this
+       case is given by any pixels which are not red.
+     </para><para>
+       If both picture drawing and priority drawing are enabled, then a flood
+       fill naturally enough takes place on both screens. In this case there
+       is a difference in the way the fill takes place in the priority
+       screen. The difference is that it not only looks for its own boundary,
+       but also stops if it reaches a boundary that exists in the picture
+       screen but does not necessarily exist in the priority screen.
+     </para></listitem>
+    </varlistentry>
    </variablelist>
 </para>
 
@@ -5005,19 +5025,21 @@ Code  Color             R    G    B
    drawing programs have options to change the size, and style of the pen
    or brush. The style covers different shapes and textures. AGI PICTURES
    provide these tools as well.
+</para><para>
 
    <variablelist>
-   <varlistentry/0xF9: Change pen size and style/
-
-   <emphasis/Function:/ Change the characteristics of the pattern plotted by drawing
-   action 0xFA. If bit 5 is not set, then the pattern is a solid shape.
-   If bit 5 is set, then the pattern is like a splatter. Bit 4 selects
-   whether the brush is a circle or a rectangle. Bits 0-2 give the size
-   of the shape which will be a value from 0 to 7. These characteristics
-   appear to only affect drawing action 0xFA.
-
-   The default brush is a solid circle or rectangle of size 0, which
-   should be used until an 0xF9 action is encountered.
+    <varlistentry><term/0xF9: Change pen size and style/
+     <listitem><para>
+       Change the characteristics of the pattern plotted by drawing
+       action 0xFA. If bit 5 is not set, then the pattern is a solid shape.
+       If bit 5 is set, then the pattern is like a splatter. Bit 4 selects
+       whether the brush is a circle or a rectangle. Bits 0-2 give the size
+       of the shape which will be a value from 0 to 7. These characteristics
+       appear to only affect drawing action 0xFA.
+     </para><para>
+       The default brush is a solid circle or rectangle of size 0, which
+       should be used until an 0xF9 action is encountered.
+     </para><para>
 <programlisting>
            ___ ___ ___ ___ ___ ___ ___ ___
           | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 |
@@ -5065,24 +5087,28 @@ Code  Color             R    G    B
     * = coordinates given              XX
         for plot                       7
 </programlisting>
+     </para><para>
+       To implement this you will need to store bitmaps for each of these of
+       these circles.
+     </para></listitem>
+    </varlistentry>
 
-   To implement this you will need to store bitmaps for each of these of
-   these circles.
-
-   <varlistentry/0xFA: Plot with pen/
-
-   <emphasis/Function:/ Plots points with the pen defined with drawing action 0xF9.
-   If the pen style is set to solid, then the arguments are just a list
-   of coordinates to be plotted. If the pen style is set to splatter
-   brush (texture), then the arguments are in groups of three with the
-   first argument giving the texture number and the other two giving the
-   coordinates. The texture number determines in what way the pixels will
-   splatter within the defined shape. Bits 1-7 seem to give the actual
-   texture number. Bit 0 does not do anything. This means that there are
-   120 different pixel splatter bitmaps (values 0xF0 and above can not be
-   used as they are treated as drawing actions). There is actually only
-   32 bytes of texture data which means that most of the splatter bitmaps
-   overlap.
+    <varlistentry><term/0xFA: Plot with pen/
+     <listitem><para>
+       Plots points with the pen defined with drawing action 0xF9.
+       If the pen style is set to solid, then the arguments are just a list
+       of coordinates to be plotted. If the pen style is set to splatter
+       brush (texture), then the arguments are in groups of three with the
+       first argument giving the texture number and the other two giving the
+       coordinates. The texture number determines in what way the pixels will
+       splatter within the defined shape. Bits 1-7 seem to give the actual
+       texture number. Bit 0 does not do anything. This means that there are
+       120 different pixel splatter bitmaps (values 0xF0 and above can not be
+       used as they are treated as drawing actions). There is actually only
+       32 bytes of texture data which means that most of the splatter bitmaps
+       overlap.
+     </para></listitem>
+    </varlistentry>
    </variablelist>
 </para>
 
@@ -5090,7 +5116,7 @@ Code  Color             R    G    B
 <para>
    All of the data needed for the 128 texture patterns is included in the
    following 32 bytes (256 bits):
-
+</para><para>
 <programlisting>
 0x20, 0x94, 0x02, 0x24, 0x90, 0x82, 0xa4, 0xa2,
 0x82, 0x09, 0x0a, 0x22, 0x12, 0x10, 0x42, 0x14,
@@ -5098,10 +5124,12 @@ Code  Color             R    G    B
 0x22, 0xa8, 0x14, 0x24, 0x00, 0x50, 0x24, 0x04
 </programlisting>
 
+</para><para>
    The only difference between each texture pattern is its starting
    position within this table. The following table gives the starting bit
    position in the above table for each texture pattern number given as
    the first argument of each pen plot:
+</para><para>
 <programlisting>
 0x00, 0x18, 0x30, 0xc4, 0xdc, 0x65, 0xeb, 0x48,
 0x60, 0xbd, 0x89, 0x04, 0x0a, 0xf4, 0x7d, 0x6d,
@@ -5119,16 +5147,18 @@ Code  Color             R    G    B
 0xe6, 0xe5, 0xab, 0xe4, 0xd2, 0xaa, 0x4c, 0xe3,
 0x06, 0x6f, 0xc6, 0x4a, 0x75, 0xa3, 0x97, 0xe1
 </programlisting>
+</para><para>
 
    Important note: When drawing the brush, if the bit position in the
    texture data (first table above) reaches 255, it should loop round to
    0, instead of looping at 256 as you would normally expect. This may be
    because of a bug in the picture drawing code in the interpreter. If
    you loop at 256 then some of the patterns will not be correct.
-
+</para><para>
    When a texture pattern is drawn in the shape of a circle, the texture
    pattern 'fills' the shape of the circle. This diagram will explain
    what I mean:
+</para><para>
 <programlisting>
    X.XX          X.
    X.X.          XX
@@ -5140,6 +5170,7 @@ Code  Color             R    G    B
 
  Rectangle     Circle
 </programlisting>
+</para><para>
 
    The corner pixels of the circle which aren't part of the circle are
    totally ignored. The circle isn't just a cut out of the equivalent
@@ -5155,12 +5186,12 @@ Code  Color             R    G    B
    have to have a line drawing algorithm which exactly matches the one
    that Sierra uses. A pixel out of place can mean that a fill overflows
    or doesn't work at all.
-
+</para><para>
    You will also have to write your own fill routine because not many of
    the standard fill routines can stop at a multicoloured boundary. You
    are also dealing with two screens both of which will probably be
    stored in memory somewhere rather than the screen.
-
+</para><para>
    The picture screen has a starting state of being completely white. The
    priority screen has starting state of being completely red. It is
    important that you set all pixels in each screen to the relevant
@@ -5183,16 +5214,17 @@ Code  Color             R    G    B
    look at it and try to understand it or you'll be having headaches
    trying to get you're routines acting like the Sierra ones. Basically
    it draws a line from (x1, y1) to (x2, y2) using a function called pset
-   to draw a single pixel. The function <literal/round()/ is what makes it act like
-   the Sierra. Essentially when it comes down to a 50:50 decision about
-   where to put a pixel, the direction in which the line is being drawn
+   to draw a single pixel. The function <function/round()/ is what makes
+   it act like Sierra's. Essentially when it comes down to a 50:50 decision
+   about where to put a pixel, the direction in which the line is being drawn
    is taken into account. I've only noticed one pixel out of place in all
    the screens I've tried Showpic on which makes me believe its probably
    not a fault in this algorithm, but somewhere else in the code.
-
-   Note that <ulink name="http://homepages.ihug.com.au/~entropy/agi/"/Sarien/ (see section
-   <xref linkend="otheragi" name="Other interpreters">)
-   use a different line drawing algorithm written by Joshua Neal and <ulink name="mailto:entropy@ihug.com.au"/Stuart George/.
+</para><para>
+   Note that Sarien (see <xref linkend="otheragi" name="Other interpreters">)
+   use a different line drawing algorithm written by Joshua Neal and
+   Stuart George.
+</para><para>
 <programlisting>
 int round(float aNumber, float dirn)
 {
@@ -5233,7 +5265,6 @@ void drawline(word x1, word y1, word x2, word y2)
    }
 }
 </programlisting>
-
 </para>
 
 <sect2><title>Flood filling</title>
@@ -5242,7 +5273,7 @@ void drawline(word x1, word y1, word x2, word y2)
    quite well. It is also the easiest method to understand as far as I'm
    concerned. I just thought about what needed to be done and this method
    took shape.
-
+</para><para>
    Basically you start at a particular location. If its the desired
    background colour (white or red depending on the screen), then set
    that pixel. You then check the pixels immediately up, left, down, and
@@ -5274,27 +5305,30 @@ void drawline(word x1, word y1, word x2, word y2)
    gives the current tool being used (Line, Fill, etc), the current X and
    Y locations, and four others which I explain below.
 
+</para><para>
    Status bar examples:
 <programlisting>
 Tool:Line V:8 P:A C:o X=249 Y=89 Pri:5
 Tool:Fill V:B P:0 C:B X=96 Y=99 Pri:6
 Tool:Line V:A P:o C:o X=199 Y=55 Pri:2
 </programlisting>
-
+</para><para>
    <literal/o/ = off (or disabled)
-
-   <literal/Pri/ looks like it could be giving the current priority band that the
-   cursor location is in. The above status lines are for the SCI Picture
-   Editor. I ran these values past SQ3 and the values given for <literal/Pri/ are
-   indeed the values of the priority band at the locations given.
-
-   I think that <literal/V/, <literal/P/, and <literal/C/ refer to the colours being used
-   on the three different screens (the SCI games have a separate screen for
-   the control lines rather than having both the priority bands and control
-   lines on the same screen. This is why there were three screens and not
-   the two that we are used to in AGI games). This would mean that
-   <literal/V/ = Visual, <literal/P/ = Priority and <literal/C/ = Control.
-
+</para><para>
+   <literal/Pri/ looks like it could be giving the current priority band
+   that the cursor location is in. The above status lines are for the SCI
+   Picture Editor. I ran these values past SQ3 and the values given for
+   <literal/Pri/ are indeed the values of the priority band at the
+   locations given.
+</para><para>
+   I think that <literal/V/, <literal/P/, and <literal/C/ refer to the
+   colours being used on the three different screens (SCI games have a
+   separate screen for the control lines rather than having both the
+   priority bands and control lines on the same screen. This is why there
+   were three screens and not the two that we are used to in AGI games).
+   This would mean that <literal/V/ = Visual, <literal/P/ = Priority and
+   <literal/C/ = Control.
+</para><para>
    In an AGI Picture Editor, there would only be the Visual screen and
    the Priority screen. The picture editor would obviously be able to
    switch between the two screens. I've also noticed that the early
@@ -7200,78 +7234,98 @@ A:   ..............
    programs).
 </para><para>
    If there is no error, let's check the current room number in the
-   variable 0 (further in the text we shall refer to variables as `<literal/v/'
-   followed by the variable number, for example <literal/v0/ means variable 0). We
-   start in the room 0 because all variables are 0 when the interpreter
-   starts. Initialization logic executes in room 1 (see <literal/log01.asm/),
-   called using <literal/call 01/. After that we check if we have just started the
-   program or the program has been restarted with <literal/restart_game/. This is
-   to avoid showing the title on restart. So on the first execution flag
-   6 (<literal/f6/) is reset (equals 0) and <literal/new_room 2/ command executes
-   meaning we move to the room number 2.
+   variable 0 (further in the text we shall refer to variables as
+   `<parameter/v/' followed by the variable number, for example
+   <parameter/v0/ means variable 0). We start in the room 0 because all
+   variables are 0 when the interpreter starts. Initialization logic
+   executes in room 1 (see <filename/log01.asm/),
+   called using <function/call 01/. After that we check if we have
+   just started the program or the program has been restarted with
+   <function/restart_game/. This is to avoid showing the title on restart.
+   So on the first execution flag 6 (<parameter/f6/) is reset (equals 0)
+   and <function/new_room 2/ command executes meaning we move to the
+   room number 2.
 </para><para>
-   Second room is the <emphasis/Thunderstorm/ title screen. The corresponding logic
-   is logic 2 (same as the room number, have a look into <literal/log02.asm/ - when
-   we are finished with logic 0 we shall come back to it).
-
-   <literal/new_room/ is a complex and powerful command, it executes a lot of
-   actions. For now, it is important to understand the following:
+   Second room is the <emphasis/Thunderstorm/ title screen. The
+   corresponding logic is logic 2 (same as the room number, have a
+   look into <filename/log02.asm/ -- when we are finished with logic
+   0 we shall come back to it).
+</para><para>
+   <function/new_room/ is a complex and powerful command, it executes
+   a lot of actions. For now, it is important to understand the following:
    <itemizedlist>
-    <listitem><para><literal/new_room n/ stores the command operand in <literal/v0/, i.e. the
-       value of <emphasis/n/, 2 in our case.
+    <listitem><para>
+      <function/new_room n/ stores the command operand in
+      <parameter/v0/, i.e. the value of <parameter/n/, 2 in our case.
     </para></listitem>
-    <listitem><para>All logics in the interpreter memory are discarded and logic n (2
-       in this case) is loaded.
+
+    <listitem><para>
+      All logics in the interpreter memory are discarded and logic
+      <parameter/n/ (2 in this case) is loaded.
     </para></listitem>
-    <listitem><para>flag 5 is set (<literal/f5/ -> 1)!
+
+    <listitem><para>
+      Flag 5 is set (<parameter/f5/ -> 1)!
     </para></listitem>
-    <listitem><para>Control is returned to the interpreter which starts logic 0 from
-       the beginning (see the <emphasis/Interpreter Work Cycle/).
+
+    <listitem><para>
+      Control is returned to the interpreter which starts logic 0 from
+      the beginning (see the <emphasis/Interpreter Work Cycle/).
     </para></listitem>
+
    </itemizedlist>
 </para><para>
-   After <literal/new_room 2/ <literal/log0.asm/ checks if any reserved keys have been
-   pressed, using controller command. Then we check if we are in the
-   second room (title screen). If yes we check if any key is pressed
-   using test_key. If not, the title screen logic is called. As soon as
-   any key is pressed, the screen is switched to the text mode and the
-   greeting text is displayed. This also sets flag 54. Next time logic 0
-   executes the invitation is not displayed (because we check <literal/f54/) and we
-   simply wait for any key to be pressed in a wait loop. During that
-   cycle control is not returned to the interpreter. When a key is
-   pressed the screen switches to the graphics mode and <literal/new_room 5/
-   command is issued. In this room the game (education) session begins.
+   After <function/new_room 2/ <filename/log0.asm/ checks if any
+   reserved keys have been pressed, using the <function/controller/ command.
+   Then we check if we are in the second room (title screen). If yes we
+   check if any key is pressed using <function/test_key/. If not, the
+   title screen logic is called. As soon as any key is pressed, the
+   screen is switched to the text mode and the greeting text is displayed.
+   This also sets flag 54. Next time logic 0 executes the invitation is
+   not displayed (because we check <parameter/f54/) and we simply wait
+   for any key to be pressed in a wait loop. During that cycle control
+   is not returned to the interpreter. When a key is pressed the screen
+   switches to the graphics mode and <function/new_room 5/ command is
+   issued. In this room the game (education) session begins.
 </para><para>
    Thus logic 0 should contain:
    <orderedlist>
-    <listitem><para>A test for an error (using <literal/v17/) and a call to the error handler.
+    <listitem><para>
+      A test for an error (using <parameter/v17/) and a call to the
+      error handler.
     </para></listitem>
-    <listitem><para>A call to the initialization logic.
+
+    <listitem><para>
+      A call to the initialization logic.
     </para></listitem>
-    <listitem><para>Actions common to all logics.
+
+    <listitem><para>
+      Actions common to all logics.
     </para></listitem>
-    <listitem><para><literal/call_v 0/ command that calls the logic corresponding to the last
-       room set using <literal/new_room v/, which has to be executed each
-       interpreter cycle.
+
+    <listitem><para>
+      The <functions/call_v 0/ command that calls the logic corresponding
+      to the last room set using <function/new_room v/, which has to be
+      executed each interpreter cycle.
     </para></listitem>
    </orderedlist>
 </para><para>
-   Let us return to logic 2 (see <literal/log02.asm/) which describes the actions
-   in the second room. I shall not describe the details of how the
-   rainbow is moved across the large letters of the program title, it is
-   enough to say that the letters have priority 4 while the outer
-   areas have priority 7. The rainbow, stored in a VIEW resource 21, is
+   Let us return to logic 2 (see <filename/log02.asm/) which describes
+   the actions in the second room. I shall not describe the details of how
+   the rainbow is moved across the large letters of the program title,
+   it is enough to say that the letters have priority 4 while the outer
+   areas have priority 7. The rainbow, stored in the view resource 21, is
    assigned priority 5 in the program. This creates an illusion of the
    rainbow moving only in the inner area of the letters. You will
    understand how to move the rainbow when you study the source code in
-   <literal/log02.asm/.
+   <filename/log02.asm/.
 </para><para>
    It is more important to study the overall structure of logic 2 because
    it is characteristic to the interpreter programs and is common to all
    logics we discuss below.
 </para><para>
-   Note that the logic begins with a check for the flag 5 (<literal/f5/) state.
-   This flag is reserved by the interpreter. This does not mean you
+   Note that the logic begins with a check for the flag 5 (<parameter/f5/)
+   state. This flag is reserved by the interpreter. This does not mean you
    cannot change its value (you can change any flags and values, reserved
    or not; the question is what will happen). The flag is called reserved
    because under certain circumstances the interpreter may change the
@@ -7281,17 +7335,18 @@ A:   ..............
 </para><para>
    Flag 5 is set when the new room is run for the first time, i.e. this
    is the first entry into the room's logic. You probably remember that
-   after a new_room command the interpreter sets <literal/f5/ and loads the room
-   logic. After that control is passed to logic 0 which, in turn, calls
-   the room logic using <literal/call_v 0/ (see <emphasis/Interpreter Work Cycle/).
+   after a new_room command the interpreter sets <parameter/f5/ and loads
+   the room logic. After that control is passed to logic 0 which, in turn,
+   calls the room logic using <function/call_v 0/ (see
+   <emphasis/Interpreter Work Cycle/).
 </para><para>
    Any room logic usually includes a part which we can call the
    initialization code. This part describes actions that have to be
    executed only once on the first call. If you consider that the
-   interpreter automatically resets <literal/f5/ on the next cycle, we have an
-   ideal tool for selecting initialization code. This code usually loads
-   resources used in the logic. It can load other logic resources used as
-   subroutines of this logic. If these ``subroutine logics'' also include
+   interpreter automatically resets <parameter/f5/ on the next cycle, we
+   have an ideal tool for selecting initialization code. This code usually
+   loads resources used in the logic. It can load other logic resources used
+   as subroutines of this logic. If these ``subroutine logics'' also include
    initialization code, these logics have to be called after loading from
    the initialization code of the room. The example is logic 20 (blinking
    stars) which is loaded and called from the initialization code of
@@ -7299,23 +7354,25 @@ A:   ..............
 </para><para>
    Also note how this part loads and draws the scenery (letters of the
    title as holes in a screen with the rainbow band moving behind them).
-   The command sequence <literal/load_pic n/, <literal/draw_pic n/, <literal/discard_pic n/,
-   ...  <literal/show_pic/ is important! Any other sequence can lead to crash
-   because the loaded resource takes a lot of memory.
+   The command sequence <function/load_pic n/, <function/draw_pic n/,
+   <function/discard_pic n/, ...  <function/show_pic/ is important! Any
+   other sequence can lead to crash because the loaded resource takes a
+   lot of memory.
 </para><para>
    Initialization code is finished using return which returns control to
-   logic 0 and then to the interpreter. The interpreter will reset <literal/f5/
-   before the next cycle, and that cycle will execute the bodies of all
-   the called logics.
+   logic 0 and then to the interpreter. The interpreter will reset
+   <parameter/f5/ before the next cycle, and that cycle will execute the
+   bodies of all the called logics.
 </para><para>
    I shall not consider the rainbow band motion algorithm (the body of
    logic 2) because it is described in the comments in the source code.
    Just note that each new action (the band moving up, the band moving
    down, company title appearing, and the message ``educational program'')
-   increments the variable 201 (<literal/v201/). At the end of each action a flag
-   associated with that action is set. After all actions have completed,
-   <literal/new_room 2/ command is issued and the title is repeated, unless
-   interrupted by any key press (which is checked in logic 0).
+   increments the variable 201 (<parameter/v201/). At the end of each
+   action a flag associated with that action is set. After all actions
+   have completed, the <function/new_room 2/ command is issued and the
+   title is repeated, unless interrupted by any key press (which is
+   checked in logic 0).
 </para>
 
 <sect3><title><emphasis/Thunderstorm/ Program Structure</title>
@@ -7326,17 +7383,26 @@ A:   ..............
    Perhaps I won't say anything new, but the following conditions are
    important when you design an educational program.
    <itemizedlist>
-    <listitem><para>Sequential access to the material.
+    <listitem><para>
+      Sequential access to the material.
     </para></listitem>
-    <listitem><para>Periodic control of the progress and the possibility to repeat a
-       lesson without restarting the program.
+
+    <listitem><para>
+      Periodic control of the progress and the possibility to repeat a
+      lesson without restarting the program.
     </para></listitem>
-    <listitem><para>Reasonable sound effects with a possibility to turn the sound off.
+
+    <listitem><para>
+      Reasonable sound effects with a possibility to turn the sound off.
     </para></listitem>
-    <listitem><para>A brief description of what is going on in the output line rather
-       than only in the text windows.
+
+    <listitem><para>
+      A brief description of what is going on in the output line rather
+      than only in the text windows.
     </para></listitem>
-    <listitem><para>etc.
+
+    <listitem><para>
+      etc.
     </para></listitem>
    </itemizedlist>
 </para><para>
@@ -7345,14 +7411,21 @@ A:   ..............
    previous one are complete. In each room the following actions are
    performed:
    <itemizedlist>
-    <listitem><para>Displaying the explanatory text.
+    <listitem><para>
+      Displaying the explanatory text.
     </para></listitem>
-    <listitem><para>Illustrating the topic using animations, possibly with the
-       student's participation.
+
+    <listitem><para>
+      Illustrating the topic using animations, possibly with the
+      student's participation.
     </para></listitem>
-    <listitem><para>Checking the student's understanding by asking questions.
+
+    <listitem><para>
+      Checking the student's understanding by asking questions.
     </para></listitem>
-    <listitem><para>Moving to the next room if the answers are correct.
+
+    <listitem><para>
+      Moving to the next room if the answers are correct.
     </para></listitem>
    </itemizedlist>
 </para><para>

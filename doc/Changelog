@@ -2,7 +2,7 @@
 Revision History
 ================
 
-0.5.2 (20010408)
+0.5.3 (20010408) *DEVELOPMENT*
 	- starting code cleanup
 	  * reindentations & cosmetic changes
 	  * removing redundant checks
@@ -15,6 +15,9 @@ Revision History
 	- fixed sound resources deallocation in agi_v2.c
 	- added AGI specs SGML documentation; currently converting from
 	  linuxdoc to DocBook
+	- added Lance Ewing's AGI utilities to the bundle
+
+0.5.2 () -- must merge changes from DF's 0.5.2!
 
 0.5.1 (20000110) *DEVELOPMENT*
 	- added new id mechanism with external id file.
