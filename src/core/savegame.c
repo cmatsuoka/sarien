@@ -16,14 +16,16 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
+
 #ifndef __MPW__
-#ifndef __DICE__
-#include <sys/stat.h>
-#endif
-#include <sys/types.h>
+#  ifndef __DICE__
+#    include <sys/stat.h>
+#  endif
+#  include <sys/types.h>
 #endif
 #ifdef WIN32
-#include <direct.h>
+#  include <direct.h>
 #endif
 
 #include "sarien.h"
@@ -40,8 +42,7 @@
 #endif
 
 /* Image stack support */
-struct image_stack_element
-{
+struct image_stack_element {
 	UINT8 type;
 	UINT8 pad;
 	SINT16 parm1;
@@ -51,30 +52,25 @@ struct image_stack_element
 	SINT16 parm5;
 	SINT16 parm6;
 	SINT16 parm7;
-	struct image_stack_element* next;
 };
 
-struct image_stack_element* image_stack = NULL;
+#define IMAGE_STACK_SIZE 32
+static struct image_stack_element image_stack[IMAGE_STACK_SIZE];
+static int image_stack_pointer = 0;
 
 void clear_image_stack(void)
 {
-	struct image_stack_element* ptr = image_stack;
-	struct image_stack_element* doomed;
-	while(ptr)
-	{
-		doomed = ptr;
-		ptr = ptr->next;
-		free(doomed);
-	}
-	image_stack = NULL;
+	image_stack_pointer = 0;
 }
 
 void record_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3, SINT16 p4, SINT16 p5, SINT16 p6, SINT16 p7)
 {
 	struct image_stack_element* pnew;
-	struct image_stack_element* ptr;
 
-	pnew = (struct image_stack_element*)malloc(sizeof(struct image_stack_element));
+	image_stack_pointer++;
+	assert (image_stack_pointer < IMAGE_STACK_SIZE);
+	pnew = &image_stack[image_stack_pointer];
+
 	pnew->type = type;
 	pnew->parm1 = p1;
 	pnew->parm2 = p2;
@@ -83,17 +79,6 @@ void record_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3, SINT16
 	pnew->parm5 = p5;
 	pnew->parm6 = p6;
 	pnew->parm7 = p7;
-	pnew->next = NULL;
-
-	if(image_stack)
-	{
-		ptr = image_stack;
-		while(ptr->next)
-			ptr = ptr->next;
-		ptr->next = pnew;
-	}
-	else
-		image_stack = pnew;
 }
 
 void replay_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3, SINT16 p4, SINT16 p5, SINT16 p6, SINT16 p7)
@@ -320,8 +305,9 @@ int save_game(char* s, char* d)
 	}
 
 /* Save image stack */
-	while(ptr)
-	{
+	
+	for (i = 0; i < image_stack_pointer; i++) {
+		ptr = &image_stack[i];
 		write_uint8(f, ptr->type);
 		write_sint16(f, ptr->parm1);
 		write_sint16(f, ptr->parm2);
@@ -330,7 +316,6 @@ int save_game(char* s, char* d)
 		write_sint16(f, ptr->parm5);
 		write_sint16(f, ptr->parm6);
 		write_sint16(f, ptr->parm7);
-		ptr = ptr->next;
 	}
 	write_uint8(f, 0);
 
