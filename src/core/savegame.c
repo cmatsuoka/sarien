@@ -358,7 +358,7 @@ int load_game(char* s)
 	game.state = read_sint16(f);
 	/* game.name - not saved */
 	read_string(f, id);
-	if(strcmp(id, game.id)) {
+	if (strcmp (id, game.id)) {
 		fclose(f);
 		return err_BadFileOpen;
 	}
@@ -574,7 +574,7 @@ static int select_slot (char *path)
 		FILE *f;
 		char sig[8];
 #ifdef DREAMCAST
-		sprintf(name, VMU_PATH, g_vmu_port, game.id, i);
+		sprintf (name, VMU_PATH, g_vmu_port, game.id, i);
 #else
 		sprintf (name, "%s/%08d.sav", path, i);
 #endif
@@ -678,7 +678,7 @@ int savegame_dialog ()
 	/* DATADIR conflicts with ObjIdl.h in win32 SDK, renamed to DATA_DIR */
 	sprintf (path, "%s/" DATA_DIR "/", home);
 	MKDIR (path, 0755);
-	sprintf (path, "%s/" DATA_DIR "/%s/", home, game.id);
+	sprintf (path, "%s/" DATA_DIR "/%05X.%s/", home, game.crc, game.id);
 	MKDIR (path, 0711);
 #endif
 
@@ -723,8 +723,8 @@ int savegame_dialog ()
 	sprintf(path, VMU_PATH, g_vmu_port, game.id, slot);
 	fs_unlink(path);
 #else
-	sprintf (path, "%s/" DATA_DIR "/%s/%08d.sav",
-		home, game.id, slot);
+	sprintf (path, "%s/" DATA_DIR "/%05X.%s/%08d.sav",
+		home, game.crc, game.id, slot);
 #endif
 	_D (_D_WARN "file is [%s]", path);
 	
@@ -761,7 +761,7 @@ int loadgame_dialog ()
 		return err_BadFileOpen;
 	}
 
-	sprintf (path, "%s/" DATA_DIR "/%s/", home, game.id);
+	sprintf (path, "%s/" DATA_DIR "/%05X.%s/", home, game.crc, game.id);
 #endif
 
 	erase_both ();
@@ -785,8 +785,8 @@ int loadgame_dialog ()
 #ifdef DREAMCAST
 	sprintf(path, VMU_PATH, g_vmu_port, game.id, slot);
 #else	
-	sprintf (path, "%s/" DATA_DIR "/%s/%08d.sav",
-		home, game.id, slot);
+	sprintf (path, "%s/" DATA_DIR "/%05X.%s/%08d.sav",
+		home, game.crc, game.id, slot);
 #endif
 
 	stop_sound();
