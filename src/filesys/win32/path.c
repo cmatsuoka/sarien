@@ -52,15 +52,17 @@ int get_app_dir (char *app_dir, unsigned int size)
 	return 0;
 }
 
-char* get_config_file(void)
+/* Fixed by anonymous (bug #478600) */
+char *get_config_file()
 {
-	strcpy(ini_path, "./");
-
-	if(getenv("SARIEN")!=NULL)
-	{
-		sprintf(ini_path, "%s/%s", getenv("SARIEN"), "sarien.ini");
-	}
-	strcat(ini_path, "/sarien.ini");
-
+	sprintf (ini_path, "%s/sarien.ini", getenv ("SARIEN") != NULL ?
+		getenv ("SARIEN") : ".")
+	
 	return (char*)ini_path;
 }
+
+char *get_current_directory ()
+{
+	return ".";
+}
+

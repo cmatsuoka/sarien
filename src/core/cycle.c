@@ -209,6 +209,7 @@ int main_cycle ()
 	poll_timer ();		/* msdos driver -> does nothing */
 	update_timer ();
 
+#if 0
 	if (game.ver == 0) {
 		message_box ("Sarien didn't recognize this game and may "
 			"execute it with an incorrect interpreter version. "
@@ -216,6 +217,7 @@ int main_cycle ()
 			"is not listed, please contact the authors.");
 		game.ver = -1;
 	}
+#endif
 
 	key = do_poll_keyboard ();
 

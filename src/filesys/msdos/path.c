@@ -41,12 +41,9 @@ char* get_config_file(void)
 {
 	char *q;
 
-	if (getenv ("SARIEN") != NULL)
-	{
+	if (getenv ("SARIEN") != NULL) {
 		sprintf(ini_path, "%s/%s", getenv("SARIEN"), "sarien.ini");
-	}
-	else
-	{
+	} else {
 		strcpy (ini_path, exec_name);
 		q = strchr(ini_path, 0x0);
 		q--;
@@ -61,5 +58,10 @@ char* get_config_file(void)
 	}
 
 	return (char*)ini_path;
+}
+
+char *get_current_directory ()
+{
+	return ".";
 }
 

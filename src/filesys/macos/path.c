@@ -33,8 +33,13 @@ int get_app_dir (char *app_dir, unsigned int size)
 	return x ? 0 : -1;
 }
 
-
 char* get_config_file (void)
 {
 	return "sarien.conf";
 }
+
+char *get_current_directory ()
+{
+	return (".");
+}
+

@@ -73,9 +73,3 @@ char *fixpath (int flag, char *fname)
 	return path;
 }
 
-
-char *get_current_directory ()
-{
-	return ".";
-}
-

@@ -199,7 +199,7 @@ int v2id_game ()
 	report ("Computed CRC: 0x%05x\n", crc);
 	ver = match_version (crc);
 	game.crc = crc;
-	game.ver = ver;
+	//game.ver = ver;
 	agi_set_release (ver);
 	return setup_v2_game(ver, crc);
 #endif
@@ -256,7 +256,7 @@ int v3id_game ()
 	report ("Computed CRC: 0x%05x\n", crc);
 	ver = match_version (crc);
 	game.crc = crc;
-	game.ver = ver;
+	//game.ver = ver;
 	agi_set_release (ver);
 
 	ec = setup_v3_game(ver, crc);
