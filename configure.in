@@ -185,7 +185,7 @@ else
 	if test ! -z "${ac_cv_have_x}"; then
 		CONSOLE_DRIVER="x11"
 		AC_PATH_XTRA
-		AC_CHECK_HEADERS(X11/extensions/XShm.h)
+		AC_CHECK_HEADERS(X11/extensions/XShm.h,,,[#include <X11/Xlib.h>])
 dnl		AC_CHECK_HEADERS(X11/extensions/xf86dga.h \
 dnl			X11/extensions/xf86vmode.h)
 
