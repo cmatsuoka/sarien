@@ -155,6 +155,7 @@ char*	fixpath		(int flag, char *fname);
 int	get_direction	(int x, int y, int x0, int y0, int s);
 void	inventory	(void);
 void	list_games	(void);
+UINT32	match_crc	(UINT32, char *, char *, int);
 int	v2id_game	(void);
 int	v3id_game	(void);
 int	v4id_game	(UINT32 ver);

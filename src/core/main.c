@@ -66,9 +66,15 @@ int main (int argc, char *argv[])
 		goto bail_out;
 
 	if (opt.gamerun == GAMERUN_CRC) {
+		char name[80];
 		agi_detect_game (argc > 1 ? argv[optind] :
 			get_current_directory ());
 		printf ("CRC: 0x%x (Ver 0x%x)\n", game.crc, game.ver);
+		if (match_crc (game.crc, get_config_file(), name, 80))
+			printf(" AGI game detected: %s\n", name);
+		else
+			printf(" Unknown game (config file: %s)\n",
+				get_config_file());
 		exit (0);
 	}
 

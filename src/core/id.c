@@ -90,7 +90,7 @@ void list_games ()
 
 #endif
 
-static UINT32 match_crc (UINT32 crc, char *path)
+UINT32 match_crc (UINT32 crc, char *path, char *name, int len)
 {
 	FILE *f;
 	char *c, *t, buf[256];
@@ -149,7 +149,7 @@ static UINT32 match_crc (UINT32 crc, char *path)
 				for (; *t == ' ' || *t == '\t'; t++) {}
 			}
 
-			report ("AGI game detected: %s\n\n", t);
+			strncpy (name, t, len);
 			fclose (f);
 #ifdef DREAMCAST
 			strcpy(g_gamename, t);
@@ -167,10 +167,10 @@ static UINT32 match_crc (UINT32 crc, char *path)
 static UINT32 match_version (UINT32 crc)
 {
 	int ver;
-	char *fname;
+	char name[80];
 
-	fname = get_config_file();
-	ver = match_crc(crc, fname);
+	if ((ver = match_crc(crc, get_config_file(), name, 80)) > 0)
+		report ("AGI game detected: %s\n\n", name);
 
 	return ver;
 }
