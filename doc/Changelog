@@ -31,6 +31,21 @@ Revision History
 	- added SGML man page (use docbook-to-man to create the roff file)
 	- added AGI Mouse 1.0 protocol emulation
 
+0.6.2 (20010826)
+	- fixed cmd_clear_rect() to prevent crash with the IIgs demo
+	- merged Amit Vainsencher's patch to _set_cel() to avoid crash in KQ1
+	- fixed macros in the X11 and SDL drivers to address gcc 3.0 warnings
+	- fixed AGI variable indirection in get.room.v (bug #443900)
+	- removed preprocessor directives from printf() calls to avoid
+	  errors with gcc 3.0
+	- fixed drawing of priority rectangle in add.to.pic
+	- fixed loop setting in AGI v3 when number of loops > 4 (fixes
+	  ego moonwalking in KQ4)
+	- fixed OSS sound driver to use native-endian 16-bit sound
+	- inventory selection bugs fixed by Ziv Barber <ZivB@siliquent.com>
+	- PgUp/PgDn/Home/End codes in console fixed by Ziv Barber
+	- testing raw sound resource pointer before playing
+
 0.6.1 (20010722)
 	- fixed QNX build and Photon driver
 	- updated ALSA driver to work in QNX
