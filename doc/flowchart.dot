@@ -1,3 +1,7 @@
+/*
+ * $Id$
+ */
+
 digraph agi {
 	subgraph cluster_0 {
 		label = "main loop";
@@ -23,9 +27,6 @@ digraph agi {
 		label = "check motions";
 		color = purple;
 
-		"wander"	[shape=box];
-		"follow.ego"	[shape=box];
-		"move.obj"	[shape=box];
 		"changepos"	[shape=box];
 
 		":check motions" -> "motion test";
@@ -43,7 +44,7 @@ digraph agi {
 		
 		"changepos" -> "$check motions";
 		
-		"motion test" [label="ANI|UPD|DRA\n&& step_count == 1"];
+		"motion test" [label="Anim,Upd,Draw\n&& step_count == 1"];
 
 		":check motions" [label="check motions"];
 		"$check motions" [label="end"];
@@ -71,6 +72,27 @@ digraph agi {
 
 		":changepos" [label="changepos"];
 		"$changepos" [label="end"];
+	}
+
+	subgraph cluster_3 {
+		label = "update viewtable";
+		color = "red";
+
+		":update viewtable" -> "update test";
+
+		"update test" -> "set loop"			[label="yes"];
+		"update test" -> "update active sprites"	[label="no"];
+
+		"set loop"
+			-> "update cycle timer"
+			-> "update active sprites"
+			-> "reset land,water flags"
+			-> "$update viewtable";
+
+		"update test" [label="Anim,Upd,Draw"];
+
+		":update viewtable" [label="update viewtable"];
+		"$update viewtable" [label="end"];
 	}
 
 	"initialize flags" -> ":main loop";

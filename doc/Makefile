@@ -18,3 +18,5 @@ dox:
 	[ -d html ] || mkdir html
 	doxygen sarien.doxygen
 
+flowchart.ps: flowchart.dot
+	dot -Tps -o$@ $+

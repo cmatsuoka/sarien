@@ -647,6 +647,11 @@ draw (smoke);
    programs by default.
 </para>
 
+  <figure id="fig-flowchart" float="1">
+    <title>Intepreter cycle</title>
+    <graphic fileref="flowchart.ps" format="ps">
+  </figure>
+
 <para><programlisting>
                      +---------------------------+
                      |      1. delay time        |
