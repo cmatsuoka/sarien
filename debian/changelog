@@ -1,3 +1,10 @@
+sarien (0.6.0.cvs20010626-1) unstable; urgency=low
+
+  * Builds with CVS-version as of now
+  * I have to figure out how to deal with cvs-versions.
+
+ -- Peter Makholm <peter@makholm.net>  Tue, 26 Jun 2001 01:00:34 +0200
+
 sarien (0.4.10-2) frozen unstable; urgency=low
 
   * Renamed executable from /usr/bin/sarien/sarien to /usr/games/sarien

@@ -1,7 +1,5 @@
-
-Documentation/README.agi
-Documentation/README.sdl
-Documentation/README.unix
-Documentation/Bugs
-Documentation/Todo
-Documentation/Authors
+doc/README.agi
+doc/README.unix
+doc/BUGS
+doc/TODO
+doc/AUTHORS

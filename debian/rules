@@ -55,7 +55,7 @@ binary-arch: build install
 	dh_installmenu
 	dh_installmanpages
 	dh_undocumented sarien.1
-	dh_installchangelogs Documentation/ChangeLog 
+	dh_installchangelogs doc/Changelog 
 	dh_strip
 	dh_compress
 	dh_fixperms
