@@ -1,0 +1,11 @@
+000000 start
+000100 key 0x0d		# title screen
+000200 key 0x32		# select demo 2: SQ2
+000202 key 0x33		# select demo 3: Thexder
+000204 key 0x35		# select demo 5: Larry
+000206 key 0x37		# select demo 7: KQ3
+000208 key 0x38		# select demo 8: MUMG
+000210 key 0x0d		# press ENTER
+016500 key 0x2c00	# ALT-Z
+016505 key 0x0d		# confirm quit
+999999 end
