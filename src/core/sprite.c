@@ -19,7 +19,7 @@
 /**
  * Sprite structure. 
  * This structure holds information on visible and priority data of
- * an rectangular area of the AGI screen. Sprites are chained in two
+ * a rectangular area of the AGI screen. Sprites are chained in two
  * circular lists, one for updating and other for non-updating sprites.
  */
 struct sprite {

@@ -548,7 +548,7 @@ void console_cycle ()
 	} else {
 		*cursor = CONSOLE_CURSOR_HOLLOW;
 	}
-	if (console.first_line == CONSOLE_LINES_BUFFER -
+	if (console.y > 0 && console.first_line == CONSOLE_LINES_BUFFER -
 		CONSOLE_LINES_ONSCREEN)
 	{
 		SINT16 y1 = console.y - 10, y2 = console.y - 1;
