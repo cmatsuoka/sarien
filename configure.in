@@ -128,8 +128,6 @@ AC_CHECKING([for sound support])
 SOUND_DRIVER="dummy"
 if test "${with_sdl}" = "yes"; then
 	SOUND_DRIVER="sdl"
-elif test "${with_svgalib}" = "yes"; then
-	SOUND_DRIVER="dummy"
 else case ${target_os} in
 linux*)
 	case ${target_cpu} in

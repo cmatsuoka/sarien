@@ -8,7 +8,7 @@ Tested ports:
  MS-DOS  |Watcom |   Raw   |  dummy  |    no   |   yes   |    no   |
 ---------+-------+---------+---------+---------+---------+---------+
  Linux   |  gcc  |   X11   |OSS,ALSA |   yes   |    no   |   yes   |
- Linux   |  gcc  | SVGAlib |  dummy  |    no   |   yes   |    no   |
+ Linux   |  gcc  | SVGAlib |OSS,ALSA |    no   |   yes   |   yes   |
  Linux   |  gcc  |   SDL   |   SDL   |   yes   |   yes   |   yes   |
  FreeBSD |  gcc  |   X11   | freebsd |   yes   |    no   |   yes   |
  NetBSD  |  gcc  |   X11   |   BSD   |   yes   |    no   |    no   |

@@ -43,28 +43,22 @@ UINT32 clock_count;
 #define TICK_SECONDS 20
 
 
-//static int svgalib_key_init (void);
-//static void svgalib_key_close (void);
-//static void svgalib_key_flush (void);
-//static void svgalib_key_update (void);
-//static void svgalib_key_handler (int scancode, int press);
-
 static int	init_vidmode	(void);
 static int	deinit_vidmode	(void);
-static void	put_block	(int, int, int, int);
-static void	put_pixels	(int, int, int, UINT8 *);
-static void	new_timer	(void);
-static int	keypress	(void);
-static int	get_key		(void);
+static void	gfx_put_block	(int, int, int, int);
+static void	gfx_put_pixels	(int, int, int, UINT8 *);
+static void	gfx_new_timer	(void);
+static int	gfx_keypress	(void);
+static int	gfx_get_key	(void);
 
-static struct gfx_driver GFX_svgalib = {
+static struct gfx_driver gfx_svgalib = {
 	init_vidmode,
 	deinit_vidmode,
-	put_block,
-	put_pixels,
-	new_timer,
-	keypress,
-	get_key
+	gfx_put_block,
+	gfx_put_pixels,
+	gfx_new_timer,
+	gfx_keypress,
+	gfx_get_key
 };
 
 extern struct gfx_driver *gfx;
@@ -130,72 +124,96 @@ static void svgalib_key_handler (int scancode, int press)
 		return;
 	}
 
-	if ((scancode == SCANCODE_LEFTSHIFT) ||
-	    (scancode == SCANCODE_RIGHTSHIFT))
+	switch (scancode) {
+	case SCANCODE_LEFTSHIFT:
+	case SCANCODE_RIGHTSHIFT:
 		key_value= 0;
-	else if (scancode == SCANCODE_LEFTCONTROL) {
+		break;
+	case SCANCODE_LEFTCONTROL:
 		key_control |= 1;
 		key_value= 0;
-	}
-	else if (scancode == SCANCODE_RIGHTCONTROL) {
+		break;
+	case SCANCODE_RIGHTCONTROL:
 		key_control |= 2;
 		key_value= 0;
-	}
-	else if (scancode == SCANCODE_LEFTALT) {
+		break;
+	case SCANCODE_LEFTALT:
 		key_alt |= 1;
 		key_value= 0;
-	}
-	else if (scancode == SCANCODE_RIGHTALT) {
+		break;
+	case SCANCODE_RIGHTALT:
 		key_alt |= 2;
 		key_value= 0;
-	}
-	else if ((scancode == SCANCODE_CURSORUP) ||
-	    (scancode == SCANCODE_CURSORBLOCKUP))
+		break;
+	case SCANCODE_CURSORUP:
+	case SCANCODE_CURSORBLOCKUP:
 		key_value= KEY_UP;
-	else if ((scancode == SCANCODE_CURSORDOWN) ||
-	    (scancode == SCANCODE_CURSORBLOCKDOWN))
+		break;
+	case SCANCODE_CURSORDOWN:
+	case SCANCODE_CURSORBLOCKDOWN:
 		key_value= KEY_DOWN;
-	else if ((scancode == SCANCODE_CURSORLEFT) ||
-	    (scancode == SCANCODE_CURSORBLOCKLEFT))
+		break;
+	case SCANCODE_CURSORLEFT:
+	case SCANCODE_CURSORBLOCKLEFT:
 		key_value= KEY_LEFT;
-	else if ((scancode == SCANCODE_CURSORRIGHT) ||
-	    (scancode == SCANCODE_CURSORBLOCKRIGHT))
+		break;
+	case SCANCODE_CURSORRIGHT:
+	case SCANCODE_CURSORBLOCKRIGHT:
 		key_value= KEY_RIGHT;
-	else if (scancode == SCANCODE_CURSORUPLEFT)
+		break;
+	case SCANCODE_CURSORUPLEFT:
 		key_value= KEY_UP_LEFT;
-	else if (scancode == SCANCODE_CURSORUPRIGHT)
+		break;
+	case SCANCODE_CURSORUPRIGHT:
 		key_value= KEY_UP_RIGHT;
-	else if (scancode == SCANCODE_CURSORDOWNLEFT)
+		break;
+	case SCANCODE_CURSORDOWNLEFT:
 		key_value= KEY_DOWN_LEFT;
-	else if (scancode == SCANCODE_CURSORDOWNRIGHT)
+		break;
+	case SCANCODE_CURSORDOWNRIGHT:
 		key_value= KEY_DOWN_RIGHT;
-	else if ((scancode == SCANCODE_ENTER) ||
-	    (scancode == SCANCODE_KEYPADENTER))
+		break;
+	case SCANCODE_ENTER:
+	case SCANCODE_KEYPADENTER:
 		key_value= KEY_ENTER;
-	else if (scancode == SCANCODE_KEYPADPLUS)
+		break;
+	case SCANCODE_KEYPADPLUS:
 		key_value= '+';
-	else if (scancode == SCANCODE_KEYPADMINUS)
+		break;
+	case SCANCODE_KEYPADMINUS:
 		key_value= '-';
-	else if (scancode == SCANCODE_REMOVE)
+		break;
+	case SCANCODE_REMOVE:
 		key_value= 0x53;
-	else if (scancode == SCANCODE_INSERT)
+		break;
+	case SCANCODE_INSERT:
 		key_value= 0x52;
-	else if ((scancode >= SCANCODE_F1) &&
-	    (scancode <= SCANCODE_F10)) {
+		break;
+	case SCANCODE_F1:
+	case SCANCODE_F2:
+	case SCANCODE_F3:
+	case SCANCODE_F4:
+	case SCANCODE_F5:
+	case SCANCODE_F6:
+	case SCANCODE_F7:
+	case SCANCODE_F8:
+	case SCANCODE_F9:
+	case SCANCODE_F10: {
 		int ftable[10] = {
 			0x3B00, 0x3C00, 0x3D00, 0x3E00, 0x3F00,
 			0x4000, 0x4100, 0x4200, 0x4300, 0x4400};
 		key_value= ftable[(scancode - SCANCODE_F1)];
-	}
-	else if (scancode == SCANCODE_ESCAPE)
+		break; }
+	case SCANCODE_ESCAPE:
 		key_value= KEY_ESCAPE;
-	else {
+		break;
+	default:
 		/* Map scancode to ASCII key_value*/
 		for (i=0; ; i++) {
 			if (key_map[i].scancode == 0)
 				break;
 			if (key_map[i].scancode == scancode) {
-				key_value= key_map[i].ascii;
+				key_value = key_map[i].ascii;
 				break;
 			}
 		}
@@ -203,12 +221,11 @@ static void svgalib_key_handler (int scancode, int press)
 		    INRANGE (scancode, SCANCODE_A, SCANCODE_L) ||
 		    INRANGE (scancode, SCANCODE_Z, SCANCODE_M)) {
 			if (key_control || key_alt) {
-				key_value&= ~0x20;
-				key_value-= 0x40;
+				key_value &= ~0x20;
+				key_value -= 0x40;
 			}
 			if (key_alt) {
-				key--;
-				key_value= (scancode_table[key] << 8);
+				key_value = scancode_table[key_value - 1] << 8;
 			}
 		}
 	}
@@ -271,13 +288,11 @@ static void process_events ()
 
 int init_machine (int argc, char **argv)
 {
-	gfx = &GFX_svgalib;
+	gfx = &gfx_svgalib;
 
 	__argc = argc;
 	__argv = argv;
 	scale = 1;
-
-	screen_mode = GFX_MODE;
 
 	clock_count = 0;
 	clock_ticks = 0;
@@ -314,9 +329,10 @@ static int init_vidmode ()
 	svgalib_framebuffer = vga_getgraphmem ();
 
 	/* Set up EGA colors */
-	for (i = 0; i < 32; i++)
+	for (i = 0; i < 32; i++) {
 		vga_setpalette (i, palette[i * 3],
 			palette[i * 3 + 1], palette[i * 3 + 2]);
+	}
 
 	/* Allocate framebuffer */
 	video_buffer = (UINT8 *) malloc (320 * 200);
@@ -325,8 +341,6 @@ static int init_vidmode ()
 		deinit_vidmode ();
 		return err_Unk;
 	}
-
-	screen_mode = GFX_MODE;
 
 	/* XoXus: This is a semantics issue, but the keyboard init
 	 *		probably shouldn't be done in 'init_vidmode'
@@ -352,7 +366,7 @@ static int deinit_vidmode ()
 
 
 /* put a block onto the screen */
-static void put_block (int x1, int y1, int x2, int y2)
+static void gfx_put_block (int x1, int y1, int x2, int y2)
 {
 	int i, h;
 
@@ -373,7 +387,7 @@ static void put_block (int x1, int y1, int x2, int y2)
 
 
 /* put pixel routine */
-static void put_pixels (int x, int y, int w, UINT8 *p)
+static void gfx_put_pixels (int x, int y, int w, UINT8 *p)
 {
 	/* XoXus: FIXME: Is this a 16-bit color? */
 	UINT8 *s = &video_buffer[y * 320 + x];
@@ -383,29 +397,30 @@ static void put_pixels (int x, int y, int w, UINT8 *p)
 }
 
 
-static int keypress ()
+static int gfx_keypress ()
 {
 	process_events ();
-	return !!key;
+	return !!key_value;
 }
 
 /* XoXus: FIXME: Should get_keypress block? */
-static int get_key ()
+static int gfx_get_key ()
 {
 	UINT16 k;
 
 	process_events ();
-	while (key_value== 0) {
+	while (key_value == 0) {
 		process_events ();
 	}
 
-	k = key;
+	k = key_value;
 	key_value= 0;
+
 	return k;
 }
 
 
-static void new_timer ()
+static void gfx_new_timer ()
 {
 	struct timeval tv;
 	struct timezone tz;

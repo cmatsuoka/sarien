@@ -11,9 +11,11 @@ System requirements
 
 GNU make, gcc, svgalib package, AGI game files.
 
-The SVGALib port is being tested on an i386 RedHat GNU/Linux box with
-glibc running kernel 2.2.1 on a 233MHz Cyrix machine. The video mode used
-is 320x200 at 256 colors, which should run on any machine at all.
+The video mode used is 320x200 at 256 colors, which should run on any
+machine at all.
+
+A reasonably recent SVGAlib package is recommended if sound support is
+enabled.
 
 
 Building
