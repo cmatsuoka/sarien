@@ -639,9 +639,9 @@ cmd(get_num) {
 
 	if (cur_logic->texts != NULL && cur_logic->num_texts >= (p0 - 1)) {
 		int len = strlen (cur_logic->texts[p0 - 1]);
-		print_text (cur_logic->texts[p0 - 1], 0, 0, 23, len,
+		print_text (cur_logic->texts[p0 - 1], 0, 0, 22, len,
 			game.color_fg, game.color_bg);
-		get_string (len - 1, 23, 3, MAX_WORDS2);
+		get_string (len - 1, 22, 3, MAX_WORDS2);
 	}
 
 	do {
@@ -650,8 +650,8 @@ cmd(get_num) {
 
 	_v[p1] = atoi (game.strings[MAX_WORDS2]);
 	_D (_D_WARN "[%s] -> %d", game.strings[MAX_WORDS2], _v[p1]);
-	clear_lines (23, 23, game.color_bg);
-	flush_lines (23, 23);
+	clear_lines (22, 22, game.color_bg);
+	flush_lines (22, 22);
 }
 
 cmd(set_cursor_char)
