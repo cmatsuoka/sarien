@@ -275,6 +275,7 @@ int main_cycle ()
 		case INPUT_GETSTRING:
 			handle_controller (key);
 			handle_getstring (key);
+			setvar (V_key, 0);	/* clear ENTER key */
 			break;
 		case INPUT_MENU:
 			menu_keyhandler (key);
