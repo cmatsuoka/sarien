@@ -12,6 +12,7 @@
 #include "agi.h"
 #include "text.h"
 #include "sprite.h"
+#include "graphics.h"
 #include "keyboard.h"
 #include "menu.h"
 

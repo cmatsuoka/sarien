@@ -340,6 +340,7 @@ char *agi_sprintf (char *s)
 	char z[16], *p;
 	int xx, xy;
 
+	_D (_D_WARN "logic %d, '%s'", game.lognum, s);
 	/* turn a AGI string into a real string */
 	p = x;
 
@@ -386,11 +387,12 @@ char *agi_sprintf (char *s)
 			case 's':
 				strcat(p, game.strings[atol(s)]);
 				break;
-			case 'm':
-				strcat(p, game.logics[game.lognum].texts[atol(s)-1]);
+			case 'm': {
+				int n = game.lognum, m = atoi(s) - 1;
+				if (game.logics[n].num_texts > m)
+					strcat(p,game.logics[n].texts[m]);
 				break;
-			default:
-				break;
+				}
 			}
 
 			while (*s >= '0' && *s <= '9') s++;

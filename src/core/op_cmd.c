@@ -178,8 +178,8 @@ cmd(unk_181)		{ message_box ("cmd_unk_181"); }
 
 
 cmd(call) {
-	struct agi_logic *old_logic;
 	int old_cIP;
+	int old_lognum;
 
 #ifndef NO_DEBUG
 	if (opt.debug == 4) opt.debug = TRUE;
@@ -189,9 +189,12 @@ cmd(call) {
 	 *     used in a called script (fixes xmas demo)
 	 */
 	old_cIP = cur_logic->cIP;
-	old_logic = cur_logic;
+	old_lognum = game.lognum;
+
 	run_logic (p0);
-	cur_logic = old_logic;
+
+	game.lognum = old_lognum;
+	cur_logic = &game.logics[game.lognum];
 	cur_logic->cIP = old_cIP;
 }
 
@@ -881,7 +884,7 @@ int run_logic (int n)
 	}
 
 	game.lognum = n;
-	cur_logic = &game.logics[n];
+	cur_logic = &game.logics[game.lognum];
 
 	code = cur_logic->data;
 	cur_logic->cIP = cur_logic->sIP;

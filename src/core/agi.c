@@ -14,6 +14,7 @@
 
 #include "sarien.h"
 #include "agi.h"
+#include "opcodes.h"
 #include "keyboard.h"
 #include "rand.h"
 #include "menu.h"
@@ -246,7 +247,7 @@ int agi_load_resource (int r, int n)
 	i = loader->load_resource (r, n);
 #ifdef DISABLE_COPYPROTECTION
 	if (r == rLOGIC)
-		break_copy_protection (n);
+		patch_logic (n);
 #endif
 
 	return i;

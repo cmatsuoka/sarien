@@ -86,7 +86,7 @@ static UINT8 mh1data_fix[]= {
 };
 
 
-void break_copy_protection (int n)
+void patch_logic (int n)
 {
 
 	switch(n) {
