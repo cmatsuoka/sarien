@@ -164,6 +164,7 @@ void	inventory	(void);
 void	list_games	(void);
 int	v2id_game	(void);
 int	v3id_game	(void);
+int v4id_game	(UINT32 ver);
 void	update_timer	(void);
 /*
  * get_current_directory() returns the current working

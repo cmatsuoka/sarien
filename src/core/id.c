@@ -1,6 +1,6 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
  *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
- *  
+ *
  *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -265,26 +265,27 @@ int v3id_game ()
 
 	ec = setup_v3_game(ver, crc);
 
-	
+
 	return ec;
 }
 
 
 #ifdef PALMOS
 
-int v4id_game (UINT32 crc)
+int v4id_game (UINT32 ver)
 {
-	int ec = err_OK, ver;	
+	int ec = err_OK;
 
-	ver = match_version (crc);
+	game.crc = 0;
+	game.ver = ver;
 	agi_set_release (ver);
-	
+
 	switch ((ver>>12)&0xFF) {
 	case 2:
-		ec = setup_v2_game (ver, crc);
+		ec = setup_v2_game (ver, 0);
 		break;
 	case 3:
-		ec = setup_v3_game (ver, crc);
+		ec = setup_v3_game (ver, 0);
 		break;
 	}
 
@@ -342,7 +343,7 @@ int setup_v2_game (int ver, UINT32 crc)
 int setup_v3_game (int ver, UINT32 crc)
 {
 	int ec = err_OK;
-	
+
 	if (ver == 0) {
 		report ("Unknown v3 Sierra game: %08x\n\n", crc);
 		agi_set_release (ver = 0x3149);
@@ -363,7 +364,7 @@ int setup_v3_game (int ver, UINT32 crc)
 		ec = err_UnknownAGIVersion;
 		break;
 	}
-	
+
 	return ec;
 }
 
