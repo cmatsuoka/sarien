@@ -164,7 +164,7 @@ static int agi_v2_unload_words ()
 
 static int agi_v2_unload_resource (int t, int n)
 {
-	_D ("unload resource");
+	/* _D ("unload resource"); */
 
 	switch (t) {
 	case rLOGIC:

@@ -18,218 +18,217 @@
 #include "keyboard.h"
 #include "menu.h"
 #include "text.h"
+#include "list.h"
 
 
-struct agi_menu {
-	struct agi_menu	*next;		/**< next along */
-	struct agi_menu	*down;		/**< next menu under this */
-	int enabled;			/**< option is enabled or disabled */
-	int event;			/**< menu event */
+struct menu {
+	struct list_head list;
+	struct list_head down;
+	int index;
+	int width;
+	int height;
+	int col;
+	int wincol;
 	char *text;			/**< text of menu item */
 };
 
-static struct agi_menu *master_menu = NULL;
-static struct agi_menu *menu = NULL;
+struct menu_option {
+	struct list_head list;
+	int enabled;			/**< option is enabled or disabled */
+	int event;			/**< menu event */
+	int index;
+	char *text;			/**< text of menu item */
+};
+
+static LIST_HEAD(menubar);
 
 
-static void draw_horizontal_menu_bar (int cur_menu)
+static struct menu *get_menu (int i)
 {
-	struct agi_menu *men = NULL;
-	int col, z;
+	struct list_head *h;
+	struct menu *m;
+
+	list_for_each (h, &menubar, next) {
+		m = list_entry (h, struct menu, list);
+		if (m->index == i)
+			return m;
+	}
+
+	return NULL;
+}
+
+static struct menu_option *get_menu_option (int i, int j)
+{
+	struct list_head *h;
+	struct menu *m;
+	struct menu_option *d;
+
+	m = get_menu (i);
+
+	list_for_each (h, &m->down, next) {
+		d = list_entry (h, struct menu_option, list);
+		if (d->index == j)
+			return d;
+	}
+
+	return NULL;
+}
+
+static void draw_menu_bar ()
+{
+	struct list_head *h;
+	struct menu *m;
+	int c, i;
 
 	clear_lines (0, 0, MENU_BG);
 
-	/* draw menu titles */
-	men = master_menu->next;
-
-	col = 1;
-	for (z = 0; men; z++, men = men->next) {
-		_D ("searching: %s", men->text);
-		if (men->text) {
-			print_text (men->text, 0, col, 0, 40,
-				MENU_FG, MENU_BG);
-			col += strlen (men->text) + 1;
-		}
+	i = 0; c = 1;
+	list_for_each (h, &menubar, next) {
+		m = list_entry (h, struct menu, list);
+		print_text (m->text, 0, m->col, 0, 40, MENU_FG, MENU_BG);
 	}
 
 	flush_lines (0, 0);
 }
 
 
-static void draw_horizontal_menu_hilite (int cur_menu)
+static void draw_menu_hilite (int cur_menu)
 {
-	struct agi_menu *men = NULL;
-	int col, z;
+	struct menu *m;
 
-	_D (_D_WARN "current menu = %d", cur_menu);
-	/* draw menu titles */
-	men = master_menu->next;
-
-	col = 1;
-	for (z = 0; men; z++, men = men->next) {
-		_D ("searching: %s", men->text);
-		if (men->text) {
-			if(z == cur_menu) {
-				print_text (men->text, 0, col, 0, 40,
-					MENU_BG, MENU_FG);
-			}
-			col += strlen (men->text) + 1;
-		}
-	}
-
+	m = get_menu (cur_menu);
+	_D ("[%s]", m->text);
+	print_text (m->text, 0, m->col, 0, strlen (m->text), MENU_BG, MENU_FG);
 	flush_lines (0, 0);
 }
 
-
-static void draw_vertical_menu (int h_menu, int cur_men, int max_men)
+/* draw box and pulldowns. */
+static void draw_menu_option (int h_menu)
 {
-	/* draw box and pulldowns. */
-	int col, lin, x, y, z, l, len;
-	struct agi_menu *men = master_menu->next;
-	struct agi_menu *down = NULL;
-	char menu[64];
+	struct list_head *h;
+	struct menu *m = NULL;
+	struct menu_option *d = NULL;
 
-	_D (_D_WARN "menu %d, cur %d, max %d", h_menu, cur_men, max_men);
 	/* find which vertical menu it is */
-	for (col = x = 0; x < h_menu; x++) {
-		if (men->text && *men->text)
-			col += 1 + strlen (men->text);
-		men = men->next;
-	}
+	m = get_menu (h_menu);
 
-	down = men->down;
-
-	len = 0;
-	lin = 1;
-	men = down;
-
-	/* scan size of this vertical menu */
-	while (men) {
-		if (men->text) {
-			x = strlen (men->text);
-			if (len < x)
-				len = x;
-		}
-		men = men->down;
-	}
-
-	_D ("col = %d, len = %d", col, len);
-	if (len > 40)
-		len = 38;
-	if (col + len > 38)
-		col = 38 - len;
-
-	draw_box (col * CHAR_COLS, lin * CHAR_LINES,
-		(col + len + 2) * CHAR_COLS,
-		(max_men + 2) * CHAR_LINES,
+	draw_box (m->wincol * CHAR_COLS, 1 * CHAR_LINES,
+		(m->wincol + m->width + 2) * CHAR_COLS,
+		(1 + m->height + 2) * CHAR_LINES,
 		MENU_BG, MENU_LINE, LINES);
 
-	men = down;
-	x = col + 1;
-	y = lin + 1;
-
-	for (z = 0; men; z++, y++, men = men->down) {
-		l = strlen (men->text);
-		memmove (menu, men->text, l);
-		memset (menu + l, ' ', len - l);
-		menu[len] = 0;
-
-		if (z == cur_men)
-			print_text (menu, 0, x, y, len + 2, MENU_BG, MENU_FG);
-		else
-			print_text (menu, 0, x, y, len + 2, MENU_FG, MENU_BG);
+	list_for_each (h, &m->down, next) {
+		d = list_entry (h, struct menu_option, list);
+		print_text (d->text, 0, m->wincol + 1, d->index + 2,
+			m->width + 2, MENU_FG, MENU_BG);
 	}
-
-	flush_block (col * CHAR_COLS, lin * CHAR_LINES,
-		(col + len + 2) * CHAR_COLS,
-		(max_men + 2) * CHAR_LINES);
 }
 
+static void draw_menu_option_hilite (int h_menu, int v_menu)
+{
+	struct menu *m;
+	struct menu_option *d;
+
+	m = get_menu (h_menu);
+	d = get_menu_option (h_menu, v_menu);
+	print_text (d->text, 0, m->wincol + 1, v_menu + 2, m->width + 2,
+		MENU_BG, MENU_FG);
+}
+
+
+static int h_index;
+static int v_index;
+static int h_col;
+static int h_max_menu;
+static int v_max_menu[10];
 
 void init_menus ()
 {
-	menu = calloc (1, sizeof (struct agi_menu));
-	assert (menu != NULL);
-	master_menu = NULL;
+	h_index = 0;
+	h_col = 1;
 }
 
 
 void deinit_menus ()
 {
-	/* struct agi_menu *m0, *m1, *m2; */
-
-	/* free all down's then all next's */
-
-	/* FIXME: FR: bad memory deallocation */
-#if 0
-	while ((m0 = menu->next)) {
-		while ((m1 = m0->down)) {
-			m2 = m1->down;
-			if (m1->text)
-				free (m1->text);
-			free (m1);
-			m1 = m2;
-		}
-		m1 = m0->next;
-		if (m0->text)
-			free (m0->text);
-		free (m0);
-		m0 = m1;
-	}
-#endif
-	free (menu);
 }
 
 
-void add_menu (char *message)
+void add_menu (char *s)
 {
-	struct agi_menu *m1 = menu;
+	struct menu *m;
 
-	_D (_D_WARN "add menu: %s", message);
-	while (m1->next != NULL)
-		m1 = m1->next;
+	_D (_D_WARN "add menu: %s", s);
+	
+	m = malloc (sizeof (struct menu));
+	m->text = strdup (s);
+	m->down.next = &m->down;
+	m->down.prev = &m->down;
+	m->width = 0;
+	m->height = 0;
+	m->index = h_index++;
+	m->col = h_col;
+	m->wincol = h_col - 1;
+	v_index = 0;
+	v_max_menu[m->index] = 0;
+	h_col += strlen (s);
+	h_max_menu = m->index;
 
-	m1->next = calloc (1, sizeof(struct agi_menu));
-	m1 = m1->next;
-
-	m1->enabled = TRUE;
-	m1->event = 0xFF;
-	m1->text = strdup (message);
+	list_add_tail (&m->list, &menubar);
 }
 
 
-void add_menu_item (char *message, int code)
+void add_menu_item (char *s, int code)
 {
-	struct agi_menu *m1 = NULL;
+	struct menu *m;
+	struct menu_option *d;
+	int l;
 
-	_D (_D_WARN "Adding menu item: %s", message);
-	for (m1 = menu; m1->next; m1 = m1->next) {}
-	for (; m1->down; m1 = m1->down) {}
+	d = malloc (sizeof (struct menu_option));
+	d->text = strdup (s);
+	d->enabled = TRUE;
+	d->event = code;
+	d->index = v_index++;
 
-	m1->down = calloc (1, sizeof(struct agi_menu));
-	m1 = m1->down;
+	m = list_entry (menubar.prev, struct menu, list);
+	m->height++;
 
-	m1->enabled = TRUE;
-	m1->event = code;
-	m1->text = strdup (message);
+	v_max_menu[m->index] = d->index;
+
+	l = strlen (d->text);
+	if (l > 40)
+		l = 38;
+	if (m->wincol + l > 38)
+		m->wincol = 38 - l;
+	if (l > m->width)
+		m->width = l;
+
+	_D (_D_WARN "Adding menu item: %s (size = %d)", s, m->height);
+	list_add_tail (&d->list, &m->down);
 }
 
 
 void submit_menu ()
 {
 	_D (_D_WARN "Submitting menu");
-	master_menu = menu;
 }
 
+
+static void new_menu_selected (i)
+{
+	show_pic ();
+	draw_menu_bar ();
+   	draw_menu_hilite (i);
+    	draw_menu_option (i);
+}
 
 int menu_keyhandler (int key)
 {
 	static int clock_val;
-	static int h_cur_menu = 0, h_max_menu = 0;
-	static int v_cur_menu = 0, v_max_menu = 0;
-	static struct agi_menu *men = NULL;
+	static int h_cur_menu = 0;
+	static int v_cur_menu = 0;
 	static int menu_active = FALSE;
-	int i;
+	struct menu_option *d;
 
 	if (!getflag (F_menus_work)) 
 		return FALSE;
@@ -237,26 +236,32 @@ int menu_keyhandler (int key)
 	if (!menu_active) {
 		clock_val = game.clock_enabled;
 		game.clock_enabled = FALSE;
-
-		/* calc size of horizontal menu */
-		h_max_menu = 0;
-		for (men = master_menu->next; men; h_max_menu++, men=men->next);
-	
-   		draw_horizontal_menu_bar (h_cur_menu);
+   		draw_menu_bar ();
 	}
 
 	if (mouse.button) {
-		int x = 0, x2;
+		struct list_head *h;
+		struct menu *m;
+		int hmenu;
 
-		h_cur_menu = 0;
-    		for (men = master_menu->next; men; men = men->next) {
-			_D ("%s", men->text);
-			x2 = x + strlen(men->text) * CHAR_COLS;
-			if (mouse.y <=CHAR_LINES && mouse.x > x && mouse.x < x2)
+		hmenu = 0;
+		list_for_each (h, &menubar, next) {
+			m = list_entry (h, struct menu, list);
+			if (mouse.y <= CHAR_LINES &&
+				mouse.x > m->col * CHAR_COLS &&
+				mouse.x < (m->col + strlen(m->text)) * CHAR_COLS) {
 				break;
-			else
-				h_cur_menu++;
-			x = x2 + 1;
+			} else {
+				hmenu++;
+			}
+		}
+
+		if (hmenu <= h_max_menu) {
+			if (h_cur_menu != hmenu) {
+				v_cur_menu = 0;
+				new_menu_selected (hmenu);
+			}
+			h_cur_menu = hmenu;
 		}
 	}
 #if 0
@@ -267,13 +272,9 @@ int menu_keyhandler (int key)
 
 	if (!menu_active) {
  		/* calc size of vertical menus */
-		v_max_menu = 0;
-   		for (i = 0, men = master_menu->next; i < h_cur_menu; i++)
-   			men = men->next;
-   		for (v_max_menu = 0; men; v_max_menu++, men = men->down);
-	
-   		draw_horizontal_menu_hilite (h_cur_menu);
-   		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
+   		draw_menu_hilite (h_cur_menu);
+   		draw_menu_option (h_cur_menu);
+   		draw_menu_option_hilite (h_cur_menu, v_cur_menu);
 		menu_active = TRUE;
 	}
 
@@ -283,63 +284,38 @@ int menu_keyhandler (int key)
 		goto exit_menu;
     	case KEY_ENTER:
 		_D (_D_WARN "KEY_ENTER");
-    		men = master_menu->next;
-    		for (i = 0; i < h_cur_menu; i++, men = men->next);
-    		men = men->down;
-    		for (i = 0; i < v_cur_menu; i++, men = men->down);
-    		if (men->enabled) {
-			_D ("event %d registered", men->event);
-    			game.ev_scan[men->event].occured = TRUE;
-    			game.ev_scan[men->event].data = men->event;
+		d = get_menu_option (h_cur_menu, v_cur_menu);
+		if (d->enabled) {
+			_D ("event %d registered", d->event);
+    			game.ev_scan[d->event].occured = TRUE;
+    			game.ev_scan[d->event].data = d->event;
 			goto exit_menu;
     		}
     		break;
     	case KEY_DOWN:
-    		if (1 + v_cur_menu >= v_max_menu - 1)
-			break;
-    	    	v_cur_menu++;
-		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
-    		break;
     	case KEY_UP:
-    		if(v_cur_menu <= 0)
-			break;
-    		v_cur_menu--;
-    		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
+    	    	v_cur_menu += key == KEY_DOWN ? 1 : -1;
+
+		if (v_cur_menu < 0)
+			v_cur_menu = 0;
+		if (v_cur_menu > v_max_menu[h_cur_menu])
+			v_cur_menu = v_max_menu[h_cur_menu];
+
+		draw_menu_option (h_cur_menu);
+		draw_menu_option_hilite (h_cur_menu, v_cur_menu);
     		break;
     	case KEY_RIGHT:
-		_D ("cur=%d, max=%d", h_cur_menu, h_max_menu);
-    		if (1 + h_cur_menu >= h_max_menu)
-			h_cur_menu = 0;
-		else
-    			h_cur_menu++;
-
-		show_pic ();
-
-		/* calc size of vertical menus */
-		for(i = 0, men = master_menu->next; i < h_cur_menu; i++)
-			men=men->next;
-		for (v_max_menu = 0; men; v_max_menu++, men = men->down);
-		v_cur_menu = 0;
-		draw_horizontal_menu_bar (h_cur_menu);
-   		draw_horizontal_menu_hilite (h_cur_menu);
-    		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
-    		break;
     	case KEY_LEFT:
-    		if (h_cur_menu <= 0)
-			h_cur_menu = h_max_menu - 1;
-		else
-    			h_cur_menu--;
+		h_cur_menu += key == KEY_RIGHT ? 1 : -1;
+		
+		if (h_cur_menu < 0)
+			h_cur_menu = h_max_menu;
+		if (h_cur_menu > h_max_menu)
+			h_cur_menu = 0;
 
-		show_pic ();
-
-		/* calc size of vertical menus */
-		for (i = 0, men = master_menu->next; i < h_cur_menu; i++)
-			men=men->next;
-		for (v_max_menu = 0; men; v_max_menu++, men=men->down);
 		v_cur_menu = 0;
-		draw_horizontal_menu_bar (h_cur_menu);
-   		draw_horizontal_menu_hilite (h_cur_menu);
-    		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
+		new_menu_selected (h_cur_menu);
+    		draw_menu_option_hilite (h_cur_menu, v_cur_menu);
     		break;
     	}
 
@@ -362,23 +338,22 @@ exit_menu:
 
 void menu_set_item (int event, int state)
 {
-	struct agi_menu *m0	= NULL;
-	struct agi_menu *m1	= NULL;
+	struct list_head *h, *v;
+	struct menu *m = NULL;
+	struct menu_option *d = NULL;
 
 	/* scan all menus for event number # */
 
-	for (m0 = menu->next; m0 != NULL; ) {
-		m1 = m0->down;
-		while (m1 != NULL) {
-			if (m1->event != event) {
-				m1 = m1->down;
-			} else {
-				m1->enabled = state;
+	list_for_each (h, &menubar, next) {
+		m = list_entry (h, struct menu, list);
+		list_for_each (v, &m->down, next) {	
+			d = list_entry (v, struct menu_option, list);
+			if (d->event == event) {
+				d->enabled = state;
 				return;
 			}
 		}
-		if (m1 == NULL)
-			m0 = m0->next;
 	}
 }
+
 
