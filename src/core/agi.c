@@ -166,11 +166,11 @@ int agi_detect_game (char *gn)
 	strcpy(g_gamename, UNKNOWN_GAME);
 #endif
 
+#ifndef PALMOS
 	_D ("(gn = %s)", gn);
 	if (gn == NULL)		/* assume current directory */
 		gn = get_current_directory ();
 
-#ifndef PALMOS
 	loader = &agi_v2;
 	ec = loader->detect_game (gn);
 
@@ -181,7 +181,7 @@ int agi_detect_game (char *gn)
 	}
 #endif
 
-#else
+#else /* PALMOS */
 	loader = &agi_v4;
 	ec = loader->detect_game(gn);
 #endif

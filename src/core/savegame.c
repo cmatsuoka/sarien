@@ -13,13 +13,10 @@
  * Multi-slots by Claudio Matsuoka <claudio@helllabs.org>
  */
 
-#ifndef PALMOS
-
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
 
-#if !defined(DREAMCAST) && !defined(__MPW__)
+#if !defined(DREAMCAST) && !defined(__MPW__) && !defined(PALMOS)
 #  ifndef __DICE__
 #    include <sys/stat.h>
 #  endif
@@ -103,6 +100,8 @@ void replay_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3, SINT16
 
 static char* strSig = "Sarien:";
 
+#ifndef PALMOS
+
 static void write_uint8(FILE* f, SINT8 val)
 {
 	fwrite(&val, 1, 1, f);
@@ -172,6 +171,7 @@ static void read_bytes (FILE* f, char* s, SINT16 size)
 
 int save_game (char* s, char* d)
 {
+
 	SINT16 i;
 	struct image_stack_element* ptr = image_stack;
 	FILE* f = fopen (s, "wb");
@@ -331,6 +331,7 @@ int save_game (char* s, char* d)
 
 int load_game(char* s)
 {
+
 	int i;
 	UINT8 t;
 	SINT16 parm[7];
@@ -564,11 +565,13 @@ int load_game(char* s)
 
 	return err_OK;
 }
+#endif /* PALMOS */
 
 #define NUM_SLOTS 12
 
 static int select_slot (char *path)
 {
+#ifndef PALMOS
 	int i, key, active = 0;
 	int rc = -1;
 	int hm = 2 * CHAR_COLS, vm = 3 * CHAR_LINES;	/* box margins */
@@ -588,7 +591,7 @@ static int select_slot (char *path)
 			strcpy (desc[i], "          (empty slot)");
 		} else {
 #ifdef DREAMCAST
-		read_vmu_header(f);
+			read_vmu_header(f);
 #endif
 			read_bytes (f, sig, 8);
 			if (strncmp (sig, strSig, 8)) {
@@ -647,10 +650,12 @@ press:
 getout:
 	close_window ();
 	return rc;
+#endif
 }
 
 int savegame_dialog ()
 {
+#ifndef PALMOS /* FIXME */
 	char home[MAX_PATH], path[MAX_PATH];
 	char *desc;
 	char *buttons[] = { "Do as I say!", "I regret", NULL }; 
@@ -733,6 +738,7 @@ int savegame_dialog ()
 	save_game (path, desc);
 
 	message_box ("Game saved.");
+#endif /* PALMOS */
 
 	return err_OK;
 }
@@ -740,6 +746,7 @@ int savegame_dialog ()
 
 int loadgame_dialog ()
 {
+#ifndef PALMOS
 	char home[MAX_PATH], path[MAX_PATH];
 	int rc, slot = 0;
 	int hm = 2 * CHAR_COLS, vm = 3 * CHAR_LINES;	/* box margins */
@@ -796,8 +803,7 @@ int loadgame_dialog ()
 		message_box ("Error restoring game.");
 
 	return rc;
-}
-
 #endif /* PALMOS */
+}
 
 /* end: savegame.c */
