@@ -41,34 +41,36 @@ struct agi_loader agi_v2 = {
 };
 
 
+static int file_exists (char *s)
+{
+	FILE *f;
+
+	/* Should use stat(), but fopen() is more portable :\ */
+	
+	if ((f = fopen (s, "r")) != NULL) {
+		fclose (f);
+		return 1;
+	}
+
+	return 0;
+}
+
+
 static int agi_v2_detect_game (char *gn)
 {
-	int ec = err_Unk;
-	char *path;
-
 	strncpy (game.dir, gn, MAX_PATH);
 	_D (_D_WARN "game.dir = %s", game.dir);
 
-	path = fixpath (NO_GAMEDIR, LOGDIR);
-	if (__file_exists (path))
+	if (	!file_exists (fixpath (NO_GAMEDIR, LOGDIR)) ||
+		!file_exists (fixpath (NO_GAMEDIR, PICDIR)) ||
+		!file_exists (fixpath (NO_GAMEDIR, SNDDIR)) ||
+		!file_exists (fixpath (NO_GAMEDIR, VIEWDIR)))
+	{
 		return err_InvalidAGIFile;
-
-	path = fixpath (NO_GAMEDIR, PICDIR);
-	if (__file_exists (path))
-		return err_InvalidAGIFile;
-
-	path = fixpath (NO_GAMEDIR, SNDDIR);
-	if (__file_exists (path))
-		return err_InvalidAGIFile;
-
-	path = fixpath (NO_GAMEDIR, VIEWDIR);
-	if (__file_exists (path))
-		return err_InvalidAGIFile;
+	}
 
 	agi_v2.int_version = 0x2917;		/* setup for 2.917 */
-	ec = v2id_game ();
-
-	return ec;
+	return v2id_game ();
 }
 
 
