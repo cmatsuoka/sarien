@@ -211,7 +211,7 @@ int save_game (char* s, char* d)
 	write_sint16 (f, (SINT16)game.has_prompt);
 	write_sint16 (f, (SINT16)game.game_flags);
 
-	write_sint16 (f, (SINT16)game.alt_pri);
+	write_sint16 (f, (SINT16)0);		/* alt_pri */
 	for (i = 0; i < _HEIGHT; i++)
 		write_uint8 (f, game.pri_table[i]);
 
@@ -382,7 +382,7 @@ int load_game(char* s)
 	game.has_prompt = read_sint16(f);
 	game.game_flags = read_sint16(f);
 
-	game.alt_pri = read_sint16(f);
+	/* game.alt_pri = */ read_sint16(f);
 	for (i = 0; i < _HEIGHT; i++)
 		game.pri_table[i] = read_uint8(f);
 

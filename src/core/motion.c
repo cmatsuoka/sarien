@@ -143,17 +143,17 @@ static void motion_followego (struct vt_entry *v)
 	}
 
 	if (v->parm3 != 0) {
+		/* DF: this is ugly and I dont know why this works, but
+		 * other line does not! (watcom complained about lvalue)
+		 *
+		 * if ( ((SINT8)v->parm3 -= v->step_size) < 0)
+		 *	v->parm3 = 0;
+		 */
+		k = v->parm3;
+		k -= v->step_size;
+		v->parm3 = k;
 
-		/* this is ugly and I dont know why this works, but other line
-		   does not! */
-
-		k=v->parm3;
-		k-=v->step_size;
-		v->parm3=k;
-
-		if((SINT8)v->parm3<0)
-		/* DF : watcom complained about lvalue */
-		/* if ( ((SINT8)v->parm3 -= v->step_size) < 0) */
+		if ((SINT8)v->parm3 < 0)
 			v->parm3 = 0;
 	} else {
 		v->direction = dir;

@@ -780,7 +780,7 @@ cmd(set_pri_base) {
 
 	report ("Priority base set to %d\n", p0);
 
-	game.alt_pri = TRUE;
+	/* game.alt_pri = TRUE; */
 	x = (_HEIGHT - p0) * _HEIGHT / 10;
 
 	for (i = 0; i < _HEIGHT; i++) {

@@ -31,7 +31,7 @@ extern struct agi_loader agi_v4;
 #endif
 
 
-static void init_pri_bands ()
+static void init_pri_table ()
 {
 	int i, p, y = 0;
 
@@ -76,7 +76,7 @@ int agi_init ()
 	init_words ();
 	set_rnd_seed ();
 	init_menus ();
-	init_pri_bands ();
+	init_pri_table ();
 
 	/* clear string buffer */
 	for (i = 0; i < MAX_WORDS1; i++)

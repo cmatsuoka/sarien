@@ -277,7 +277,7 @@ static void objs_restorearea (struct sprite *s)
 #endif
 
 	if (x_pos + x_size > _WIDTH)
-		x_size = _WIDTH-x_pos;
+		x_size = _WIDTH - x_pos;
 
 	if (x_pos < 0) {
 		x_size += x_pos;
@@ -351,16 +351,15 @@ static INLINE int prio_to_y (int p)
 {
 	int i;
 
-	if (game.alt_pri) {		/* set.pri.base used */
-		if (p == 0)
-			return -1;
-		for (i = 168; i; i--) {
-			if (game.pri_table[i] < p)
-				return i;
-		}
+	if (p == 0)
+		return -1;
+
+	for (i = 168; i; i--) {
+		if (game.pri_table[i] < p)
+			return i;
 	}
 
-	return (p - 5) * 12 + 48;
+	return -1;		/* (p - 5) * 12 + 48; */
 }
 
 /**
@@ -572,7 +571,6 @@ static void blit_sprites (struct list_head *head)
 /*
  * Public functions
  */
-
 
 void commit_upd_sprites ()
 {

@@ -51,7 +51,7 @@ enum {
 	V_computer,                     /* 20 */
 	V_window_reset,
 	V_soundgen,
-	V_Volume,
+	V_volume,
 	V_max_input_chars,
 	V_sel_item,                     /* 25 */
 	V_monitor
@@ -77,12 +77,12 @@ enum {
 	F_status_selects_items,
 	F_menus_work,
 	F_output_mode			/* 15 */
-	/* Add F16 used in restart.game */
+	/* FIXME: Add F16 used in restart.game */
 };
 
 struct agi_event {
-	UINT8	occured;
-	UINT16	data;
+	UINT8 occured;
+	UINT16 data;
 };
 
 struct agi_word {
@@ -165,9 +165,7 @@ struct agi_game {
 #define ID_AMIGA	0x00000002
 	int game_flags;		/**< Sarien options flags */
 
-	/* priority table */
-	int alt_pri;
-	UINT8 pri_table[_HEIGHT];
+	UINT8 pri_table[_HEIGHT];	/**< priority table */
 
 	/* windows */
 	UINT32 msg_box_ticks;	/**< timed message box tick counter */
@@ -182,7 +180,7 @@ struct agi_game {
 	unsigned int color_bg;
 	UINT8 sbuf[_WIDTH * _HEIGHT];	/**< 160x168 AGI screen buffer */
 #ifdef USE_HIRES
-	UINT8 hires[_WIDTH * _HEIGHT * 2];
+	UINT8 hires[_WIDTH * _HEIGHT * 2];	/**< 320x128 hi-res buffer */
 #endif
 
 	/* player command line */
