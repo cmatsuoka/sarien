@@ -30,7 +30,7 @@ int decode_words (UINT8* mem, UINT32 flen)
 	words = NULL;
 
 	/* scan for first entry with words */
-	for (wc = woff = 0; woff == 0 && woff < flen; wc += 2)
+	for (wc = woff = 0; woff == 0 && wc < flen; wc += 2)
 		woff = hilo_getword (mem + wc);
 
 #ifdef AGDS_SUPPORT
@@ -56,7 +56,7 @@ int decode_words (UINT8* mem, UINT32 flen)
 	num_syns = sc;
 
 	/* scan for first words entry */
-	for(wc = woff = 0; woff == 0; wc += 2)
+	for(wc = woff = 0; wc == 0; wc += 2)
 		woff = hilo_getword(mem+wc);
 
 	/* alloc word memory */
