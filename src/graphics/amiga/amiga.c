@@ -15,16 +15,18 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
-#if 0
 #include <intuition/intuition.h>
 #include <intuition/screens.h>
 #include <clib/exec_protos.h>
 #include <clib/graphics_protos.h>
 #include <clib/intuition_protos.h>
-#endif
+#include <exec/memory.h>
+#include <hardware/cia.h>
 #include "sarien.h"
 #include "graphics.h"
+
+#define NUMCOLS 32
+#define CIAAPRA 0xBFE001
 
 
 extern struct gfx_driver *gfx;
@@ -50,13 +52,13 @@ static struct gfx_driver gfx_amiga = {
 	amiga_get_key
 };
 
-typedef void *PLANEPTR;
-
 static struct Window *win;
 static struct Screen *scr;
-static struct RastPort *rp;
+static struct RastPort *rp, temprp;
 static PLANEPTR raster;
 static UBYTE *vscreen;
+static UBYTE colors[NUMCOLS];
+static struct CIA *ciamou = (struct CIA *)CIAAPRA;
 
 extern struct GfxBase *GfxBase;
 extern struct IntuitionBase *IntuitionBase;
@@ -77,7 +79,6 @@ static int key_queue_end = 0;
 
 static void process_events ()
 {
-#if 0
 	struct IntuiMessage *message;
 
 	message = (struct IntuiMessage *)GetMsg (win->UserPort);
@@ -87,7 +88,10 @@ static void process_events ()
 			exit (0);
 		}
 	}
-#endif
+
+	mouse.x = win->MouseX;
+	mouse.y = win->MouseY;
+	mouse.button = !(ciamou->ciapra & 0x0040);
 }
 
 int init_machine (int argc, char **argv)
@@ -125,7 +129,6 @@ static void amiga_timer ()
 
 static int amiga_init_vidmode ()
 {
-	struct RastPort temprp;
 	struct BitMap tempbm;
 	int i;
 
@@ -157,20 +160,19 @@ static int amiga_init_vidmode ()
 		return -1;
 
 	rp = win->RPort;
-	bleft = win->BorderLeft;
-	btop=win->BorderTop;
+	/*bleft = win->BorderLeft;
+	btop=win->BorderTop;*/
 
 	for (i = 0; i < NUMCOLS; i++) {
-		colors[i]=ObtainBestPen(win->WScreen->ViewPort.ColorMap,
-			(colortable[i*2] & 0xff0000)<<8,
-			(colortable[i*2] & 0x00ff00)<<16,
-			(colortable[i*2] & 0x0000ff)<<24,
+		colors[i] = ObtainBestPen(win->WScreen->ViewPort.ColorMap,
+			(UINT32)palette[i * 3 + 0] << 26,
+			(UINT32)palette[i * 3 + 1] << 26,
+			(UINT32)palette[i * 3 + 2] << 26,
 			OBP_Precision,PRECISION_EXACT,
 			TAG_DONE);
-		wcolors[i]=(colors[i]<<8)|colors[i];
 	}
 
-	InitBitMap(&tempbm, 7, vwidth+16, tv_height);
+	InitBitMap (&tempbm, 7, GFX_WIDTH + 16, GFX_HEIGHT);
 
 	raster = (PLANEPTR)AllocRaster (GFX_WIDTH + 16, 7 * GFX_HEIGHT);
 	if (raster == NULL)
@@ -218,7 +220,7 @@ static void amiga_put_block (int x1, int y1, int x2, int y2)
 
 static void amiga_put_pixels(int x, int y, int w, UINT8 *p)
 {
-	while (w--) { scrdev.DrawPixel (mempsd, x, y++, *p++); }
+	/* while (w--) { scrdev.DrawPixel (mempsd, x, y++, *p++); } */
 }
 
 
@@ -242,19 +244,7 @@ static int amiga_get_key ()
 }
 
 #if 0
----------
-Leftovers from the original driver
----------
 
-
-UBYTE colors[NUMCOLS];
-UWORD wcolors[NUMCOLS];
-
-extern int moudrv_x, moudrv_y, moudrv_but;
-
-#define CIAAPRA 0xBFE001
-
-struct CIA *ciamou = (struct CIA *) CIAAPRA;
 
 /*****************************************************************************/
 
@@ -268,9 +258,6 @@ void tv_event (void)
 
 void moudrv_read(void)
 {
-	moudrv_x=win->MouseX;
-	moudrv_y=win->MouseY;
-	moudrv_but=!(ciamou->ciapra & 0x0040);
 }
 
 /*****************************************************************************/
