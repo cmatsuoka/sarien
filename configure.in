@@ -108,12 +108,20 @@ elif test "${with_sdl}" = "yes"; then
 	if test "${ac_cv_header_SDL_h}" = "yes"; then
 		CONSOLE_DRIVER="sdl"
 		CFLAGS="`sdl-config --cflags` ${CFLAGS}"
-		LIBS="`sdl-config --libs` ${LIBS}"
+		if test "${ac_cv_prog_cc_cross}" = "yes"; then
+			LIBS="-lSDL ${LIBS}"
+		else
+			LIBS="`sdl-config --libs` ${LIBS}"
+		fi
 	fi
 	if test "${ac_cv_header_SDL_SDL_h}" = "yes"; then
 		CONSOLE_DRIVER="sdl"
 		CFLAGS="`sdl-config --cflags` ${CFLAGS} -ISDL"
-		LIBS="`sdl-config --libs` ${LIBS}"
+		if test "${ac_cv_prog_cc_cross}" = "yes"; then
+			LIBS="-lSDL ${LIBS}"
+		else
+			LIBS="`sdl-config --libs` ${LIBS}"
+		fi
 	fi
 	with_x="no"
 elif test "${with_svgalib}" = "yes"; then
@@ -222,7 +230,6 @@ cygwin*)
 	SOUND_DRIVER="win32"
 	;;
 amiga*)
-	LIBS="${LIBS}"
 	SOUND_DRIVER="amiga"
 	;;
 *)
@@ -293,6 +300,7 @@ AC_MSG_RESULT([using console driver: ${CONSOLE_DRIVER}])
 AC_MSG_RESULT([using sound driver: ${SOUND_DRIVER}])
 AC_MSG_RESULT([using file globbing method: ${FILEIO_DRIVER}])
 AC_MSG_RESULT([cflags: ${CFLAGS}])
+AC_MSG_RESULT([libs: ${LIBS}])
 AC_MSG_RESULT([----------------------------------------------------------])
 
 AC_OUTPUT(Rules)

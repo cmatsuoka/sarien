@@ -200,6 +200,8 @@ void shake_screen (int n)
 		return;
 	}
 
+	commit_both ();		/* Fixed SQ1 demo */
+
 	memset (c, 0, GFX_WIDTH * GFX_HEIGHT);
 	memcpy (b, sarien_screen, GFX_WIDTH * GFX_HEIGHT);
 	for (i = 0; i < (GFX_HEIGHT - MAG); i++)
