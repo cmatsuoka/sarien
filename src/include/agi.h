@@ -196,7 +196,7 @@ struct agi_game {
 
 	struct agi_event ev_keyp[MAX_DIRS];	/**< keyboard keypress events */
 	struct agi_event ev_scan[MAX_DIRS];	/**< keyboard scan events */
-	char strings[MAX_WORDS1][MAX_WORDS2];	/**< strings */
+	char strings[MAX_STRINGS + 1][MAX_STRINGLEN];	/**< strings */
 
 	/* directory entries for resources */
 	struct agi_dir dir_logic[MAX_DIRS];

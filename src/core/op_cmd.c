@@ -650,15 +650,15 @@ cmd(get_num) {
 		int len = strlen (cur_logic->texts[p0 - 1]);
 		print_text (cur_logic->texts[p0 - 1], 0, 0, 22, len,
 			game.color_fg, game.color_bg);
-		get_string (len - 1, 22, 3, MAX_WORDS2);
+		get_string (len - 1, 22, 3, MAX_STRINGS);
 	}
 
 	do {
 		main_cycle ();
 	} while (game.input_mode == INPUT_GETSTRING);
 
-	_v[p1] = atoi (game.strings[MAX_WORDS2]);
-	_D (_D_WARN "[%s] -> %d", game.strings[MAX_WORDS2], _v[p1]);
+	_v[p1] = atoi (game.strings[MAX_STRINGS]);
+	_D (_D_WARN "[%s] -> %d", game.strings[MAX_STRINGS], _v[p1]);
 	clear_lines (22, 22, game.color_bg);
 	flush_lines (22, 22);
 }
@@ -689,7 +689,7 @@ cmd(set_key) {
 
 cmd(set_string) {
 	/* CM: to avoid crash in Groza (str = 150) */
-	if (p0 > MAX_WORDS1) return;
+	if (p0 > MAX_STRINGS) return;
 	strcpy (game.strings[p0], cur_logic->texts[p1 - 1]);
 }
 

@@ -94,6 +94,8 @@ static int agi_v2_load_dir (struct agi_dir *agid, char *fname)
 	for (i = 0; i < flen; i += 3) {
 		agid[i / 3].volume = hilo_getbyte (mem + i) >> 4;
 		agid[i / 3].offset = hilo_getpword (mem + i) & (UINT32)_EMPTY;
+		/* _D ("%d: volume %d, offset 0x%05x", i / 3,
+			agid[i / 3].volume, agid[i / 3].offset); */
 	}
 
 	free (mem);

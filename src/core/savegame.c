@@ -241,7 +241,7 @@ int save_game (char* s, char* d)
 
 	/* game.ev_keyp */
 	/* game.ev_scan */
-	for (i = 0; i < MAX_WORDS1; i++)
+	for (i = 0; i < MAX_STRINGS; i++)
 		write_string (f, game.strings[i]);
 
 	/* record info about loaded resources */
@@ -424,7 +424,7 @@ int load_game(char* s)
 		game.ev_keyp[i].occured = FALSE;
 	}
 
-	for (i = 0; i < MAX_WORDS1; i++)
+	for (i = 0; i < MAX_STRINGS; i++)
 		read_string (f, game.strings[i]);
 
 	for (i = 0; i < MAX_DIRS; i++) {
@@ -543,7 +543,7 @@ int load_game(char* s)
 	}
 
 #ifndef DREAMCAST
-	// Why is this here? -- BP
+	/* Why is this here? -- BP */
 	if(ferror(f) || feof(f)) {
 		fclose(f);
 		return err_BadFileOpen;
@@ -621,7 +621,8 @@ static int select_slot (char *path)
 			switch (key) {
 			case KEY_ENTER:
 				rc = active;
-				strcpy (game.strings[MAX_WORDS2], desc[i]);
+				strncpy (game.strings[MAX_STRINGS],
+					desc[i], MAX_STRINGLEN);
 				goto press;
 			case KEY_ESCAPE:
 				rc = -1;
@@ -709,11 +710,11 @@ int savegame_dialog ()
 	flush_block (3 * CHAR_COLS, 11 * CHAR_LINES - 1,
 		37 * CHAR_COLS, 12 * CHAR_LINES);
 
-	get_string (2, 11, 33, MAX_WORDS2);
+	get_string (2, 11, 33, MAX_STRINGS);
         do { main_cycle (); } while (game.input_mode == INPUT_GETSTRING);
 	close_window ();
 
- 	desc = game.strings[MAX_WORDS2];
+ 	desc = game.strings[MAX_STRINGS];
 
 	sprintf (dstr, "Are you sure you want to save the game "
 		"described as:\n\n%s\n\nin slot %d?\n\n\n",

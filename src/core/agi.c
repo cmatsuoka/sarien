@@ -79,7 +79,7 @@ int agi_init ()
 	init_pri_table ();
 
 	/* clear string buffer */
-	for (i = 0; i < MAX_WORDS1; i++)
+	for (i = 0; i < MAX_STRINGS; i++)
 		game.strings[i][0] = 0;
 
 	/* setup emulation */

@@ -18,6 +18,7 @@
 
 #define ip (game.logics[n].cIP)
 #define code (game.logics[n].data)
+#define size (game.logics[n].size)
 
 /*
  * Patches
@@ -89,7 +90,6 @@ static UINT8 mh1data_fix[]= {
 
 void patch_logic (int n)
 {
-
 	switch(n) {
 	case 6:
 		/* lsl1 bypass questions */
@@ -114,7 +114,7 @@ void patch_logic (int n)
 		break;
 	case 159:
 		/* manhunter 1 amiga */
-		if(!memcmp (mh1data_find, (code+ip), 30)) {
+		if(ip + 30 < size && !memcmp (mh1data_find, (code+ip), 30)) {
 			memmove ((code+ip), mh1data_fix, 6);
 		}
 		break;  
