@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2002 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -71,18 +71,6 @@ static int key_queue_end = 0;
 	key_queue_start %= KEY_QUEUE_SIZE; } while (0)
 
 #define ASPECT_RATIO(x) ((x) * 6 / 5)
-
-
-#ifdef __MPW__
-
-char *strdup (char *s)
-{
-	char *r = malloc (strlen (s) + 1);
-	strcpy (r, s);
-	return r;
-}
-
-#endif
 
 
 int init_machine (int argc, char **argv)

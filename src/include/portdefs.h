@@ -25,13 +25,6 @@ static char g_vmu_port[2];
 #  undef USE_MOUSE
 #endif
 
-#ifdef __MPW__
-#  undef USE_COMMAND_LINE
-#  undef OPT_LIST_OBJECTS
-#  undef OPT_PICTURE_VIEWER
-#  undef OPT_LIST_DICT
-#endif
-
 #ifdef PALMOS
 #  include <PalmOS.h>
 #  undef USE_CONSOLE
@@ -76,25 +69,6 @@ static char g_vmu_port[2];
  */
 #ifdef __TURBOC__
 #  include <alloc.h>
-#endif
-
-/*
- * From hall_j@sat.mot.com (Joseph Hall)
- * Date: Mon, 6 Jun 1994 18:48:45 GMT
- *
- * (...)
- * MPW's malloc(), on the other hand, was busted around 3.0 or 3.1.
- * Do some malloc-ing and some free-ing and eventually it would crash.
- * I don't know whether that was ever fixed, though I reported it.
- * I suggest that you use NewPtr() on the Mac to obtain memory, then
- * manage it with a memory allocator of your own.
- */
-#ifdef __MPW__
-#  include <Memory.h>
-#  define malloc(x)	((void *)NewPtr (x))
-#  define calloc(x,s)	((void *)NewPtrClear ((x) * (s)))
-#  define realloc(x,s)	(x) /* FIXME */
-#  define free(x)	DisposePtr ((Ptr)(x))
 #endif
 
 #ifdef PALMOS

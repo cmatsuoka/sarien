@@ -111,9 +111,9 @@ int agi_init ()
 	if (ec == err_OK)
 		ec = loader->load_objects(OBJECTS);
 
-	/* CM: ec= commented out, demogs has no words.tok */
+	/* note: demogs has no words.tok */
 	if(ec == err_OK)
-		/*ec =*/ loader->load_words(WORDS);
+		ec = loader->load_words(WORDS);
 
 	/* FIXME: load IIgs instruments and samples */
 	/* load_instruments("kq.sys16"); */

@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2002 Stuart George and Claudio Matsuoka
  *
  *  $Id$
  *
@@ -23,7 +23,7 @@ static UINT32 words_flen;	/* length of word memory */
 
 char *strndup (char* src, int n) {
 
-	char *tmp = strncpy (malloc(n+1), src, n);
+	char *tmp = strncpy (malloc(n + 1), src, n);
 	tmp[n] = 0;
 	return tmp;
 }
@@ -39,22 +39,24 @@ int load_words (char *fname)
 	words = NULL;
 
 	path = fixpath (NO_GAMEDIR, fname);
-	report ("Loading dictionary: %s\n", path);
 
-	if ((fp = fopen(path, "rb")) == NULL)
-		return err_BadFileOpen;
+	if ((fp = fopen(path, "rb")) == NULL) {
+		report ("Warning: can't open %s\n", path);
+		return err_OK /*err_BadFileOpen*/;
+	}
+	report ("Loading dictionary: %s\n", path);
 
 	fseek (fp, 0, SEEK_END);
 	flen = ftell (fp);
 	words_flen = flen;
 	fseek (fp, 0, SEEK_SET);
 
-	if ((mem = (UINT8*)calloc(1, flen+32)) == NULL) {
+	if ((mem = (UINT8*)calloc(1, flen + 32)) == NULL) {
 		fclose (fp);
 		return err_NotEnoughMemory;
 	}
 
-	fread(mem, 1, flen, fp);
+	fread (mem, 1, flen, fp);
 	fclose (fp);
 
 	words = mem;

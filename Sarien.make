@@ -10,6 +10,7 @@ MAKEFILE        = Sarien.make
 
 ObjDir          = :
 Includes        =  ¶
+				  -i :src:core:macos: ¶
 				  -i :src:include:
 
 Sym-68K         = -sym off
@@ -45,10 +46,11 @@ SrcFiles        =  ¶
 				  :src:core:picture.c ¶
 				  :src:core:rand.c ¶
 				  :src:core:savegame.c ¶
-				  :src:graphics:macos:macos.c ¶
 				  :src:core:silent.c ¶
 				  :src:core:sound.c ¶
 				  :src:sound:dummy:dummy.c ¶
+				  :src:core:macos:library.c ¶
+				  :src:graphics:macos:macos.c ¶
 				  :src:filesys:macos:fileglob.c ¶
 				  :src:filesys:macos:path.c ¶
 				  :src:core:sprite.c ¶
@@ -86,6 +88,7 @@ ObjFiles-68K    =  ¶
 				  "{ObjDir}rand.c.o" ¶
 				  "{ObjDir}savegame.c.o" ¶
 				  "{ObjDir}macos.c.o" ¶
+				  "{ObjDir}library.c.o" ¶
 				  "{ObjDir}fileglob.c.o" ¶
 				  "{ObjDir}path.c.o" ¶
 				  "{ObjDir}dummy.c.o" ¶
@@ -162,6 +165,7 @@ Sarien  ÄÄ  {ObjFiles-68K} {LibFiles-68K} {¥MondoBuild¥}
 "{ObjDir}picture.c.o"  Ä  :src:core:picture.c
 "{ObjDir}rand.c.o"  Ä  :src:core:rand.c
 "{ObjDir}savegame.c.o"  Ä  :src:core:savegame.c
+"{ObjDir}library.c.o"  Ä  :src:core:macos:library.c
 "{ObjDir}macos.c.o"  Ä  :src:graphics:macos:macos.c
 "{ObjDir}fileglob.c.o"  Ä  :src:filesys:macos:fileglob.c
 "{ObjDir}path.c.o"  Ä  :src:filesys:macos:path.c
