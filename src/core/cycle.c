@@ -59,7 +59,7 @@ void new_room (int n)
 	/* Reposition ego in the new room */
 	switch (game.vars[V_border_touch_ego]) {
 	case 1:
-		game.view_table[0].y_pos = _HEIGHT;
+		game.view_table[0].y_pos = _HEIGHT - 1;
 		break;
 	case 2:
 		game.view_table[0].x_pos = 0;
