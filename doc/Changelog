@@ -12,13 +12,9 @@ Revision History
 	- reduced memory allocation in shake.screen
 	- added many options to the configuration script
 	- widgets set to classic Sierra, MUMG wants white message boxes
-	- logic patch code compiled only if patching is enabled (reduces
-	  code size)
-	- patching enabled by default only when tracing is enabled
 	- checking null pointers when parsing AGI strings (closes: #491334)
-	- reseting current cel in end.of.loop if KQ4 (closes: #475912)
-	- implemented multi-slot savegames
 	- fixed game restart issues (closes: #457622)
+	- implemented multi-slot savegames
 	- selectable Amiga-ish or EGA palettes
 	- merged Brian Peek's SarienDC Dreamcast port
 	- added Mike Montague's DirectX driver
@@ -29,6 +25,7 @@ Revision History
 	- input prompt and user input fixes (closes: #518734, #540840,
 	  #540734, #540843, #540736)
 	- fixed object position test in cmd_reposition (closes: #518731)
+	- fixed end.of.loop and reverse.loop handling (closes: #475912)
 	- added CGA palette emulation
 	- added CGA video card support for PC DOS
 

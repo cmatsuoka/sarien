@@ -83,15 +83,16 @@ static int agi_v3_load_dir (struct agi_dir *agid, FILE *fp, UINT32 offs, UINT32 
 		fread(mem, 1, len, fp);
 
 		/* set all directory resources to gone */
-		for(i = 0; i < MAX_DIRS; i++) {
+		for (i = 0; i < MAX_DIRS; i++) {
 			agid[i].volume = 0xff;
 			agid[i].offset = _EMPTY;
 		}
 
 		/* build directory entries */
-		for(i = 0; i < len; i += 3) {
+		for (i = 0; i < len; i += 3) {
 			agid[i / 3].volume = hilo_getbyte (mem + i) >> 4;
-			agid[i / 3].offset = hilo_getpword (mem+i) & (UINT32)_EMPTY;
+			agid[i / 3].offset =
+				hilo_getpword (mem + i) & (UINT32)_EMPTY;
 		}
 
 		free(mem);
@@ -227,7 +228,10 @@ UINT8* agi_v3_load_vol_res (struct agi_dir *agid)
 			/* FIXME */
 			deinit_video_mode();
 #endif
-			printf("ACK! BAD RESOURCE!!!\n");
+			_D (_D_CRIT "path = %s", path);
+			_D (_D_CRIT "offset = %d", agid->offset);
+			_D (_D_CRIT "x = %x %x", x[0], x[1]);
+			printf ("ACK! BAD RESOURCE!!!\n");
 			exit(0);
 		}
 
