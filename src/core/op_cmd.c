@@ -262,6 +262,9 @@ cmd(draw) {
 	if (vt.flags & DRAWN)
 		return;
 
+	if (vt.y_size <= 0 || vt.x_size <= 0)
+		return;
+
 	vt.flags |= UPDATE;
 	fix_position (p0);
 	vt.x_pos2 = vt.x_pos;

@@ -98,6 +98,12 @@ static int blit_cel (int x, int y, int spr, struct view_cel *c)
 	int epr, pr;		/* effective and real priorities */
 	int hidden = TRUE;
 
+	/* Fixes bug #477841 (crash in PQ1 map C4 when y == -2) */
+	if (y < 0) y = 0;
+	if (x < 0) x = 0;
+	if (y >= _HEIGHT) y = _HEIGHT - 1;
+	if (x >= _WIDTH)  x = _WIDTH - 1;
+
 #ifdef USE_HIRES
 	if (opt.hires)
 		blit_hires_cel (x, y, spr, c);

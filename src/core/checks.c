@@ -31,8 +31,8 @@ static int check_position (struct vt_entry *v)
 		v->y_pos >= _HEIGHT ||
 		((~v->flags & IGNORE_HORIZON) && v->y_pos <= game.horizon))
 	{
-		_D (_D_WARN "check position failed: x=%d, y=%d, h=%d, w=%d",
-			v->x_pos, v->y_pos, v->x_size, v->y_size);
+		/* _D (_D_WARN "check position failed: x=%d, y=%d, h=%d, w=%d",
+			v->x_pos, v->y_pos, v->x_size, v->y_size); */
 		return 0;
 	}
 
@@ -297,6 +297,7 @@ void fix_position (int n)
 		count = tries;
 	}
 
+	_D (_D_WARN "line_min_print = %d", game.line_min_print);
 	/* _D (_D_WARN "view table entry #%d position adjusted to (%d,%d)",
 		n, v->x_pos, v->y_pos); */
 }
