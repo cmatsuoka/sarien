@@ -25,7 +25,6 @@ extern struct gfx_driver *gfx;
 extern struct agi_object *objects;
 extern struct agi_logic logics[];
 /* FIXME: remove */
-extern    UINT8           strings[MAX_WORDS1][MAX_WORDS2];
 
 static void print_text2 (int l, char *msg, int foff, int xoff, int yoff,
 	int len, int fg, int bg)
@@ -286,7 +285,7 @@ char *agi_printf (char *msg, int lognum)
 				strcat(p, game.ego_words[atol(msg)-1].word);
 				break;
 			case 's':
-				strcat(p, strings[atol(msg)]);
+				strcat(p, game.strings[atol(msg)]);
 				break;
 			case 'm':
 				strcat(p, logics[lognum].texts[atol(msg)-1]);

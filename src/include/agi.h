@@ -94,6 +94,8 @@ struct agi_game {
 	int num_objects;
 
 	struct agi_event events[MAX_DIRS];	/* keyboard events */
+
+	char strings[MAX_WORDS1][MAX_WORDS2];	/* strings */
 #if 0
 	/* resources */
 	struct agi_picture pictures[MAX_DIRS];

@@ -23,8 +23,6 @@
 #include "console.h"
 #include "text.h"	/* remove later */
 
-UINT8 strings[MAX_WORDS1][MAX_WORDS2];	/* strings */
-
 UINT16 key; 
 UINT8  buffer[40];
 UINT8  last_sentence[40];
@@ -99,7 +97,7 @@ void print_line_prompt ()
 
 	if (game.allow_kyb_input) {
 		/* Command prompt */
-		print_text (agi_printf (strings[0], 0), 0, 0,
+		print_text (agi_printf (game.strings[0], 0), 0, 0,
 			game.line_user_input * 8, 40, txt_fg, txt_bg );
 
 		/* internal keyboard buffer */
@@ -392,7 +390,7 @@ void handle_keys ()
            		if (!IsGetString) {
 	   			cmd_clear_lines (game.line_user_input,
 					game.line_user_input, txt_bg);
-	   			print_text (agi_printf (strings[0], 0), 0, 0,
+	   			print_text (agi_printf (game.strings[0], 0), 0, 0,
 					game.line_user_input * 8,
 					40, txt_fg, txt_bg);
        			}

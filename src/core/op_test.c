@@ -47,8 +47,7 @@ static UINT8	test_keypressed	(void);
 #define test_isset(flag)	(getflag (flag))
 #define test_has(obj)		(objects[obj].location == EGO_OWNED)
 #define test_obj_in_room(obj,v)	(objects[obj].location == getvar (v))
-#define test_compare_strings(s1,s2) \
-			(!strcmp((char*)strings[s1], (char*)strings[s2]))
+#define test_compare_strings(s1,s2) (!strcmp(game.strings[s1], game.strings[s2]))
 
 
 static UINT8 test_keypressed ()

@@ -472,7 +472,7 @@ void cmd_ignore_objs (UINT8 entry)
 
 void cmd_word_to_string (UINT8 sn, UINT8 wn)
 {
-	strcpy (strings[sn], game.ego_words[wn].word);
+	strcpy (game.strings[sn], game.ego_words[wn].word);
 }
 
 
@@ -497,7 +497,7 @@ void cmd_parse (UINT8 logic, UINT8 str)
 	UINT8	*p;
 
 	_D (("(%d, %d)\n", logic, str));
-	p=agi_printf (strings[str], logic);
+	p = agi_printf (game.strings[str], logic);
 	dictionary_words (p);
 }
 
@@ -737,17 +737,16 @@ void cmd_get_posn (UINT8 entry, UINT8 x1, UINT8 y1)
 
 void cmd_get_string (UINT8 logic, UINT8 str, UINT8 msg, UINT8 y, UINT8 x, UINT8 len)
 {
-	UINT8	*p;
+	char *p;
 
 	/* FR:
 	 * Changed here
 	 */
-	if (logics[logic].texts!=NULL && (msg-1)<=logics[logic].num_texts)
-	{
+	if (logics[logic].texts!=NULL && (msg-1)<=logics[logic].num_texts) {
 		p=agi_printf (logics[logic].texts[msg-1], logic);
-		print_text (p, 0, x * 8, y * 8, strlen ((char*)p), txt_fg, txt_bg); 
-		p = get_string ( (x * 8) + (8 * (strlen ((char*)p) - 1)), y*8, len);
-		strcpy ( (char*)strings[str], (char*)p );
+		print_text (p, 0, x * 8, y * 8, strlen (p), txt_fg, txt_bg); 
+		p = get_string ((x * 8) + (8 * (strlen (p) - 1)), y*8, len);
+		strcpy (game.strings[str], p );
 	}
 }
 
@@ -1356,7 +1355,7 @@ void cmd_set_string (UINT8 logic, UINT8 str, UINT8 txt)
 	if (str > MAX_WORDS1)
 		return;
 
-	strcpy ((char*)strings[str], (char*)logics[logic].texts[txt]);
+	strcpy (game.strings[str], logics[logic].texts[txt]);
 }
 
 

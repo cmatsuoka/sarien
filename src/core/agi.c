@@ -75,7 +75,7 @@ int agi_init ()
 
 	/* clear string buffer */
 	for (i = 0; i < MAX_WORDS1; i++)
-		strings[i][0] = 0;
+		game.strings[i][0] = 0;
 
 	/* setup emulation */
 

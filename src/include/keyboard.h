@@ -39,7 +39,7 @@ extern "C"{
 extern	UINT8		scancode_table[];
 extern	UINT16		key;
 
-extern	UINT8		strings[MAX_WORDS1][MAX_WORDS2];
+//extern	UINT8		strings[MAX_WORDS1][MAX_WORDS2];
 
 
 void	init_words	(void);

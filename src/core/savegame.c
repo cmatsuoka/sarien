@@ -103,7 +103,7 @@ int save_game (char *s, char *d)
 	s_flag = WORD_ALIGN (MAX_FLAGS) + 4;
 	s_objs = game.num_objects + 4;	/* 1 byte / object */
 	s_stri = 4;
-	for (i = 0; i < MAX_WORDS1; s_stri += strlen (strings[i++]) + 1);
+	for (i = 0; i < MAX_WORDS1; s_stri += strlen (game.strings[i++]) + 1);
 	s_view = 28;
 	s_form = s_agid + s_gcrc + s_desc + s_vars + s_flag + s_stri +
 		/* s_vtbl + */ MAX_VIEWTABLE * (8 + s_view) + s_objs;
@@ -152,8 +152,8 @@ int save_game (char *s, char *d)
 	write32 (MAX_WORDS1, f);
 	s_stri -= 4;
 	for (i = 0; i < MAX_WORDS1; i++) {
-		fwrite (strings[i], 1, strlen (strings[i]) + 1, f);
-		s_stri -= strlen (strings[i]) + 1;
+		fwrite (game.strings[i], 1, strlen (game.strings[i]) + 1, f);
+		s_stri -= strlen (game.strings[i]) + 1;
 	}
 	iff_chunk_pad (s_stri, f);
 
@@ -242,7 +242,7 @@ static void get_stri (int size, UINT8 *buffer)
 	for (i = 0; i < n; i++) {
 		for (j = 0, b = 1; b; j++) {
 			b = hilo_getbyte (buffer++);
-			strings[i][j] = b;
+			game.strings[i][j] = b;
 		}
 	}
 }
