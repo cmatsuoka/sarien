@@ -290,7 +290,7 @@ int agi_v3_load_resource (int restype, int resnum)
 		/* load resource into memory, decrypt messages at the end
 		 * and build the message list (if logic is in memory)
 		 */
-		if (game.dir_logic[resnum].flags & RES_LOADED) {
+		if (~game.dir_logic[resnum].flags & RES_LOADED) {
 			/* if logic is already in memory, unload it */
 			agi_v3.unload_resource (rLOGIC, resnum);
 
@@ -326,7 +326,7 @@ int agi_v3_load_resource (int restype, int resnum)
 		/* if picture is currently NOT loaded *OR* cacheing is off,
 		 * unload the resource (caching==off) and reload it
 		 */
-		if (game.dir_pic[resnum].flags & RES_LOADED) {
+		if (~game.dir_pic[resnum].flags & RES_LOADED) {
 			agi_v3.unload_resource (rPICTURE, resnum);
 			data = agi_v3_load_vol_res (&game.dir_pic[resnum]);
 			if (data != NULL) {
@@ -340,7 +340,7 @@ int agi_v3_load_resource (int restype, int resnum)
 		}
 		break;
 	case rSOUND:
-		if (game.dir_sound[resnum].flags & RES_LOADED)
+		if (~game.dir_sound[resnum].flags & RES_LOADED)
 			break;
 
 		if ((data = agi_v3_load_vol_res (&game.dir_sound[resnum])) != NULL) {
