@@ -83,7 +83,7 @@ void init_view_table ()
 {
 	int i;
 
-	_D (("()"));
+	_D ("()");
 	for (i = 0; i < MAX_VIEWTABLE; i++) {
 		memset (&view_table[i], 0, sizeof (struct agi_view_table));
 		view_table[i].step_time = 1;
@@ -135,7 +135,7 @@ void unload_view (int n)
 {
 	int x, y;
 
-	_D (("(%d)", n));
+	_D ("(%d)", n);
 	if (~game.dir_view[n].flags & RES_LOADED)
 		return;
 
@@ -172,7 +172,7 @@ void unload_view (int n)
 
 void add_view_table (int entry, int vw)
 {
-	_D (("(%d, %d)", entry, vw));
+	_D ("(%d, %d)", entry, vw);
 
 	/* To prevent Larry explosion in room 11 after hooker */
 	if (~game.dir_view[vw].flags & RES_LOADED) {
@@ -455,7 +455,7 @@ int decode_view (int resnum)
 	DebugBreak();
 #endif
 
-	_D (("(%d)", resnum));
+	_D ("(%d)", resnum);
 	ptrView = views[resnum].rdata;
 
 	views[resnum].loop = NULL;
@@ -471,7 +471,7 @@ int decode_view (int resnum)
 	/* if no loops exist, return! */
 	views[resnum].num_loops = lohi_getbyte (ptrView+2);
 
-	_D (("views[%d].num_loops = %d", resnum, views[resnum].num_loops));
+	_D ("views[%d].num_loops = %d", resnum, views[resnum].num_loops);
 
 	if (views[resnum].num_loops == 0)
 		return err_NoLoopsInView;

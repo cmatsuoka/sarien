@@ -233,7 +233,7 @@ static void process_events ()
 						- 0x41] << 8;
 				break;
 			};
-			_D ((": key = 0x%02x ('%c')", key, isprint(key) ? key : '?'));
+			_D ("key = 0x%02x ('%c')", key, isprint(key) ? key : '?');
 			break;
 		case KeyRelease:
 			XLookupString (&event.xkey, buf, 1, &k, NULL);
@@ -361,7 +361,7 @@ static int init_vidmode ()
 	char *apptext = TITLE " " VERSION;
 	char *icontext = TITLE;
 
-	_D (("()"));
+	_D ("()");
 
 	fprintf (stderr, "x11: X11 support by claudio@helllabs.org\n");
 
@@ -487,7 +487,7 @@ init_done:
 
 static int deinit_vidmode ()
 {
-	_D (("()"));
+	_D ("()");
 
 	fprintf (stderr, "x11: deiniting video mode\n");
 	XDestroyWindow (display, window);

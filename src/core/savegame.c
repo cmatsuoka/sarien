@@ -91,7 +91,7 @@ int save_game (char *s, char *d)
 	UINT32 s_flag, s_vars, s_stri, s_view;
 	UINT32 crc = 0x12345678;	/* FIXME */
 
-	_D (("(\"%s\", \"%s\")", s, d));
+	_D ("(\"%s\", \"%s\")", s, d);
 
 	f = fopen (s, "w");
 
@@ -199,7 +199,7 @@ static void get_view (int size, UINT8 *buffer)
 {
 	UINT32 i;
 
-	_D (("(%d, %p)", size, buffer));
+	_D ("(%d, %p)", size, buffer);
 
 	i = hilo_getdword (buffer);
  	buffer += 4;
@@ -234,7 +234,7 @@ static void get_stri (int size, UINT8 *buffer)
 	UINT32 i, j, n;
 	UINT8 b;
 
-	_D (("(%d, %p)", size, buffer));
+	_D ("(%d, %p)", size, buffer);
 
 	n = hilo_getdword (buffer);
  	buffer += 4;
@@ -253,7 +253,7 @@ static void get_flag (int size, UINT8 *buffer)
 	UINT32 i, n;
 	UINT8 b;
 
-	_D (("(%d, %p)", size, buffer));
+	_D ("(%d, %p)", size, buffer);
 
 	n = hilo_getdword (buffer);
 	buffer += 4;
@@ -271,7 +271,7 @@ static void get_vars (int size, UINT8 *buffer)
 	UINT32 i, n;
 	UINT8 b;
 
-	_D (("(%d, %p)", size, buffer));
+	_D ("(%d, %p)", size, buffer);
 
 	n = hilo_getdword (buffer);
 	buffer += 4;
@@ -299,7 +299,7 @@ static void get_objs (int size, UINT8 *buffer)
 
 static void get_agid (int size, UINT8 *buffer)
 {
-	_D (("(%d, %p)", size, buffer));
+	_D ("(%d, %p)", size, buffer);
 
 	if (size < strlen (game.id)) {
 		loading_ok = 0;
@@ -313,7 +313,7 @@ static void get_agid (int size, UINT8 *buffer)
 
 static void get_gcrc (int size, UINT8 *buffer)
 {
-	_D (("(%d, %p)", size, buffer));
+	_D ("(%d, %p)", size, buffer);
 }
 
 
@@ -322,7 +322,7 @@ int load_game (char *s)
 	FILE *f;
 	struct iff_header h;
 
-	_D (("(\"%s\")", s));
+	_D ("(\"%s\")", s);
 	if ((f = fopen (s, "r")) == NULL)
 		return err_BadFileOpen;
 

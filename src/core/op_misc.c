@@ -55,7 +55,7 @@ static void new_room_resources ()
 
 void new_room (int r)
 {
-	_D (("(%d)", r));
+	_D ("(%d)", r);
 
 	/* stop all animation */
 

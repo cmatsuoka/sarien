@@ -150,8 +150,8 @@ void move_ego (UINT8 direction)
 {
 	static UINT8 last_ego_dir = 0xFF;
 
-	_D (("(%d)", direction));
-	_D ((": last_ego_dir = %d", last_ego_dir));
+	_D ("(%d)", direction);
+	_D (_D_WARN "last_ego_dir = %d", last_ego_dir);
 
 	if ((view_table[EGO_VIEW_TABLE].flags & MOTION) != 0) {
 		if (last_ego_dir != direction) {

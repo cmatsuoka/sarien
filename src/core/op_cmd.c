@@ -232,7 +232,7 @@ void cmd_force_update (UINT8 entry)
 
 void cmd_draw (UINT8 entry)
 {
-	_D (("(%d)", entry));
+	_D ("(%d)", entry);
 	
 	redraw_sprites ();	/* KQ4 draws behind non-updating views */
 	erase_sprites ();
@@ -245,7 +245,7 @@ void cmd_draw (UINT8 entry)
 
 void cmd_erase (UINT8 entry)
 {
-	_D (("(%d)", entry));
+	_D ("(%d)", entry);
 	redraw_sprites ();
 	erase_sprites ();
 	vt.flags &= ~(DRAWN | UPDATE);
@@ -354,7 +354,7 @@ void cmd_release_priority (UINT8 entry)
 
 void cmd_set_priority (UINT8 entry, UINT8 p)
 {
-	_D (("(%d, %d)", entry, p));
+	_D ("(%d, %d)", entry, p);
 
 	vt.flags |= FIXED_PRIORITY;
 
@@ -411,7 +411,7 @@ void cmd_release_loop (UINT8 entry)
 
 void cmd_reverse_loop (UINT8 entry, UINT8 p1)
 {
-	_D (("(%d, %d)", entry, p1));
+	_D ("(%d, %d)", entry, p1);
 	vt.parm1        = p1;
 	vt.cycle_status = CYCLE_REV_LOOP;
 /*	
@@ -430,7 +430,7 @@ void cmd_reverse_cycle (UINT8 entry)
 
 void cmd_end_of_loop (UINT8 entry, UINT8 p1)
 {
-	_D (("(%d, %d)", entry, p1));
+	_D ("(%d, %d)", entry, p1);
 	vt.parm1        = p1;
 	vt.cycle_status = CYCLE_END_OF_LOOP; 
 /*
@@ -496,7 +496,7 @@ void cmd_parse (UINT8 logic, UINT8 str)
 {
 	UINT8	*p;
 
-	_D (("(%d, %d)\n", logic, str));
+	_D ("(%d, %d)\n", logic, str);
 	p = agi_printf (game.strings[str], logic);
 	dictionary_words (p);
 }
@@ -522,7 +522,7 @@ void cmd_unblock ()
 
 void cmd_follow_ego (UINT8 entry, UINT8 sv, UINT8 f)
 {
-	_D (("(%d, %d, %d)", entry, sv, f));
+	_D ("(%d, %d, %d)", entry, sv, f);
 	vt.step_size = sv;
 	vt.parm1 = vt.step_size;
 	vt.parm2 = f;
@@ -576,7 +576,7 @@ void cmd_move_obj (UINT8 entry, UINT8 p1, UINT8 p2, UINT8 sv, UINT8 p4)
 {
 	SINT16 h, w, od;
 
-	_D (("(%d, %d, %d, %d, %d)", entry, p1, p2, sv, p4));
+	_D ("(%d, %d, %d, %d, %d)", entry, p1, p2, sv, p4);
 
 	/* FIXME: I don't know if this is the correct behaviour, but
 	 *        KQ2 demo needs this in the lion sequence. This test
@@ -679,7 +679,7 @@ void cmd_set_cur_char (UINT8 logic, UINT8 msg)
 
 void cmd_set_text_attr (UINT8 fg, UINT8 bg)
 {
-	_D (("(%d, %d)", fg, bg));
+	_D ("(%d, %d)", fg, bg);
 
 	txt_fg = fg;
 	txt_bg = bg;
@@ -838,28 +838,28 @@ void cmd_status_line_off ()
 
 void cmd_load_sound (UINT8 s)
 {
-	_D (("(%d)", s));
+	_D ("(%d)", s);
 	loader->load_resource (rSOUND, s);
 }
 
 
 void cmd_play_sound (UINT8 s, UINT8 f)
 {
-	_D (("()"));
+	_D ("(%d, %d)", s, f);
 	start_sound (s, f);
 }
 
 
 void cmd_stop_sound ()
 {
-	_D (("()"));
+	_D ("()");
 	stop_sound ();
 }
 
 
 void cmd_print (UINT8 logic, UINT8 msg)
 {
-	_D (("(%d, %d)", logic, msg));
+	_D ("(%d, %d)", logic, msg);
 	cmd_print_at (logic, msg, -1, -1, -1);
 }
 
@@ -868,12 +868,12 @@ void cmd_print_at (UINT8 logic, UINT8 msg, SINT8 y, SINT8 x, SINT8 len)
 {
 	UINT8	*p;
 
-	_D (("(%d, %d, %d, %d, %d)", logic, msg, y, x, len));
+	_D ("(%d, %d, %d, %d, %d)", logic, msg, y, x, len);
 	if (logics[logic].texts==NULL || logics[logic].num_texts< (msg-1))
 		return;
 
 	if (window_nonblocking) {
-		_D ((": window_nonblocking=1 => remove window"));
+		_D (_D_WARN "window_nonblocking=1 => remove window");
 		restore_screen_area ();	/* Yuck! */
 		window_nonblocking = 0;
 	}
@@ -898,16 +898,13 @@ void cmd_print_at (UINT8 logic, UINT8 msg, SINT8 y, SINT8 x, SINT8 len)
 	 * So 1 is nonblocking, and 0 is blocking!
 	 */
  
-	if (getflag (15) && !getvar (V_window_reset))
-	{
-		_D ((": f15==1, v21==0 => nonblocking"));
+	if (getflag (15) && !getvar (V_window_reset)) {
+		_D (_D_WARN "f15==1, v21==0 => nonblocking");
 		window_nonblocking = 1;
 		release_sprites ();
-	}
-	else
-	{
+	} else {
 		if (getvar (V_window_reset)>0) {
-			_D ((": f15==0, v21==%d => timed", getvar (21)));
+			_D (_D_WARN "f15==0, v21==%d => timed", getvar (21));
 			setvar (V_key, 0);
 			msg_box_secs2=getvar (V_window_reset);
 
@@ -925,10 +922,8 @@ void cmd_print_at (UINT8 logic, UINT8 msg, SINT8 y, SINT8 x, SINT8 len)
 					break;
 				}
 			}
-		}
-		else
-		{
-			_D ((": f15==0, v21==0 ==> waitkey"));
+		} else {
+			_D (_D_WARN "f15==0, v21==0 ==> waitkey");
 			setvar (V_key, key = 0);
 			wait_key ();
 		}
@@ -1051,7 +1046,7 @@ void cmd_set_upper_left ()
 
 void cmd_clear_text_rect (UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2, UINT8 c)
 {
-	_D (("(%d, %d, %d, %d, %d)", x1, y1, x2, y2, c));
+	_D ("(%d, %d, %d, %d, %d)", x1, y1, x2, y2, c);
 /*
 	if (screen_mode==GFX_MODE)
 		c=0xF;
@@ -1140,8 +1135,7 @@ void cmd_display (UINT8 logic, UINT8 y, UINT8 x, UINT8 msg)
 	UINT8	*p;
 
 	/*_D (("(%d, %d, %d, %d)", logic, y, x, msg));*/
-	if (logics[logic].texts!=NULL && (msg-1)<=logics[logic].num_texts)
-	{
+	if (logics[logic].texts!=NULL && (msg-1)<=logics[logic].num_texts) {
 		p = agi_printf (logics[logic].texts[msg-1], logic);
 		print_text (p, x*8, 0, y*8, 40, txt_fg, txt_bg);
 	}
@@ -1186,7 +1180,7 @@ void cmd_animate_obj (UINT8 entry)
 	 * INEXISTENT!
 	 */
 
-	_D (("(%d)", entry));
+	_D ("(%d)", entry);
 	vt.flags = ANIMATED | UPDATE | CYCLING | MOTION;
 
 	/* from meka, unknown */
@@ -1348,7 +1342,7 @@ void cmd_unk_181 ()
 
 void cmd_set_string (UINT8 logic, UINT8 str, UINT8 txt)
 {
-	_D (("(%d, %d, %d)", logic, str, txt));
+	_D ("(%d, %d, %d)", logic, str, txt);
 	txt--;
 
 	/* CM: to avoid crash in Groza (str = 150) */
@@ -1495,14 +1489,14 @@ void cmd_pause ()
 
 void cmd_submit_menu ()
 {
-	_D (("()"));
+	_D ("()");
 	submit_menu ();
 }
 
 
 void cmd_set_menu (UINT8 logic, UINT8 msg)
 {
-	_D (("(%d, %d)", logic, msg));
+	_D ("(%d, %d)", logic, msg);
 	if (logics[logic].texts!=NULL && (msg-1)<=logics[logic].num_texts)
 		add_menu (logics[logic].texts[msg-1]);
 }
@@ -1510,7 +1504,7 @@ void cmd_set_menu (UINT8 logic, UINT8 msg)
 
 void cmd_set_menu_item (UINT8 logic, UINT8 msg, UINT8 cont)
 {
-	_D (("(%d, %d, %d)", logic, msg, cont));
+	_D ("(%d, %d, %d)", logic, msg, cont);
 	if (logics[logic].texts!=NULL && (msg-1)<=logics[logic].num_texts)
 		add_menu_item (logics[logic].texts[msg-1], cont);
 }
@@ -1544,6 +1538,7 @@ extern int greatest_kludge_of_all_time;
 
 void cmd_draw_pic (UINT8 pic)
 {
+	_D (_D_WARN, "(pic = %d)", getvar(pic));
 	pic_clear_flag = TRUE;
 	decode_picture (getvar (pic));
 	/* CM: needed for nonblocking window removal
@@ -1593,7 +1588,6 @@ void cmd_version ()
         	"    Emulating Sierra AGI v%x  \n";
 	char *p, *q;
 
-	_D (("()"));
 	switch (loader->version) {
 	case 2:
 	    	q = ver2_msg;
@@ -1695,6 +1689,7 @@ void execute_agi_command (UINT8 op, UINT16 lognum, UINT8 *p)
 		cmd_load_pic (p[0]);
 		break;
 	case 0x19:				/* show pic */
+		_D (_D_WARN "-----------------------");
 		cmd_draw_pic (p[0]);
 		break;
 	case 0x1A:				/* show pic */

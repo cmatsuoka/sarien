@@ -144,7 +144,7 @@ void textbox (char *message, int x, int y, int len)
 	int xoff, yoff, lin;
 	char *msg, *m;
 
-	_D (("(\"%s\", %d, %d, %d)", message, x, y, len));
+	_D ("(\"%s\", %d, %d, %d)", message, x, y, len);
 
 	if (len <= 0 || len >= 40)
 		len=30;
@@ -159,7 +159,7 @@ void textbox (char *message, int x, int y, int len)
 		if (*m == '\n')
 			lin++;
 
-	_D ((": lin=%d", lin));
+	_D (": lin=%d", lin);
 
 	if (lin * 8 > GFX_HEIGHT)
 		lin = (GFX_HEIGHT / 8);
@@ -188,7 +188,7 @@ void message_box (char *message, ...)
 	char x[512];
 	va_list	args;
 
-	_D (("(message, ...)"));
+	_D ("(message, ...)");
 	va_start (args, message);
 
 #ifdef HAVE_VSNPRINTF

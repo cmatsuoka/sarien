@@ -21,7 +21,7 @@ int __file_exists (char *fname)
 	int rc;
 	glob_t pglob;
 
-	_D (("(\"%s\")", fname));
+	_D ("(\"%s\")", fname);
 	rc = glob (fname, GLOB_ERR | GLOB_NOSORT, NULL, &pglob);
 	if (!rc && pglob.gl_pathc <= 0)
 		rc = -1;
@@ -32,18 +32,17 @@ int __file_exists (char *fname)
 }
 
 
-
 char* __file_name (char *fname)
 {
 	int rc;
 	glob_t pglob;
 	char *s, *r = NULL;
 
-	_D (("(\"%s\")", fname));
+	_D ("(\"%s\")", fname);
 	rc = glob (fname, GLOB_ERR | GLOB_NOSORT, NULL, &pglob);
 	if (!rc) {
 		r = strdup (pglob.gl_pathv[0]);
-		_D ((": found name \"%s\"", r));
+		_D ("found name \"%s\"", r);
 	}
 
 	globfree (&pglob);
@@ -57,7 +56,7 @@ char* __file_name (char *fname)
 
 void fixpath (int flag, char *fname)
 {
-	_D (("(%d, \"%s\")", flag, fname));
+	_D ("(%d, \"%s\")", flag, fname);
 
 	strcpy (path, game.dir);
 

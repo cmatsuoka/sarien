@@ -82,14 +82,18 @@ typedef signed long	SINT32;
 #define _WIDTH		160
 #define _HEIGHT		168
 
+#define _D_INFO "\x1b[33m"
+#define _D_CRIT "\x1b[31m"
+#define _D_WARN "\x1b[36m"
+
 #ifdef _TRACE
-#define _D(y) do {							\
-	printf (__PRETTY_FUNCTION__ " [%s:%d] ", __FILE__, __LINE__);	\
-	printf y;							\
-	printf ("\n");							\
-} while (0)
+#include <stdio.h>
+#define _D(args...) do { \
+        printf("\x1b[33m" __PRETTY_FUNCTION__ " \x1b[37m[" __FILE__ \
+        ":%d] " _D_INFO, __LINE__); printf (args); printf ("\x1b[0m\n"); \
+        } while (0)
 #else
-#define _D(y)
+extern void _D(char *,...);
 #endif
 
 #ifdef __cplusplus

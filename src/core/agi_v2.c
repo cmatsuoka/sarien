@@ -74,10 +74,10 @@ static int agi_v2_detect_game (UINT8 *gn)
 
 static int agi_v2_load_dir (struct agi_dir *agid, char *fname)
 {
-	FILE	*fp;
-	UINT8	*mem;
-	UINT32	flen;
-	UINT16	i;
+	FILE *fp;
+	UINT8 *mem;
+	UINT32 flen;
+	int i;
 
 	fixpath (NO_GAMEDIR, fname);
 	report ("Loading directory: %s\n", path);
@@ -244,6 +244,7 @@ int agi_v2_load_resource (int restype, int resnum)
 	int ec = err_OK;
 	UINT8 *data = NULL;
 
+	_D (_D_WARN "(restype = %d, resnum = %d)", restype, resnum);
 	if (resnum > MAX_DIRS)
 		return err_BadResource;
 
@@ -290,12 +291,13 @@ int agi_v2_load_resource (int restype, int resnum)
 		if (game.dir_sound[resnum].flags & RES_LOADED)
 			break;
 
+		_D (_D_WARN "loading sound resource %d", resnum);
 		if ((data = agi_v2_load_vol_res (&game.dir_sound[resnum])) != NULL) {
 			sounds[resnum].rdata = data;
 			game.dir_sound[resnum].flags |= RES_LOADED;
 			decode_sound (resnum);
 		} else {
-			ec=err_BadResource;
+			ec = err_BadResource;
 		}
 		break;
 	case rVIEW:

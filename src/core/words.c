@@ -157,7 +157,7 @@ void dictionary_words (char *msg)
 	char *p, *q = NULL;
 	int wc1;
 
-	_D (("(\"%s\")", msg));
+	_D ("(\"%s\")", msg);
 
 	/* FR
 	 * This shouldn't be here!
@@ -176,7 +176,7 @@ void dictionary_words (char *msg)
 	 */
 	clean_input();
 
-	_D ((": p = msg = \"%s\"", msg));
+	_D (_D_WARN "p = msg = \"%s\"", msg);
 
 	for (p = msg; p && *p && getvar(V_word_not_found)==0; ) {
 		if (*p == 0x20)
@@ -186,12 +186,12 @@ void dictionary_words (char *msg)
 			break;
 
  		wc1 = find_word(p);
- 		_D ((": find_word(p) == %d", wc1));
+ 		_D ("find_word(p) == %d", wc1);
 
  		if (wc1 != -1) {
  			switch (words[wc1].id) {
  			case -1:
- 				_D ((": bad word"));
+ 				_D (_D_WARN "bad word");
  				game.ego_words[game.num_ego_words].word = strdup(p);
  				q = game.ego_words[game.num_ego_words].word;
  				game.ego_words[game.num_ego_words].id = 19999;
@@ -201,13 +201,13 @@ void dictionary_words (char *msg)
  				break;
  			case 0:
  				/* ignore this word */
- 				_D ((": ignore word"));
+ 				_D (_D_WARN "ignore word");
  				p += strlen((char*)words[wc1].word);
  				q = NULL;
  				break;
  			default:
  				/* an OK word */
- 				_D ((": ok word (%d)", wc1));
+ 				_D (_D_WARN "ok word (%d)", wc1);
  				game.ego_words[game.num_ego_words].id = words[wc1].id;
  				game.ego_words[game.num_ego_words].word = words[wc1].word;
  				game.num_ego_words++;
@@ -216,7 +216,7 @@ void dictionary_words (char *msg)
  			}
  		} else {
  			/* unknown word */
- 			_D ((": unknown word"));
+ 			_D (_D_WARN "unknown word");
 			strcpy ((char*)bad_word, (char*)p);
  			game.ego_words[game.num_ego_words].word = bad_word;
 			q = game.ego_words[game.num_ego_words].word;

@@ -44,6 +44,9 @@ extern struct agi_loader *loader;
 struct sarien_options opt;
 struct game_id_list game_info;
 
+#ifndef _TRACE
+void _D (char *s, ...) { }
+#endif
 
 static int detect_game (char *gn)
 {

@@ -205,7 +205,7 @@ static INLINE void _PUSH (struct point *c)
 			abort ();
 		}
 		if (stack_num_segs <= ++stack_seg) {
-			_D ((": new stack (#%ld)", stack_num_segs));
+			_D ("new stack (#%d)", stack_num_segs);
 			stack[stack_num_segs++] = malloc (sizeof (struct point)
 				* STACK_SEG_SIZE);
 		}
@@ -422,7 +422,6 @@ static void agiFill (int x, int y)
 {
 	struct point c;
 
-	/* _D (("(%d, %d)", x, y)); */
 	c.x = x;
 	c.y = y;
 	_PUSH (&c);
@@ -705,7 +704,7 @@ void splitPriority (int resnum)
 	int x, y;
 	register UINT8 *p, *c;
 
-	_D (("()"));
+	_D ("(%d)", resnum);
 
 	p = pictures[resnum].xdata;
 	c = pictures[resnum].cdata;
@@ -740,12 +739,12 @@ void splitPriority (int resnum)
 /* FIXME */
 extern UINT8 show_screen_mode;
 
-void draw_picture ()
+static void draw_picture ()
 {
 	UINT8	act;
 	int i;
 
-	_D (("()"));
+	_D ("()");
  	patCode = 0;
  	patNum = 0;
  	pri_on = scr_on = FALSE;
@@ -769,6 +768,7 @@ void draw_picture ()
 	stack_ptr = stack_seg = 0;
 	stack_num_segs = 1;
 
+	_D (_D_WARN "Drawing picture");
 	for (we_are_drawing = 1; we_are_drawing && foffs < flen; ) {
 		act = next_byte;
 
@@ -845,7 +845,7 @@ int decode_picture (int resnum)
 {
 	int ec = err_OK;
 
-	_D (("(%d)", resnum));
+	_D (_D_WARN "(%d)", resnum);
 
 	patCode = 0;
 	patNum = 0;

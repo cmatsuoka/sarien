@@ -144,7 +144,7 @@ static int note_to_period (int note)
 
 void unload_sound (int resnum)
 {
-	_D (("(%d)", resnum));
+	_D ("(%d)", resnum);
 
 	if (game.dir_sound[resnum].flags & RES_LOADED) {
 		if (sounds[resnum].flags & SOUND_PLAYING)
@@ -166,7 +166,7 @@ void decode_sound (int resnum)
 	UINT8 *src;
 	struct sound_iigs_sample *smp;
 
-	_D (("(%d)", resnum));
+	_D ("(%d)", resnum);
 	type = lohi_getword ((UINT8 *)sounds[resnum].rdata);
 
 	if (type == AGI_SOUND_SAMPLE) {
@@ -209,7 +209,7 @@ void start_sound (int resnum, int flag)
 
 	switch (type) {
 	case AGI_SOUND_SAMPLE:
-		_D ((": IIGS sample"));
+		_D (_D_WARN "IIGS sample");
 		smp = (struct sound_iigs_sample *)sounds[resnum].rdata;
 		for (i = 0; i < NUM_CHANNELS; i++) {
 			chn[i].flags = 0;
@@ -222,7 +222,7 @@ void start_sound (int resnum, int flag)
 		}
 		break;
 	case AGI_SOUND_MIDI:
-		_D ((": IIGS MIDI sequence"));
+		_D (_D_WARN "IIGS MIDI sequence");
 
 		for (i = 0; i < NUM_CHANNELS; i++) {
 			chn[i].flags = AGI_SOUND_LOOP | AGI_SOUND_ENVELOPE;
@@ -236,7 +236,7 @@ void start_sound (int resnum, int flag)
 		chn[0].ptr = (struct agi_note *)(song + 3);
 		break;
 	case AGI_SOUND_4CHN:
-		_D ((": AGI four-channel sound resource"));
+		_D (_D_WARN "AGI four-channel sound resource");
 
 		/* Initialize channel info */
 		for (i = 0; i < NUM_CHANNELS; i++)
@@ -255,7 +255,7 @@ void start_sound (int resnum, int flag)
 		break;
 	}
 
-	_D ((": ready"));
+	_D ("ready");
 	memset (snd_buffer, 0, BUFFER_SIZE << 1);
 	endflag = flag;
 
@@ -273,7 +273,7 @@ void stop_sound ()
 {
 	int i;
 
-	_D (("()"));
+	_D ("()");
 
 	endflag = -1;
 	for (i = 0; i < NUM_CHANNELS; i++) {
@@ -335,7 +335,7 @@ int init_sound ()
 
 void deinit_sound (void)
 {
-	_D (("()"));
+	_D ("()");
 	snd->deinit ();
 	free (snd_buffer);
 }
@@ -397,21 +397,20 @@ void play_midi_sound ()
 	case 0x0b:
 		parm1 = *p++;
 		parm2 = *p++;
-		_D ((": controller %02x, ch %02x, val %02x",
-			parm1, ch, parm2));
+		_D (_D_WARN "controller %02x, ch %02x, val %02x",
+			parm1, ch, parm2);
 		break;
 	case 0x0c:
 		parm1 = *p++;
-		_D ((": set patch %02x, ch %02x", parm1, ch));
+		_D (_D_WARN "set patch %02x, ch %02x", parm1, ch);
 		break;
 	}
 
 	chn[0].timer = *p++;
 	chn[0].ptr = (struct agi_note *)p;
 
-	if (*p >= 0xfc)
-	{
-		_D ((": end of sequence"));
+	if (*p >= 0xfc) {
+		_D (_D_WARN "end of sequence");
 		playing = 0;
 		return;
 	}
@@ -614,5 +613,4 @@ void unload_instruments ()
 {
 	free (instruments);
 }
-
 
