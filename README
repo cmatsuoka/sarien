@@ -17,13 +17,15 @@ The following compilers/environments can be used to build sarien:
 
 	Compiler	Operating System
 	--------------- ---------------------------------	
-	GNU C compiler	UNIX, Linux, BeOS, QNX Neutrino
-	Cygwin/Mingw32	Win32 or cross-compiled
+	GNU C compiler	UNIX, Linux, BeOS, QNX, AmigaOS
+	Cygwin/Mingw32	Win32
 	Visual C++	Win32
 	MIPSpro		IRIX
 	DJGPP		MS-DOS (uses Allegro)
 	Watcom C	MS-DOS
 	Turbo C++ 3.0	MS-DOS (real mode)
+	DICE C		AmigaOS (in progress)
+	MPW		MacOS (in progress)
 
 
 To build in UNIX platforms, run './configure; make'. ./configure --help

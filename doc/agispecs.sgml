@@ -614,12 +614,13 @@ draw (smoke);
   </para></listitem>
 
   <listitem><para>
-    analyse some of the reserved variables and flags (see block diagram);
+    analyse some of the reserved variables and flags (see
+    <xref linkend="fig-flowchart">);
   </para></listitem>
 
   <listitem><para>
-    for all controllable objects for which <function/animate_obj/,
-    <function/start_update/ and <function/draw/ commands were issued,
+    for all controllable objects for which <function/animate.obj/,
+    <function/start.update/ and <function/draw/ commands were issued,
     directions of motion are recalculated;
   </para></listitem>
 
@@ -633,7 +634,7 @@ draw (smoke);
   </para></listitem>
 
   <listitem><para>
-    test if the <function/new_room/ command has been issued;
+    test if the <function/new.room/ command has been issued;
   </para></listitem>
 </orderedlist>
 
@@ -648,96 +649,9 @@ draw (smoke);
 </para>
 
   <figure id="fig-flowchart" float="1">
-    <title>Intepreter cycle</title>
-    <graphic fileref="flowchart.ps" format="ps">
+    <title>Intepreter cycle flowchart</title>
+    <graphic fileref="flowchart.eps" format="eps">
   </figure>
-
-<para><programlisting>
-                     +---------------------------+
-                     |      1. delay time        |
-                     +---------------------------+
-                                   |
-                                   V
-                     +----------------------------+
-                     |2. clear the keyboard buffer|
-                     +----------------------------+
-                                   |
-                                   V
-                     +---------------------------+
-                     |      Flag (2) - > 0       |
-                     |      Flag (4) - > 0       |
-                     +---------------------------+
-                                   |
-                                   V
-                 +-------------------------------------+
-                 | 3. poll keyboard and joystick       |
-                 +-------------------------------------+
-                                   |
-                                   V
-                 +-------------------------------------+
-                 | If the current mode is              |
-                 | - program_control, the direction of |
-                 |   Ego motion <-- var(6).            |
-                 | - player.control, var (6) --> dir.  |
-                 |   of Ego motion.                    |
-                 +-------------------------------------+
-                                   |
-                                   V
-    +---------------------------------------------------------------+
-    | For all objects for which command animate.obj, start_update   |
-    | and draw were carried out, the recalculation of the direction |
-    | of movement is performed.                                     |
-    +---------------------------------------------------------------+
-                                   |
-                                   V
-    +---------------------------------------------------------------+
-    | If the score has changed (var (3)) or the sound has been      |
-    | turned on or off (Flag (9)), the status line is updated.      |
-    +---------------------------------------------------------------+
-                                   |
-                                   +---------+
-                                             V
-                               +--------------------------+
-             +---------------->| 4 Logic 0 is executed    |
-             |                 +--------------------------+
-             |                               |
-             |                               V
-             |          +--------------------------------------+
-             |          | - Dir. of motion of Ego  <-- var (6) |
-             |          | - If score (var (3)) or Flag (9)     |
-             |          | have changed their values - update   |
-             |          | the status and score (on Var (3));   |
-             |          | - Var (5) - > 0;                     |
-             |          | - Var (4) - > 0;                     |
-             |          | - Flag (5) - > 0!!!!                 |
-             |          | - Flag (6) - > 0;                    |
-             |          | - Flag (12) - > 0.                   |
-             |          +--------------------------------------+
- +----------------------------+               |
- | Execute:                   |               V
- | ~~~~~~~~~~~~~~~~~~~~~~~~   |  +------------------------+
- | - stop.update;             |  | Update all controlled  |
- | - unanimate.all;           |  | objects on the screen. |
- | - destroy all logic        |  +------------------------+
- |   resources except         |                   |
- |   for logic 0;             |                   V
- | - player.control;          |            +--------------+
- | - unblock;                 |            | new.room n   |
- | - set_horizon 36;          |            | or           |
- | - var (1) = var (0);       |            | new.room.v n |
- | - var (0) = n | Var(n);    |            | was issued?  |
- | - var (4) = 0;             |            |              |
- | - var (5) = 0;             |            +-------+------+
- | - var (9) = 0;             |<-----------+  Yes  |  No  |
- | - var (16) = number of     |            +-------+--+---+
- | view assoc. w/Ego;         |                       |
- | - Ego coords from var (2); |                       |
- | - var (2) = 0;             |                       |
- | - flag (2) - > 0;          |                       V
- | - flag (5) - > 1!!!!       |               +--------------+
- | - score < - var (3);       |               | Go to step 1 |
- +----------------------------+               +--------------+
-</programlisting></para>
 
 </sect2>
 </sect1>

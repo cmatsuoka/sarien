@@ -3,6 +3,8 @@
  */
 
 digraph agi {
+	size = "8,32";
+
 	subgraph cluster_0 {
 		label = "main loop";
 		color = blue;
@@ -18,7 +20,8 @@ digraph agi {
 			-> "set ego dir"
 			-> "update statusline"
 			-> "reset v4,v5,f5,f6,f12"
-			-> "update viewtable";
+			-> "update viewtable"
+			;
 
 		":main loop" [label="update timer"];
 	}
@@ -78,14 +81,16 @@ digraph agi {
 		label = "update viewtable";
 		color = "red";
 
+		"update position"	[shape=box];
+
 		":update viewtable" -> "update test";
 
-		"update test" -> "set loop"			[label="yes"];
-		"update test" -> "update active sprites"	[label="no"];
+		"update test" -> "set loop"		[label="yes"];
+		"update test" -> "update position"	[label="no"];
 
 		"set loop"
 			-> "update cycle timer"
-			-> "update active sprites"
+			-> "update position"
 			-> "reset land,water flags"
 			-> "$update viewtable";
 
@@ -95,10 +100,40 @@ digraph agi {
 		"$update viewtable" [label="end"];
 	}
 
+	subgraph cluster_4 {
+		label = "update position";
+		color = "orange";
+
+		":update position"
+			-> "v4 = v5 = v2 = 0"
+			-> "update pos test";
+
+		"update pos test" -> "update step time"	[label="yes"];
+		"update pos test" -> "$update position"	[label="no"];
+
+		"update step time"
+			-> "update object pos\n(if update flag is set)"
+			-> "check borders"
+			-> "check position\n(rollback if fails)"
+			-> "update v4,v5,v2\n(if touch border)"
+			-> "reset update flag"
+			-> "$update position";
+
+		"update pos test" [label="Anim,Upd,Draw"];
+
+		":update position" [label="update position"];
+		"$update position" [label="end"];
+	}
+
+	"check motions" -> ":check motions"	[style=dotted,dir=both];
+	"changepos" -> ":changepos"		[style=dotted,dir=both];
+	"update viewtable" -> ":update viewtable"[style=dotted,dir=both];
+	"update position" -> ":update position"	[style=dotted,dir=both];
+
 	"initialize flags" -> ":main loop";
 
 	"update viewtable"
 		-> "reset f2,f4"
 		-> ":main loop";
-
 }
+
