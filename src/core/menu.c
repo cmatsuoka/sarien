@@ -192,11 +192,19 @@ static int mouse_over_text (unsigned int line, unsigned int col, char *s)
 	if (mouse.x > (col + strlen (s)) * CHAR_COLS)
 		return FALSE;
 
+#ifdef FANCY_BOX
+	if ((mouse.y + 4) < line * (CHAR_LINES + 2))
+		return FALSE;
+
+	if ((mouse.y + 4) >= (line + 1) * (CHAR_LINES + 2))
+		return FALSE;
+#else
 	if (mouse.y < line * CHAR_LINES)
 		return FALSE;
 
-	if (mouse.y >= (line + 1) * CHAR_COLS)
+	if (mouse.y >= (line + 1) * CHAR_LINES)
 		return FALSE;
+#endif
 
 	return TRUE;
 }
