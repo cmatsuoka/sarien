@@ -107,9 +107,9 @@ cmd(reverse_cycle)	{ vt.cycle = CYCLE_REVERSE; vt.flags |= CYCLING; }
 cmd(set_dir)		{ vt.direction = _v[p1]; }
 cmd(get_dir)		{ _v[p1] = vt.direction; }
 cmd(get_room_v)		{ _v[p1] = object_get_location (p0); }
-cmd(put)		{ _D ("p0 = %d", p0); object_set_location (p0, p1); }
+cmd(put)		{ object_set_location (p0, _v[p1]); }
 cmd(put_v)		{ object_set_location (_v[p0], _v[p1]); }
-cmd(drop)		{ _D ("p0 = %d", p0); object_set_location (p0, 0); }
+cmd(drop)		{ object_set_location (p0, 0); }
 cmd(get)		{ object_set_location (p0, EGO_OWNED); }
 cmd(get_v)		{ object_set_location (_v[p0], EGO_OWNED); }
 cmd(parse)		{ dictionary_words (agi_sprintf(game.strings[p0])); }
@@ -554,7 +554,6 @@ cmd(graphics_mode) {
 
 cmd(status) {
 	inventory();
-/*	setvar (V_sel_item, 0xff); */
 }
 
 cmd(quit) {
