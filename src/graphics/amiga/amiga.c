@@ -25,6 +25,7 @@
 #include <hardware/cia.h>
 #include "sarien.h"
 #include "graphics.h"
+#include "keyboard.h"
 
 #define NUMCOLS 32
 #define CIAAPRA 0xBFE001
@@ -86,8 +87,12 @@ static int keymap[256] = {
 	0, 0,
 	KEY_ENTER,	/* 0x43 */
 	KEY_ENTER,	/* 0x44 */
-	KEY_ESC,	/* 0x45 */
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	KEY_ESCAPE,	/* 0x45 */
+	0, 0, 0, 0, 0, 0,
+	KEY_UP,		/* 0x4c */
+	KEY_DOWN,	/* 0x4d */
+	KEY_RIGHT,	/* 0x4e */
+	KEY_LEFT,	/* 0x4f */
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
