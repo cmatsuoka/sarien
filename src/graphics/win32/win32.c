@@ -196,7 +196,10 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		if (lParam & REPEATED_KEYMASK)
 			return 0;
 
-		switch ( key = (int) wParam ) {
+		/* Keycode debug:
+		 * report ("%02x\n", (int)wParam);
+		 */
+		switch (key = (int)wParam) {
 		case VK_SHIFT:
 			key = 0;
 			break;
@@ -263,8 +266,20 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		case VK_F10:
 			key = 0x4400;
 			break;
+		case VK_SNAPSHOT:
+			key = KEY_PRIORITY;
+			break;
 		case VK_ESCAPE:
 			key = 0x1b;
+			break;
+		case 0xbc:
+			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '<' : '.';
+			break;
+		case 0xbe:
+			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '>' : '.';
+			break;
+		case 0xbf:
+			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '?' : '/';
 			break;
 #ifdef USE_CONSOLE
 		case 192:

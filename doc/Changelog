@@ -20,6 +20,7 @@ Revision History
 	- AGI games can be loaded from the console
 	- picture viewer temporarily removed, it will be put back in
 	  a future release.
+	- Many win32 driver fixes
 
 0.5.3 (20010408) *unstable*
 	- starting code cleanup
