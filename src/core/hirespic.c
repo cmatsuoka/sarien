@@ -546,6 +546,8 @@ void fix_hires_picture ()
 		p++;
 		if ((*p & 0x0f) == 0x0f && (*b & 0x0f) != 0x0f)
 			*p = *b;
+		if ((*p >> 4) == 4 && (*b >> 4) != 4)
+			*p = *b;
 		p++; b++;
 	}
 }

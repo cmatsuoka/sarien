@@ -236,7 +236,7 @@
         </row>
         <row>
           <entry>OS/2 + XFree86</entry>
-          <entry>?</entry>
+          <entry>Martin Baechler</entry>
           <entry>gcc</entry>
           <entry>X11</entry>
           <entry>Dummy</entry>
