@@ -232,12 +232,12 @@ if (e) {
 
 		if ((vt_obj->flags & ON_WATER) && z != 3) {
 			_D (_D_CRIT "failed: must stay ON_WATER");
-			return -1;
+			return -2;
 		}
 
 		if ((vt_obj->flags & ON_LAND) && z != 4) {
 			_D (_D_CRIT "failed: must stay ON_LAND");
-			return -1;
+			return -2;
 		}
 	}
 
@@ -273,7 +273,7 @@ static void normal_motion (int em, int x, int y)
 	x += vt_obj->x_pos;
 	y += vt_obj->y_pos;
 
-	if (b == 0 && check_boundaries (em, x, y) < 0) {
+	if (b != -1 && check_boundaries (em, x, y) < 0) {
 		_D (_D_WARN "object %d bounded", em);
 		return;
 	}
