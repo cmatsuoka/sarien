@@ -34,7 +34,7 @@ ifeq ($(CORE_ARCH),win32)
 XTRA_OBJS = win32/winres.o
 endif
 
-../../bin/sarien$(EXE_SUFFIX): $(MAIN_FILE).o $(XTRA_OBJS) $(LIB)
+../../bin/sarien$(EXE_SUFFIX): $(MAIN_FILE).o $(XTRA_OBJS) $(LIB) ../../lib/libsarien.a
 	$(LD) $(LDFLAGS) $(XLDFLAGS) $(MAIN_FILE).o id.o $(XTRA_OBJS) $(XLIBS) $(X11LIBS) $(LIBS)
 
 graph: callgraph.ps

@@ -400,6 +400,7 @@ static void process_menu (int mc)
 			erase_both ();
 			show_pic ();
 			blit_both ();
+			commit_both ();
 			adjust_menu ();
 			break;
 		case iSize:

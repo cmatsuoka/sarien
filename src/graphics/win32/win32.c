@@ -24,6 +24,8 @@
 #include <process.h>
 
 #include "sarien.h"
+#include "sprite.h"
+#include "picture.h"
 #include "graphics.h"
 #include "keyboard.h"
 #include "console.h"
@@ -104,7 +106,7 @@ extern struct sarien_options opt;
 extern struct gfx_driver *gfx;
 
 static char *apptext = TITLE " " VERSION;
-static HDC  hDC;
+static HDC  hdc;
 static WNDCLASSEX wc;
 static int xsize, ysize;
 	
@@ -213,15 +215,29 @@ static void update_mouse_pos(int x, int y)
 LRESULT CALLBACK
 MainWndProc (HWND hwndMain, UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
-	HDC          hDC;
-	PAINTSTRUCT  ps;
-	int          h, w, key = 0, shift;
-	xyxy         *p = (xyxy *)lParam;
+	HDC hdc;
+	PAINTSTRUCT ps;
+	int h, w, key = 0, shift;
+	xyxy *p = (xyxy *)lParam;
 
 	switch (nMsg) {
 	case WM_COMMAND:
 		/* Handle menu options */
 		switch (LOWORD(wParam)) {
+		case ITEM_OPTIONS_RES_LOW:
+			opt.hires = FALSE;
+			erase_both ();
+			show_pic ();
+			blit_both ();
+			commit_both ();
+			break;
+		case ITEM_OPTIONS_RES_HIGH:
+			opt.hires = TRUE;
+			erase_both ();
+			show_pic ();
+			blit_both ();
+			commit_both ();
+			break;
 		case ITEM_HELP_ABOUT:
 			DialogBox (GetModuleHandle(NULL),
 				MAKEINTRESOURCE(DIALOG_ABOUT), hwndMain,
@@ -234,12 +250,12 @@ MainWndProc (HWND hwndMain, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_PUT_BLOCK:
-		hDC = GetDC (hwndMain);
+		hdc = GetDC (hwndMain);
 		w = p->x2 - p->x1 + 1;
 		h = p->y2 - p->y1 + 1;
 		EnterCriticalSection (&g_screen.cs);
 		StretchDIBits (
-			hDC,
+			hdc,
 			p->x1, p->y1, w, h,
 			p->x1, ysize - p->y2 - 1, w, h,
 			g_screen.screen_pixels,
@@ -247,7 +263,7 @@ MainWndProc (HWND hwndMain, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			DIB_RGB_COLORS,
 			SRCCOPY);
 		LeaveCriticalSection (&g_screen.cs);
-		ReleaseDC (hwndMain, hDC);
+		ReleaseDC (hwndMain, hdc);
 		break;
 
 	case WM_DESTROY:
@@ -255,10 +271,10 @@ MainWndProc (HWND hwndMain, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		exit (-1);
 
 	case WM_PAINT:
-		hDC = BeginPaint (hwndMain, &ps);
+		hdc = BeginPaint (hwndMain, &ps);
 		EnterCriticalSection(&g_screen.cs);
 		StretchDIBits(
-			hDC,
+			hdc,
 			0, 0, xsize, ysize,
 			0, 0, xsize, ysize,
 			g_screen.screen_pixels,
@@ -524,7 +540,8 @@ static int init_vidmode ()
 		CW_USEDEFAULT,
 		xsize + GetSystemMetrics (SM_CXFRAME),
 		ysize + GetSystemMetrics (SM_CYCAPTION) +
-			GetSystemMetrics (SM_CYFRAME),
+			GetSystemMetrics (SM_CYFRAME) +
+			GetSystemMetrics (SM_CYMENU),
 		NULL,
 		NULL,
 		NULL,
@@ -570,10 +587,10 @@ static int init_vidmode ()
 	}
 
 	/* Create the offscreen bitmap buffer */
-	hDC = GetDC (hwndMain);
-	g_screen.screen_bmp = CreateDIBSection (hDC, g_screen.binfo,
+	hdc = GetDC (hwndMain);
+	g_screen.screen_bmp = CreateDIBSection (hdc, g_screen.binfo,
 		DIB_RGB_COLORS, (void **)(&g_screen.screen_pixels), NULL, 0);
-	ReleaseDC (hwndMain, hDC);
+	ReleaseDC (hwndMain, hdc);
 
 	if (g_screen.screen_bmp == NULL || g_screen.screen_pixels == NULL) {
 		OutputDebugString ("win32.c: init_vidmode(): "
@@ -702,13 +719,13 @@ static void win32_new_timer ()
 static int set_palette (UINT8 *pal, int scol, int numcols)
 {
 	int          i;
-	HDC          hDC;
+	HDC          hdc;
 	LOGPALETTE   *palette;
 	PALETTEENTRY *entries;
 
-	hDC = GetDC(hwndMain);
+	hdc = GetDC(hwndMain);
 
-	if (GetDeviceCaps(hDC, PLANES) * GetDeviceCaps(hDC, BITSPIXEL) <= 8 ) {
+	if (GetDeviceCaps(hdc, PLANES) * GetDeviceCaps(hdc, BITSPIXEL) <= 8 ) {
 		palette = malloc(sizeof(*palette) + 16 * sizeof(PALETTEENTRY));
 		if (NULL == palette) {
 			OutputDebugString("malloc failed for palette");
@@ -718,7 +735,7 @@ static int set_palette (UINT8 *pal, int scol, int numcols)
 		palette->palVersion    = 0x300;
 		palette->palNumEntries = 32;   /* Yikes! */
 
-		GetSystemPaletteEntries(hDC, 0, 16, palette->palPalEntry);
+		GetSystemPaletteEntries(hdc, 0, 16, palette->palPalEntry);
 		g_hPalette = CreatePalette(palette);
 		entries = (PALETTEENTRY *)malloc(32 * sizeof(PALETTEENTRY));
 
@@ -730,11 +747,11 @@ static int set_palette (UINT8 *pal, int scol, int numcols)
 		}
 
 		SetPaletteEntries(g_hPalette, 0, 32, entries);
-		SelectPalette(hDC, g_hPalette, FALSE);
-		RealizePalette(hDC);
+		SelectPalette(hdc, g_hPalette, FALSE);
+		RealizePalette(hdc);
 	}
 
-	ReleaseDC(hwndMain, hDC);
+	ReleaseDC(hwndMain, hdc);
 
 	return err_OK;
 }
