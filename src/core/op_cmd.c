@@ -168,9 +168,8 @@ cmd(hide_mouse)		{ report ("hide.mouse\n"); }
 cmd(allow_menu)		{ report ("allow.menu\n"); }
 cmd(show_mouse)		{ report ("show.mouse\n"); }
 cmd(fence_mouse)	{ report ("fence.mouse\n"); }
-cmd(mouse_posn)		{ report ("mouse.posn\n"); }
 cmd(release_key)	{ report ("release.key\n"); }
-cmd(adj_ego_move_to_xy)	{ report ("adj.ego.move.to.xy\n"); }
+cmd(adj_ego_move_to_xy)	{ game.view_table[0].flags |= ADJ_EGO_XY; }
 
 
 cmd(call) {
@@ -730,6 +729,12 @@ cmd(set_pri_base) {
 	}
 }
 
+cmd(mouse_posn)	{
+	_v[p0] = WIN_TO_PIC_X(mouse.x);
+	_v[p1] = WIN_TO_PIC_Y(mouse.y);
+}
+
+
 static void (*agi_command[183])(UINT8 *) = {
 	NULL,				/* 0x00 */
 	cmd_increment,
@@ -992,5 +997,4 @@ void execute_agi_command (UINT8 op, UINT8 *p)
 {
 	agi_command[op](p);
 }
-
 

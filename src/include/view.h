@@ -91,11 +91,12 @@ struct vt_entry {
 #define MOTION		0x0080
 #define ON_WATER	0x0100
 #define IGNORE_OBJECTS	0x0200
-#define UPDATE_POS	0x0400		/* ?!? */
+#define UPDATE_POS	0x0400
 #define ON_LAND		0x0800
-#define DONTUPDATE	0x1000		/* ?!? */
+#define DONTUPDATE	0x1000
 #define FIX_LOOP	0x2000
-#define DIDNT_MOVE	0x4000		/* ?!? */
+#define DIDNT_MOVE	0x4000
+#define	ADJ_EGO_XY	0x8000
 	UINT16		flags;
 
 	UINT8		parm1;

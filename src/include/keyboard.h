@@ -37,6 +37,9 @@ extern "C"{
 #define KEY_HOME	0x352F  	/* keypad / */
 #define KEY_END		0x372A  	/* keypad * */
 
+#define BUTTON_LEFT	0xF000		/* Left mouse button */
+#define BUTTON_RIGHT	0xF100		/* Right mouse button */
+
 #define KEY_SCAN(k)	(k >> 8)
 #define KEY_ASCII(k)	(k & 0xff)
 

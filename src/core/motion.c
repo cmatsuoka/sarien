@@ -23,11 +23,6 @@ static int check_step (int delta, int step)
 	return (-step >= delta) ? 0 : (step <= delta) ? 2 : 1;
 }
 
-static int get_direction (int x, int y, int x0, int y0, int s)
-{
-	return dir_table [check_step(x0 - x, s) + 3 * check_step(y0 - y, s)];
-}
-
 static int check_block (int x, int y)
 {
 	if (x <= game.block.x1 || x >= game.block.x2)
@@ -222,8 +217,10 @@ void check_all_motions ()
  */
 void in_destination (struct vt_entry *v)
 {
-	v->step_size = v->parm3;
-	setflag (v->parm4, TRUE);
+	if (v->motion == MOTION_MOVE_OBJ) {
+		v->step_size = v->parm3;
+		setflag (v->parm4, TRUE);
+	}
 	v->motion = MOTION_NORMAL;
 	if_is_ego_view (v)
 		game.player_control = TRUE;
@@ -231,12 +228,17 @@ void in_destination (struct vt_entry *v)
 
 /**
  * Wrapper for static function motion_moveobj().
- * This function is used by cmd_move_object() for the first motion cycle
+ * This function is used by cmd_move_object() in the first motion cycle
  * after setting the motion mode to MOTION_MOVE_OBJ.
  */
 void move_obj (struct vt_entry *v)
 {
 	motion_moveobj (v);
+}
+
+int get_direction (int x, int y, int x0, int y0, int s)
+{
+	return dir_table [check_step(x0 - x, s) + 3 * check_step(y0 - y, s)];
 }
 
 /* end: motion.c */

@@ -276,6 +276,20 @@ static void process_events ()
 					event.xexpose.height);
 			}
 			break;
+		case ButtonPress:
+			key = event.xbutton.button == Button1 ?
+				BUTTON_LEFT : BUTTON_RIGHT;
+			mouse.button = TRUE;
+			mouse.x = event.xbutton.x / opt.scale;
+			mouse.y = event.xbutton.y / opt.scale;
+			if (opt.fixratio)
+				mouse.y = mouse.y * 5 / 6;
+			_D (_D_WARN "ButtonPress %04x @ %d,%d",
+				key, mouse.x, mouse.y);
+			break;
+		case ButtonRelease:
+			mouse.button = FALSE;
+			break;
 		case KeyPress:
 			XLookupString (&event.xkey, buf, 1, &k, NULL);
 			switch (key = k) {
@@ -552,6 +566,7 @@ static int init_vidmode ()
 
 	attribute_mask = CWEventMask;
 	attributes.event_mask |= ExposureMask | KeyPressMask | KeyReleaseMask;
+	attributes.event_mask |= ButtonPressMask | ButtonReleaseMask;
 
 	window = XCreateWindow (
 		display, root, 0, 0, GFX_WIDTH * scale,
@@ -824,7 +839,6 @@ int init_machine (int argc, char **argv)
 
 	return err_OK;
 }
-
 
 int deinit_machine (void)
 {

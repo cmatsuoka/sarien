@@ -17,6 +17,8 @@
 #include "menu.h"
 
 #define TICK_SECONDS 20
+
+struct mouse mouse;
  
 /**
  * Set up new room.
@@ -215,9 +217,9 @@ int main_cycle ()
 		if (kascii) setvar (V_key, kascii);
 		switch (game.input_mode) {
 		case INPUT_NORMAL:
-			if (key == 0)
-				break;
 			if (!handle_controller (key)) {
+				if (key == 0)
+					break;
 				handle_keys (key);
 				/* commented out to close bug #438872
 				 * if (key) game.keypress = key;

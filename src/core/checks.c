@@ -188,7 +188,6 @@ void update_position ()
 		if (~v->flags & UPDATE_POS) {
 			dir = v->direction;
 			step = v->step_size;
-			
 			x += step * dir_table_x[dir];
 			y += step * dir_table_y[dir];
 		}

@@ -21,6 +21,8 @@ extern "C"{
 #include "logic.h"
 #include "sound.h"
 
+#define WIN_TO_PIC_X(x) ((x) / 2)
+#define WIN_TO_PIC_Y(y) ((y) < 8 ? 999 : (y) >= (8 + _HEIGHT) ? 999 : (y) - 8)
 
 /**
  * AGI variables.

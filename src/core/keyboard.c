@@ -121,10 +121,22 @@ int do_poll_keyboard ()
 
 int handle_controller (int key)
 {
+	struct vt_entry *v = &game.view_table[0];
 	int i;
+
+	if (game.player_control && v->flags & ADJ_EGO_XY) {
+		v->direction = get_direction (v->x_pos, v->y_pos,
+			WIN_TO_PIC_X(mouse.x), WIN_TO_PIC_Y(mouse.y),
+			v->step_size);
+
+		if (v->direction == 0)
+			in_destination (v);
+	}
 
 	if (key == 0)
 		return FALSE;
+
+	_D (_D_WARN "key = %04x", key);
 
 	for (i = 0; i < MAX_DIRS; i++) {
 		if (game.ev_scan[i].data == KEY_SCAN(key) && KEY_ASCII(key) == 0) {
@@ -152,11 +164,15 @@ int handle_controller (int key)
 		case KEY_DOWN_RIGHT: d = 4; break;
 		case KEY_UP_LEFT:    d = 8; break;
 		case KEY_DOWN_LEFT:  d = 6; break;
+		case BUTTON_LEFT:
+			v->flags |= ADJ_EGO_XY;
+			return TRUE;
 		}
 
+		v->flags &= ~ADJ_EGO_XY;
+
 		if (d || key == KEY_STATIONARY) {
-			game.view_table[0].direction = 
-				game.view_table[0].direction == d ? 0 : d;
+			v->direction = v->direction == d ? 0 : d;
 			return TRUE;
 		}
 	}
@@ -323,7 +339,8 @@ int wait_key ()
 		poll_timer ();		/* msdos driver -> does nothing */
 		key = do_poll_keyboard ();
 		if (!console_keyhandler (key)) {
-			if (key == KEY_ENTER || key == KEY_ESCAPE)
+			if (key == KEY_ENTER || key == KEY_ESCAPE ||
+				key == BUTTON_LEFT)
 				break;
 		}
 		console_cycle ();
@@ -349,5 +366,6 @@ int wait_any_key ()
 	}
 	return key;
 }
+
 
 

@@ -434,10 +434,11 @@ void write_status ()
 
 #ifdef USE_CONSOLE
 	if (debug.statusline) {
-		print_status ("%3d(%03d) %3d,%3d                        ",
+		print_status ("%3d(%03d) %3d,%3d(%3d,%3d)               ",
 			getvar (0), getvar (1),
 			game.view_table[0].x_pos,
-			game.view_table[0].y_pos);
+			game.view_table[0].y_pos,
+			WIN_TO_PIC_X(mouse.x), WIN_TO_PIC_Y(mouse.y));
 		return;
 	}
 #endif

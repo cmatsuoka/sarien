@@ -239,6 +239,16 @@ void	decrypt		(UINT8 *mem, int len);
 void	release_sprites	(void);
 
 int main_cycle (void);
+int view_pictures (void);
+
+struct mouse {
+	int button;
+	int x;
+	int y;
+};
+
+
+extern struct mouse mouse;
 
 
 
