@@ -40,7 +40,7 @@ static int key_control = 0;
 static int key_alt = 0;
 static SDL_Surface *screen;
 
-SDL_Color color[16];
+SDL_Color color[32];
 
 UINT32 clock_ticks;
 UINT32 clock_count;
@@ -194,7 +194,6 @@ static void process_events ()
 			if (key)
 				key_enqueue (key);
 
-			_D ((": key = 0x%02x ('%c')", key, isprint (key) ? key : '?'));
 			break;
 		case SDL_KEYUP:
 			switch (event.key.keysym.sym) {
@@ -281,7 +280,7 @@ static int init_vidmode (void)
 
 static int deinit_vidmode (void)
 {
-	_D (("()"));
+	_D ("()");
 	SDL_Quit ();
 	screen_mode = TXT_MODE;
 

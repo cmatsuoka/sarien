@@ -32,6 +32,7 @@ fi
 case "${target_os}" in
 beos*)
 	CFLAGS="$CFLAGS -I/boot/develop/tools/gnupro/include"
+	with_sdl="yes"
 	;;
 qnx*)
 	AC_CHECK_HEADERS(Pt.h Ph.h)

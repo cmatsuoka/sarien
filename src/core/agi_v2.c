@@ -47,7 +47,7 @@ static int agi_v2_detect_game (char *gn)
 	int ec = err_Unk;
 	char *path;
 
-	strncpy (game.dir, gn, 8);
+	strncpy (game.dir, gn, MAX_PATH);
 	_D (_D_WARN "game.dir = %s", game.dir);
 
 	path = fixpath (NO_GAMEDIR, LOGDIR);

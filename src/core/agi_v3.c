@@ -51,7 +51,7 @@ int agi_v3_detect_game (char *gn)
 	int l;
 
 	_D ("(\"%s\")", gn);
-	strncpy (game.dir, gn, 8);
+	strncpy (game.dir, gn, MAX_PATH);
 
 	strcpy (x, "*vol.0");
 	path = fixpath (GAMEDIR, x);
