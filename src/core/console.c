@@ -42,7 +42,6 @@ struct console_command {
 struct sarien_console console;
 struct sarien_debug debug;
 
-extern struct agi_loader *loader;
 extern struct agi_object *objects;
 
 static struct console_command *ccmd_head = NULL;
@@ -191,18 +190,13 @@ static void ccmd_ver ()
 
 static void ccmd_agiver ()
 {
-	switch (loader->int_version >> 12) {
-	case 2:
-		report ("%x.%03x\n",
-			(int)(loader->int_version >> 12) & 0xf,
-			(int)(loader->int_version) & 0xfff);
-		break;
-	case 3:
-		report ("%x.002.%03x\n",
-			(int)(loader->int_version >> 12) & 0xf,
-			(int)(loader->int_version) & 0xfff);
-		break;
-	}
+	int ver, maj, min;
+
+	ver = agi_get_release ();
+	maj = (ver >> 12) & 0xf;
+	min = ver & 0xfff;
+
+	report (maj == 2 ? "%x.%03x\n" : "%x.002.%03x\n", maj, min);
 }
 
 

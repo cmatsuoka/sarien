@@ -37,35 +37,12 @@ extern int optind;
 extern struct sarien_console console;
 extern UINT8 *font, font_english[];
 
-extern struct agi_loader agi_v2;
-extern struct agi_loader agi_v3;
-extern struct agi_loader *loader;
-
 struct sarien_options opt;
 struct game_id_list game_info;
 
 #ifndef _TRACE
 INLINE void _D (char *s, ...) { }
 #endif
-
-static int detect_game (char *gn)
-{
-	int ec = err_OK;
-
-	_D ("(gn = %s)", gn);
-	if (gn == NULL)		/* assume current directory */
-		gn = get_current_directory ();
-
-	loader = &agi_v2;
-	ec = loader->detect_game (gn);
-
-	if (ec != err_OK) {
-		loader = &agi_v3;
-		ec = loader->detect_game (gn);
-	}
-
-	return ec;
-}
 
 
 static int view_pictures ()
@@ -100,7 +77,7 @@ static int view_pictures ()
 		}
 		resnum = pic;
 
-		if ((ec = loader->load_resource (rPICTURE, resnum)) != err_OK)
+		if ((ec = agi_load_resource (rPICTURE, resnum)) != err_OK)
 			continue;
 
 		sprintf ((char*)x, "Picture:%3li     [drawing]     Show: %3s",
@@ -169,7 +146,7 @@ update_statusline:
     			}
     		}
 next_pic:
-    		loader->unload_resource (rPICTURE, resnum);
+    		agi_unload_resource (rPICTURE, resnum);
     		resnum = pic;
 	}
 
@@ -237,7 +214,6 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 	//clock_count = 0;
 	//clock_ticks = 0;
 
-	loader = NULL;
 	font = font_english;
 
 	if (opt.gamerun == gLIST_GAMES) {
@@ -245,7 +221,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 		goto bail_out;
 	}
 
-	ec = detect_game (argc > 1 ? argv[optind] : get_current_directory ());
+	ec = agi_detect_game (argc > 1 ? argv[optind] : get_current_directory ());
 	if (ec != err_OK) {
 		ec = err_InvalidAGIFile;
 		goto bail_out;
@@ -264,7 +240,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 		goto bail_out;
 	}
 
-	printf("AGI v%i game detected.\n", loader->version);
+	printf("AGI v%i game detected.\n", agi_version ());
 
 	if (opt.gamerun == gRUN_GAME || opt.gamerun == gVIEW_PICTURES) {
 		if (init_video () != err_OK) {

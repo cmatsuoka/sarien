@@ -15,7 +15,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern struct agi_loader *loader;
 extern struct sarien_options opt;
 
 /*
@@ -142,7 +141,7 @@ static UINT32 match_version (UINT32 crc)
 
 int v2id_game ()
 {
-	int ec = err_OK, y;
+	int ec = err_OK, y, ver;
 	UINT32 len, c, crc;
 	UINT8 *buff;
 	FILE *fp;
@@ -165,23 +164,24 @@ int v2id_game ()
 	}
 	free(buff);
 
-	loader->int_version = match_version (crc);
+	ver = match_version (crc);
+	agi_set_release (ver);
 
-	if (loader->int_version == 0) {
+	if (ver == 0) {
 		printf("Unknown Sierra Game Version: %08lx\n", crc);
-			loader->int_version=0x2917;
+		agi_set_release (0x2917);
 	}
 
 	/* setup the differences in the opcodes and other bits in the
 	 * AGI v2 specs
 	 */
 	if (opt.emuversion)
-		loader->int_version = opt.emuversion;
+		agi_set_release (opt.emuversion);
 
 	if (opt.agds)
-		loader->int_version=0x2440;/* ALL AGDS games built for 2.440 */
+		agi_set_release (0x2440);/* ALL AGDS games built for 2.440 */
 
-	switch(loader->int_version) {
+	switch(agi_get_release ()) {
 	case 0x2089:
 		logic_names_cmd[0x86].num_args=0;	/* quit: 0 args */
 	case 0x2272:
@@ -213,7 +213,7 @@ int v2id_game ()
 
 int v3id_game ()
 {
-	int ec = err_OK, y;
+	int ec = err_OK, y, ver;
 	UINT32 len, c, crc;
 	UINT8 *buff;
 	FILE *fp;
@@ -251,18 +251,18 @@ int v3id_game ()
 
 	free (buff);
 
-	loader->int_version = match_version (crc);
+	ver = match_version (crc);
+	agi_set_release (ver);
 
-	if (loader->int_version == 0) {
+	if (ver == 0) {
 		printf("Unknown Sierra game version: %08lx\n", crc);
-		loader->int_version = 0x3149;
+		agi_set_release (ver = 0x3149);
 	}
 
-
 	if (opt.emuversion)
-		loader->int_version = opt.emuversion;
+		agi_set_release (ver = opt.emuversion);
 
-	switch(loader->int_version) {
+	switch(ver) {
 	case 0x3086:
 		logic_names_cmd[0xAD].num_args = 1;	/* 173 : 1 args */
 		break;

@@ -29,7 +29,6 @@
 extern struct agi_view_table view_table[];
 extern struct agi_logic logics[];
 extern struct agi_view views[];
-extern struct agi_loader *loader;
 
 
 static void new_room_resources ()
@@ -42,10 +41,10 @@ static void new_room_resources ()
 		 * be freed (and now freeing the view resources will corrupt
 		 * the program anyway)
 		 *
-		 * loader->unload_resource(rVIEW, x);
-		 * loader->unload_resource(rPICTURE, x);
+		 * agi_unload_resource(rVIEW, x);
+		 * agi_unload_resource(rPICTURE, x);
 		 */
-		loader->unload_resource(rLOGIC, x);
+		agi_unload_resource(rLOGIC, x);
 	}
 
 	for (x = 0; x < MAX_VIEWTABLE; x++)

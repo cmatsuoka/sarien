@@ -27,11 +27,14 @@
 #include "console.h"
 
 
-struct agi_loader *loader;		/* loader */
+static struct agi_loader *loader;		/* loader */
 
 struct agi_game game;
 
 volatile UINT32	msg_box_secs2;		/* message box timeout in sec/2 */
+
+extern struct agi_loader agi_v2;
+extern struct agi_loader agi_v3;
 
 extern struct sarien_options opt;
 extern struct agi_picture pictures[];
@@ -39,6 +42,7 @@ extern struct agi_logic logics[];
 extern struct agi_view views[];
 extern struct agi_object *objects;
 extern UINT8 *font, font_english[], font_russian[];
+
 
 
 int agi_init ()
@@ -204,4 +208,54 @@ int agi_deinit ()
 
 	return ec;
 }
+
+
+int agi_detect_game (char *gn)
+{
+	int ec = err_OK;
+
+	_D ("(gn = %s)", gn);
+	if (gn == NULL)		/* assume current directory */
+		gn = get_current_directory ();
+
+	loader = &agi_v2;
+	ec = loader->detect_game (gn);
+
+	if (ec != err_OK) {
+		loader = &agi_v3;
+		ec = loader->detect_game (gn);
+	}
+
+	return ec;
+}
+
+
+int agi_version ()
+{
+	return loader->version;
+}
+
+
+int agi_get_release ()
+{
+	return loader->int_version;
+}
+
+
+void agi_set_release (int n)
+{
+	loader->int_version = n;
+}
+
+
+int agi_load_resource (int r, int n)
+{
+	return loader->load_resource (r, n);
+}
+
+
+int agi_unload_resource (int r, int n)
+{
+	return loader->unload_resource (r, n);
+};
 

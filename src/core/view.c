@@ -18,12 +18,12 @@
 #include "picture.h"
 #include "console.h"
 
-extern struct agi_loader *loader;
 
 struct agi_view_table view_table[MAX_VIEWTABLE];/* 32 animated objects/views */
 struct agi_view	views[MAX_DIRS];		/* max views */
 
 
+/* FIXME: ugh. any way to eliminate this kludge? */
 UINT8 old_prio = 0;
 
 
@@ -123,7 +123,7 @@ void reset_views ()
 	int i;
 
 	for (i = 0; i < MAX_DIRS; i++) 
-		loader->unload_resource (rVIEW, i);
+		agi_unload_resource (rVIEW, i);
 
 	for (i = 0; i < MAX_VIEWTABLE; i++)
 		reset_view (i);
@@ -178,7 +178,7 @@ void add_view_table (int entry, int vw)
 	/* To prevent Larry explosion in room 11 after hooker */
 	if (~game.dir_view[vw].flags & RES_LOADED) {
 		report ("Parachute deployed: view %d not loaded\n", vw);
-		loader->load_resource (rVIEW, vw);
+		agi_load_resource (rVIEW, vw);
 	}
 
 	if (view_table[entry].current_view != vw || getflag(F_new_room_exec)) {	

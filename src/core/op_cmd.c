@@ -75,7 +75,6 @@
 int open_dialogue = 0;		/* fix this properly too */
 static int window_nonblocking = 0;	/* Yuck! Remove it later! */
 
-extern struct agi_loader *loader;
 extern struct agi_object *objects;
 extern struct agi_logic logics[];
 extern struct agi_view views[];
@@ -127,14 +126,14 @@ void cmd_call (UINT8 log)
 void cmd_load_view (UINT8 view)
 {
 	_D("(view = %d)", view);
-	loader->load_resource (rVIEW, view);
+	agi_load_resource (rVIEW, view);
 }
 
 
 void cmd_load_logic (UINT8 log)
 {
 	_D("(logic = %d", log);
-	loader->load_resource (rLOGIC, log);
+	agi_load_resource (rLOGIC, log);
 #ifdef DISABLE_COPYPROTECTION
 	break_copy_protection (log);
 #endif
@@ -843,7 +842,7 @@ void cmd_status_line_off ()
 void cmd_load_sound (UINT8 s)
 {
 	_D ("(sound = %d)", s);
-	loader->load_resource (rSOUND, s);
+	agi_load_resource (rSOUND, s);
 }
 
 
@@ -1003,7 +1002,7 @@ void cmd_show_obj (UINT8 n)
 
 	report ("TEST: cmd_show_obj(%i)\n", n);
 
-	loader->load_resource (rVIEW, n);
+	agi_load_resource (rVIEW, n);
 	if (! (c = &views[n].loop[0].cel[0]))
 		return;
 	
@@ -1420,7 +1419,7 @@ void cmd_show_pri_screen ()
 
 void cmd_discard_view (UINT8 vw)
 {
-	loader->unload_resource (rVIEW, vw);
+	agi_unload_resource (rVIEW, vw);
 }
 
 
@@ -1542,7 +1541,7 @@ void cmd_rand_num (UINT8 n0, UINT8 n1, UINT8 var)
 void cmd_load_pic (UINT8 pic)
 {
 	_D("(pic = %d)", pic);
-	loader->load_resource (rPICTURE, getvar (pic));
+	agi_load_resource (rPICTURE, getvar (pic));
 }
 
 
@@ -1594,30 +1593,19 @@ void cmd_version ()
     		"\n"
        		"                                   \n\n"
        		" Emulating Sierra AGI v%x.002.%03x \n";
-	char verX_msg[]=
-    		"\n"
-    		"                              \n\n"
-        	"    Emulating Sierra AGI v%x  \n";
 	char *p, *q;
+	int ver, maj, min;
 
-	switch (loader->version) {
-	case 2:
-	    	q = ver2_msg;
-        	break;
-        case 3:
-        	q = ver3_msg;
-        	break;
-        default:
-        	q = verX_msg;
-        	break;
-	}
+	ver = agi_get_release ();
+	maj = (ver >> 12) & 0xf;
+	min = ver & 0xfff;
+
+	q = ver == 2 ? ver2_msg : ver3_msg;
 
 	p = strchr (q+1, '\n');
 	strncpy (q+1 + ((p-q>0 ? p-q : 1)/4), ver_msg, strlen (ver_msg));
 
-	message_box ((UINT8*)q,
-		 (int) (loader->int_version >> 12) & 0xF,
-		 (int) (loader->int_version) & 0xFFF);
+	message_box (q, maj, min);
 }
 
 
@@ -2201,7 +2189,7 @@ void run_logic (int lognum)
 
 	/* If logic not loaded, load it */
 	if (~game.dir_logic[lognum].flags & RES_LOADED) {
-		loader->load_resource (rLOGIC, lognum);
+		agi_load_resource (rLOGIC, lognum);
 #ifdef DISABLE_COPYPROTECTION
 		break_copy_protection (lognum);
 #endif
