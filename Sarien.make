@@ -35,7 +35,7 @@ SrcFiles        =  ¶
 				  :src:core:keyboard.c ¶
 				  :src:core:logic.c ¶
 				  :src:core:lzw.c ¶
-				  :src:core:main.c ¶
+				  :src:core:macos:main.c ¶
 				  :src:core:menu.c ¶
 				  :src:core:motion.c ¶
 				  :src:core:objects.c ¶
@@ -154,7 +154,7 @@ Sarien  ÄÄ  {ObjFiles-68K} {LibFiles-68K} {¥MondoBuild¥}
 "{ObjDir}keyboard.c.o"  Ä  :src:core:keyboard.c
 "{ObjDir}logic.c.o"  Ä  :src:core:logic.c
 "{ObjDir}lzw.c.o"  Ä  :src:core:lzw.c
-"{ObjDir}main.c.o"  Ä  :src:core:main.c
+"{ObjDir}main.c.o"  Ä  :src:core:macos:main.c
 "{ObjDir}menu.c.o"  Ä  :src:core:menu.c
 "{ObjDir}motion.c.o"  Ä  :src:core:motion.c
 "{ObjDir}objects.c.o"  Ä  :src:core:objects.c

@@ -136,7 +136,7 @@ int main (int argc, char *argv[])
 	}
 #endif
 
-#if !defined (__MSDOS__) && !defined (__MPW__)
+#if !defined (__MSDOS__)
 	/* printf() breaks GCC 3.0 build */
 	fprintf (stdout,
 TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
@@ -160,7 +160,6 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 	if (!opt.gfxhacks)
 		report ("Graphics driver hacks disabled (if any)\n");
 
-#ifndef __MPW__
 	_D ("Detect game");
 	if (agi_detect_game (argc > 1 ? argv[optind] :
 		get_current_directory ()) == err_OK)
@@ -174,7 +173,6 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 		}
 		game.ver = -1;	/* Don't display the conf file warning */
 	}
-#endif
 
 	_D ("Init sound");
 	init_sound ();

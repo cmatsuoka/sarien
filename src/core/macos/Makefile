@@ -2,7 +2,7 @@
 
 XCFLAGS	= -I ../../include
 OBJS	=
-DFILES	= Makefile portdefs.h library.c
+DFILES	= Makefile main.c portdefs.h library.c
 CFILES	=
 DDIRS	=
 LIB	= ../../../lib/libsarien.a
