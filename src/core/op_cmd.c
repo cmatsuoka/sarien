@@ -653,17 +653,30 @@ cmd(prevent_input) {
 }
 
 cmd(get_string) {
+	int tex, row, col;
+
 	_D ("%d %d %d %d %d", p0, p1, p2, p3, p4);
+
+	tex = p1 - 1;
+	row = p2;
+	col = p3;
+
+	/* Workaround for SQLC bug.
+	 * See bug #792125 for details
+	 */
+	if (row > 24) row = 24;
+	if (col > 39) col = 39;
+
 	new_input_mode (INPUT_GETSTRING);
 
-	if (cur_logic->texts != NULL && cur_logic->num_texts >= (p1 - 1)) {
-		int len = strlen (cur_logic->texts[p1 - 1]);
-		print_text (cur_logic->texts[p1 - 1], 0, p3,
-			p2, len, game.color_fg, game.color_bg);
-		get_string (p3 + len - 1, p2, p4, p0);
+	if (cur_logic->texts != NULL && cur_logic->num_texts >= tex) {
+		int len = strlen (cur_logic->texts[tex]);
+		print_text (cur_logic->texts[tex], 0, col,
+			row, len, game.color_fg, game.color_bg);
+		get_string (col + len - 1, row, p4, p0);
 
 		/* SGEO: display input char */
-		print_character ((p3 + len), p2, game.cursor_char,
+		print_character ((col + len), row, game.cursor_char,
 			game.color_fg, game.color_bg);
 	}
 

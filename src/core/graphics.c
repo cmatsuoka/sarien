@@ -347,8 +347,7 @@ void print_character (int x, int y, char c, int fg, int bg)
 	y *= CHAR_LINES;
 
 	put_text_character (0, x, y, c, fg, bg);
-	/* CM: the extra pixel in y is for the underline cursor */
-	flush_block (x, y, x + CHAR_COLS - 1, y + CHAR_LINES); 
+	flush_block (x, y, x + CHAR_COLS - 1, y + CHAR_LINES - 1); 
 }
 
 /**
