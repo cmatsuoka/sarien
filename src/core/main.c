@@ -68,6 +68,7 @@ int main (int argc, char *argv[])
 	if (opt.gamerun == GAMERUN_CRC) {
 		agi_detect_game (argc > 1 ? argv[optind] :
 			get_current_directory ());
+		printf ("CRC: 0x%x (Ver 0x%x)\n", game.crc, game.ver);
 		exit (0);
 	}
 

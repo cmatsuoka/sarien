@@ -1,11 +1,11 @@
-/*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+/* Sarien - A Sierra AGI resource interpreter engine
+ * Copyright (C) 1999-2003 Stuart George and Claudio Matsuoka
  *
- *  $Id$
+ * $Id$
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; see docs/COPYING for further details.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; see docs/COPYING for further details.
  */
 
 #ifndef PALMOS
@@ -232,7 +232,7 @@ int v3id_game ()
 
 	buff = malloc (8192);
 
-	for (crc = 0, y = 0; fn[y][0]!=0x0; y++) {
+	for (crc = 0, y = 0; fn[y][0] != 0x0; y++) {
 		path = fixpath (NO_GAMEDIR, fn[y]);
 		if ((fp = fopen (path, "rb")) != NULL) {
 			len = 1;
@@ -246,7 +246,7 @@ int v3id_game ()
 		}
 	}
 
-	/* no do the directory file */
+	/* now do the directory file */
 
 	path = fixpath (GAMEDIR, DIR_);
 

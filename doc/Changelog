@@ -43,6 +43,7 @@ Revision History
 	- fixed keyboard variables handling (closes: #763577)
 	- fixed X11 keyboard translation to honour numlock (closes: #767422)
 	- fixed broken toggle.v AGI command
+	- fixed -C option to actually show the game CRC
 	- added "trigger" command to the interpreter console
 	- added CGA palette/color dithering emulation
 	- added CGA video card support for PC DOS
