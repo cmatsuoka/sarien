@@ -28,8 +28,6 @@
  * echo line
  * cancel line
  * menu input
- * save
- * load
  * init disk
  * trace on
  * trace info
@@ -1309,20 +1307,13 @@ void cmd_set_string (UINT8 logic, UINT8 str, UINT8 txt)
 
 void cmd_save_game ()
 {
-	report ("Debug: save.game ()\n");
-	save_game ("savetest.iff", "Save game test");
-	message_box ("Game saved.");
+	savegame_dialog ();
 }
 
 
 void cmd_load_game ()
 {
-	/* CM: we'll implemente the browser later */
-	if (load_game ("savetest.iff") == err_OK)
-		message_box ("Gamed loaded.");
-	else
-		message_box ("Error loading game.");
-	redraw_sprites ();
+	loadgame_dialog ();
 }
 
 

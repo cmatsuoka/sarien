@@ -95,11 +95,6 @@ void clean_input ()
 }
 
 
-/* FR:
- * The capture of the keys is done inside main_cycle()
- * It's safe to return last_sentence because all the functions who call
- * get_string copy the result into another buffer
- */
 void get_string (int x, int y, int len, int str)
 {
 	new_input_mode (INPUT_GETSTRING);

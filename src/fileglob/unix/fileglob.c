@@ -84,49 +84,15 @@ static char *match (char *p, int f)
 
 int file_exists (char *fname)
 {
-#if 1
 	_D ("(fname=%s)", fname);
 	return match (fname, 0) != NULL;
-#else
-	int rc;
-	glob_t pglob;
-
-	_D ("(\"%s\")", fname);
-	rc = glob (fname, GLOB_ERR | GLOB_NOSORT, NULL, &pglob);
-	if (!rc && pglob.gl_pathc <= 0)
-		rc = -1;
-
-	globfree (&pglob);
-
-	return rc;
-#endif
 }
 
 
 char* file_name (char *fname)
 {
-#if 1
 	_D ("(fname=%s)", fname);
 	return match (fname, 0);
-#else
-	int rc;
-	glob_t pglob;
-	char *s, *r = NULL;
-
-	_D ("(\"%s\")", fname);
-	rc = glob (fname, GLOB_ERR | GLOB_NOSORT, NULL, &pglob);
-	if (!rc) {
-		r = strdup (pglob.gl_pathv[0]);
-		_D ("found name \"%s\"", r);
-	}
-
-	globfree (&pglob);
-
-	if ((s = strrchr (r, '/')))
-		r = s + 1;
-
-	return r;
-#endif
 }
 
 

@@ -15,6 +15,9 @@
 extern "C"{
 #endif
 
+int savegame_dialog (void);
+int loadgame_dialog (void);
+
 int save_game (char *, char *);
 int load_game (char *);
 

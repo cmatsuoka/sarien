@@ -10,13 +10,17 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include "sarien.h"
 #include "agi.h"
 #include "keyboard.h"
+#include "text.h"
 #include "view.h"
 #include "opcodes.h"
 #include "savegame.h"
+#include "gfx_agi.h"
 #include "iff.h"
 
 static int loading_ok;
@@ -358,5 +362,74 @@ int load_game (char *s)
 	game.exit_all_logics = TRUE;
 
 	return loading_ok ? err_OK : err_BadFileOpen;
+}
+
+
+int savegame_dialog ()
+{
+	char *home, path[MAX_PATH];
+	char *desc;
+	int slot = 0;
+
+	save_screen ();
+	redraw_sprites ();
+
+	home = getenv (HOMEDIR);
+
+	textbox (
+		"Multi-slot savegames are under development and"
+		"will be available in future versions of Sarien."
+		, -1, -1, -1);
+	wait_key ();
+ 	desc = "Save game test";
+
+	snprintf (path, MAX_PATH, "%s/" DATADIR "/", home);
+	mkdir (path, 0755);
+	snprintf (path, MAX_PATH, "%s/" DATADIR "/%s/", home, game.id);
+	_D (_D_WARN "path is [%s]", path);
+	mkdir (path, 0711);
+
+	snprintf (path, MAX_PATH, "%s/" DATADIR "/%s/%08d.iff",
+		home, game.id, slot);
+	_D (_D_WARN "file is [%s]", path);
+	
+	save_game (path, desc);
+
+	release_sprites ();
+	restore_screen ();
+	message_box ("Game saved.");
+
+	return err_OK;
+}
+
+
+int loadgame_dialog ()
+{
+	char *home, path[MAX_PATH];
+	int slot = 0;
+	int rc;
+
+	save_screen ();
+	redraw_sprites ();
+
+	home = getenv (HOMEDIR);
+
+	snprintf (path, MAX_PATH, "%s/" DATADIR "/", home);
+	mkdir (path, 0755);
+	snprintf (path, MAX_PATH, "%s/" DATADIR "/%s/", home, game.id);
+	mkdir (path, 0600);
+	
+	redraw_sprites ();
+	release_sprites ();
+	restore_screen ();
+
+	snprintf (path, MAX_PATH, "%s/" DATADIR "/%s/%08d.iff",
+		home, game.id, slot);
+	if ((rc = load_game (path)) == err_OK)
+		message_box ("Gamed loaded.");
+	else
+		message_box ("Error loading game.");
+
+	return rc;
 }
 

@@ -136,6 +136,7 @@ int agi_init ()
 		}
 	}
 
+#if 0
 	/* if forced, load all cacheable objects */
 	if (opt.forceload && ec == err_OK) {
 		for(i = 0; i < MAX_DIRS; i++) {
@@ -159,6 +160,8 @@ int agi_init ()
 		}
 		printf("\n");
 	}
+#endif
+
 
 	return ec;
 }

@@ -11,23 +11,38 @@
 #ifndef __SARIEN_H
 #define __SARIEN_H
 
-#ifdef PALMOS
-#include <PalmOS.h>
-#else
-#include <stdlib.h>
-#ifndef FAKE_PALMOS
-#define USE_CONSOLE
+#ifdef __cplusplus
+extern "C"{
 #endif
+
+#ifdef PALMOS
+#  include <PalmOS.h>
+#else
+#  include <stdlib.h>
+#  ifndef FAKE_PALMOS
+#    define USE_CONSOLE
+#  endif
 #endif
 
 #ifdef DMALLOC
-#include <dmalloc.h>
+#  include <dmalloc.h>
 #endif
 
 #if defined (NATIVE_WIN32)
-#define INLINE __forceinline
+#  define INLINE __forceinline
 #elif !defined (INLINE)
-#define INLINE
+#  define INLINE
+#endif
+
+/* Environment variable containing the path name for the users's
+ * private files ($HOME in Unix, %USERPROFILE% in Win32)
+ */
+#ifdef WIN32
+#  define HOMEDIR "USERPROFILE"
+#  define DATADIR "Sarien"
+#else
+#  define HOMEDIR "HOME"
+#  define DATADIR ".sarien"
 #endif
 
 #ifdef PALMOS
@@ -46,9 +61,7 @@ typedef Int32	SINT32;
 
 typedef unsigned char	UINT8;
 typedef unsigned short	UINT16;
-//#ifndef WIN32
 typedef unsigned long	UINT32;
-//#endif
 typedef signed char	SINT8;
 typedef signed short	SINT16;
 typedef signed long	SINT32;
@@ -56,14 +69,14 @@ typedef signed long	SINT32;
 #endif	/* PALMOS */
 
 #ifndef FALSE
-#define FALSE		0
-#define TRUE		(!FALSE)
+#  define FALSE		0
+#  define TRUE		(!FALSE)
 #endif
 
 #define	TITLE		"Sarien"
 
 #ifdef NATIVE_WIN32
-#define VERSION "Win32 native experimental version"
+#  define VERSION "Win32 native experimental version"
 #endif
 
 
@@ -105,10 +118,10 @@ typedef signed long	SINT32;
 
 
 #if !defined PALMOS && !defined FAKE_PALMOS
-#define AGDS_SUPPORT			/* enable support for AGDS games */
-#define OPT_LIST_OBJECTS
-#define OPT_PICTURE_VIEWER
-#define OPT_LIST_DICT
+#  define AGDS_SUPPORT			/* enable support for AGDS games */
+#  define OPT_LIST_OBJECTS
+#  define OPT_PICTURE_VIEWER
+#  define OPT_LIST_DICT
 #endif
 
 #define	DISABLE_COPYPROTECTION		/* only works on some games */
@@ -120,26 +133,22 @@ typedef signed long	SINT32;
 #define _WIDTH		160
 #define _HEIGHT		168
 
+/* You'll need an ANSI terminal to use these :\ */
 #define _D_INFO "\x1b[33m"
 #define _D_CRIT "\x1b[31m"
 #define _D_WARN "\x1b[36m"
 
 #ifdef _TRACE
-#include <stdio.h>
-#define _D(args...) do { \
+#  include <stdio.h>
+#  define _D(args...) do { \
         printf("\x1b[33m" __PRETTY_FUNCTION__ " \x1b[37m[" __FILE__ \
         ":%d] " _D_INFO, __LINE__); printf (args); printf ("\x1b[0m\n"); \
         } while (0)
 #else
-#ifdef _D
-#undef _D
-#endif
-
+#  ifdef _D
+#    undef _D
+#  endif
 void _D(char *, ...);
-#endif
-
-#ifdef __cplusplus
-extern "C"{
 #endif
 
 extern	UINT8	*exec_name;
@@ -167,10 +176,6 @@ void	release_sprites	(void);
 void	update_status_line(int);
 
 int main_cycle (void);
-
-#ifdef __cplusplus
-};
-#endif
 
 
 
@@ -398,4 +403,9 @@ extern struct sarien_options opt;
 extern struct sarien_debug debug;
 #endif
 
+#ifdef __cplusplus
+};
 #endif
+
+#endif /* __SARIEN_H */
+
