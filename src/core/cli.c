@@ -40,11 +40,6 @@ static void help (int argc, char **argv)
 "  -d --list-dictionary\n"
 "                     List dictionary words.\n"
 #endif
-#ifndef __MSDOS__
-"  -E --emulate-sound {type}\n"
-"                     Emulate the sound of Sierra AGI running in different\n"
-"                     computers. Valid emulations are pc, mac and amiga\n"
-#endif
 #ifndef PCCGA
 "  -e --ega-palette   Use PC EGA palette instead of amiga-ish palette\n"
 #endif
@@ -71,6 +66,11 @@ static void help (int argc, char **argv)
 #endif
 #ifndef __MSDOS__
 "  -S --scale {num}   Window size scale (only for windowed graphics).\n"
+#ifndef __MSDOS__
+"  -s --emulate-sound {type}\n"
+"                     Emulate the sound of Sierra AGI running in different\n"
+"                     computers. Valid emulations are pc, mac and amiga\n"
+#endif
 "  -r --aspect-ratio {0|1}\n"
 "                     Adjust aspect ratio to match the PC EGA 320x200 screen.\n"
 #endif
@@ -127,10 +127,6 @@ int parse_cli (int argc, char **argv)
 #ifdef OPT_LIST_DICT
 		{ "list-dictionary",	0, 0, 'd' },
 #endif
-		{ "debug",		0, 0, 'D' },
-#ifndef __MSDOS__
-		{ "emulate-sound",	1, 0, 'E' },
-#endif
 #ifndef PCCGA
 		{ "ega-palette",	0, 0, 'e' },
 #endif
@@ -152,6 +148,9 @@ int parse_cli (int argc, char **argv)
 		{ "agimouse",		0, 0, 'm' },
 #endif
 		{ "scale",		1, 0, 'S' },
+#ifndef __MSDOS__
+		{ "emulate-sound",	1, 0, 's' },
+#endif
 		{ "no-gfx-optimizations",0,0, 'g' }
 	};
 
@@ -222,19 +221,6 @@ int parse_cli (int argc, char **argv)
 			opt.gamerun = GAMERUN_WORDS;
 			break;
 #endif
-		case 'E':
-			if (!strcmp (optarg, "pc"))
-				opt.soundemu = SOUND_EMU_PC;
-			else if (!strcmp (optarg, "mac"))
-				opt.soundemu = SOUND_EMU_MAC;
-			else if (!strcmp (optarg, "amiga"))
-				opt.soundemu = SOUND_EMU_AMIGA;
-			else {
-				fprintf (stderr, "Sound emulation \"%s\" is "
-					"unknown\n", optarg);
-				exit (0);
-			}
-			break;
 #ifndef PCCGA
 		case 'e':
 			opt.egapal = TRUE;
@@ -282,6 +268,19 @@ int parse_cli (int argc, char **argv)
 				opt.scale = 1;
 			if (opt.scale > 4)
 				opt.scale = 4;
+			break;
+		case 's':
+			if (!strcmp (optarg, "pc"))
+				opt.soundemu = SOUND_EMU_PC;
+			else if (!strcmp (optarg, "mac"))
+				opt.soundemu = SOUND_EMU_MAC;
+			else if (!strcmp (optarg, "amiga"))
+				opt.soundemu = SOUND_EMU_AMIGA;
+			else {
+				fprintf (stderr, "Sound emulation \"%s\" is "
+					"unknown\n", optarg);
+				exit (0);
+			}
 			break;
 #endif
 		case 'v':

@@ -121,7 +121,8 @@ int handle_controller (int key)
 	struct vt_entry *v = &game.view_table[0];
 	int i;
 
-	if (key == 0 || key == KEY_ESCAPE)
+	/* The Black Cauldron needs KEY_ESCAPE to use menus */
+	if (key == 0 /*|| key == KEY_ESCAPE*/)
 		return FALSE;
 
 	_D (_D_WARN "key = %04x", key);

@@ -17,9 +17,30 @@
 </refnamediv>
 
 <refsynopsisdiv>
-  <cmdsynopsis><command>
-<application/sarien/ <optional/<parameter/-A|--amiga// <optional/<parameter/-a|--agds// <optional/<parameter/-C|--crc// <optional/<parameter/-c|--cga-palette// <optional/<parameter/-d|--list-dictionary// <optional/<parameter/-E|--emulate-sound/ <optional/<parameter/-e|--ega-palette// <optional/<parameter/-F|--full-screen// <replaceable/type// <optional/<parameter/-g|--no-gfx-optimizations// <optional/<parameter/-H|--hires/ <property/0|1// <optional/<parameter/-h|--help// <optional/<parameter/-L|--list-games// <optional/<parameter/-m|--agimouse// <optional/<parameter/-n|--no-sound// <optional/<parameter/-p|--picture-viewer// <optional/<parameter/-o|--list-objects// <optional/<parameter/-S|--scale/ <replaceable/num// <optional/<parameter/-r|--aspect-ratio/ <property/0|1// <optional/<parameter/-v|--emulate-version/ <replaceable/version// <optional/<parameter/-V|--version// <optional/<parameter/-x|--no-x-shm// <optional/<replaceable/gamedir//
-  </command></cmdsynopsis>
+<cmdsynopsis><command><application/sarien/
+ <optional/<parameter/-A|--amiga//
+ <optional/<parameter/-a|--agds//
+ <optional/<parameter/-C|--crc//
+ <optional/<parameter/-c|--cga-palette//
+ <optional/<parameter/-d|--list-dictionary//
+ <optional/<parameter/-e|--ega-palette//
+ <optional/<parameter/-F|--full-screen//
+ <optional/<parameter/-g|--no-gfx-optimizations//
+ <optional/<parameter/-H|--hires/ <property/0|1//
+ <optional/<parameter/-h|--help//
+ <optional/<parameter/-L|--list-games//\
+ <optional/<parameter/-m|--agimouse//
+ <optional/<parameter/-n|--no-sound//
+ <optional/<parameter/-p|--picture-viewer//
+ <optional/<parameter/-o|--list-objects//
+ <optional/<parameter/-S|--scale/ <replaceable/num//
+ <optional/<parameter/-s|--emulate-sound/ <replaceable/type//
+ <optional/<parameter/-r|--aspect-ratio/ <property/0|1//
+ <optional/<parameter/-v|--emulate-version/ <replaceable/version//
+ <optional/<parameter/-V|--version//
+ <optional/<parameter/-x|--no-x-shm//
+ <optional/<replaceable/gamedir//
+</command></cmdsynopsis>
 </refsynopsisdiv>
 
 <refsect1>
@@ -70,15 +91,6 @@
     <term/<parameter/-d, --list-dictionary//
     <listitem><para>
       List dictionary words and exit.
-    </para></listitem>
-  </varlistentry>
-
-  <varlistentry>
-    <term/<parameter/-E, --emulate-sound/ <replaceable/type//
-    <listitem><para>
-      Set the sound generator to emulate the output of Sierra's AGI in
-      different platforms. The available types are: <parameter/pc/,
-      <parameter/mac/ and <parameter/amiga/.
     </para></listitem>
   </varlistentry>
 
@@ -162,6 +174,15 @@
   </varlistentry>
 
   <varlistentry>
+    <term/<parameter/-r, --aspect-ratio/ <property/0|1//
+    <listitem><para>
+      Enable or disable aspect ratio correction for square-pixel graphics
+      modes to match the PC EGA 320x200 display. Aspect ratio correction
+      is enabled by default in the drivers that support this feature.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
     <term/<parameter/-S, --scale/ <replaceable/num//
     <listitem><para>
       Set window scaling to <replaceable/num/. This option is available
@@ -170,11 +191,11 @@
   </varlistentry>
 
   <varlistentry>
-    <term/<parameter/-r, --aspect-ratio/ <property/0|1//
+    <term/<parameter/-s, --emulate-sound/ <replaceable/type//
     <listitem><para>
-      Enable or disable aspect ratio correction for square-pixel graphics
-      modes to match the PC EGA 320x200 display. Aspect ratio correction
-      is enabled by default in the drivers that support this feature.
+      Set the sound generator to emulate the output of Sierra's AGI in
+      different platforms. The available types are: <parameter/pc/,
+      <parameter/mac/ and <parameter/amiga/.
     </para></listitem>
   </varlistentry>
 
