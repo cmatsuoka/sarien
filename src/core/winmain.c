@@ -63,16 +63,42 @@ BOOL CheckForGame(char *szDir)
 
 int CALLBACK BrowseCallbackProc(HWND hwnd,UINT uMsg,LPARAM lp, LPARAM pData)
 {
-	CHAR szDir[MAX_PATH] = {0};
-
+	CHAR szDir[MAX_PATH]	= {0};
+	DWORD ret				= 0;
+	HKEY hKey				= NULL;
+	DWORD dwDisposition		= 0;
+	DWORD cbData			= MAX_PATH;
 
 
 	switch(uMsg) 
 	{
 		case BFFM_INITIALIZED: 
 		{
+			if (ERROR_SUCCESS == RegCreateKeyEx(
+						HKEY_CURRENT_USER, "SOFTWARE\\FreeAGI",
+						0, NULL, REG_OPTION_NON_VOLATILE, KEY_QUERY_VALUE, 
+						NULL, &hKey, &dwDisposition))
+			{
+				/* if the key exists, read the value from it */
+				if (REG_OPENED_EXISTING_KEY == dwDisposition)
+				{
+					if (ERROR_SUCCESS != RegQueryValueEx(
+						hKey, "LastFolder", NULL, NULL, 
+						(unsigned char *)szDir, &cbData))
+					{
+						OutputDebugString("winmain.c: BrowseCallbackProc(): RegQueryValueEx != ERROR_SUCESS");
+					}
+				}
+			}
 
 			SendMessage(hwnd,BFFM_SETSELECTION,TRUE,(LPARAM)szDir);
+
+		if (ERROR_SUCCESS != RegCloseKey(hKey))
+		{
+			OutputDebugString("winmain.c: open_file(): RegCloseKey != ERROR_SUCESS");
+		}
+
+
 			break;
 
 		}
@@ -97,38 +123,64 @@ int CALLBACK BrowseCallbackProc(HWND hwnd,UINT uMsg,LPARAM lp, LPARAM pData)
 
 static void open_file (HINSTANCE hThisInst, char *s)
 {
-	BROWSEINFO bi;
-	CHAR szDir[MAX_PATH];
-	LPITEMIDLIST pidl;
-	LPMALLOC pMalloc;
+	BROWSEINFO bi			= {0};
+	CHAR szDir[MAX_PATH]	= {0};
+	LPITEMIDLIST pidl		= {0};
+	LPMALLOC pMalloc		= NULL;
+	HKEY hKey				= NULL;
+	DWORD dwDisposition		= 0;
+
 
 	if (SUCCEEDED(SHGetMalloc(&pMalloc)))
 	{
-		ZeroMemory(&bi,sizeof(bi));
 		bi.hwndOwner = NULL;
-		bi.lpszTitle = "Select target directory containing AGI game."; 
+		bi.lpszTitle = "Select AGI game folder:"; 
 		bi.pszDisplayName = 0;
 		bi.pidlRoot = 0;
-		bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_STATUSTEXT;
+		/* USENEWUI flag has weird problem where "My Computer" is seen as a 
+		 * valid folder by CheckForGame. TODO: figure out why and fix. */
+		bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_STATUSTEXT /*| BIF_USENEWUI */;
 		bi.lpfn = BrowseCallbackProc;
 		pidl = SHBrowseForFolder(&bi);
 		if (pidl) 
 			if (SHGetPathFromIDList(pidl,szDir)) 
 				strncpy(s, szDir, MAX_PATH);
-				
-		//not c++ so vtbl
+
+		if (ERROR_SUCCESS != RegCreateKeyEx(
+					HKEY_CURRENT_USER, "SOFTWARE\\FreeAGI",
+					0, NULL, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE, 
+					NULL, &hKey, &dwDisposition))
+		{
+			OutputDebugString("winmain.c: open_file(): RegCreateKeyEx != ERROR_SUCESS");
+		}
+
+		if (ERROR_SUCCESS != RegSetValueEx(hKey, "LastFolder", 0, REG_SZ, (const unsigned char *)szDir, MAX_PATH))
+		{
+			OutputDebugString("winmain.c: open_file(): RegSetValueEx != ERROR_SUCESS");
+		}
+
+		if (ERROR_SUCCESS != RegCloseKey(hKey))
+		{
+			OutputDebugString("winmain.c: open_file(): RegCloseKey != ERROR_SUCESS");
+		}
+
+		/* not c++ so vtbl */
 		pMalloc->lpVtbl->Free(pMalloc,pidl);
 		pMalloc->lpVtbl->Release(pMalloc);
 	   
-	}
-
+	} else 
+		{
+			OutputDebugString("open_file(): SHGetMalloc failed");
+			exit(1);
+		}
 }
 
 
 int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int nWinMode)
 {
-	int ec = err_OK;
-	char *c, filename[MAX_PATH];
+	int ec				= err_OK;
+	char *c				= NULL;
+	char filename[MAX_PATH]	= {0};
 	
 	game.clock_enabled = FALSE;
 	game.state = STATE_INIT;
