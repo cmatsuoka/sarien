@@ -32,7 +32,7 @@ drivers:
 clean:
 	if exist *.bak @del *.bak
 	if exist bin\*.exe @del bin\*.exe
-	echo Cleaing core
+	echo Cleaning core
 	cd src\core
 	make -f Makefile.dj clean TOPDIR=../..
 	cd ..\..

@@ -24,7 +24,7 @@ drivers: .symbolic
 clean: .symbolic
 	@if exist *.bak @del *.bak
 	@if exist bin\*.exe @del bin\*.exe
-	@echo Cleaing core
+	@echo Cleaning core
 	cd src\core
 	wmake -h -f makefile.wat clean HOME=..\..
 	@echo Cleaning msdos code
