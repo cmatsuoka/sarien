@@ -87,9 +87,9 @@ extern struct gfx_driver *gfx;
 
 #define _putpixels_scale1(d) static void INLINE				\
 _putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) {		\
-	Uint##d## *s;							\
+	Uint##d *s;							\
 	if (w == 0) return;						\
-	s = (Uint##d## *)screen->pixels + x + y * screen->w;		\
+	s = (Uint##d *)screen->pixels + x + y * screen->w;		\
 	if (SDL_MUSTLOCK (screen)) {					\
 		if (SDL_LockSurface (screen) < 0)			\
 			return;						\
@@ -100,10 +100,10 @@ _putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) {		\
 
 #define _putpixels_scale2(d) static void INLINE				\
 _putpixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) {		\
-	Uint##d## *s, *t;						\
+	Uint##d *s, *t;						\
 	if (w == 0) return;						\
 	x <<= 1; y <<= 1;						\
-	s = (Uint##d## *)screen->pixels + x + y * screen->w;		\
+	s = (Uint##d *)screen->pixels + x + y * screen->w;		\
 	t = s + screen->w;						\
 	if (SDL_MUSTLOCK (screen)) {					\
 		if (SDL_LockSurface (screen) < 0)			\
@@ -137,12 +137,12 @@ _putpixels_fixratio_##d##bits_scale1 (int x, int y, int w, UINT8 *p) {	\
 
 #define _putpixels_fixratio_scale2(d) static void INLINE		\
 _putpixels_fixratio_##d##bits_scale2 (int x, int y, int w, Uint8 *p0) {	\
-	Uint##d## *s, *t, *u; Uint8 *p; int extra = 0;			\
+	Uint##d *s, *t, *u; Uint8 *p; int extra = 0;			\
 	if (w == 0) return;						\
 	x <<= 1; y <<= 1;						\
 	if (y < ((GFX_WIDTH - 1) << 2) && ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2)) extra = w; \
 	y = ASPECT_RATIO(y);						\
-	s = (Uint##d## *)screen->pixels + x + y * screen->w;		\
+	s = (Uint##d *)screen->pixels + x + y * screen->w;		\
 	t = s + screen->w;						\
 	u = t + screen->w;						\
 	if (SDL_MUSTLOCK (screen)) {					\
@@ -467,9 +467,9 @@ static int init_vidmode ()
 	SDL_SetColors (screen, color, 0, 32);
 
 #define handle_case(d,s) case (d/8): \
-	gfx_sdl.put_pixels = _putpixels_##d##bits_scale##s##; break;
+	gfx_sdl.put_pixels = _putpixels_##d##bits_scale##s; break;
 #define handle_fixratio_case(d,s) case (d/8): \
-	gfx_sdl.put_pixels = _putpixels_fixratio_##d##bits_scale##s##; break;
+	gfx_sdl.put_pixels = _putpixels_fixratio_##d##bits_scale##s; break;
 
 	/* Use an optimized put_pixels if available */
 	if (!opt.fixratio) {
