@@ -26,7 +26,7 @@ static int dummy2_init_sound (SINT16 *buffer);
 static void dummy2_close_sound (void);
 /* static void dummy2_dump_buffer (void); */
 
-SOUND_DRIVER sound_dummy2=
+static struct sound_driver sound_dummy2=
 {
 	"Dummy sound driver",
 	dummy2_init_sound,
