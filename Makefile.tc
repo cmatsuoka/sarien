@@ -14,7 +14,7 @@ TASM = TASM
 TLIB = tlib
 TLINK = tlink
 LIBPATH = \TC\LIB
-INCLUDEPATH = SRC\INCLUDE;\TC\INCLUDE
+INCLUDEPATH = SRC\INCLUDE;\TC\INCLUDE;SRC\CORE
 
 
 #		*Implicit Rules*
@@ -234,6 +234,7 @@ sarien.cfg: makefile.tc
 -O
 -Z
 -d
+-r
 -vi-
 -w-ret
 -w-nci
