@@ -129,8 +129,11 @@ void agi_unload_resources ()
 {
 	int i;
 
-	for (i = 0; i < MAX_DIRS; i++) {
+	/* Make sure logic 0 is always loaded */
+	for (i = 1; i < MAX_DIRS; i++) {
 		loader->unload_resource (rLOGIC, i);
+	}
+	for (i = 0; i < MAX_DIRS; i++) {
 		loader->unload_resource (rVIEW, i);
 		loader->unload_resource (rPICTURE, i);
 		loader->unload_resource (rSOUND, i);
@@ -143,6 +146,7 @@ int agi_deinit ()
 
 	clean_input ();			/* remove all words from memory */
 	agi_unload_resources ();	/* unload resources in memory */
+	loader->unload_resource (rLOGIC, 0);
 	ec = loader->deinit ();
 	unload_objects();
 	unload_words();
