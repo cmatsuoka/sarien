@@ -4,7 +4,7 @@ XCFLAGS	= -I ../../include
 OBJS	= main.o
 DFILES	= Makefile $(OBJS:.o=.m) SarienIcon.icns
 CFILES	=
-DDIRS	= sdl English.lproj French.lproj
+DDIRS	= sdl #English.lproj French.lproj
 LIB	= ../../../lib/libsarien.a
 
 all: $(LIB)
