@@ -111,6 +111,11 @@ LibFiles-68K    =  ¶
 				  "{Libraries}Interface.o"
 
 
+### Resources ###
+
+Resources		= :src:core:macos:sarien.r
+
+
 ### Default Rules ###
 
 .c.o  Ä  .c  {¥MondoBuild¥}
@@ -119,7 +124,8 @@ LibFiles-68K    =  ¶
 
 ### Build Rules ###
 
-Sarien  ÄÄ  {ObjFiles-68K} {LibFiles-68K} {¥MondoBuild¥}
+Sarien  ÄÄ  {ObjFiles-68K} {LibFiles-68K} {Resources} {¥MondoBuild¥}
+	Rez {Resources} -o Sarien
 	ILink ¶
 		-o {Targ} ¶
 		{ObjFiles-68K} ¶

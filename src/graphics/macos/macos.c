@@ -196,18 +196,30 @@ static void process_events ()
 		case autoKey:	/* key pressed once or held down to repeat */
 			if (window == FrontWindow()) {
 				int c = (event.message & charCodeMask);
+				int k = (event.message & keyCodeMask);
 				if (event.modifiers & cmdKey) {
 					process_menu (MenuKey (c));
 					break;
 				}
 				report ("%02x %02x\n", c, event.message);
+
+				/* These key codes were obtained using the
+				 * BasiliskII emulator. I'm assuming that
+				 * the key codes are being correctly emulated,
+				 * however it would be interesting to check
+				 * it in a real Mac.
+				 */
 				switch (c) {
 				case 0xa4:	/* Backquote in BasiliskII */
 					c = 0x60;
 					break;
 				case 0xb1:	/* Tilde in BasiliskII */
 					c = 0x7e;
-					break;		
+					break;
+				case 0x10:	/* Function keys */
+					switch (k) {
+					}
+					break;
 				case 0x1c:
 					c = KEY_LEFT;
 					break;
@@ -412,15 +424,15 @@ static void macos_timer ()
 
 static int macos_init_vidmode ()
 {
-	OSErr error;
+	OSErr err;
 	Rect window_rect;
 	Rect gworld_rect;
 	GDHandle old_gd;
 	GWorldPtr old_gw;
-	SysEnvRec theWorld;
+	SysEnvRec sysenv;
 	
-	error = SysEnvirons (1, &theWorld);
-	if (theWorld.hasColorQD == false)
+	err = SysEnvirons (1, &sysenv);
+	if (sysenv.hasColorQD == false)
 		return -1;
 	
 	init_toolbox ();
@@ -430,8 +442,11 @@ static int macos_init_vidmode ()
 	set_palette (palette, 0, 32);
 
 	/* Create offscreen pixmap */
-	SetRect (&gworld_rect, 0, 0, GFX_WIDTH * scale,
-		GFX_HEIGHT * scale);
+	/* It looks inconsistent, but it seems that the rect here is
+	 * defined by dimensions while in the window creation call it
+	 * is defined by coordinates. --claudio
+	 */
+	SetRect (&gworld_rect, 0, 0, GFX_WIDTH * scale, GFX_HEIGHT * scale);
 	if (NewGWorld (&gworld, depth, &gworld_rect, NULL, NULL, 0) != noErr)
 		return -1;
 
