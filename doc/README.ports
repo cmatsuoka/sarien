@@ -22,7 +22,8 @@ Tested ports:
 ---------+-------+---------+---------+---------+---------+---------+
  BeOS 5  |  gcc  |   SDL   |   SDL   |   yes   |   yes   | claudio |
 ---------+-------+---------+---------+---------+---------+---------+
- MacOS X |   ?   |  Cocoa  | Carbon  |   yes   |    ?    |drzoltan |
+ MacOS   |  MPW  |  macos  |  macos  |   yes   |    no   | claudio |
+ MacOS X |   ?   |  Cocoa  |  macos  |   yes   |    ?    |drzoltan |
 ---------+-------+---------+---------+---------+---------+---------+
 Dreamcast|   ?   |   dc    |   dc    |    no   |   yes   |brianpeek|
 ---------+-------+---------+---------+---------+---------+---------+
@@ -73,8 +74,6 @@ Incomplete, assistance required:
          Compiler  Driver    Driver   Graphics  Graphics    Sound
 ---------+-------+---------+---------+---------+---------+---------+
  OS/2    |   ?   |  DIVE   |  DART   |   yes   |    no   |   yes   |
----------+-------+---------+---------+---------+---------+---------+
- MacOS   |  MPW  |  macos  |  macos  |   yes   |    no   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
 
 

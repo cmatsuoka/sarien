@@ -1,5 +1,5 @@
 
-XCFLAGS	= -I../../include -I../../core/win32 -Wno-implicit-int
+XCFLAGS	= -I../../include -Wno-implicit-int
 OBJS	= win32.o
 DFILES	= Makefile $(OBJS:.o=.c)
 CFILES	=

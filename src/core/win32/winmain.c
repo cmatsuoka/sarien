@@ -8,6 +8,10 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
+/*
+ * Launcher window added by Ian Hanschen <ian@stardock.com>
+ */
+
 #include <windows.h>
 #include <shlobj.h>
 #include <stdio.h>
@@ -15,6 +19,7 @@
 #include "agi.h"
 #include "text.h"
 #include "graphics.h"
+#include "sprite.h"
 
 
 volatile UINT32 clock_ticks;
@@ -34,94 +39,83 @@ void _D (char *x, ...)
 #endif
 
 
-BOOL CheckForGame(char *szDir)
+BOOL CheckForGame (char *szDir)
 {
 	WIN32_FIND_DATA ffd;
 	HANDLE hFind;
-	CHAR szDirLocal[MAX_PATH]	= {0};
-	CHAR szFullPath[MAX_PATH]	= {0};
+	CHAR szDirLocal[MAX_PATH] = {0};
+	CHAR szFullPath[MAX_PATH] = {0};
 	BOOL bFound = FALSE;
 	DWORD dwFileInfo;
 
 	sprintf(szDirLocal, "%s\\words.tok", szDir);
-	
 	ZeroMemory(&ffd, sizeof(WIN32_FIND_DATA));
-
 	hFind = FindFirstFile(szDirLocal, &ffd);
 
 	if (hFind == INVALID_HANDLE_VALUE)
 		return FALSE;
 
 	do {
-		sprintf(szFullPath, "%s\\%s", szDir, ffd.cFileName);
+		sprintf (szFullPath, "%s\\%s", szDir, ffd.cFileName);
 		dwFileInfo = GetFileAttributes(szFullPath);
 		
-		if(dwFileInfo != 0xFFFFFFFF && dwFileInfo & ~FILE_ATTRIBUTE_DIRECTORY)
+		if (dwFileInfo != 0xFFFFFFFF &&
+			dwFileInfo & ~FILE_ATTRIBUTE_DIRECTORY)
+		{
 			bFound = TRUE;
-	}
-	while(0 != FindNextFile(hFind, &ffd) && bFound != TRUE);
+		}
+	} while (0 != FindNextFile(hFind, &ffd) && bFound != TRUE);
 
-	FindClose(hFind);
+	FindClose (hFind);
 
 	return bFound;
 }
 
 int CALLBACK BrowseCallbackProc(HWND hwnd,UINT uMsg,LPARAM lp, LPARAM pData)
 {
-	CHAR szDir[MAX_PATH + 1]= {0};
-	HKEY hKey			= NULL;
-	DWORD dwDisposition		= 0;
-	DWORD cbData			= MAX_PATH;
+	CHAR szDir[MAX_PATH+1]	= { 0 };
+	HKEY hKey		= NULL;
+	DWORD dwDisposition	= 0;
+	DWORD cbData		= MAX_PATH;
 
-
-	switch(uMsg) 
-	{
-		case BFFM_INITIALIZED: 
+	switch(uMsg) {
+	case BFFM_INITIALIZED: 
+		if (ERROR_SUCCESS == RegCreateKeyEx (HKEY_CURRENT_USER,
+			"SOFTWARE\\FreeAGI", 0, NULL, REG_OPTION_NON_VOLATILE,
+			KEY_QUERY_VALUE, NULL, &hKey, &dwDisposition))
 		{
-			if (ERROR_SUCCESS == RegCreateKeyEx(
-						HKEY_CURRENT_USER, "SOFTWARE\\FreeAGI",
-						0, NULL, REG_OPTION_NON_VOLATILE, KEY_QUERY_VALUE, 
-						NULL, &hKey, &dwDisposition))
-			{
-				/* if the key exists, read the value from it */
-				if (REG_OPENED_EXISTING_KEY == dwDisposition)
+			/* if the key exists, read the value from it */
+			if (REG_OPENED_EXISTING_KEY == dwDisposition) {
+				if (ERROR_SUCCESS != RegQueryValueEx (hKey,
+					"LastFolder", NULL, NULL, 
+					(unsigned char *)szDir, &cbData))
 				{
-					if (ERROR_SUCCESS != RegQueryValueEx(
-						hKey, "LastFolder", NULL, NULL, 
-						(unsigned char *)szDir, &cbData))
-					{
-						OutputDebugString("winmain.c: BrowseCallbackProc(): RegQueryValueEx != ERROR_SUCESS");
-					}
+					OutputDebugString ("winmain.c: "
+					"BrowseCallbackProc(): "
+					"RegQueryValueEx != ERROR_SUCESS");
 				}
 			}
-
-			SendMessage(hwnd,BFFM_SETSELECTION,TRUE,(LPARAM)szDir);
-
-			if (ERROR_SUCCESS != RegCloseKey(hKey))
-			{
-				OutputDebugString("winmain.c: open_file(): RegCloseKey != ERROR_SUCESS");
-			}
-			break;
-
 		}
 
-		case BFFM_SELCHANGED: 
-			if (SHGetPathFromIDList((LPITEMIDLIST) lp ,szDir)) 
-			{
-				if(CheckForGame(szDir))
-				{
-					SendMessage(hwnd, BFFM_ENABLEOK, 0, TRUE);
-					SendMessage(hwnd,BFFM_SETSTATUSTEXT,0,(LPARAM)szDir);
-				}
-					else
-				{
-					SendMessage(hwnd, BFFM_ENABLEOK, 0, FALSE);
-				}
-			}
-			break;
+		SendMessage(hwnd,BFFM_SETSELECTION,TRUE,(LPARAM)szDir);
 
-		default:
-			break;
+		if (ERROR_SUCCESS != RegCloseKey(hKey)) {
+			OutputDebugString ("winmain.c: open_file(): "
+				"RegCloseKey != ERROR_SUCESS");
+		}
+		break;
+
+	case BFFM_SELCHANGED: 
+		if (SHGetPathFromIDList((LPITEMIDLIST) lp ,szDir)) {
+			if(CheckForGame(szDir)) {
+				SendMessage (hwnd, BFFM_ENABLEOK, 0, TRUE);
+				SendMessage (hwnd, BFFM_SETSTATUSTEXT, 0,
+					(LPARAM)szDir);
+			} else {
+				SendMessage(hwnd, BFFM_ENABLEOK, 0, FALSE);
+			}
+		}
+		break;
 	}
 
 	return 0;
@@ -129,64 +123,67 @@ int CALLBACK BrowseCallbackProc(HWND hwnd,UINT uMsg,LPARAM lp, LPARAM pData)
 
 static void open_file (HINSTANCE hThisInst, char *s)
 {
-	BROWSEINFO bi			= {0};
-	CHAR szDir[MAX_PATH]	= {0};
-	LPITEMIDLIST pidl		= {0};
-	LPMALLOC pMalloc		= NULL;
-	HKEY hKey				= NULL;
-	DWORD dwDisposition		= 0;
+	BROWSEINFO bi		= { 0 };
+	CHAR szDir[MAX_PATH]	= { 0 };
+	LPITEMIDLIST pidl	= { 0 };
+	LPMALLOC pMalloc	= NULL;
+	HKEY hKey		= NULL;
+	DWORD dwDisposition	= 0;
 
-
-	if (SUCCEEDED(SHGetMalloc(&pMalloc)))
-	{
+	if (SUCCEEDED (SHGetMalloc(&pMalloc))) {
 		bi.hwndOwner = NULL;
 		bi.lpszTitle = "Select AGI game folder:"; 
 		bi.pszDisplayName = 0;
 		bi.pidlRoot = 0;
-		/* USENEWUI flag has weird problem where "My Computer" is seen as a 
-		 * valid folder by CheckForGame. TODO: figure out why and fix. */
-		bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_STATUSTEXT /*| BIF_USENEWUI */;
+		/* USENEWUI flag has weird problem where "My Computer" is
+		 * seen as a valid folder by CheckForGame. TODO: figure out
+		 * why and fix.
+		 */
+		bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_STATUSTEXT;
 		bi.lpfn = BrowseCallbackProc;
 		pidl = SHBrowseForFolder(&bi);
-		if (pidl) 
+		if (pidl) { 
 			if (SHGetPathFromIDList(pidl,szDir)) 
 				strncpy(s, szDir, MAX_PATH);
-
-		if (ERROR_SUCCESS != RegCreateKeyEx(
-					HKEY_CURRENT_USER, "SOFTWARE\\FreeAGI",
-					0, NULL, REG_OPTION_NON_VOLATILE, KEY_SET_VALUE, 
-					NULL, &hKey, &dwDisposition))
-		{
-			OutputDebugString("winmain.c: open_file(): RegCreateKeyEx != ERROR_SUCESS");
 		}
 
-		if (ERROR_SUCCESS != RegSetValueEx(hKey, "LastFolder", 0, REG_SZ, (const unsigned char *)szDir, MAX_PATH))
+		if (ERROR_SUCCESS != RegCreateKeyEx (HKEY_CURRENT_USER,
+			"SOFTWARE\\FreeAGI", 0, NULL, REG_OPTION_NON_VOLATILE,
+			KEY_SET_VALUE, NULL, &hKey, &dwDisposition))
 		{
-			OutputDebugString("winmain.c: open_file(): RegSetValueEx != ERROR_SUCESS");
+			OutputDebugString("winmain.c: open_file(): "
+				"RegCreateKeyEx != ERROR_SUCESS");
 		}
 
-		if (ERROR_SUCCESS != RegCloseKey(hKey))
+		if (ERROR_SUCCESS != RegSetValueEx(hKey, "LastFolder", 0,
+			REG_SZ, (const unsigned char *)szDir, MAX_PATH))
 		{
-			OutputDebugString("winmain.c: open_file(): RegCloseKey != ERROR_SUCESS");
+			OutputDebugString ("winmain.c: open_file(): "
+				"RegSetValueEx != ERROR_SUCESS");
+		}
+
+		if (ERROR_SUCCESS != RegCloseKey(hKey)) {
+			OutputDebugString("winmain.c: open_file(): "
+			"RegCloseKey != ERROR_SUCESS");
 		}
 
 		/* not c++ so vtbl */
 		pMalloc->lpVtbl->Free(pMalloc,pidl);
 		pMalloc->lpVtbl->Release(pMalloc);
 	   
-	} else 
-		{
-			OutputDebugString("open_file(): SHGetMalloc failed");
-			exit(1);
-		}
+	} else {
+		OutputDebugString("open_file(): SHGetMalloc failed");
+		exit(1);
+	}
 }
 
 
-int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int nWinMode)
+int WINAPI
+WinMain (HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int nWinMode)
 {
-	int ec				= err_OK;
-	char *c				= NULL;
-	char filename[MAX_PATH]	= {0};
+	int ec = err_OK;
+	char *c	= NULL;
+	char filename[MAX_PATH]	= { 0 };
 	
 	game.clock_enabled = FALSE;
 	game.state = STATE_INIT;
@@ -218,7 +215,7 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 	if ((game.sbuf = calloc (_WIDTH, _HEIGHT)) == NULL)
 		goto bail_out;
 #ifdef USE_HIRES
-	if ((game.hires = malloc (_WIDTH * 2, _HEIGHT)) == NULL)
+	if ((game.hires = calloc (_WIDTH * 2, _HEIGHT)) == NULL)
 		goto bail_out2;
 #endif
 	if (init_sprites () != err_OK)
@@ -234,7 +231,7 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 
 	_D ("Detect game");
 
-	if (	agi_detect_game (filename) == err_OK ||
+	if (agi_detect_game (filename) == err_OK ||
 		agi_detect_game (get_current_directory ()) == err_OK)
 	{
 		game.state = STATE_LOADED;
