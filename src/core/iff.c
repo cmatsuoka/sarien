@@ -70,15 +70,14 @@ void iff_release ()
 
 int iff_process (char *id, long size, FILE * f)
 {
-	char *buffer		= NULL;
-	struct iff_info *i	= NULL;
+	char *buffer = NULL;
+	struct iff_info *i = NULL;
 
 	if (size == 0)
 		return 0;
 
-	if ((buffer = malloc (size)) == NULL)
+	if ((buffer = calloc (1, size)) == NULL)
 		return -1;
-	memset(buffer, 0, size);
 
 	fread (buffer, 1, size, f);
 	for (i = iff_head; i; i = i->next) {
