@@ -114,7 +114,6 @@ cmd(put_f)		{ object_set_location (_v[p0], _v[p1]); }
 cmd(drop)		{ object_set_location (p0, 0); }
 cmd(get)		{ object_set_location (p0, EGO_OWNED); }
 cmd(get_f)		{ object_set_location (_v[p0], EGO_OWNED); }
-cmd(parse)		{ dictionary_words (agi_sprintf(game.strings[p0])); }
 cmd(set_text_attribute)	{ game.color_fg = p0; game.color_bg = p1; }
 cmd(word_to_string)	{ strcpy (game.strings[p0], game.ego_words[p1].word); }
 cmd(open_dialogue)	{ _D ("p0 = %d", p0); game.has_window = TRUE; }
@@ -166,6 +165,14 @@ cmd(fence_mouse)	{ report ("fence.mouse\n"); }
 cmd(release_key)	{ report ("release.key\n"); }
 cmd(adj_ego_move_to_xy)	{ game.view_table[0].flags |= ADJ_EGO_XY; }
 
+
+cmd(parse) {
+	_v[V_word_not_found] = 0;
+	setflag (F_entered_cli, FALSE);
+	setflag (F_said_accepted_input, FALSE);
+
+	dictionary_words (agi_sprintf(game.strings[p0]));
+}
 
 cmd(call) {
 	int old_cIP;
