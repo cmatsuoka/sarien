@@ -263,7 +263,10 @@ static void normal_motion (int em, int x, int y)
 	vt_obj = &view_table[em];
 
 	/* Positions should be adjusted if the object is stepping
-	 * on a control line, as reported by Nat Budin
+	 * on a control line, as reported by Nat Budin.
+	 *
+	 * This is not the correct solution: it breaks DDP and KQ1 intros
+	 * but fixes the hooker in LSL1.
 	 */
 	while (check_control_lines (em, vt_obj->x_pos, vt_obj->y_pos) == -1) {
 		if (vt_obj->x_pos > 0)
@@ -554,20 +557,18 @@ int main_cycle ()
 	kascii = KEY_ASCII (key);
 
 	if (!console_keyhandler (key)) {
+		if (kascii) setvar (V_key, kascii);
 		switch (game.input_mode) {
 		case INPUT_NORMAL:
-			if (kascii) setvar (V_key, kascii);
 			handle_controller (key);
 			handle_keys (key);
 			if (key) game.keypress = key;
 			break;
 		case INPUT_GETSTRING:
-			if (kascii) setvar (V_key, kascii);
 			handle_controller (key);
 			handle_getstring (key);
 			break;
 		case INPUT_MENU:
-			if (kascii) setvar (V_key, kascii);
 			menu_keyhandler (key);
 			console_cycle ();
 			return FALSE;
