@@ -1,6 +1,6 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
  *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
- *  
+ *
  *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -16,13 +16,6 @@
 
 extern int decode_objects(UINT8* mem, UINT32 flen);
 
-/**
- * AGI object
- */
-struct agi_object {
-        int location;
-        char *name;
-};
 
 static struct agi_object *objects;		/* objects in the game */
 
@@ -35,7 +28,7 @@ int decode_objects(UINT8* mem, UINT32 flen)
 
 	game.num_objects = 0;
 	objects = NULL;
-	
+
 	/* check if first pointer exceeds file size
 	 * if so, its encrypted, else it is not
 	 */

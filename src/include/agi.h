@@ -85,6 +85,11 @@ struct agi_event {
 	UINT16 data;
 };
 
+struct agi_object {
+	int location;
+	char *name;
+};
+
 struct agi_word {
 	int id;
 	char *word;
