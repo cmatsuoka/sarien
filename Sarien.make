@@ -14,7 +14,7 @@ Includes        =  ¶
 
 Sym-68K         = -sym off
 
-COptions        = {Includes} {Sym-68K} -model near -typecheck relaxed -d VERSION="0.7.0" -d __MPW__ -w 35,7,2
+COptions        = {Includes} {Sym-68K} -model far -typecheck relaxed -d VERSION="0.7.0" -d __MPW__ -w 35,7,2
 
 
 ### Source Files ###
@@ -46,10 +46,10 @@ SrcFiles        =  ¶
 				  :src:core:picture.c ¶
 				  :src:core:rand.c ¶
 				  :src:core:savegame.c ¶
-				  :src:graphics:sdl:sdl.c ¶
+				  :src:graphics:macos:macos.c ¶
 				  :src:core:silent.c ¶
 				  :src:core:sound.c ¶
-				  :src:sound:sdl:sound_sdl.c ¶
+				  :src:sound:dummy:dummy.c ¶
 				  :src:core:sprite.c ¶
 				  :src:core:text.c ¶
 				  :src:core:view.c
@@ -84,8 +84,8 @@ ObjFiles-68K    =  ¶
 				  "{ObjDir}picture.c.o" ¶
 				  "{ObjDir}rand.c.o" ¶
 				  "{ObjDir}savegame.c.o" ¶
-				  "{ObjDir}sdl.c.o" ¶
-				  "{ObjDir}sound_sdl.c.o" ¶
+				  "{ObjDir}macos.c.o" ¶
+				  "{ObjDir}dummy.c.o" ¶
 				  "{ObjDir}silent.c.o" ¶
 				  "{ObjDir}sound.c.o" ¶
 				  "{ObjDir}sprite.c.o" ¶
@@ -159,10 +159,10 @@ Sarien  ÄÄ  {ObjFiles-68K} {LibFiles-68K} {¥MondoBuild¥}
 "{ObjDir}picture.c.o"  Ä  :src:core:picture.c
 "{ObjDir}rand.c.o"  Ä  :src:core:rand.c
 "{ObjDir}savegame.c.o"  Ä  :src:core:savegame.c
-"{ObjDir}sdl.c.o"  Ä  :src:graphics:sdl:sdl.c
+"{ObjDir}macos.c.o"  Ä  :src:graphics:macos:macos.c
 "{ObjDir}silent.c.o"  Ä  :src:core:silent.c
 "{ObjDir}sound.c.o"  Ä  :src:core:sound.c
-"{ObjDir}sound_sdl.c.o"  Ä  :src:sound:sdl:sound_sdl.c
+"{ObjDir}dummy.c.o"  Ä  :src:sound:dummy:dummy.c
 "{ObjDir}sprite.c.o"  Ä  :src:core:sprite.c
 "{ObjDir}text.c.o"  Ä  :src:core:text.c
 "{ObjDir}view.c.o"  Ä  :src:core:view.c
