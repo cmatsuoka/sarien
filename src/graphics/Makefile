@@ -4,7 +4,7 @@ OBJS	=
 DFILES	= Makefile
 CFILES	=
 # XoXus: Modified this to include "svgalib" at end
-DDIRS	= msdos sdl x11 svgalib win32 photon dive macos
+DDIRS	= msdos sdl x11 svgalib win32 photon dive macos amiga
 XDFILES =
 LIB	=
 

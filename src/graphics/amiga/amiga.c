@@ -15,11 +15,12 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <intuition/intuition.h>
-#include <intuition/screens.h>
 #include <clib/exec_protos.h>
 #include <clib/graphics_protos.h>
 #include <clib/intuition_protos.h>
+#include <intuition/intuition.h>
+#include <intuition/screens.h>
+#include <graphics/view.h>
 #include <exec/memory.h>
 #include <hardware/cia.h>
 #include "sarien.h"
@@ -164,7 +165,7 @@ static int amiga_init_vidmode ()
 	btop=win->BorderTop;*/
 
 	for (i = 0; i < NUMCOLS; i++) {
-		colors[i] = ObtainBestPen(win->WScreen->ViewPort.ColorMap,
+		colors[i] = ObtainBestPen (win->WScreen->ViewPort.ColorMap,
 			(UINT32)palette[i * 3 + 0] << 26,
 			(UINT32)palette[i * 3 + 1] << 26,
 			(UINT32)palette[i * 3 + 2] << 26,
