@@ -1,10 +1,10 @@
 
 XCFLAGS	= -I../../include
-OBJS	=
+OBJS	= sound_win32.o
 DFILES	= Makefile $(OBJS:.o=.c)
 CFILES	=
 DDIRS	=
-XDFILES	= sound_win32.c
+XDFILES	=
 LIB	= ../../../lib/libagi.a
 
 all: $(LIB)

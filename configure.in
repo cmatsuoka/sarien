@@ -15,6 +15,7 @@ AC_SUBST(FILEIO_DRIVER)
 AC_ARG_WITH(sdl,    [  --with-sdl              use the Simple DirectMedia Layer])
 AC_ARG_WITH(svgalib,[  --with-svgalib          use SVGAlib for graphics])
 AC_ARG_WITH(alsa,   [  --with-alsa             use ALSA for sound output])
+AC_ARG_WITH(alsa,   [  --with-win32            use Win32 console/sound drivers])
 
 if test "${target}" = NONE; then
 	target=${host}
@@ -36,15 +37,21 @@ qnx*)
 	;;
 cygwin*)
 	AC_CHECK_HEADERS(wingdi.h)
+	with_win32="yes"
 	;;
 esac
+
+
+if test "${with_win32}" = "yes"; then
+	CFLAGS="${CFLAGS} -DELIDE_CODE"
+fi
 
 dnl ----------------------------------------------
 dnl Checks for header files.
 dnl ----------------------------------------------
 
 AC_HEADER_STDC
-AC_CHECK_HEADERS(getopt.h glob.h)
+AC_CHECK_HEADERS(getopt.h glob.h dirent.h)
 
 
 dnl ----------------------------------------------
@@ -57,7 +64,7 @@ CONSOLE_DRIVER="none"
 if test "${ac_cv_header_Ph_h}" = "yes"; then
 	CONSOLE_DRIVER="ph"
 	LIBS="${LIBS} -lph -lphrender"
-elif test "${ac_cv_header_wingdi_h}" = "yes"; then
+elif test "${with_win32}" = "yes"; then
 	CONSOLE_DRIVER="win32"
 	AC_CHECK_LIB(cygwin, usleep)
 	LIBS="-lgdi32 ${LIBS}"
@@ -107,7 +114,7 @@ dnl Check sound support
 dnl ----------------------------------------------
 
 AC_CHECKING([for sound support])
-SOUND_DRIVER=""
+SOUND_DRIVER="dummy"
 if test "${with_sdl}" = "yes"; then
 	SOUND_DRIVER="sdl"
 elif test "${with_svgalib}" = "yes"; then
@@ -165,6 +172,7 @@ openbsd*|netbsd*)
 	fi
 	;;
 cygwin*)
+	LIBS="-lwinmm ${LIBS}"
 	SOUND_DRIVER="win32"
 	;;
 default)
@@ -188,7 +196,7 @@ dnl Check for file globbing support
 dnl ----------------------------------------------
 
 AC_CHECKING([for file globbing support])
-FILEIO_DRIVER=""
+FILEIO_DRIVER="none"
 AC_CHECK_FUNC(_dos_findfirst,[FILEIO_DRIVER="msdos"])
 AC_CHECK_FUNC(_findfirst,[FILEIO_DRIVER="win32"])
 AC_CHECK_FUNC(glob,[FILEIO_DRIVER="unix"])

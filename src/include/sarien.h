@@ -53,7 +53,9 @@ typedef signed long	SINT32;
 #define MAX_WORDS	20
 #define MAX_WORDS1	24
 #define	MAX_WORDS2	40
+#ifndef MAX_PATH
 #define MAX_PATH	256
+#endif
 
 #define	_EMPTY		0xfffff
 #define	EGO_OWNED	0xff

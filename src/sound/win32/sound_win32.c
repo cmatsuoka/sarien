@@ -13,6 +13,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <windows.h>
 #include <mmsystem.h>
 
@@ -35,7 +36,7 @@ static HWAVEOUT hSoundDevice;
 
 static int   win32_init_sound   (SINT16 *buffer);
 static void  win32_close_sound  (void);
-static void  win32_swap_buffers (void);
+static void  win32_swap_buffers (PWAVEHDR);
 
 static struct sound_driver sound_win32 = {
 	"Win32 native sound output",
@@ -127,7 +128,7 @@ static void win32_close_sound (void)
 
 static void win32_swap_buffers( PWAVEHDR pWave ) 
 {
-	int    acumulador, i, temp;
+	int    acumulador, i;
 	static int pos_buffer = 0, excesso = 0;
 
 	if ( (acumulador = excesso) != 0) {
