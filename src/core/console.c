@@ -63,7 +63,7 @@ struct sarien_debug debug;
 static struct console_command ccmd_list[MAX_CCMD];
 static int num_ccmd = 0;
 
-static UINT8 has_console;
+static UINT8 has_console = 0;
 static UINT8 console_input = 0;
 
 static char *_p0, *_p1, *_p2, *_p3, *_p4, *_p5;	/* FIXME: array */
@@ -596,20 +596,16 @@ void report (char *message, ...)
 	va_list	args;
 	int i, s, len;
 
-	va_start (args, message);
+	if (!has_console)
+		return;
 
+	va_start (args, message);
 #ifdef HAVE_VSNPRINTF
 	vsnprintf (y, 510, (char*)message, args);
 #else
 	vsprintf (y, (char*)message, args);
 #endif
-
 	va_end (args);
-
-	if (!has_console) {
-		fprintf (stderr, "%s", y);
-		return;
-	}
 
 	if (console_input) {
 		strcpy (z, get_last_console_line ());

@@ -2,7 +2,7 @@
 
 XCFLAGS	= -I../include
 XLDFLAGS=
-OBJS	= format.o arith.o
+OBJS	= format.o arith.o flag.o
 DFILES	= Makefile $(TESTS:.=.c)
 CFILES	=
 DDIRS	=

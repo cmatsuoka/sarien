@@ -60,7 +60,7 @@ cmd(reset)		{ setflag (*p, FALSE); }
 cmd(toggle)		{ setflag (*p, !getflag (*p)); }
 cmd(set_v)		{ setflag (_v[p0], TRUE); }
 cmd(reset_v)		{ setflag (_v[p0], FALSE); }
-cmd(toggle_v)		{ setflag (_v[p0], !getflag (*p)); }
+cmd(toggle_v)		{ setflag (_v[p0], !getflag (_v[p0])); }
 cmd(new_room)		{ new_room (p0); }
 cmd(new_room_f)		{ new_room (_v[p0]); }
 cmd(load_view)		{ agi_load_resource (rVIEW, p0); }

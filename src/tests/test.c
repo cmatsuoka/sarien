@@ -73,7 +73,7 @@ void test_prepare (struct test_suite *suite)
 }
 
 
-void test_result (struct test_suite *suite, int i)
+void test_result (char *name, struct test_suite *suite, int i)
 {
 	switch (i) {
 	case TEST_OK:
@@ -98,7 +98,7 @@ void test_result (struct test_suite *suite, int i)
 		abort();
 	}
 
-	printf (" %03d: %s", count++, msg_buffer);
+	printf (" %03d: [%s] %s", ++count, name, msg_buffer);
 }
 
 
@@ -131,6 +131,7 @@ int main (int argc, char **argv)
 {
 	time_t t0, t1;
 	struct list_head *h;
+	int total;
 
 	time (&t0);
 
@@ -143,8 +144,9 @@ int main (int argc, char **argv)
 	num_succeeded = num_failed = num_skipped = 0;
 	count = 0;
 
+	new_suite (&test_list, test_flag, "flag operations");
 	new_suite (&test_list, test_arith, "arithmetic operations");
-	new_suite (&test_list, test_format, "AGI string formatting");
+	new_suite (&test_list, test_format, "string formatting");
 
 	list_for_each (h, &test_list, next) {
 		struct test_suite *s = list_entry (h, struct test_suite, list);
@@ -162,12 +164,27 @@ int main (int argc, char **argv)
 
 	time (&t1);
 
-	printf ("\n");
-	printf ("Succeeded    : %d\n", num_succeeded);
-	printf ("Failed       : %d (%3.1f%%)\n", num_failed,
-		100.0 * num_failed / (num_failed + num_succeeded));
-	printf ("Skipped      : %d\n", num_skipped);
-	printf ("Elapsed time : %ds\n", (int)(t1 - t0));
+	printf ("\n*** Summary\n\n");
+	printf (" %-23.23s Success        Fail        Skip\n", "Test name");
+	printf (" ---------------------------------------------------------\n");
+	list_for_each (h, &test_list, next) {
+		struct test_suite *s = list_entry (h, struct test_suite, list);
+		total = s->succeeded + s->failed + s->skipped;
+		printf (" %-23.23s%3d (%3d%%)  %3d (%3d%%)  %3d (%3d%%)\n",
+			s->name,
+			s->succeeded, 100 * s->succeeded / total,
+			s->failed, 100 * s->failed / total,
+			s->skipped, 100 * s->skipped / total);
+	}
+	printf (" ---------------------------------------------------------\n");
+	total = num_succeeded + num_failed + num_skipped;
+	printf (" %-23.23s%3d (%3d%%)  %3d (%3d%%)  %3d (%3d%%)\n",
+		"TOTAL",
+		num_succeeded, 100 * num_succeeded / total,
+		num_failed, 100 * num_failed / total,
+		num_skipped, 100 * num_skipped / total);
+
+	printf ("\n*** Elapsed time: %ds\n", (int)(t1 - t0));
 
 	return 0;
 }
