@@ -15,13 +15,24 @@
 extern "C"{
 #endif
 
+/* Features */
+#define USE_CONSOLE
+#define USE_PCM_SOUND
+#define AGDS_SUPPORT
+
 #ifdef PALMOS
 #  include <PalmOS.h>
+#  undef USE_CONSOLE
+#  undef USE_PCM_SOUND
+#  undef AGDS_SUPPORT
 #else
 #  include <stdlib.h>
-#  ifndef FAKE_PALMOS
-#    define USE_CONSOLE
-#  endif
+#endif
+
+#ifdef FAKE_PALMOS
+#  undef USE_CONSOLE
+#  undef USE_PCM_SOUND
+#  undef AGDS_SUPPORT
 #endif
 
 /*
@@ -36,6 +47,8 @@ extern "C"{
 #ifdef __TURBOC__
 #  include <alloc.h>
 #  undef USE_CONSOLE
+#  undef USE_PCM_SOUND
+#  undef AGDS_SUPPORT
 #endif
 
 #include "console.h"
@@ -135,7 +148,6 @@ extern "C"{
 
 
 #if !defined PALMOS && !defined FAKE_PALMOS && !defined __TURBOC__
-#  define AGDS_SUPPORT			/* enable support for AGDS games */
 #  define OPT_LIST_OBJECTS
 #  define OPT_PICTURE_VIEWER
 #  define OPT_LIST_DICT

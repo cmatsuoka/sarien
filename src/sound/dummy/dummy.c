@@ -33,7 +33,7 @@ static int dummy2_init_sound (SINT16 *buffer)
 	return -1;
 }
 
-static void dummy2_close_sound (void)
+static void dummy2_close_sound ()
 {
 }
 

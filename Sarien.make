@@ -14,7 +14,7 @@ Includes        =  ¶
 
 Sym-68K         = -sym off
 
-COptions        = {Includes} {Sym-68K} -model near 
+COptions        = {Includes} {Sym-68K} -model near -typecheck relaxed -d VERSION="0.7.0" -d __MPW__ 
 
 
 ### Source Files ###
@@ -24,7 +24,6 @@ SrcFiles        =  ¶
 				  :src:core:agi_v2.c ¶
 				  :src:core:agi_v3.c ¶
 				  :src:core:checks.c ¶
-				  :src:core:cli.c ¶
 				  :src:core:console.c ¶
 				  :src:core:cycle.c ¶
 				  :src:core:font.c ¶
@@ -36,7 +35,6 @@ SrcFiles        =  ¶
 				  :src:core:keyboard.c ¶
 				  :src:core:logic.c ¶
 				  :src:core:lzw.c ¶
-				  :src:core:main.c ¶
 				  :src:core:menu.c ¶
 				  :src:core:motion.c ¶
 				  :src:core:objects.c ¶

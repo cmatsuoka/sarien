@@ -47,15 +47,17 @@ struct channel_info {
 #define AGI_SOUND_4CHN		0x0008
 	UINT32 type;
 	struct agi_note *ptr;
+#ifdef USE_PCM_SOUND
 	SINT16 *ins;
 	SINT32 size;
+	UINT32 phase;
+#endif
 #define AGI_SOUND_LOOP		0x0001
 #define AGI_SOUND_ENVELOPE	0x0002
 	UINT32 flags;
 	SINT32 timer;
 	UINT32 end;
 	UINT32 freq;
-	UINT32 phase;
 	UINT32 vol;
 	UINT32 env;
 };
@@ -122,14 +124,19 @@ static int playing_sound = -1;
 static UINT16 type;
 static UINT8 *song;
 static UINT8 env;
-static SINT16 *waveform;
 
-
-SINT16 *snd_buffer;
 struct sound_driver *snd;
 
 extern struct sound_driver sound_dummy;
 
+static void stop_note(int i);
+static void play_note(int i, int freq, int vol);
+
+
+#ifdef USE_PCM_SOUND
+
+SINT16 *snd_buffer;
+static SINT16 *waveform;
 
 static SINT16 waveform_ramp[WAVEFORM_SIZE] = {
        0,   8,  16,  24,  32,  40,  48,  56,
@@ -164,9 +171,9 @@ static SINT16 waveform_mac[WAVEFORM_SIZE] = {
     -175,-172,-165,-159,-137,-114, -67, -19
 };
 
+#endif /* USE_PCM_SOUND */
 
-static void stop_note(int i);
-static void play_note(int i, int freq, int vol);
+
 
 #ifdef USE_IIGS_SOUND
 
@@ -294,8 +301,10 @@ void start_sound (int resnum, int flag)
 			chn[i].flags = AGI_SOUND_LOOP;
 			if (env)
 				chn[i].flags |= AGI_SOUND_ENVELOPE;
+#ifdef USE_PCM_SOUND
 			chn[i].ins = waveform;
 			chn[i].size = WAVEFORM_SIZE;
+#endif
 			chn[i].ptr = (struct agi_note *)(song +
 				(song[i << 1] | (song[(i << 1) + 1] << 8)));
 			chn[i].timer = 0;
@@ -305,7 +314,9 @@ void start_sound (int resnum, int flag)
 		break;
 	}
 
+#ifdef USE_PCM_SOUND
 	memset (snd_buffer, 0, BUFFER_SIZE << 1);
+#endif
 	endflag = flag;
 
 	/* Nat Budin reports that the flag should be reset when sound starts,
@@ -343,10 +354,15 @@ int init_sound ()
 {
 	int r = -1;
 
+#ifdef USE_PCM_SOUND
 	snd_buffer = calloc (2, BUFFER_SIZE);
+#endif
+
 	__init_sound ();
 
 	env = FALSE;
+
+#ifdef USE_PCM_SOUND
 	switch (opt.soundemu) {
 	case SOUND_EMU_NONE:
 		waveform = waveform_ramp;
@@ -359,16 +375,19 @@ int init_sound ()
 		waveform = waveform_mac;
 		break;
 	}
+#endif
 
 	report ("Initializing sound:\n");
 
 	if (opt.nosound)
 		snd = &sound_dummy;
 
+#ifdef USE_PCM_SOUND
 	if ((r = snd->init (snd_buffer)) != 0) {
 		snd = &sound_dummy;
 		opt.nosound = TRUE;
 	}
+#endif
 
 	report ("sound: %s configured\n", snd->description);
 
@@ -388,7 +407,9 @@ void deinit_sound (void)
 {
 	_D ("()");
 	snd->deinit ();
+#ifdef USE_PCM_SOUND
 	free (snd_buffer);
+#endif
 }
 
 
@@ -410,8 +431,11 @@ static void play_note (int i, int freq, int vol)
 	else if (vol && opt.soundemu == SOUND_EMU_PC)
 		vol = 160;
 
-	chn[i].freq = freq;
+#ifdef USE_PCM_SOUND
 	chn[i].phase = 0;
+#endif
+
+	chn[i].freq = freq;
 	chn[i].vol = vol; 
 	chn[i].env = 0x10000;
 
@@ -445,8 +469,7 @@ void play_midi_sound ()
 		cmd >>= 4;
 	}
 
-	switch (cmd)
-	{
+	switch (cmd) {
 	case 0x08:
 		parm1 = *p++;
 		parm2 = *p++;
@@ -543,6 +566,8 @@ void play_sound ()
 	}
 }
 
+
+#ifdef USE_PCM_SOUND
 
 UINT32 mix_sound (void)
 {
@@ -685,3 +710,6 @@ void unload_instruments ()
 }
 
 #endif /* USE_IIGS_SOUND */
+
+#endif /* USE_PCM_SOUND */
+
