@@ -76,9 +76,12 @@ static char *match (char *p, int f)
 			} else {
 				strcpy (path, e->d_name);
 			}
+			closedir (d);
 			return path;
 		}
 	}
+
+	closedir (d);
 
 	return NULL;
 }
