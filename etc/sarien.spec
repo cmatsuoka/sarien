@@ -1,6 +1,6 @@
 Name: sarien
-Version: 0.7.0
-Release: 1cm
+Version: 0.8.0
+Release: 1
 Summary: An interpreter for old Sierra AGI games
 Group: Games
 License: GPL

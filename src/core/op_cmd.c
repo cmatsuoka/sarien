@@ -706,10 +706,14 @@ cmd(set_cursor_char) {
 }
 
 cmd(set_key) {
-	int key = 256 * p1 + p0;
+	int key;
 
 	_D ("%d %d %d", p0, p1, p2);
 
+	if (game.ev_keyp[p2].data != 0)		/* TBC sets c23 (ESC) twice! */
+		return;
+
+	key = 256 * p1 + p0;
 	game.ev_keyp[p2].data = key;
 	game.ev_keyp[p2].occured = FALSE;
 }
