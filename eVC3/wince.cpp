@@ -38,9 +38,6 @@
 
 #include "resource.h"
 
-#define USE_F_KEYS
-#define SMOOTH
-
 static LPTSTR szAppName = TEXT("Pocket Sarien");
 static GXDisplayProperties gxdp;
 static GXKeyList gxkl;
@@ -50,17 +47,17 @@ static HWND hwndMB = NULL;
 
 typedef unsigned char UBYTE;
 static UBYTE* screen;
-#ifdef SMOOTH
+
+static int bFilter = 1;
 static UBYTE* palRed;
 static UBYTE* palGreen;
 static UBYTE* palBlue;
-#else
 static unsigned short* pal;
-#endif
 
 static bool bmono;
 static bool b565;
 static bool b555;
+static bool bpalette;
 
 static UBYTE invert = 0;
 static int colorscale = 0;
@@ -79,11 +76,9 @@ static void	wince_new_timer		(void);
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam);
 
-#ifdef USE_F_KEYS
 void setup_extra_windows(HWND hwndTop);
 void adjust_extra_windows();
 HWND hwndFKeys;
-#endif
 
 static struct gfx_driver gfx_wince =
 {
@@ -114,20 +109,44 @@ void set_palette(int ent, UBYTE r, UBYTE g, UBYTE b)
 {
 	if (ent >= 256)
 		return;
-#ifdef SMOOTH
+
 	palRed[ent] = r;
 	palGreen[ent] = g;
 	palBlue[ent] = b;
-#else
+
 	if(b565)
 		pal[ent] = COLORCONV565(r,g,b);
 	else if(b555)
 		pal[ent] = COLORCONV555(r,g,b);
 	else if(bmono)
 		pal[ent] = COLORCONVMONO(r,g,b);
-#endif
 }
 
+void palette_update()
+{
+	if(bpalette)
+	{
+		LOGPALETTE* ple = (LOGPALETTE*)malloc(sizeof(LOGPALETTE)+sizeof(PALETTEENTRY)*255);
+		ple->palVersion = 0x300;
+		ple->palNumEntries = 256;
+		for(int i=0; i<236; i++) // first 10 and last ten belong to the system!
+		{
+			ple->palPalEntry[i+10].peBlue =  palBlue[i];
+			ple->palPalEntry[i+10].peGreen = palGreen[i];
+			ple->palPalEntry[i+10].peRed =   palRed[i];
+			ple->palPalEntry[i+10].peFlags = PC_RESERVED;
+		}
+		HDC hDC = GetDC(hwndMain);
+		GetSystemPaletteEntries(hDC, 0, 10, &(ple->palPalEntry[0]));
+		GetSystemPaletteEntries(hDC, 246, 10, &(ple->palPalEntry[246]));
+		HPALETTE hpal =	CreatePalette(ple);
+		SelectPalette(hDC, hpal, FALSE);
+		RealizePalette(hDC);
+		DeleteObject((HGDIOBJ)hpal);
+		ReleaseDC(hwndMain, hDC);
+		free((void*)ple);
+	}
+}
 
 static int wince_init_vidmode()
 {
@@ -173,17 +192,16 @@ static int wince_init_vidmode()
 	hwndMB = smbi.hwndMB;
 	
 	screen = new UBYTE[GFX_WIDTH*GFX_HEIGHT];
-#ifdef SMOOTH
+
 	palRed = new UBYTE[256];
 	palGreen = new UBYTE[256];
 	palBlue = new UBYTE[256];
 	if(!palRed || !palGreen || !palBlue)
 		return err_Unk;
-#else
+
 	pal = new unsigned short[256];
 	if(!pal)
 		return err_Unk;
-#endif
 
 	if(!screen)
 		return err_Unk;
@@ -205,6 +223,12 @@ static int wince_init_vidmode()
 	bmono = (gxdp.ffFormat & kfDirect) && (gxdp.cBPP <= 8);
 	b565 = (gxdp.ffFormat & kfDirect565) != 0;
 	b555 = (gxdp.ffFormat & kfDirect555) != 0;
+	bpalette = (gxdp.ffFormat & kfPalette) != 0;
+	if(bpalette)
+	{
+		bmono = false;
+		bFilter = 0; // cannot do filtered image in palette mode, sorry
+	}
 	if(bmono)
 	{
 		if(gxdp.ffFormat & kfDirectInverted)
@@ -218,9 +242,9 @@ static int wince_init_vidmode()
 	for(i=17; i<256; i++)
 		set_palette(i, 0, 255, 0);
 
-#ifdef USE_F_KEYS
+	palette_update();
+
 	setup_extra_windows(hwndMain);
-#endif
 
 	return err_OK;
 }
@@ -241,14 +265,10 @@ static int wince_deinit_vidmode(void)
 	GXCloseDisplay();
 
 	delete[] screen;
-#ifdef SMOOTH
 	delete[] palRed;
 	delete[] palGreen;
 	delete[] palBlue;
-#else
 	delete[] pal;
-#endif
-
 
 	PostMessage(hwndMain, WM_QUIT, 0, 0);
 	return err_OK;
@@ -345,9 +365,7 @@ static void wince_put_block(int x1, int y1, int x2, int y2)
 	static UBYTE bitmask;
 	static int   bitshift;
 
-#ifdef SMOOTH
 	x1 &= ~3;
-#endif
 
 	scr_ptr = screen + x1 + y1*GFX_WIDTH;
 	scr_ptr_limit = screen + x2 + y2*GFX_WIDTH;
@@ -391,60 +409,65 @@ static void wince_put_block(int x1, int y1, int x2, int y2)
 			dst = scraddr;
 			while(src < src_limit)
 			{
-#ifdef SMOOTH
-			/* Let's see how fast that CPU is */
-				UBYTE r, g, b;
-				r = (3*palRed[*(src+0)] + palRed[*(src+1)])>>2;
-				g = (3*palGreen[*(src+0)] + palGreen[*(src+1)])>>2;
-				b = (3*palBlue[*(src+0)] + palBlue[*(src+1)])>>2;
-
-				if(b565)
-					*(unsigned short*)dst = COLORCONV565(r,g,b);
-				else if(b555)
-					*(unsigned short*)dst = COLORCONV555(r,g,b);
-				else if(bmono)
-					*dst = (*dst & ~bitmask) | (COLORCONVMONO(r,g,b)<<bitshift);
-
-				dst += pixelstep;
-
-				r = (palRed[*(src+1)] + palRed[*(src+2)])>>1;
-				g = (palGreen[*(src+1)] + palGreen[*(src+2)])>>1;
-				b = (palBlue[*(src+1)] + palBlue[*(src+2)])>>1;
-
-				if(b565)
-					*(unsigned short*)dst = COLORCONV565(r,g,b);
-				else if(b555)
-					*(unsigned short*)dst = COLORCONV555(r,g,b);
-				else if(bmono)
-					*dst = (*dst & ~bitmask) | (COLORCONVMONO(r,g,b)<<bitshift);
-
-				dst += pixelstep;
-
-				r = (palRed[*(src+2)] + 3*palRed[*(src+3)])>>2;
-				g = (palGreen[*(src+2)] + 3*palGreen[*(src+3)])>>2;
-				b = (palBlue[*(src+2)] + 3*palBlue[*(src+3)])>>2;
-
-				if(b565)
-					*(unsigned short*)dst = COLORCONV565(r,g,b);
-				else if(b555)
-					*(unsigned short*)dst = COLORCONV555(r,g,b);
-				else if(bmono)
-					*dst = (*dst & ~bitmask) | (COLORCONVMONO(r,g,b)<<bitshift);
-
-				dst += pixelstep;
-
-				src += 4;
-#else
-				if((unsigned long)src & 3)
+				if(bFilter)
 				{
-					if(bmono)
-						*dst = ((*dst)&~bitmask)|(pal[*src]<<bitshift);
-					else
-						*(unsigned short*)dst = pal[*src];
+				/* Let's see how fast that CPU is */
+					UBYTE r, g, b;
+					r = (3*palRed[*(src+0)] + palRed[*(src+1)])>>2;
+					g = (3*palGreen[*(src+0)] + palGreen[*(src+1)])>>2;
+					b = (3*palBlue[*(src+0)] + palBlue[*(src+1)])>>2;
+
+					if(b565)
+						*(unsigned short*)dst = COLORCONV565(r,g,b);
+					else if(b555)
+						*(unsigned short*)dst = COLORCONV555(r,g,b);
+					else if(bmono)
+						*dst = (*dst & ~bitmask) | (COLORCONVMONO(r,g,b)<<bitshift);
+
 					dst += pixelstep;
+
+					r = (palRed[*(src+1)] + palRed[*(src+2)])>>1;
+					g = (palGreen[*(src+1)] + palGreen[*(src+2)])>>1;
+					b = (palBlue[*(src+1)] + palBlue[*(src+2)])>>1;
+
+					if(b565)
+						*(unsigned short*)dst = COLORCONV565(r,g,b);
+					else if(b555)
+						*(unsigned short*)dst = COLORCONV555(r,g,b);
+					else if(bmono)
+						*dst = (*dst & ~bitmask) | (COLORCONVMONO(r,g,b)<<bitshift);
+
+					dst += pixelstep;
+
+					r = (palRed[*(src+2)] + 3*palRed[*(src+3)])>>2;
+					g = (palGreen[*(src+2)] + 3*palGreen[*(src+3)])>>2;
+					b = (palBlue[*(src+2)] + 3*palBlue[*(src+3)])>>2;
+
+					if(b565)
+						*(unsigned short*)dst = COLORCONV565(r,g,b);
+					else if(b555)
+						*(unsigned short*)dst = COLORCONV555(r,g,b);
+					else if(bmono)
+						*dst = (*dst & ~bitmask) | (COLORCONVMONO(r,g,b)<<bitshift);
+
+					dst += pixelstep;
+
+					src += 4;
 				}
-				src ++;
-#endif
+				else
+				{
+					if((unsigned long)src & 3)
+					{
+						if(bmono)
+							*dst = ((*dst)&~bitmask)|(pal[*src]<<bitshift);
+						else if(bpalette)
+							*dst = *src+10; // YES!!!
+						else
+							*(unsigned short*)dst = pal[*src];
+						dst += pixelstep;
+					}
+					src ++;
+				}
 			}
 			if(bmono)
 			{
@@ -475,7 +498,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT  ps;
 	int          key = 0;
 	static		 SHACTIVATEINFO sai;
-	int x, y;
 	RECT		 rc;
 
 	switch (nMsg)
@@ -502,9 +524,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		hDC = BeginPaint (hwndMain, &ps);
 		EndPaint (hwndMain, &ps);
 		SHSipPreference(hwndMain, SIP_UP); /* Hack! */
-#ifdef USE_F_KEYS
 		adjust_extra_windows();
-#endif
 		/* It does not happen often but I don't want to see tooltip traces */
 		wince_put_block(0, 0, 319, 199);
 		return 0;
@@ -515,9 +535,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			GXResume();
 		}
 		SHHandleWMActivate(hwnd, wParam, lParam, &sai, SHA_INPUTDIALOG);
-#ifdef USE_F_KEYS
 		adjust_extra_windows();
-#endif
+		palette_update();
 		return 0;
 	case WM_HIBERNATE:
 		if(active)
@@ -528,9 +547,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		return 0;
 	case WM_SETTINGCHANGE:
 		SHHandleWMSettingChange(hwnd, wParam, lParam, &sai);
-#ifdef USE_F_KEYS
 		adjust_extra_windows();
-#endif
 		return 0;
 	case WM_COMMAND:
 		switch(wParam)
@@ -700,7 +717,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc (hwnd, nMsg, wParam, lParam);
 }
 
-#ifdef USE_F_KEYS
 /* Window for F-key input. Hack but some people asked for it. */
 LRESULT CALLBACK FWindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -796,4 +812,3 @@ void adjust_extra_windows()
 			SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
 	}
 }
-#endif
