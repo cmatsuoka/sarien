@@ -57,6 +57,7 @@ void inventory ()
 	/* FIXME: doesnt check if objects overflow off screen... */
 
 	intobj = malloc (4 + game.num_objects);
+	memset(intobj, 0, (4 + game.num_objects));
 
 	for (x = y = 0, cy = 2, objcount = 0; x < game.num_objects; x++) {
 		if (object_get_location (x) == EGO_OWNED) {
