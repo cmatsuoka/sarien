@@ -40,7 +40,8 @@ Revision History
 	- fixed geometry of win32 window (closes: #606452, #604435)
 	- fixed menu controller data corruption (closes: #608671)
 	- enabling menu options on restart (closes: #607643)
-	- added CGA palette emulation
+	- added "trigger" command to the interpreter console
+	- added CGA palette/color dithering emulation
 	- added CGA video card support for PC DOS
 	- added icon and menu resources to the win32 port
 	- added picture viewer to the win32 port
