@@ -18,6 +18,7 @@ AC_ARG_WITH(sdl,    [  --with-sdl              use the Simple DirectMedia Layer]
 AC_ARG_WITH(svgalib,[  --with-svgalib          use SVGAlib for graphics])
 AC_ARG_WITH(alsa,   [  --with-alsa             use ALSA for sound output])
 AC_ARG_WITH(win32,  [  --with-win32            use Win32 console/sound drivers])
+AC_ARG_WITH(amiga,  [  --with-amiga            use Amiga console/sound drivers])
 
 if test "${target}" = NONE; then
 	target=${host}
@@ -49,6 +50,9 @@ cygwin*|mingw*)
 palmos*)
 	CFLAGS="$CFLAGS -DPALMOS"
 	MAIN_FILE="palmos"
+	;;
+amiga*)
+	CFLAGS="$CFLAGS -DAMIGA -Uamiga"
 	;;
 esac
 
@@ -98,6 +102,10 @@ elif test "${with_svgalib}" = "yes"; then
 		CONSOLE_DRIVER="svgalib"
 		LIBS="-lvga ${LIBS}"
 	fi
+elif test "${with_amiga}" = "yes"; then
+	CONSOLE_DRIVER="amiga"
+	AC_CHECK_LIB(amiga, usleep)
+	LIBS="-m68020 -noixemul -ldebug -lm ${LIBS}"
 else
 	AC_PATH_X
 	if test ! -z "${ac_cv_have_x}"; then
@@ -193,6 +201,10 @@ cygwin*)
 	LIBS="-lwinmm ${LIBS}"
 	SOUND_DRIVER="win32"
 	;;
+amiga*)
+	LIBS="${LIBS}"
+	SOUND_DRIVER="amiga"
+	;;
 *)
 	SOUND_DRIVER="dummy"
 	;;
@@ -200,7 +212,7 @@ esac
 fi
 
 case "${SOUND_DRIVER}" in
-dummy|win32|sdl|freebsd|qnx)
+dummy|win32|sdl|freebsd|qnx|amiga)
 	;;
 *)
 	AC_CHECK_LIB(pthread, pthread_create,[
