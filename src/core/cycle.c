@@ -72,7 +72,7 @@ void new_room (int n)
 		game.view_table[0].y_pos = HORIZON + 1;
 		break;
 	case 4:
-		game.view_table[0].x_pos = _WIDTH - v->x_size;
+		game.view_table[0].x_pos = _WIDTH - game.view_table[0].x_size;
 		break;
 	}
 
