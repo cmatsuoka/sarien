@@ -1,7 +1,7 @@
 # $Id$
 
 XCFLAGS	= -I../../include
-OBJS	= amiga.o
+OBJS	= sound_ahi.o
 DFILES	= Makefile $(OBJS:.o=.c)
 CFILES	=
 DDIRS	=
