@@ -27,7 +27,8 @@
 #  define MAX_INT (int)((unsigned)~0 >> 1)
 #endif
 
-extern UINT8 font[];
+
+extern UINT8 cur_font[];
 
 #ifdef __TURBOC__
 
@@ -225,7 +226,7 @@ void put_text_character (int l, int x, int y, unsigned int c, int fg, int bg)
 		c = 1;
 #endif
 
-	p = font + ((unsigned int)c * CHAR_LINES);
+	p = cur_font + ((unsigned int)c * CHAR_LINES);
 	for (y1 = 0; y1 < CHAR_LINES; y1++) {
 		for (x1 = 0; x1 < CHAR_COLS; x1 ++) {
 			xx = x + x1;
