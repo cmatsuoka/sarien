@@ -237,7 +237,7 @@ int main(int argc, char *argv[])
 #endif
 
 	printf(
-TITLE VERSION " - A Sierra AGI resource interpreter engine.\n"
+TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 "Copyright (C) 1999 Stuart George, (C) 1999,2001 Claudio Matsuoka\n"
 "Portions Copyright (C) 1998 Lance Ewing, (C) 1999 Felipe Rosinha\n"
 #ifndef HAVE_GETOPT_LONG
