@@ -375,6 +375,7 @@ press:
 
 getout:
 	close_window ();
+	_D (_D_WARN "Result = %d", rc);
 
 	return rc;
 }

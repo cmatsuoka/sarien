@@ -90,6 +90,11 @@ diff: chkoldver
 	    sync; \
 	fi
 
+devbuild: configure
+	./configure --enable-trace --enable-efence
+	make clean
+	make
+
 Rules: Rules.in
 	./config.status
 

@@ -254,7 +254,7 @@ static void adjust_menu ()
 	if (scale == 1)
 		SetMenuItemText (menu, iSize, "\pDouble size");
 	else
-		SetMenuItemText (menu, iSize, "\pSingle size");
+		SetMenuItemText (menu, iSize, "\pNormal size");
 	
 	if (fixratio)
 		SetMenuItemText (menu, iRatio, "\p8:5 aspect ratio");

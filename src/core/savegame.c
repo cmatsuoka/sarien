@@ -714,7 +714,7 @@ int savegame_dialog ()
 
 	rc = selection_box (dstr, buttons);
 
-	if (rc > 0) {
+	if (rc != 0) {
 		message_box ("Game NOT saved.");
 		return err_OK;
 	}
