@@ -32,6 +32,7 @@ fi
 case "${target_os}" in
 beos*)
 	CFLAGS="$CFLAGS -I/boot/develop/tools/gnupro/include"
+	CPPFLAGS="$CPPFLAGS -I/boot/develop/tools/gnupro/include"
 	with_sdl="yes"
 	;;
 qnx*)
@@ -186,14 +187,18 @@ default)
 esac
 fi
 
-if test "${SOUND_DRIVER}" != "dummy" -a "${SOUND_DRIVER}" != "win32"; then
+case "${SOUND_DRIVER}" in
+dummy|win32|sdl)
+	;;
+default)
 	AC_CHECK_LIB(pthread, pthread_create,[		\
 		CFLAGS="${CFLAGS} -D_REENTRANT";	\
 		LIBS="-lpthread ${LIBS}"		\
 	], [						\
 		SOUND_DRIVER="dummy"			\
 	])
-fi
+	;;
+esac
 
 
 dnl ----------------------------------------------
@@ -201,7 +206,7 @@ dnl Check for file globbing support
 dnl ----------------------------------------------
 
 AC_CHECKING([for file globbing support])
-FILEIO_DRIVER="none"
+FILEIO_DRIVER="unix"
 AC_CHECK_FUNC(_dos_findfirst,[FILEIO_DRIVER="msdos"])
 AC_CHECK_FUNC(_findfirst,[FILEIO_DRIVER="win32"])
 AC_CHECK_FUNC(glob,[FILEIO_DRIVER="unix"])
