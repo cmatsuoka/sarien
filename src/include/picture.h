@@ -27,7 +27,6 @@ int	decode_picture	(int, int);
 int	unload_picture	(int);
 void	show_pic	(void);
 UINT8* 	convert_v3_pic	(UINT8 *data, UINT32 len);
-void	restore_window_area (void);
 
 #ifdef __cplusplus
 };

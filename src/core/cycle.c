@@ -191,9 +191,10 @@ int main_cycle ()
 		if (kascii) setvar (V_key, kascii);
 		switch (game.input_mode) {
 		case INPUT_NORMAL:
-			if (!handle_controller (key))
+			if (!handle_controller (key)) {
 				handle_keys (key);
-			if (key) game.keypress = key;
+				if (key) game.keypress = key;
+			}
 			break;
 		case INPUT_GETSTRING:
 			handle_controller (key);

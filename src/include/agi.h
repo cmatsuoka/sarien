@@ -105,6 +105,7 @@ struct agi_block {
 	int active;
 	int x1, y1;
 	int x2, y2;
+	UINT8 *buffer;	/* used for window background */
 };
 
 #define EGO_VIEW_TABLE	0

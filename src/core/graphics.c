@@ -453,4 +453,35 @@ void clear_console_screen (int n)
 		n * 10 * GFX_WIDTH);
 }
 
+void save_block (int x1, int y1, int x2, int y2, UINT8 *b)
+{
+	UINT8 *p0;
+	int w, h;
+
+	p0 = &sarien_screen[x1 + GFX_WIDTH * y1];
+	w = x2 - x1 + 1;
+	h = y2 - y1 + 1;
+	while (h--) {
+		memcpy (b, p0, w);
+		b += w;
+		p0 += GFX_WIDTH;
+	}
+}
+
+void restore_block (int x1, int y1, int x2, int y2, UINT8 *b)
+{
+	UINT8 *p0;
+	int w, h;
+
+	p0 = &sarien_screen[x1 + GFX_WIDTH * y1];
+	w = x2 - x1 + 1;
+	h = y2 - y1 + 1;
+	while (h--) {
+		memcpy (p0, b, w);
+		b += w;
+		p0 += GFX_WIDTH;
+	}
+	flush_block (x1, y1, x2, y2);
+}
+
 /* end: graphics.c */

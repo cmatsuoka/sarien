@@ -110,8 +110,8 @@ static void objs_restorearea (struct sprite *s)
 	}
 
 	if (game.picture_shown) {
-		flush_block_a (s->x_pos, s->y_pos, s->x_pos + s->x_size,
-			s->y_pos + s->y_size);
+		flush_block_a (s->x_pos, s->y_pos, s->x_pos + s->x_size - 1,
+			s->y_pos + s->y_size - 1);
 	}
 }
 

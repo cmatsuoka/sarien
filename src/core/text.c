@@ -153,21 +153,10 @@ end:
 }
 
 
-/**
- *
- */
-void close_window ()
-{
-	if (game.window.active)
-		restore_window_area ();		/* remove window */
-	game.has_window = FALSE;
-	game.window.active = FALSE;
-}
-
 
 /* len is in characters, not pixels!!
  */
-static void textbox (char *p, int y, int x, int len)
+static void blit_textbox (char *p, int y, int x, int len)
 {
 	/* if x | y = -1, then centre the box */
 	int xoff, yoff, lin, h, w;
@@ -206,22 +195,54 @@ static void textbox (char *p, int y, int x, int len)
 	if (yoff < 0)
 		yoff = (GFX_HEIGHT - 2 * CHAR_LINES - h) / 2;
 
-	game.window.active = 1;
-	game.window.x1 = xoff / 2;
-	game.window.y1 = yoff - 8;
-	game.window.x2 = (xoff + w - 1) / 2;
-	game.window.y2 = (yoff + h - 1) - 8;
+	game.window.active = TRUE;
+	game.window.x1 = xoff;
+	game.window.y1 = yoff;
+	game.window.x2 = xoff + w - 1;
+	game.window.y2 = yoff + h - 1;
+	game.window.buffer = malloc (w * h);
+	
+	_D (_D_WARN "x1=%d, y1=%d, x2=%d, y2=%d", game.window.x1,
+		game.window.y1, game.window.x2, game.window.y2);
 
-	draw_box (xoff, yoff, xoff + w - 1, yoff + h - 1,
-		MSG_BOX_COLOUR, MSG_BOX_LINE, LINES);
+	save_block (game.window.x1, game.window.y1, game.window.x2,
+		game.window.y2, game.window.buffer);
+
+	draw_box (game.window.x1, game.window.y1, game.window.x2,
+		game.window.y2, MSG_BOX_COLOUR, MSG_BOX_LINE, LINES);
 
 	print_text2 (2, msg, 0, CHAR_COLS + xoff, CHAR_LINES + yoff, len + 1,
 		MSG_BOX_TEXT, MSG_BOX_COLOUR);
 
 	free (msg);
 
-	schedule_update (xoff, yoff, xoff + w, yoff + h);
 	do_update ();
+}
+
+static void erase_textbox ()
+{
+	if (!game.window.active)
+		return;
+
+	_D (_D_WARN "x1=%d, y1=%d, x2=%d, y2=%d", game.window.x1,
+		game.window.y1, game.window.x2, game.window.y2);
+
+	restore_block (game.window.x1, game.window.y1,
+		game.window.x2, game.window.y2, game.window.buffer);
+
+	game.window.active = FALSE;
+
+	do_update ();
+}
+
+/**
+ *
+ */
+void close_window ()
+{
+	_D (_D_WARN "close window");
+	erase_textbox ();		/* remove window, if any */
+	game.has_window = FALSE;
 }
 
 /**
@@ -234,8 +255,9 @@ int message_box (char *s)
 {
 	int k;
 
-	textbox (s, -1, -1, -1);
+	blit_textbox (s, -1, -1, -1);
 	k = wait_key ();
+	_D (_D_WARN "wait_key returned %02x", k);
 	close_window ();
 
 	return k;
@@ -248,7 +270,7 @@ int print (char *p, int lin, int col, int len)
 {
 	assert (p != NULL);
 
-	textbox (p, lin, col, len);
+	blit_textbox (p, lin, col, len);
 
 	if (getflag (F_output_mode)) {
 		/* non-blocking window */

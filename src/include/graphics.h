@@ -65,6 +65,8 @@ void	flush_screen	(void);
 void	clear_screen	(int);
 void	draw_box	(int, int, int, int, int, int, int);
 void	draw_rectangle	(int, int, int, int, int);
+void	save_block	(int, int, int, int, UINT8 *);
+void	restore_block	(int, int, int, int, UINT8 *);
 
 void	put_pixel	(int, int, int);	
 

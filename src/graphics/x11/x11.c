@@ -669,8 +669,8 @@ static void x11_put_block (int x1, int y1, int x2, int y2)
 	if (scale > 1) {
 		x1 *= scale;
 		y1 *= scale;
-		x2 *= scale;
-		y2 *= scale;
+		x2 = x2 * scale + scale - 1;
+		y2 = y2 * scale + scale - 1;
 	}
 
 #ifdef MITSHM
