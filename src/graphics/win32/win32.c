@@ -269,7 +269,8 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
 	HDC hdc;
 	PAINTSTRUCT ps;
-	int h, w, key = 0, shift, old_res;
+	int h, w, key = 0, shift;
+	static old_res = TRUE;
 	xyxy *p = (xyxy *)lParam;
 
 	switch (nMsg) {
@@ -328,6 +329,9 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			resize_window(hwnd);
 			set_putpixels_method();
 			refresh_screen();
+			break;
+		case ITEM_FILE_OPEN:
+			open_file (hwnd);
 			break;
 		case ITEM_HELP_ABOUT:
 			DialogBox (GetModuleHandle(NULL),

@@ -21,6 +21,7 @@ HWND     hwndMain;
 void     (*flush_sound) (PWAVEHDR pWave);
 
 BOOL CALLBACK AboutDlgProc(HWND, UINT, WPARAM, LPARAM);
+void open_file (HWND);
 
 #ifdef __cplusplus
 } 

@@ -49,8 +49,8 @@ BOOL CheckForGame (char *szDir)
 {
 	WIN32_FIND_DATA ffd;
 	HANDLE hFind;
-	CHAR szDirLocal[MAX_PATH] = {0};
-	CHAR szFullPath[MAX_PATH] = {0};
+	CHAR szDirLocal[MAX_PATH] = { 0 };
+	CHAR szFullPath[MAX_PATH] = { 0 };
 	BOOL bFound = FALSE;
 	DWORD dwFileInfo;
 
@@ -77,7 +77,7 @@ BOOL CheckForGame (char *szDir)
 	return bFound;
 }
 
-int CALLBACK BrowseCallbackProc(HWND hwnd,UINT uMsg,LPARAM lp, LPARAM pData)
+int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg,LPARAM lp, LPARAM pData)
 {
 	CHAR szDir[MAX_PATH+1]	= { 0 };
 	HKEY hKey		= NULL;
@@ -127,62 +127,77 @@ int CALLBACK BrowseCallbackProc(HWND hwnd,UINT uMsg,LPARAM lp, LPARAM pData)
 	return 0;
 }
 
-static void open_file (HINSTANCE hThisInst, char *s)
+/* BOOL CALLBACK
+FileOpenDlgProc (HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) */
+/* static void open_file (HINSTANCE hThisInst, char *s) */
+void open_file (HWND hwnd)
 {
-	BROWSEINFO bi		= { 0 };
-	CHAR szDir[MAX_PATH]	= { 0 };
-	LPITEMIDLIST pidl	= { 0 };
-	LPMALLOC pMalloc	= NULL;
-	HKEY hKey		= NULL;
-	DWORD dwDisposition	= 0;
+	BROWSEINFO bi        = { 0 };
+	CHAR szDir[MAX_PATH] = { 0 };
+	LPITEMIDLIST pidl    = { 0 };
+	LPMALLOC pMalloc     = NULL;
+	HKEY hKey            = NULL;
+	DWORD dwDisposition  = 0;
+	char s[MAX_PATH]     = { 0 };
 
-	if (SUCCEEDED (SHGetMalloc(&pMalloc))) {
-		bi.hwndOwner = NULL;
-		bi.lpszTitle = "Select AGI game folder:"; 
-		bi.pszDisplayName = 0;
-		bi.pidlRoot = 0;
-		/* USENEWUI flag has weird problem where "My Computer" is
-		 * seen as a valid folder by CheckForGame. TODO: figure out
-		 * why and fix.
-		 */
-		bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_STATUSTEXT;
-		bi.lpfn = BrowseCallbackProc;
-		pidl = SHBrowseForFolder(&bi);
-		if (pidl) { 
-			if (SHGetPathFromIDList(pidl,szDir)) 
-				strncpy(s, szDir, MAX_PATH);
-		}
+	if (game.state >= STATE_LOADED) {
+		MessageBox(hwnd, "AGI game already loaded.", "Error", MB_OK);
+		return;
+	}
 
-		if (ERROR_SUCCESS != RegCreateKeyEx (HKEY_CURRENT_USER,
-			"SOFTWARE\\FreeAGI", 0, NULL, REG_OPTION_NON_VOLATILE,
-			KEY_SET_VALUE, NULL, &hKey, &dwDisposition))
-		{
-			OutputDebugString("winmain.c: open_file(): "
-				"RegCreateKeyEx != ERROR_SUCESS");
-		}
-
-		if (ERROR_SUCCESS != RegSetValueEx(hKey, "LastFolder", 0,
-			REG_SZ, (const unsigned char *)szDir, MAX_PATH))
-		{
-			OutputDebugString ("winmain.c: open_file(): "
-				"RegSetValueEx != ERROR_SUCESS");
-		}
-
-		if (ERROR_SUCCESS != RegCloseKey(hKey)) {
-			OutputDebugString("winmain.c: open_file(): "
-			"RegCloseKey != ERROR_SUCESS");
-		}
-
-		/* not c++ so vtbl */
-		pMalloc->lpVtbl->Free(pMalloc,pidl);
-		pMalloc->lpVtbl->Release(pMalloc);
-	   
-	} else {
+	if (!SUCCEEDED (SHGetMalloc(&pMalloc))) {
 		OutputDebugString("open_file(): SHGetMalloc failed");
 		exit(1);
 	}
-}
 
+	bi.hwndOwner = NULL;
+	bi.lpszTitle = "Select AGI game folder:"; 
+	bi.pszDisplayName = 0;
+	bi.pidlRoot = 0;
+	/* USENEWUI flag has weird problem where "My Computer" is
+	 * seen as a valid folder by CheckForGame. TODO: figure out
+	 * why and fix.
+	 */
+	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_STATUSTEXT;
+	bi.lpfn = BrowseCallbackProc;
+	pidl = SHBrowseForFolder(&bi);
+
+	if (pidl) { 
+		if (SHGetPathFromIDList(pidl,szDir)) 
+			strncpy(s, szDir, MAX_PATH);
+	}
+
+	if (ERROR_SUCCESS != RegCreateKeyEx (HKEY_CURRENT_USER,
+		"SOFTWARE\\FreeAGI", 0, NULL, REG_OPTION_NON_VOLATILE,
+		KEY_SET_VALUE, NULL, &hKey, &dwDisposition))
+	{
+		OutputDebugString("winmain.c: open_file(): "
+			"RegCreateKeyEx != ERROR_SUCESS");
+	}
+
+	if (ERROR_SUCCESS != RegSetValueEx(hKey, "LastFolder", 0,
+		REG_SZ, (const unsigned char *)szDir, MAX_PATH))
+	{
+		OutputDebugString ("winmain.c: open_file(): "
+			"RegSetValueEx != ERROR_SUCESS");
+	}
+
+	if (ERROR_SUCCESS != RegCloseKey(hKey)) {
+		OutputDebugString("winmain.c: open_file(): "
+		"RegCloseKey != ERROR_SUCESS");
+	}
+
+	/* not c++ so vtbl */
+	pMalloc->lpVtbl->Free(pMalloc,pidl);
+	pMalloc->lpVtbl->Release(pMalloc);
+
+	stop_sound ();
+
+	if (agi_detect_game (s) == err_OK) {
+		game.state = STATE_RUNNING;
+		return;
+	}
+}
 
 
 BOOL CALLBACK
@@ -214,13 +229,12 @@ WinMain (HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int nWinMode)
 {
 	int ec = err_OK;
 	char *c	= NULL;
-	char filename[MAX_PATH]	= { 0 };
+	char filename[MAX_PATH]	= "";
 	
 	game.clock_enabled = FALSE;
 	game.state = STATE_INIT;
 
 	/* Set defaults */
-	/* FIXME: make these selectable in the launcher window */
 	memset (&opt, 0, sizeof (struct sarien_options));
 	opt.gamerun = GAMERUN_RUNGAME;
 	opt.scale = 2;
@@ -235,8 +249,10 @@ WinMain (HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int nWinMode)
 
 	if (*c)
 		strcpy (filename, ++c);
+/*
 	else
 		open_file (hThisInst, filename);
+*/
 
 	init_machine (1, 0);
 
