@@ -193,9 +193,10 @@ static void read_bytes (FILE* f, char* s, SINT16 size)
 }
 
 
+#define SAVEGAME_VERSION 1
+
 int save_game (char* s, char* d)
 {
-
 	SINT16 i;
 	struct image_stack_element* ptr = image_stack;
 	FILE* f = fopen (s, "wb");
@@ -210,7 +211,8 @@ int save_game (char* s, char* d)
 	write_bytes (f, strSig, 8);
 	write_string (f, d);
 
-	write_sint16 (f, (SINT16)game.state);
+	write_uint8 (f, (SINT8)SAVEGAME_VERSION);
+	write_uint8 (f, (SINT8)game.state);
 	/* game.name */
 	write_string (f, game.id);
 	/* game.crc */
@@ -356,8 +358,7 @@ int save_game (char* s, char* d)
 
 int load_game(char* s)
 {
-
-	int i;
+	int i, ver, vt_entries = MAX_VIEWTABLE;
 	UINT8 t;
 	SINT16 parm[7];
 	char sig[8];
@@ -380,7 +381,10 @@ int load_game(char* s)
 
 	read_string (f, description);
 
-	game.state = read_sint16(f);
+	ver = read_uint8(f);
+	if (ver == 0)
+		vt_entries = 64;
+	game.state = read_uint8(f);
 	/* game.name - not saved */
 	read_string(f, id);
 	if(strcmp(id, game.id)) {
@@ -486,7 +490,7 @@ int load_game(char* s)
 	/* game.views - loaded above */
 	/* game.sounds - loaded above */
 
-	for (i = 0; i < MAX_VIEWTABLE; i++) {
+	for (i = 0; i < vt_entries; i++) {
 		struct vt_entry* v = &game.view_table[i];
 
 		v->step_time = read_uint8(f);
@@ -531,6 +535,9 @@ int load_game(char* s)
 		v->parm2 = read_uint8(f);
 		v->parm3 = read_uint8(f);
 		v->parm4 = read_uint8(f);
+	}
+	for (i = vt_entries; i < MAX_VIEWTABLE; i++) {
+		memset (&game.view_table[i], 0, sizeof (struct vt_entry));
 	}
 
 	/* Fix some pointers in viewtable */
