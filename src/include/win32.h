@@ -11,6 +11,8 @@
 #ifndef _WIN_32_H
 #define _WIN_32_H 1
 
+#define snprintf _vsnprintf
+
 #ifdef	__cplusplus
 extern "C" {
 #endif

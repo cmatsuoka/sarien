@@ -85,10 +85,10 @@ int decode_words (UINT8* mem, UINT32 flen)
 int load_words (char *fname)
 {
 #ifndef PALMOS
-	FILE *fp;
+	FILE *fp	= NULL;
 	UINT32 flen;
-	UINT8 *mem;
-	char *path;
+	UINT8 *mem	= NULL;
+	char *path	= NULL;
 	int	ec=err_OK;
 
 	num_words = 0;
@@ -167,7 +167,8 @@ int find_word (char *word)
 void dictionary_words (char *msg)
 {
 	static UINT8 bad_word[256];	/* FIXME: dynamic allocation? */
-	char *p, *q = NULL;
+	char *p	= NULL;
+	char *q = NULL;
 	int wc1;
 
 	_D ("(\"%s\")", msg);

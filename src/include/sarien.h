@@ -31,20 +31,21 @@ extern "C"{
 #endif
 
 #if defined (NATIVE_WIN32)
-#  define INLINE __forceinline
+#  define INLINE __inline
 #elif !defined (INLINE)
 #  define INLINE
 #endif
 
 /* Environment variable containing the path name for the users's
  * private files ($HOME in Unix, %USERPROFILE% in Win32)
+ * DATADIR conflicts with ObjIdl.h in win32 SDK, renamed to DATA_DIR 
  */
 #if defined (WIN32) || defined (_M_MSDOS)
 #  define HOMEDIR "USERPROFILE"
-#  define DATADIR "Sarien"
+#  define DATA_DIR "Sarien"
 #else
 #  define HOMEDIR "HOME"
-#  define DATADIR ".sarien"
+#  define DATA_DIR ".sarien"
 #endif
 
 #ifdef PALMOS
@@ -99,7 +100,7 @@ extern "C"{
 #define MAX_WORDS1	24
 #define	MAX_WORDS2	40
 #ifndef MAX_PATH
-#define MAX_PATH	256
+#define MAX_PATH	260
 #endif
 
 #define	_EMPTY		0xfffff

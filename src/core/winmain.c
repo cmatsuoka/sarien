@@ -9,6 +9,7 @@
  */
 
 #include <windows.h>
+#include <shlobj.h>
 #include <stdio.h>
 #include "sarien.h"
 #include "agi.h"
@@ -26,24 +27,95 @@ struct game_id_list game_info;
 struct agi_game game;
 
 #ifndef _TRACE
-INLINE void _D (char *s, ...) { }
+void _D (char *s, ...) { }
 #endif
 
 
+BOOL CheckForOVL(char *szDir)
+{
+	WIN32_FIND_DATA ffd;
+	HANDLE hFind;
+	CHAR szDirLocal[MAX_PATH];
+	CHAR szFullPath[MAX_PATH];
+	BOOL bFound = FALSE;
+	DWORD dwFileInfo;
+
+	sprintf(szDirLocal, "%s\\*.ovl", szDir);
+	
+	ZeroMemory(&ffd, sizeof(WIN32_FIND_DATA));
+
+	hFind = FindFirstFile(szDirLocal, &ffd);
+	
+	do
+	{
+		sprintf(szFullPath, "%s\\%s", szDir, ffd.cFileName);
+		dwFileInfo = GetFileAttributes(szFullPath);
+		
+		if(dwFileInfo != 0xFFFFFFFF && dwFileInfo & ~FILE_ATTRIBUTE_DIRECTORY)
+			bFound = TRUE;
+	}
+	while(0 != FindNextFile(hFind, &ffd) && bFound != TRUE);
+
+	FindClose(hFind);
+
+	return bFound;
+}
+
+int CALLBACK BrowseCallbackProc(HWND hwnd,UINT uMsg,LPARAM lp, LPARAM pData)
+{
+	CHAR szDir[MAX_PATH];
+
+	switch(uMsg) 
+	{
+	case BFFM_INITIALIZED: 
+		if(GetCurrentDirectory(sizeof(szDir)/sizeof(CHAR), szDir))
+			SendMessage(hwnd,BFFM_SETSELECTION,TRUE,(LPARAM)szDir);
+		break;
+	case BFFM_SELCHANGED: 
+	   if (SHGetPathFromIDList((LPITEMIDLIST) lp ,szDir)) 
+	   {
+		   if(CheckForOVL(szDir))
+		   {
+			   SendMessage(hwnd, BFFM_ENABLEOK, 0, TRUE);
+			   SendMessage(hwnd,BFFM_SETSTATUSTEXT,0,(LPARAM)szDir);
+		   }
+		   else
+			   SendMessage(hwnd, BFFM_ENABLEOK, 0, FALSE);
+	   }
+	   break;
+	default:
+	   break;
+	}
+	return 0;
+}
+
 static void open_file (HINSTANCE hThisInst, char *s)
 {
-	OPENFILENAME OpenFile;	/* Structure for Open common dialog box */
-	
-	ZeroMemory (&OpenFile, sizeof(OPENFILENAME));
-	OpenFile.lStructSize = sizeof (OPENFILENAME);
-	OpenFile.hwndOwner = HWND_DESKTOP;
-	OpenFile.hInstance = hThisInst;
-	OpenFile.lpstrFile = s;
-	OpenFile.nMaxFile = MAX_PATH - 1;
-	OpenFile.lpstrTitle = TITLE " " VERSION " - FIXME: OpenFile hack";
-	OpenFile.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
-	
-	GetOpenFileName(&OpenFile);
+	BROWSEINFO bi;
+	CHAR szDir[MAX_PATH];
+	LPITEMIDLIST pidl;
+	LPMALLOC pMalloc;
+
+	if (SUCCEEDED(SHGetMalloc(&pMalloc)))
+	{
+		ZeroMemory(&bi,sizeof(bi));
+		bi.hwndOwner = NULL;
+		bi.lpszTitle = "Select target directory containing AGI game."; 
+		bi.pszDisplayName = 0;
+		bi.pidlRoot = 0;
+		bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_STATUSTEXT;
+		bi.lpfn = BrowseCallbackProc;
+		pidl = SHBrowseForFolder(&bi);
+		if (pidl) 
+			if (SHGetPathFromIDList(pidl,szDir)) 
+				strncpy(s, szDir, MAX_PATH);
+				
+		//not c++ so vtbl
+		pMalloc->lpVtbl->Free(pMalloc,pidl);
+		pMalloc->lpVtbl->Release(pMalloc);
+	   
+	}
+
 }
 
 

@@ -54,10 +54,9 @@ typedef struct {
 enum {
 	WM_PUT_BLOCK = WM_USER + 1,
 };
-
 static UINT16 g_err = err_OK;
 static HPALETTE g_hPalette = NULL;
-static const char* g_szMainWndClass = "SarienWin";
+static const char g_szMainWndClass[] = "SarienWin";
 static int  scale = 2;
 
 static struct{
@@ -103,7 +102,7 @@ extern struct gfx_driver *gfx;
 
 static char *apptext = TITLE " " VERSION;
 static HDC  hDC;
-static WNDCLASSEX wndclass;
+static WNDCLASS wndclass;
 
 
 static void INLINE gui_put_block (int x1, int y1, int x2, int y2)
@@ -356,18 +355,16 @@ static int init_vidmode ()
 	"win32: Win32 DIB support by rosinha@dexter.damec.cefetpr.br\n");
 #endif
 
-	memset (&wndclass, 0, sizeof(WNDCLASSEX));
+	memset (&wndclass, 0, sizeof(WNDCLASS));
 	wndclass.lpszClassName = g_szMainWndClass;
-//	wndclass.cbSize        = sizeof(WNDCLASSEX);
 	wndclass.style         = CS_HREDRAW | CS_VREDRAW;
 	wndclass.lpfnWndProc   = MainWndProc;
-	wndclass.hInstance     = NULL;
+	wndclass.hInstance     = GetModuleHandle(NULL);
 	wndclass.hIcon         = LoadIcon (NULL, IDI_APPLICATION);
-//	wndclass.hIconSm       = LoadIcon (NULL, IDI_APPLICATION);
 	wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW);
 	wndclass.hbrBackground = GetStockObject (BLACK_BRUSH);
 
-	if (!RegisterClassEx (&wndclass)) {
+	if (!RegisterClass(&wndclass)) {
 		fprintf( stderr, "win32: can't register class\n");
 		g_err = err_Unk;
 		goto exx;
@@ -443,7 +440,7 @@ exx:
 static void INLINE process_events ()
 {
 	MSG msg;
-
+	
 	while (PeekMessage (&msg, NULL, 0, 0, PM_NOREMOVE)) {
 		GetMessage (&msg, NULL, 0, 0);
 		TranslateMessage (&msg);

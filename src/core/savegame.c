@@ -40,6 +40,8 @@ static int loading_ok;
  * Application Data for NT
  */
 
+#define snprintf _snprintf
+
 #include <windows.h>
 
 static int get_app_dir (char *app_dir, unsigned int size)
@@ -457,13 +459,15 @@ int savegame_dialog ()
 		"will be available in future versions of Sarien.");
  	desc = "Save game test";
 
-	snprintf (path, MAX_PATH, "%s/" DATADIR "/", home);
+	/* DATADIR conflicts with ObjIdl.h in win32 SDK,
+		renamed to DATA_DIR */
+	snprintf (path, MAX_PATH, "%s/" DATA_DIR "/", home);
 	mkdir (path, 0755);
-	snprintf (path, MAX_PATH, "%s/" DATADIR "/%s/", home, game.id);
+	snprintf (path, MAX_PATH, "%s/" DATA_DIR "/%s/", home, game.id);
 	_D (_D_WARN "path is [%s]", path);
 	mkdir (path, 0711);
 
-	snprintf (path, MAX_PATH, "%s/" DATADIR "/%s/%08d.iff",
+	snprintf (path, MAX_PATH, "%s/" DATA_DIR "/%s/%08d.iff",
 		home, game.id, slot);
 	_D (_D_WARN "file is [%s]", path);
 	
@@ -486,12 +490,12 @@ int loadgame_dialog ()
 		return err_BadFileOpen;
 	}
 
-	snprintf (path, MAX_PATH, "%s/" DATADIR "/", home);
+	snprintf (path, MAX_PATH, "%s/" DATA_DIR "/", home);
 	mkdir (path, 0755);
-	snprintf (path, MAX_PATH, "%s/" DATADIR "/%s/", home, game.id);
+	snprintf (path, MAX_PATH, "%s/" DATA_DIR "/%s/", home, game.id);
 	mkdir (path, 0711);
 	
-	snprintf (path, MAX_PATH, "%s/" DATADIR "/%s/%08d.iff",
+	snprintf (path, MAX_PATH, "%s/" DATA_DIR "/%s/%08d.iff",
 		home, game.id, slot);
 	if ((rc = load_game (path)) == err_OK) {
 		message_box ("Gamed loaded.");

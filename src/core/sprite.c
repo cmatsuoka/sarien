@@ -39,7 +39,7 @@ struct sprite {
 
 static void blit_cel (int x, int y, int spr, struct view_cel *c)
 {
-	UINT8 *p0, *p, *q;
+	UINT8 *p0, *p, *q	= NULL;
 	int i, j, t;
 	int epr, pr;		/* effective and real priorities */
 
@@ -301,7 +301,7 @@ static void erase_sprites (struct list_head *head)
  */
 static void blit_sprites (struct list_head *head)
 {
-	struct list_head *h;
+	struct list_head *h	= NULL;
 
 	list_for_each (h, head, next) {
 		struct sprite *s = list_entry (h, struct sprite, list);
@@ -431,7 +431,7 @@ void blit_both ()
  */
 void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 {
-	struct view_cel	*c;
+	struct view_cel	*c	= NULL;
 	int x1, y1;
 	UINT8 *p;
 
@@ -439,7 +439,7 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 	if (pri == 0)
 		pri = 8;		/* ??!? */
 
-	assert ((c = &game.views[view].loop[loop].cel[cel]) != NULL);
+	c = &game.views[view].loop[loop].cel[cel];
 
 	if (y - c->height + 1 > 0)
 		y -= c->height - 1;
