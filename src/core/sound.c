@@ -510,6 +510,12 @@ void play_midi_sound ()
 	}
 }
 
+void play_sample_sound ()
+{
+	play_note (0, 11025, 200);
+	playing = 1;
+}
+
 #endif /* USE_IIGS_SOUND */
 
 
@@ -557,6 +563,8 @@ void play_sound ()
 #ifdef USE_IIGS_SOUND
 	if (type == AGI_SOUND_MIDI)
 		play_midi_sound ();
+	else if (type == AGI_SOUND_SAMPLE)
+		play_sample_sound ();
 	else
 #endif
 		play_agi_sound ();
