@@ -11,6 +11,8 @@
 #ifndef __AGI_CONSOLE_H
 #define __AGI_CONSOLE_H
 
+#ifdef USE_CONSOLE
+
 #define CONSOLE_LINES_ONSCREEN	20
 #define CONSOLE_LINES_BUFFER	128
 #define CONSOLE_PROMPT		"$"
@@ -43,15 +45,17 @@ struct sarien_console {
 extern "C" {
 #endif
 
-int	console_init	(void);
-int	console_keyhandler (int);
-void	console_cycle	(void);
-void	console_prompt	(void);
-void	console_lock	(void);
-void	report		(char *, ...);
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* USE_CONSOLE */
+
+int	console_init	(void);
+void	console_cycle	(void);
+void	console_lock	(void);
+void	console_prompt	(void);
+void	report		(char *, ...);
 
 #endif /* __AGI_CONSOLE_H */

@@ -23,7 +23,7 @@
 
 
 int	run_game2(void);
-//UINT16	crc_game(void);
+/* UINT16	crc_game(void); */
 
 /* For the interactive picture viewer */
 UINT8	show_screen_mode = 'x';
@@ -33,7 +33,9 @@ volatile UINT32 clock_count;
 
 extern int optind;
 
+#ifdef USE_CONSOLE
 extern struct sarien_console console;
+#endif
 extern UINT8 *font, font_english[];
 
 struct sarien_options opt;
@@ -51,8 +53,11 @@ static int view_pictures ()
 	char x[64];
 	int i, pic, dir = 1;
 
+#ifdef USE_CONSOLE
 	console.active = 0;
 	console.y = 0;
+#endif
+
 	show_screen_mode = 'v';
 
 	for (i = 0; ec == err_OK; i = 1) {

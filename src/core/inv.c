@@ -17,6 +17,7 @@
 #include "gfx_agi.h"
 #include "gfx_base.h"
 #include "keyboard.h"
+#include "console.h"
 #include "text.h"
 #include "keyboard.h"
 

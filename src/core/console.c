@@ -8,6 +8,10 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
+#include "sarien.h"
+
+#ifdef USE_CONSOLE
+
 /*
  * The console has been added to sarien in version 0.4.9. The main
  * interpreter engine has not been designed to have a console, and a few
@@ -23,7 +27,6 @@
 #include <string.h>
 #include <stdarg.h>
 
-#include "sarien.h"
 #include "agi.h"
 #include "gfx_base.h"
 #include "text.h"
@@ -679,3 +682,33 @@ int console_keyhandler (int k)
 	return TRUE;
 }
 
+#else
+
+void *debug;
+
+void report (char *message, ...)
+{
+	/* dummy */
+}
+
+int console_init ()
+{
+	return 0;
+}
+
+void console_cycle ()
+{
+	/* dummy */
+}
+
+void console_lock ()
+{
+	/* dummy */
+}
+
+void console_prompt ()
+{
+	/* dummy */
+}
+
+#endif /* USE_CONSOLE */

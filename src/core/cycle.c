@@ -25,7 +25,10 @@
 
 #define TICK_SECONDS 20
  
+#ifdef USE_CONSOLE
 extern struct sarien_console console;
+#endif
+
 extern struct agi_logic logics[];
 extern struct agi_view views[];
 extern struct agi_view_table view_table[];
@@ -488,12 +491,17 @@ void main_cycle (int accept_key)
 
 	poll_keyboard ();
 
+#ifdef USE_CONSOLE
 	if (console.active && console.input_active)
 		handle_console_keys ();
-	else if (accept_key)
+	else
+#endif
+	if (accept_key)
 		handle_keys ();
 
+#ifdef USE_CONSOLE
 	console_cycle ();
+#endif
 
 	if (getvar (V_window_reset) > 0) {
 		game.msg_box_ticks = getvar (V_window_reset) * 10;
@@ -530,9 +538,11 @@ int run_game2 ()
 
 	report (" \nSarien " VERSION " is ready.\n");
 	report ("Running AGI script.\n");
-	console.count = 20;
 
+#ifdef USE_CONSOLE
+	console.count = 20;
 	console_prompt ();
+#endif
 
 	clean_keyboard ();
 

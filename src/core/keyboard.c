@@ -29,7 +29,10 @@ UINT8  last_sentence[40];
 UINT8  IsGetString=FALSE;
 UINT16  xInput, yInput;
 
+#ifdef USE_CONSOLE
 extern struct sarien_console console;
+#endif
+
 extern struct agi_view_table view_table[];
 
 /* FIXME */
@@ -204,7 +207,10 @@ void poll_keyboard ()
 
 	setvar (V_word_not_found, 0);
 
-	if (!console.active || !console.input_active) {
+#ifdef USE_CONSOLE
+	if (!console.active || !console.input_active)
+#endif
+	{
 		for (c1 = 0; c1 < MAX_DIRS; c1++)
 			game.events[c1].occured = FALSE;
 	}
@@ -213,14 +219,18 @@ void poll_keyboard ()
 	while (keypress ()) {
 		xkey = get_key ();
 
+#ifdef USE_CONSOLE
 		if (console_keyhandler (xkey))
 			continue;
+#endif
 
 		key = xkey;
 		_D ("key = %d", key);
 
+#ifdef USE_CONSOLE
 		if (console.active && console.input_active)
 			continue;
+#endif
 
 		/* For controller() */
 		for (c1 = 0; c1 < MAX_DIRS; c1++) {
@@ -268,10 +278,13 @@ void poll_keyboard ()
 	if (!KEY_ASCII (key))
 		return;
 
+#ifdef USE_CONSOLE
 	if (console.active && console.input_active) {
 		console.input_key = KEY_ASCII (key);
 		key = 0;
-	} else {
+	} else
+#endif
+	{
 		/* If you comment this out all keystrokes will be echoed */
 		if (!game.allow_kyb_input)
 			return;

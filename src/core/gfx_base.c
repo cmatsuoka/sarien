@@ -18,7 +18,10 @@
 #include "gfx_base.h"
 #include "console.h"
 
+#ifdef USE_CONSOLE
 extern struct sarien_console console;
+#endif
+
 extern UINT8 *font;
 
 /* exported to the console drivers */
@@ -67,6 +70,7 @@ void put_pixel_buffer (int x, int y, int c)
 	put_pixel (x, y, c);
 }
 
+#ifdef USE_CONSOLE
 
 /* driver wrapper */
 /* put_pixel2 is console-aware and handles transparency
@@ -100,6 +104,17 @@ void put_pixel (int x, int y, int c)
 	put_pixel2 (x, y, c);
 }
 
+#else
+
+void put_pixel (int x, int y, int c)
+{
+	layer1_data[y * GFX_WIDTH + x] = c;
+	gfx->put_pixel (x, y, c);
+}
+
+#define put_pixel2 put_pixel
+
+#endif /* USE_CONSOLE */
 
 /* flush block is used to put a block "behind" the console
  * works on the 320x200 screen
@@ -206,9 +221,11 @@ int init_video ()
 	for (i = 0; i < 48; i++)
 		palette[i + 48] = (palette[i] + 0x30) >> 2;
 
+#ifdef USE_CONSOLE
 	/* Console */
 	for (i = 0; i < CONSOLE_LINES_BUFFER; i++)
 		console.line[i] = strdup ("\n");
+#endif
 
 	screen_mode = GFX_MODE;
 	txt_fg = 0xF;

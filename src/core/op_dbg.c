@@ -261,6 +261,8 @@ struct agi_logicnames logic_names_cmd[]= {
 };
 
 
+#ifdef USE_CONSOLE
+
 void debug_console (int lognum, int mode, char *str)
 {
 	struct agi_logicnames *x;
@@ -333,4 +335,14 @@ void debug_console (int lognum, int mode, char *str)
 
 	report ("\n");
 }
+
+#else
+
+void debug_console (int lognum, int mode, char *str)
+{
+	/* dummy */
+}
+
+
+#endif /* USE_CONSOLE */
 

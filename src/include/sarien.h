@@ -11,6 +11,8 @@
 #ifndef __SARIEN_H
 #define __SARIEN_H
 
+#define USE_CONSOLE
+
 #if defined (NATIVE_WIN32)
 #define INLINE __forceinline
 #elif !defined (INLINE)
@@ -126,9 +128,7 @@ int	getvar		(int);
 void	setvar		(int, int);
 
 void	decrypt		(UINT8 *mem, int len);
-//void	unload_resources(void);
 void	release_sprites	(void);
-//void	new_room_resources(void);
 void	update_status_line(int);
 
 void main_cycle (int);
