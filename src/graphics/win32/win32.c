@@ -54,12 +54,10 @@ enum {
 	WM_PUT_BLOCK = WM_USER + 1,
 };
 
-//static HANDLE g_hThread;
 static UINT16 g_err = err_OK;
-//static HANDLE g_hExchEvent = NULL;
 static HPALETTE g_hPalette = NULL;
 static const char* g_szMainWndClass = "SarienWin";
-static int  scale = 1;
+static int  scale = 2;
 
 static struct{
 	HBITMAP    screen_bmp;
@@ -76,8 +74,6 @@ static struct{
 } g_key_queue = { 0, 0 };
 
 
-//static LONGLONG g_update_freq, g_counts_per_msec; /* counts in tick */
-
 volatile UINT32 c_ticks;
 volatile UINT32 c_count;
 
@@ -93,8 +89,6 @@ static void	gui_put_block		(int, int, int, int);
 static int	set_palette		(UINT8 *, int, int);
 
 
-static unsigned int __stdcall GuiThreadProc(void *);
-
 static struct gfx_driver GFX_WIN32 = {
 	init_vidmode,
 	deinit_vidmode,
@@ -105,12 +99,14 @@ static struct gfx_driver GFX_WIN32 = {
 	win32_get_key
 };
 
+
 extern struct sarien_options opt;
 extern struct gfx_driver *gfx;
 
 static char *apptext = TITLE " " VERSION;
 static HDC  hDC;
 static WNDCLASSEX wndclass;
+
 
 LRESULT CALLBACK
 MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
@@ -122,11 +118,10 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 	switch (nMsg) {
 	case WM_PUT_BLOCK: {
 		xyxy *p = (xyxy *)lParam;
-		gui_put_block(p->x1, p->y1, p->x2, p->y2);
+		gui_put_block (p->x1, p->y1, p->x2, p->y2);
 		free(p);
 		} break;
 	case WM_DESTROY:
-		//fprintf (stderr, "Fatal: message WM_DESTROY caught\n" );
 		deinit_vidmode ();
 		exit (-1);
 		return 0;
@@ -156,7 +151,7 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 	 * (Damn! The CALLBACK_FUNCTION parameter doesn't work!)
 	 */
 	case MM_WOM_DONE:
-		felipes_kludge ((PWAVEHDR) lParam);
+		flush_sound ((PWAVEHDR) lParam);
 		return 0;
 
 	case WM_SYSKEYDOWN:
@@ -292,18 +287,6 @@ int init_machine (int argc, char **argv)
 	c_ticks = 0;
 	c_count = 0;
 
-#if 0
-	if (!QueryPerformanceFrequency((LARGE_INTEGER*)&g_update_freq)) {
-		fprintf (stderr, "win32: high resoultion timer needed\n");
-		return err_Unk;
-	}
-
-//      update_freq = 45 * (update_freq / 1000);	/* X11 speed  */
-//	g_update_freq = g_update_freq / TICK_SECONDS;	/* Sierra speed */
-//	g_counts_per_msec = g_update_freq / 1000;
-//	g_update_freq /= TICK_SECONDS;			/* Original speed */
-#endif
-	
 	return err_OK;
 }
 
@@ -316,45 +299,13 @@ int deinit_machine ()
 
 static int init_vidmode ()
 {
-	//unsigned id;
-	DWORD id;
+	int i;
 
 #if 0
+	/* FIXME: place this in an "About" box or something... */
 	fprintf (stderr,
 	"win32: Win32 DIB support by rosinha@dexter.damec.cefetpr.br\n");
 #endif
-
-	//g_hExchEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	//ResetEvent(g_hExchEvent);
-
-#ifdef __CYGWIN__
-	GuiThreadProc (NULL);
-	//g_hThread = (HANDLE)CreateThread(NULL, 0, GuiThreadProc, NULL, 0, &id);
-#else
-	g_hThread = (HANDLE)_beginthreadex(NULL, 0, GuiThreadProc, NULL, 0, &id);
-#endif
-	//if (g_hThread == INVALID_HANDLE_VALUE)
-		//return err_Unk;
-
-	//WaitForSingleObject(g_hExchEvent, INFINITE);
-	//ResetEvent(g_hExchEvent);
-	return g_err;	
-}
-
-static void process_events ()
-{
-	MSG msg;
-
-	while (PeekMessage (&msg, NULL, 0, 0, PM_NOREMOVE)) {
-		GetMessage (&msg, NULL, 0, 0);
-		TranslateMessage (&msg);
-		DispatchMessage (&msg);
-	}
-}
-
-static unsigned int __stdcall GuiThreadProc(void *param)
-{
-	int i;
 
 	memset (&wndclass, 0, sizeof(WNDCLASSEX));
 	wndclass.lpszClassName = g_szMainWndClass;
@@ -430,22 +381,25 @@ static unsigned int __stdcall GuiThreadProc(void *param)
 		fprintf( stderr, "win32: can't create DIB section\n");
 		g_err = err_Unk;
 	} else {
-		ShowWindow (hwndMain, TRUE);	// *****
+		ShowWindow (hwndMain, TRUE);
 		UpdateWindow (hwndMain);
 		g_err = err_OK;
 	}
 
 exx:
-	//SetEvent(g_hExchEvent);	/* notify main thread to continue */
 
-#if 0
-	while (GetMessage (&msg, NULL, 0, 0)) {
+	return g_err;	
+}
+
+static void process_events ()
+{
+	MSG msg;
+
+	while (PeekMessage (&msg, NULL, 0, 0, PM_NOREMOVE)) {
+		GetMessage (&msg, NULL, 0, 0);
 		TranslateMessage (&msg);
-		DispatchMessage  (&msg);
+		DispatchMessage (&msg);
 	}
-#endif
-
-	return 0;	
 }
 
 static int deinit_vidmode (void)
@@ -471,7 +425,7 @@ static void win32_put_block (int x1, int y1, int x2, int y2) //th0
 	PostMessage (hwndMain, WM_PUT_BLOCK, 0, (LPARAM)p);
 }
 
-static void gui_put_block (int x1, int y1, int x2, int y2) //1
+static void gui_put_block (int x1, int y1, int x2, int y2)
 {
 	HDC hDC;
 
@@ -504,7 +458,7 @@ static void gui_put_block (int x1, int y1, int x2, int y2) //1
 		x2 - x1 + 1,
                 y2 - y1 + 1,
 		x1,
-                GFX_HEIGHT * scale - y2,
+                GFX_HEIGHT * scale - y2 - 1,
 		x2 - x1 + 1,
                 y2 - y1 + 1,
 		g_screen.screen_pixels,

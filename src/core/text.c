@@ -336,7 +336,7 @@ void print_status (char *message, ...)
  */
 char *agi_sprintf (char *s, int n)
 {
-	static char x[256], y[256];
+	static char x[512], y[512];
 	char z[16], *p;
 	int xx, xy;
 
@@ -398,7 +398,7 @@ char *agi_sprintf (char *s, int n)
 			break;
 
 		default:
-			assert (p < x + 255);
+			assert (p < x + 512);
 			*p++ = *s++;
 			*p = 0;
 			break;

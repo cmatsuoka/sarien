@@ -16,7 +16,7 @@ extern "C" {
 #endif
 
 HWND     hwndMain;
-void     (*felipes_kludge) (PWAVEHDR pWave);
+void     (*flush_sound) (PWAVEHDR pWave);
 
 #ifdef __cplusplus
 } 
