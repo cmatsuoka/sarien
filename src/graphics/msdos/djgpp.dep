@@ -1,0 +1,16 @@
+
+include $(HOME)\Version
+CFLAGS = -I$(HOME)/src/include -O2 -m386 -DVERSION='"$(VERSION)"' -DHAVE_ALLEGRO -DSTACK_PUSHPOP -Wall
+
+%.o : %.asm
+	$(NSM) -f coff $< -o$@
+
+%.o : %.cc
+	$(CC) $(DEFS) $(EXTRAFLAGS) $(CFLAGS) -c -o$@ $<
+
+%.o : %.c
+	$(CC) $(DEFS) $(EXTRAFLAGS) $(CFLAGS) -c -o$@ $<
+
+%.o : %.s
+	$(CC) $(DEFS) $(EXTRAFLAGS) $(CFLAGS) -c -o$@ $<
+

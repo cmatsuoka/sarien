@@ -1,0 +1,93 @@
+
+ XV3 (v1.1)    Lance Ewing (be@ihug.co.nz)
+ ==========
+
+  This archive contains a program called XV3 which is designed to extract
+ LOGIC, PICTURE, VIEW, and SOUND data files out of AGI version 3 VOL files.
+
+  Some of the AGIv3 resources are slightly different in format from the
+ AGIv2 resources. For this reason they cannot be directly used with a lot
+ of the editors and viewers that we have written. However, this release
+ provides an option that will perform the conversion to AGIv2 if it is
+ requested for a particular resource (see further below). 
+
+  With this release I have tried to provide all the same features that
+ VOLX has. It now supports the conversion of WORDS.TOK and OBJECT files to
+ more readible formats as VOLX does, and it also allows you to extract ALL
+ resources in one pop. In this case the resources are extracted into
+ directories of their individual type.
+
+
+ Here is a description of the command line options for XV3:
+
+
+  xv3 -l[2] logicnumber
+
+     This option extracts the LOGIC file whose number is the same as the
+     logicnumber parameter. The optional 2 determines whether the conversion
+     to AGIv2 will take place.
+
+     Examples:   xv3 -l2 120      (extract LOGIC.120 and convert to AGIv2)
+                 xv3 -l 0         (extract LOGIC.0 and retain AGIv3 format)
+
+
+  xv3 -p[2] picturenumber
+
+     This option extracts the PICTURE file whose number is the same as the
+     picturenumber parameter. The optional 2 determines whether the conversion
+     to AGIv2 will take place.
+
+     Examples:  xv3 -p2 24        (extract PICTURE.24 and convert to AGIv2)
+                xv3 -p  5         (extract PICTURE.5 and retain AGIv3 format)
+
+
+  xv3 -v viewnumber
+
+     This option extracts the VIEW file whose number is the same as the
+     viewnumber parameter. Note that there is no optional 2 in this case
+     since the formats appear to be the same.
+
+     Example:   xv3 -v 234        (extract VIEW.234)
+
+
+  xv3 -s soundnumber
+
+     This option extracts the SOUND file whose number is the same as the
+     soundnumber parameter. Note that there is no optional 2 in this case
+     since the formats appear to be the same.
+
+     Example:   xv3 -s 8          (extract SOUND.8)
+
+
+  xv3 -l[2] ALL
+  xv3 -p[2] ALL
+  xv3 -v ALL
+  xv3 -s ALL
+
+     The ALL option can be used in the place of the resource number when
+     extracting LOGIC, PICTURE, VIEW, and SOUND resources. In each case,
+     all of the resources of the given type will be extracted into a
+     directory with the same name as the resource type.
+
+     Examples:  xv3 -l2 ALL       (extract all LOGICs in AGIv2 format)
+                xv3 -p ALL        (extract all PICTUREs)
+
+
+  xv3 -w
+
+     This option converts the WORDS.TOK into a readible text document
+     called WORDS.TXT. 
+
+
+  xv3 -o
+
+     This option decrypts the OBJECT file. 
+
+
+  xv3 -a
+
+     This option performs a complete extraction of the game data. All
+     resources are extracted into their relevant directories and the
+     WORDS.TOK and OBJECT files are converted as described above.
+
+

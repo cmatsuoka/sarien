@@ -1,0 +1,14 @@
+
+include $(HOME)/src/graphics/msdos/djgpp.dep
+
+OBJS = fileglob.o
+
+all: fileglob.a
+
+fileglob.a: $(OBJS)
+	ar rsv fileglob.a $(OBJS)
+
+clean:
+	@if exist *.a @del *.a
+	@if exist *.o @del *.o
+	@if exist *.bak @del *.bak

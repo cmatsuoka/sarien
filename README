@@ -1,0 +1,24 @@
+
+Quick notes - see docs/README.* for detailed information
+
+Directories:
+
+./VC++6.0		Visual C++ files
+./docs			Documentation
+./etc			Configuration files
+./rules			Extra rulesets for different architectures
+./src/core		AGI interpreter core files
+./src/graphics		Graphic drivers
+./src/sound		Sound drivers
+./src/utils		Lance Ewing's AGI utilities
+
+To build in UNIX platforms, run './configure; make'. ./configure --help
+will show the build options. If you're using mingw32, go32 or djgpp, copy
+the appropriate ruleset from rules/ to ./Rules. 
+
+To build using VC++, check the files in the appropriate directory.
+
+The code is currently under a cleanup/redesign process, in order to modularize
+and remove global data mess. The graphics layer will probably need a rewrite.
+Contact the maintainer (claudio@helllabs.org) to see how you can help.
+

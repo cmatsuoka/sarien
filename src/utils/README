@@ -1,0 +1,31 @@
+
+AGI Utilities
+Written by Lance Ewing <lance.e@ihug.co.nz>
+Unix port by Claudio Matsuoka <claudio@helllabs.org>
+
+This package contains utilities to extract and convert data from
+Sierra AGI resources. The utilities were originally released by Lance
+Ewing as a set of hacks and are now being re-published in a single
+package under the GNU General Public License.
+
+Note: these utilities will look for AGI files in lower case.
+
+The package currently contains showlog, volx and xv3. A brief summary
+of each utility follows:
+
+showlog
+-------
+showlog decodes Logic resources back to human-readable form. It
+requires Logic resources previously extracted by volx or xv3
+
+volx
+----
+Extract Logic, Sound, View and Picture resources from AGI files.
+volx works only with AGI version 2 files.
+
+xv3
+---
+Extract Logic, Sound, View and Picture resources from AGI files.
+xv3 works only with AGI version 3 files.
+
+

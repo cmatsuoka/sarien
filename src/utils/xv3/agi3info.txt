@@ -1,0 +1,89 @@
+AGI VERSION 3 RESOURCE STORAGE
+Written by Lance Ewing
+
+
+ AGIv3 stores resources in a slightly different way from AGIv2. The first
+significant difference is in the length of the resource header which is
+now seven bytes.
+
+      ________ ________ ________ ________ ________ ________ ________
+     |        |        |        |        |        |        |        |
+     |  0x12  |  0x34  | VOLNum |    UncompSize   |     CompSize    |
+     |________|________|________|________|________|________|________|
+
+
+      VOLNum: Bits 0-3 = VOL file number. Bit 7 = this resource is a PICTURE
+      UncompSize: Uncompressed resource size [LO-HI]
+      CompSize:   Compressed resource size [LO-HI]
+
+ 
+ Instead of one resource size as in AGIv2, there are now two sizes. Most of
+the resources in AGIv3 games are compressed with a form of LZW. Some of them
+are not though. The interpreter determines whether the resource is compressed
+by comparing the values of the two sizes given in the header information. If
+they are equal, then it knows that the resource is stored uncompressed.
+However, if the sizes do not match, this does not mean that the file is
+compressed with LZW. If the file is a PICTURE file, then it is stored with
+its own limited form of compression. This is why the top bit of the third
+byte in the header is used to tell the interpreter that the resource is a
+PICTURE file, otherwise it would think that the resource was compressed with
+LZW.
+
+ As far as I can tell, none of the PICTUREs are compressed with LZW. This
+may well be possible though. It could also be possible for the PICTURE to
+be totally uncompressed (i.e. it wouldn't use the PICTURE compression method),
+but I havn't seen any examples of either of the above two cases. 
+
+
+LZW COMPRESSION
+
+ The compression used with version 3 games is an adaptive form of LZW. The
+LZW algorithm is not explained here, but it basically compresses data by
+representing previous strings by single codes. When these strings are
+encountered again, the code can be stored instead. The following information
+states how the AGIv3 algorithm differs from the standard LZW algorithm. There
+are plenty of places on the net where you can find a description of the LZW
+algorithm if you are not familiar with it.
+
+ AGIv3 uses an adaptive form of LZW that starts by using 9 bit codes and
+when the code space is full, it progresses on to 10 bits and so on. As with
+normal LZW, codes 0-255 represent the standard ASCII characters. The next
+two codes have a special meaning:
+
+ - 256 is used as a start over code. The table is cleared, the number of bits
+   set back to 9, and the process begins again with the next code being 258.
+
+ - 257 tells the interpreter that it has reached the end of the resource.
+
+ Code 256 seems to be the first code stored in all compressed resources. This
+is probably just to make sure everything is initialized for beginning the
+compression process. As was mentioned above, the first code used for the LZW
+table itself is code 258. From there it stores pairs of prefix codes and
+appended characters for each table entry until it reaches code 512 at which
+stage it switches to storing the codes using 10 bits and then 11 and so on.
+It appears that it will never get to 12 bits because code 256 always seems
+to turn up just before it needs to switch up to 12 bits, i.e. when code 2048
+is required. Carl Muckenhoupts decrypt routine for SCI games specifically
+prevents it from switching to 12 bits anyway. Whether there is ever a case
+where code 256 does not intervene, it has not yet been determined.
+
+ Note: I should point out that Carl and myself both arrived at the above
+ algorithm independently which confirms that the compression used in the
+ early SCI games was identical to that used in AGIv3.
+
+
+PICTURE COMPRESSION
+
+ Pictures in AGI version 3 use a simple form of compression to shrink their
+size my a tiny amount. It was obviously recognised by the interpreter coders
+that four bits were being wasted for picture codes 0xF0 and 0xF2. These are
+the two codes that change the visual and the priority colour respectively.
+Since there are only 16 colours, there need not be a whole byte set aside for
+storing the colour. All the picture compression does is store these colours
+in 4 bits rather than 8.
+
+ Example:
+
+     Original picture codes:     F0 06 F8 12 45 F0 07 F2 05 F8 14 67 ...
+     Compressed picture code:    F0 6F 81 24 5F 07 F2 5F 81 46 7 ...
+

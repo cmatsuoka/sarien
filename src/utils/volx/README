@@ -1,0 +1,18 @@
+---------------------------------------------------------------------------
+ volx : AGI version 2 file extractor.
+---------------------------------------------------------------------------
+
+ Options:
+
+   volx -l ???               Extract LOGIC file number ???.
+   volx -p ???               Extract PICTURE file number ???.
+   volx -v ???               Extract VIEW file number ???.
+   volx -s ???               Extract SOUND file number ???.
+
+   volx -o                   Extract text out of OBJECT file.
+   volx -w                   Extract text out of WORDS.TOK file.
+
+   volx -s                   Extract all LOGIC, PICTURE, VIEW and SOUND
+                             resources and the OBJECT and WORDS.TOK files.
+
+---------------------------------------------------------------------------

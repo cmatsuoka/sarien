@@ -1,0 +1,60 @@
+
+WARNING: AGI file names must be in lower case! If you have unpacked them
+in upper case, run the following ksh/bash commands to convert them to
+lower case:
+
+	for i in *; do
+		mv $i `echo $i|tr A-Z a-z`
+	done
+
+
+System requirements
+===================
+
+GNU make, gcc, X Window System, Open Sound System or ALSA and supported
+sound card, AGI game files. POSIX threads (and a thread-safe X server)
+are needed for sound support.
+
+A Linux SVGAlib driver written by XoXus is now available, see README.svgalib
+for more information.
+
+This initial port is being tested on an i386 Debian GNU/Linux box with
+glibc running kernel 2.2.9 on a 333 MHz K6 machine. It should work with
+24/16/15 bpp true color and 8 bpp pseudo color servers.
+
+
+Building
+========
+
+Run "./configure", then "make". Should any problems happen, have a look
+at the generated Makefile, config.h and machine.h. And drop me a note
+so I could fix it in future versions.
+
+Most files contain carriage returns (^M) because the main development is
+being done in DOS by Dark Fiber, and keeping them there makes patching
+easier. You may need to remove them for proper building.
+
+
+Problems
+========
+
+If sarien ends and prints no message about detaching an X shared memory
+segment, remove the segment manually using ipcs(1) and ipcrm(1).
+
+
+Sound
+=====
+
+Sarien has three-channel digital sound support for Linux using OSS or
+ALSA, Solaris and IRIX. It works only with 22 kHz, 16 bit mono sound
+(it should be flexible but I'm too lazy to do it now).
+
+IIgs PCM sound is now supported thanks to Ian Schmidt <irsman@iag.net> and
+Paul Lunga <paul123@freenet.tlh.fl.us>. MIDI is not supported yet.
+
+
+Known bugs
+==========
+
+Lots. See the Bugs file for the list of outstanding features.
+

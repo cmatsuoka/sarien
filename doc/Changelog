@@ -1,0 +1,934 @@
+
+Revision History
+================
+
+0.5.2 (20010408)
+	- starting code cleanup
+	  * reindentations & cosmetic changes
+	  * removing redundant checks
+	  * changing UINTx to int where appropriate
+	  * reducing extern variable declarations in headers
+	  * reducing number of typedefs and global variables
+	- merged Jeremy Penner's Photon graphics driver
+	- fixed X11 24 bpp support (console now looks right)
+	- made GNU makefiles the default Makefiles
+	- fixed sound resources deallocation in agi_v2.c
+	- added AGI specs SGML documentation; currently converting from
+	  linuxdoc to DocBook
+
+0.5.1 (20000110) *DEVELOPMENT*
+	- added new id mechanism with external id file.
+	- added -C/--crc to cli options for dumping the CRC/ID of a game
+	- merged v2/v3 id lists into 1 list
+	- fixed v2 driver to return the proper error code in detect_game
+	- DOS driver now uses 64kb less memory than before
+	- merged in experimental DJGPP/Allegro driver
+	- merged in Ryan Gordon's SDL + command line patches.
+	- changed some length limits in text priting, messageboxes to 30
+	  and changed len-1 to len, now most message boxes seem correct....
+	- Added some experimental Inventory code. just need to activate the
+	  TAB key to the inventory....
+	  (tab is bound in controller but doesnt work....)
+
+0.5.0 (19991230)
+	- used 0.4.10 as base for dev version
+
+0.4.10 (19991222)
+	Dark Fiber's changes:
+	- fixed amiga manhunter id in id.c (it was in the v2 game list!)
+	- Fixed the vsnprintf bug ifdef in console.c/gfx.c
+	Claudio's changes:
+	- Merged Ryan Gordon's SDL fixes
+	Felipe's changes:
+	- Updated VC++ makefiles
+
+0.4.9 (19990823)
+	Dark Fiber's changes:
+	- Added Amiga Manhunter 1 ID
+	- Updated MS-DOS/Watcom driver to match the changes in Unix/win32
+	- Started DJGPP/Allegro port
+	Claudio's changes:
+	- Changed keyboard polling to 20 Hz rate
+	- Removed version box at start
+	- Added FreeSCI-style "Quake console"
+	- Moved clear_buffer(), save_screen(), restore_screen(), put_screen()
+	  and shake_screen() from drivers to the interpreter core
+	- Major keyboard input rewrite; splitted keyboard handling routine
+	  into poll_keyboard() and handle_keyboard()
+	- Added console command parsing
+	- Game cycle functions from main.c moved to cycle.c
+	- Window timer moved from drivers to the main loop
+	- AGI timer updating removed from timer function
+	- Placed AGI command calls in execute_agi_command() in op_cmd.c,
+	  to be called from the console
+	- Changed room changing flag settings in interpret_cycle() to allow
+	  console teleporting
+	- Moved debugger to the console interface
+	- Z-ordered sprite drawing & removal
+	- New sprite manager to eliminate "ghosts"
+	- Moved source directories to src/ breaking the Watcom and VC++ make
+	  systems (we still need a major header cleanup)
+	- Implemented show.obj() and show.obj.v()
+	- Removed width and height from graphics driver structure
+	- Renamed is_keypress() and get_keypress() to keypress() and get_key()
+	- Added keypress() and get_key() to graphics driver structure
+	- Moved clock counters from drivers to main.c
+	- Nuked setup_machine()
+	- Fixed screen restoring after nonblocking window in print.at() and
+	  close.window() (fixes sprite corruption and 'flashback' bug)
+	- Fixed put_block() in the X11 driver to update the last line and
+	  column of pixels when scale > 1
+	- Added hidden screen flag, nuked agi_put_bitmap_save()
+	- Merged the SGI port written by Ari Heikkinen <aheikin@probe1.pspt.fi>
+	Felipe's changes:
+	- Fixed keyboard handling
+	- Fixed cmd_get_string()
+	- Fixed rindirect() (v30 = *v31 instead of *v30 = *v31)
+	- Fixed vsnprintf() calls for win32
+	- Fixed print_text2() to print strings with len == 1
+	- Fixed said("rol") (fixes 'examine blonde' in disco scene of LSL1)
+	- Fixed F_entered_cli flag setting to avoid multiple messages from
+	  the interpreter (e.g. "look foo" resulted in "It's what it looks",
+	  "I don't see it here" _and_ "What is a foo?")
+	- Fixed CYCLE_NORMAL setting in set_loop (fixes taxi in LSL1)
+	- Removed unwanted code from fix_users_words() in words.c
+	- Changed loop setting in calc_direction() (Fixes Gold Rush demo)
+	- Fixed view loops; implemented end.of.loop()
+	- Fixed bad cels (larry in bar, Police Quest demo cars)
+	- Added workaround for bad view settings in draw_obj()
+	
+0.4.8cm4 (19990822)
+	- Fixed uncompressed v3 raw picture resource length (fixes corrupted
+	  pictures in Manhunter & MUMG, demo4)
+	- Changed default width of text box from 35 to 29 (breaks version box)
+	- Merged DF's fix for block blitting in the MS-DOS driver
+	- Added some layer stuff for engine console, wrapped gfx->put_pixel()
+	- Added extra palette colors for the engine console
+	- Fixed PC speaker sound emulation
+
+0.4.8cm3 (19990821)
+	- Improvements in the interactive picture viewer
+	- Fixed v2 to v3 picture resource conversion (fixes control lines
+	  in picture 63 of demo4 but breaks manhunter pictures)
+	- Control lines tested for all objects, not only moving objects
+	  (fixes Gold Rush! demo -- the ship in Rio is actually not moving :))
+
+0.4.8cm2 (19990819)
+	- Fixed controller() op_test.c (fixes help in sierra demos)
+	- Fixed control/priority splitting (for control lines painted
+	  over with priority data)
+
+0.4.8cm1 (19990817)
+	- move.obj() flag is set to 0 until target position is reached
+	  (fixes invisible ego, vampire and lion scene in KQ2 demo)
+	- Fixed sound attenuation (fixes "fax carrier" goat)
+	- Fixed add.to.pic() when called with priority 0 (fixes coffin in
+	  vampire scene in KQ2 demo)
+
+0.4.8 (19990816) claudio's release
+	- Better XF86 DGA support (still crashing)
+	- Removed tabs from video/sound init messages
+	- Added square wave sound sample to sound.c, smoothed ramp sample
+	- Defined STACK_PUSHPOP in the win32 VC++ build (faster pic drawing,
+	  reduces gaps in sound)
+	- Implemented shake_screen() in the win32 driver
+	- Fixed shared memory deallocation bug in x11.c
+	- Added IBM PC speaker/Mac sound emulation (clicky)
+	- Added GNUrules.go32 for cross-compiled DJGPP/Allegro port
+	- Sound output honours flag f9 (F_sound_on)
+	- Fixed add.to.pic() with priority < 4 (fixes demo2 intro, MUMG intro
+	  and LSL disco in demo2)
+	- Ego honours object.on.water(), object.on.land() settings
+	- Objects set f4, f5 when touching borders (allows LSL dog to exit
+	  the screen)
+	- Fixed control line tests for ego and non-ego objects
+	- Rewrote op_test.c (optimized logic, some tests implemented as macros)
+	- Other code cleanup/optimizations/cosmetic changes
+
+0.4.7cm13 (19990811)
+	- Added XShm tests in x11.c
+	- Added ports table (Documentation/README.ports)
+	- Started XF86 DirectVideo support
+	- EMPTY macro in defines.h changed to _EMPTY (conflicts with
+	  xf86vmode.h)
+	- _L macro in op_dbg.c changed to __L (conflicts with Solaris)
+	- SVGAlib driver cleanup
+	- Force loading option changed from -f to -l
+	- Added Solaris sound driver
+	- Added VC++ build files in VC++6.0/
+	- Added win32 native sound driver written by Felipe Rosinha
+	  <rosinha@dexter.damec.cefetpr.br>
+	- Added include/GNUmakefile
+
+0.4.7cm12 (19990808)
+	- Added support for plain X (no MIT shared memory extension) -- this
+	  should allow sarien to run in HP-UX and AIX
+	- Added parameter --no-x-shm to disable shared memory if available
+	- Fixed libpthread link in Solaris
+	- Fixed getopt_long() test in configure
+
+0.4.7cm11 (19990807)
+	- Added optimized win32 driver (not included in cm10)
+
+0.4.7cm10 (19990806)
+	Cleanup Phase II:
+	- Removed clear_bitmap_buffer() from drivers
+	- Moved put_pixel_buffer() from drivers to gfx.c
+	- Moved put_block_buffer() from drivers to picture.c
+	Bugfixes:
+	- Faster keyboard input processing (not perfect but acceptable)
+ 	- Optimized win32 blits (optimized shake_screen() not implemented)
+	- Fixed clear_buffer() for 8 bpp in Solaris
+  	- Timer adjusted in X11 and SVGAlib drivers
+
+0.4.7cm9 (19990804)
+	- Buffered keyboard input in the SDL driver
+	- Dummy sound driver changes rolled back to cm7 state
+	- shake_screen() implemented and other improvements in the
+	  win32 driver
+
+0.4.7cm8 (19990803)
+	- Bad coordinates clipped in draw_box(), gfx.c
+	- Fixed put_pixel() for scale > 2 in x11.c
+	- Added option --no-sound to disable sound output
+	- Dummy sound driver moved from core_agi/silent.c to sound/dummy
+	  (breaks MS-DOS build!)
+	- Added macro NO_DEBUG to compile without the logic debugger 
+	  (some debugger keys were not working in X11)
+	- Updates in README.agi
+
+0.4.7cm7 (19990802)
+	- Buffered keyboard input in the X11 driver
+	- Adjusted shake_screen() delay in the X11 driver
+	- Fixed do_blit() coordinates for print_min_lines==0 (no menubar)
+	- Added kludge to set the sound flag in the dummy driver (fixes
+	  Police Quest intro, KQ2 demo)
+	- Trace macro changes
+
+0.4.7cm6 (19990801)
+	- Default window size set to 2
+	- Fixed put_block() in the SVGAlib driver
+	- Implemented shake_screen() in the SVGAlib driver
+	- Fixed SDL full-screen option in getopt()
+	- Updated put_block() in the console drivers
+	- Cosmetic changes
+
+0.4.7cm5 (19990731)
+	- Added GNUrules for Xmingw32 (cross-compiler)
+	- Added 1 to the blit area height in do_blit() (fixes Helicopter
+	  Simulator demo)
+	- Merged SDL full screen mode patch by Robert Bihlmeyer
+	  <robbe@orcus.priv.at>
+	- Added -F (--full-screen) command line option
+	- Fixed gfx->put_block() call in cmd_clear_lines()
+	- Added XK_KP_[1-9] support in the X11 driver
+	- Added shake_screen() support in the X11 driver
+	- Cosmetic changes
+
+0.4.7cm4 (19990730)
+	- Cosmetic fix in help info
+	- Added Documentation/Authors, Documentation/GNUmakefile and
+	  scripts/GNUmakefile
+	- Optimized blits: blit only the smallest rectangle containing the
+	  changes. Also tried to enqueue the rectangles to blit, but it
+	  results in a funky effect we don't want
+
+0.4.7cm3 (19990728)
+	- Added $(X11CFLAGS) to XCFLAGS in console/x11/GNUmakefile
+	- Fixed pthread test for sound in the configure script (set sound
+	  driver to dummy if pthreads not found)
+	- Fixed SVGAlib driver Makefile
+	- Fixed SVGAlib palette setting
+	- Added the (unoptimized) win32 console driver written by Felipe
+	  Rosinha <rosinha@dexter.damec.cefetpr.br>
+	- Updated SDL & win32 docs
+
+0.4.7cm2 (19990726)
+	- X11 RGB color weight for 24 bpp fixed by Sad Rejeb
+	  <sadrejeb@hotmail.com>
+	- Removed Solaris workaround from clear_buffer, x11.c
+	- Cosmetic changes
+
+0.4.7cm1 (19990724)
+	- Fixed typo in OSS sound driver
+	- X11 RGB color weight fixed for 15 and 16 bpp
+
+0.4.7 (19990720)
+	- Added some new games + Versions !
+		* Donald Ducks Playground (Atari ST)
+		* Manhunter NewYork (Apple2GS)
+		* Mixed Up Mother Goose (Apple 2GS)
+		* Demo Disk (Censored) 1.0C (Apple 2GS)
+		* Police Quest 1 2.0G 12/3/87 (IBM PC)
+		* Mixed Up Mother Goose (IBM PC)
+		* Kings Quest 3 2.00 5/25/87 (IBM PC)
+		* Kings Quest 2 2.0J (Amiga)
+		* Space Quest 2 2.0F (Amiga)
+		* Leisure Suit Larry 1.05 (Amiga)
+		* Black Cauldron v2.10 (agi3) (IBM PC)
+	- Added flags in ID, for AGDS + Amiga games.
+	- Added Amiga word padding in OBJECT file (Amiga games required it)
+	- Added "-A, --amiga" keywords in command line options
+	- Very minor bug tweaks
+
+0.4.6cm2 (19990620)
+	- Fixed core/GNUmakefile to work with non-GNU grep
+	- Fixed stupid error in the BSD sound driver
+	- Added fragment setting in the ALSA driver
+
+0.4.6cm1 (19990619)
+	- Added ALSA sound driver
+	- Added BSD sound driver (not tested)
+
+0.4.6 (19990614)
+	- Fixed the MS-DOS driver (was broken)
+	- Fixed v3 message box wrapping
+	- Cleaned the version printing (on-screen cosmetic)
+	- Altered all // C++ comments into /**/ ANSI C comments
+	- Re-wrote the view decoding routines.
+	- Fixed core dumping on several games! (added clipping in gfx.c!!)
+	- Removed one of the screen buffers (was not being used)
+
+0.4.5cm3 (19990527)
+	- Fixed close.window after draw.picture
+	- Fixed view table initialization to not test current loop and cel
+	  against junk data
+	- Fixed print.at window width (fixes KQ4 window alignment)
+
+0.4.5cm2 (19990526)
+	- file_io/ renamed to fileglob/ -- there was no I/O there
+	- Changed print/print.at to behave correctly with nonblocking and
+	  key/timed blocking windows
+	- Implemented close.window
+	- Changed x pos of print.at message box to match display coordinates
+	  (fixes "Jack be nimble" message box in MUMG)
+	- Fixed textbox() size and coordinates
+	- Completely rewrote word wrapping to match Sierra's algorithm
+	- Fixed print_text() for Helcopter Simulator demo
+
+0.4.5cm1 (19990523)
+	Cleanup Phase I:
+	- Removed machine dependent declarations from machine.h
+	- machine/ split in console/ and sound/ directories -- all files
+	  in core_agi/ should be portable now
+	- KEY_* macros moved from machine.h to keyboard.h
+	- File globbing functions moved to file_io/
+	- fixpath() moved from globals.c to fileglob.c
+	- Cosmetic changes in adj_pos(), main.c
+	- Removed set_palette() from console functions 
+	- Removed kill_mode() from console functions 
+	- Removed set_cursor_pos() from console functions 
+	Bugfixes:
+	- Fixed end of move.obj for non-ego objects (KQ2 opening drift etc)
+	- Fixed erase to remove only the erased sprite (was removing all)
+	- Changed update of objects -- this is a workaround for MUMG
+	- Line feed test hacked in print_text() (need rework)
+	- Adjusted timer for x11 and svgalib console drivers
+
+0.4.5 (19990523)
+	- Fixed clipping _WIDTH-1 to _WIDTH and _HEIGHT-1 to _HEIGHT
+	- Fixed Watcom makefile for building
+	- Fixed some small #define bugs on _WIDTH/_HEIGHT, now MMG works
+	  again.
+
+0.4.4cm6 (19990523)
+	- Removed vgagl functions from the svgalib driver
+	- Added dummy sound driver for svgalib -- svgalib can't be used
+	  in a threaded application and the OSS driver uses threads
+	- Fixed KQ3 ghosting in release_sprites() (Fixes KQ3 etc in
+	  demo2 but not KQ4 or Gold Rush in demo4)
+
+0.4.4cm5 (19990522)
+	- Fixed dependencies for the binary
+	- Fixed cmd_display() to reset x coordinate to 0 (not xoff) at each
+	  new line (text is better aligned now). The hack in print_text()
+	  is somewhat ugly -- we should do a better fix later.
+	- Fixed direction for move.obj() in adj_pos(), reverse views should
+	  not happen anymore
+
+0.4.4cm4 (19990518)
+	- Fixed directory slashes for win32 (now it detects the game but
+	  wine complains about "CreateWindowEx32A: bad class name 0000")
+	  It's possible that it runs in real Windows now.
+	- Nuked directory main, now we're back to the original tree layout.
+	  core_agi/Makefile.wat must be fixed to build the binary.
+
+0.4.4cm3 (19990518)
+	- Renamed directory agi to core_agi
+	- Fixed cross-compiling using Xmingw32 (tried resulting binary with
+	  wine but it complained about "No handler for Win32 routine
+	  CRTDLL.318: _vsnprintf")
+	- Updated README.unix
+	- Added README.win32
+
+0.4.4cm2 (19990508)
+	- Added missing svgalib.h to machine/svgalib/GNUmakefile
+	- Added prototypes for save_game() and load_game() in savegame.h
+	- Workaround (test for string number) to fix segfault with Groza
+	- Autoprobing of AGDS games (to avoid core dump in UNIX); cosmetic
+	  changes in id.c
+	- Fixed library dependencies in main/GNUmakefile
+
+0.4.4cm1 (19990507)
+	- Changed agi/GNUmakefile to automatically fix carriage returns
+	  after backslashes in picture.c
+	- Removed carriage returns from machine/GNUmakefile
+
+0.4.4 (19990507)
+	- Rebaged my version numbering to be more inline with GNU standards
+	  so dropped to 3 places.
+	- Fixed the ego "wander" bug. Now ego DOES wander. Conflicting
+	  program control / player control.
+	- Fixed the adj_pos function so sprites now "Face" the correct
+	  way when walking (eg: Roger walks out of the closet in SQ1
+	  correctly).
+	- Moved sound_sdl to machine/sdl and sound_oss to machine/oss
+	- Fixed "$with_x=no" constructs in configure.in (that's not perl!)
+	- Changed driver library building rules
+	- Fixed  if(height>width) testing with abs(height)>abs(width) in
+	  adj_pos.. now it works _cleanly_ !!
+	- Removed gfx->clear_bitmap_buffer in cmd_show_pic() and we loose
+	  all that nasty flicker! (but kq4 flickers when in debug mode
+	  (ALT-D)
+	- Fixed cmd_show_priority() to display priority + control lines
+	  as it should (instead of just priority bands)
+
+0.4.3.3 (19990430)
+	- Found Police Quest 1 with AGI v2.903 (the earliest v2.9x AGI
+	  found!!)
+	- Fixed nitpick niggly bug in the width of the lines on the
+	  message boxes!! (hehe, actually i never noticed how thing they
+	  were....)
+
+0.4.3.2 (19990427)
+	- Added SVGALib support/port files from Xoxus, please check the
+	  Documentation/README.svgalib for more information on the SVGALib
+	  port.
+
+0.4.3.1 (19990423)
+	- Added support for AGDS built games (Russian Sierra type games
+	  (differ by the fact they have a different encryption key))
+	- Added Cyrillic 8x8 font for AGDS games.
+	- Fixed the english font to allow all 256 characters for
+	  extended character display (box/line drawing chars etc.)
+
+0.4.3.0 (19990422)
+	- Re-structured the directory tree
+	- Shifted the main engine into ./agi
+	- Shifted the driver code into ./machine/....
+	- .AUTODEPEND'ed the watcom makefiles
+	- Added Kings Quest 2 v2.0R (Macintosh)
+	- Added Kings Quest 3 MCGA disk version (PC) (some MCGA patch...)
+	- Added Police Quest 1 v2.0A (PC) (different ID than same Apple2GS version)
+	- Fixed ego's "stop/start" movements when changing screens
+	  (This was a bug fix for the sq2 shuttle bug.. the fix was
+	   shifted from cmd_posn to cmd_erase.. so when ego is erased
+	   is motion is stopped.)
+
+0.4.2.11 (19990415)
+	- Fixed loop/cel setting, now the demo "SIERRA" titles work
+	- Fixed some bugs in setting non existant loops + cels.
+	- Fixed the ghosting sq2 intro bug.. AGAIN...
+	  (release sprites v kill sprits in cmd_draw_pic())
+
+0.4.2.10cm1 (1990414)
+	- Removed put_pixel() method from graphics driver to make sure
+	  it is not being called (and messing with X11/SDL gfx output)
+	- raw_put_pixel_buffer() call renamed to put_pixel() since it was
+	  not raw anymore
+	- Fixed clear_buffer() in the SDL driver
+	- Fixed handler in _findnext() call for win32 in fileglob.c (but it
+	  still does not work)
+	- Added missing sdl_sound.c to list of distribution files
+	- Added win32 building target to Makefile.in
+
+0.4.2.10 (19990413)
+	- Fixed some floodfill bugs on priority screens!
+	- Fixed a compiler warning on savefile.c
+
+0.4.2.9cm4 (1990410)
+	- Added SDL sound support
+	- Removed dump() method from sound driver structure
+	- PC keyboard scancodes moved to keyboard.c
+
+0.4.2.9cm3 (1990410)
+	- Fixed VIEW chunk size in savegame
+	- Moved __file*() functions to fileglob.c to make the SDL driver
+	  portable
+	- Added SDL graphics support
+	- Started SDL sound support
+	- Added README.sdl to documentation
+	- Added Makefile for the win32 cross-compiler
+	- Fixed X11 timer handling
+
+0.4.2.9cm2 (1990410)
+	- Added IFF loading support (iff.c and iff.h from xmp)
+	- Removed VTBL chunk from savegame
+	- Removed view table entry reserved fields in savegame
+	- Added game load support (not functional yet)
+
+0.4.2.9cm1 (1990409)
+	- Better 5503 instrument handling for KQ1
+	- Added AGID (AGI game ID), STRI (string) and VIEW (view table entry)
+	  chunks to the savegame
+	- Removed ^M after \ in #define plotPatternPoint(), picture.c
+
+0.4.2.9 (19990408)
+	- Fixed horizon bugs (testing horizon changes on new room exec's +
+	  setting horizon with observing horizon.
+	- "_M_UNIX"'d Claudio's method of drawing, since it is faster in
+	  Linux to use that method that my method.
+
+0.4.2.8.3 (19990408)
+	- Fixed headless vohaul bug in sq2 (see "DF: headless" in
+	  cmd_print_at)
+	- Added checking for priority < 4 for sprites (suggested by a reader)
+
+0.4.2.8.2 (19990405)
+	- Added goldrush cracked + uncracked ids for 5.25" and 3.5" disk
+	  versions
+	- Fixed the SQ2 ghosting bug (add_to_pic)
+	- Re-implemented my PUSH/POP fill routines. Claudios were WAAAY
+	  to SLOOOOOOOOOOOOOOOOOOOOW. kq4 pic 21 still crashes interp...
+
+0.4.2.8cm4 (19990404)
+	- Fixed "pre-views" removing put_screen() call from cmd_set_view()
+	- Started support for IIgs Ensoniq 5503 "DOC" instruments (thanks
+	  to Ian Schmidt and Paul Lunga)
+	- Started save game support using IFF files
+
+0.4.2.8cm3 (19990403)
+	- Changed X11 keypress detection to ignore Shift, Alt and Control keys
+	- Fixed compressed MIDI event handling in sound.c
+	- Sound channels extended to 16 for IIgs MIDI resources
+	- Renamed snd_ibm.c to snd_dos.c
+	- Fixed memory corruption in draw_line() clipping lines to screen size
+
+0.4.2.8cm2 (19990402)
+	- Started support to MIDI sequences used in IIgs sound resource
+	- Merged Dark Fiber's 0.4.2.8.1
+		- Added Kings Quest 4 (Internal v2.2 9/27/88)
+		- Added Gold Rush (Cracked + UnCracked ID)
+		- Fixed _most_ "ghosting" sprite bugs (sq2 intro still
+		  ghosts?!?!)
+		- Fixed joystick msg trashing screen
+		- Fixed toggle monitor msg trashing screen
+	- Picture stack segmented to 16 Kb chunks
+	- Commented out some redraw_sprite() in op-cmd.c in an attempt to
+	  avoid sprites to appear before the background picture
+	- Removed release_sprites from cmd_erase() to keep sprites on
+	  screen when message box appears
+
+0.4.2.8cm1 (19990401)
+	- Fixed open file stream in load_words(), words.c
+	- Sound envelope decay values shifted right 4 bits
+	- Removed ^M after \ in #define plotPatternPoint(), picture.c
+	- Removed get_keypress() calls from AGI version detector (they
+	  shouldn't be called because graphics is not initialized yet and
+	  keypresses are handled by X11)
+
+0.4.2.8 (19990401)
+	- Added some games to the ID list
+	  * Police Quest 1 (Apple ][gs Version) (known version 2.917)
+	  * Kings Quest 1 (Apple ][gs Version)
+		KQ1-PC v1.0S uses 2.272 so we make the assumtpion that
+		KQ2-2GS v1.0S-88223 uses 2.272 also.
+	  * Kings Quest 1 (Apple Macintosh Version)
+		KQ1-PC v2.0F uses 2.425 (2.440) so we make the assumption
+		that KQ2-MAC v2.0C uses (2.440)
+	  * Space Quest 2 (Apple Macintosh Version) (known version 2.936)
+	  * Black Cauldron (Apple ][gs Version) (very strange)
+		This is a v3 AGI game using v2 AGI type version numbering.
+		But it IS a v3 game so I have given it the equiv. id of the
+		BC-PC game, the date (1989) clearly indicats v3 as well.
+	  * Leisure Suit Larry 1 (Apple Mac Version) (known version 2.439)
+	- Altered the DOS graphic driver to be in line with the X11 driver
+	  by removing all "direct memory writes" and making it all buffered.
+	  Now can clean up some other stuff i spose... ;)
+	- Removed all <conio.h> _M_MSDOS macro #ifdefs from .c files
+	  and used 1 _M_MSDOS macro for <conio.h> in include/includes.h
+	- Fixed stack size in picture.c from 0x8000 to x10000, this allows
+	  Kings Quest 4 to work.
+	- Bumpbed the DOS "stack" from 256kb to 512kb to be on the safe
+	  side :) (dynamic stack space? pshaw!)
+
+0.4.2.7cm7 (19990331)
+	- Test for opcode < 0xfc in op-test.c changed from 'op' to
+	  '*(code+ip)', to avoid problem with the 0xfd (NOT) opcode byte
+	  (fixes segfault in LSL1)
+	- Started hunting a memory corruption bug in draw_picture()
+	  (bad stack again?)
+
+0.4.2.7cm6 (19990331)
+	- Fixed IIgs sample conversion in sound.c
+	- Fixed fallback to dummy driver if no valid sound devices found;
+	  snd_dmy.c renamed to silent.c, created snd_ibm.c
+	- Lowest sound period raised to 920, needed by PQ1 intro theme
+	- Added test for character position in put_text_character() to
+	  fix crash in KQ2 demo
+
+0.4.2.7cm5 (19990330)
+	- View table slots are marked not drawn when view is removed, and
+	  calc_direction() tests for DRAWN view table entries before
+	  setting the loop; this fixes the bad loop setting bug
+	- Don't show interpreter version number on game restart
+	- Optimized sound envelope code in mix_sound()
+	- Started adding support for IIgs PCM sampled sound resources
+
+0.4.2.7cm4 (19990329)
+	- Fixed step_size * 4 (valid only for MOTION_FOLLOW_EGO)
+	- Fixed game restart in X11
+	- X shared memory segment detached on normal termination
+	- Sound is initialized only for game playing, not for pic viewer etc
+	- Fixed memory faults with gfx output in options -d, -o
+	- close_sound() renamed to deinit_sound()
+
+0.4.2.7cm3 (19990329)
+	- Fixed ON_WATER/ON_LAND flag test in normal_motion(), main.c
+	  (crocodiles in KQ1 now wander in the moat)
+	- Placed redundant code from calc_obj_motion() in set_motion()
+	- Changed lowest sound period to 900, makes KQ1 goat sound better
+	  (but still very bizarre for a goat -- sounds like fax carrier)
+	- Fixed step size in adj_pos() for follow.ego, objects following
+	  ego won't engage warp speed
+
+0.4.2.7cm2 (19990328)
+	- Merged changes from 0.4.2.8-pre2
+		- Removed the SQ1/LSL animation workaround. Breaks most every
+		  animation :>
+		- Fixed "Makefile.wat" so it works
+		- Fixed fix_user_words() to truncate bad words at first word
+		  and not whole sentence
+		- Added "INLINE" definition to machine.h as Watcom doesnt have
+		  an "inline" keyword for C functions
+	- Fixed put_block for window size != 1 in X11
+	- Adjusted some source layout (to help me understand how it works)
+	- Fixed memory leak in bad word test in fix_users_words(), words.c
+	- Changed source layout in sound.c to match coding style
+	- Changed data structures in sound.c
+
+0.4.2.7cm1 (19990327)
+	- Optimzed splitPriority(), picture.c
+	- Removed #include <math.h> from picture.c
+	- Cosmetic changes in lzh.c (indents, variable names)
+	- Conditionals reorganized in normal_motion(), main.c
+	- Merged patches from 0.4.2.8-pre1
+		- Fixed SQ2 shuttle bug -> cmd_posn() fixed to set sprite
+		  direction to 0 (no movement) if its ego being re-positioned
+		- Fixed another overlapping msg box bug in cmd_print()
+	- Word corruption bug fixed in fix_users_words(), words.c
+	  (ego_words[i].word was being set with a pointer to local variable)
+	- Added workaround for cel animation in calc_obj_motion() when object
+	  is being moved (fixes LSL opening and ego animation but breaks SQ2
+	  credits -- something is still wrong)
+	- Non-ego views won't cross control lines
+
+
+0.4.2.7 (19990326)
+	- Renamed "sound_dummy.c" to "snd_dmy.c" coz Watcom can't handle
+	  long file names.
+	- Fiddled with the sound.c driver to get it to compile
+	  (variable names were clashing with internal compiler names
+	  from i86.h (sound() function), and "_buffer" was someone
+	  elses variable)
+	- Split opcode.c into more managable files.
+	- Fixed message boxes being printed over the top of each other
+	  in cmd_print_at() added a gfx->put_screen()
+	- Merged 0.4.2.6cm7 patches in DF's 0.4.2.7-pre
+	- Added BUGS and TODO, capitalized COPYING
+	- Added support for 15 and 16 bit X visuals (not tested)
+
+0.4.2.6cm7 (19990325)
+	- Header files moved to include/
+	- Added GNU autoconf support
+	- Stop current sound before playing new sound
+	- Floating point code removed from plotPattern(), picture.c
+	- Added pre-allocated stack for _PUSH() and _POP() in picture.c
+	  (fixes memory corruption problems with KQ4 and others, and
+	  makes sarien run _much_ faster with Electric Fence)
+	- Some logic cleanup in picture.c (adding breaks and removing flags)
+	- Added test for bad cel setting in set_cel(), view.c
+
+0.4.2.6cm6 (19990325)
+	- Revision history detached from README.agi and README.unix and
+	  merged in ChangeLog
+	- palette.inc slurped by gfx.c, font.inc changed to font.c
+	- Message box word wrapping fixed
+	- Sound(x) is ignored when x is already playing (fixes KQ3, LSL demo)
+	- Fixed out-of-range XShmPutImage in textbox(), gfx.c (fixes KQ4,
+	  Gold Rush! demo and others); added test in put_block(), x11.c
+	- Added workaround for len=38 in textbox() (for KQ4 demo intro)
+
+0.4.2.6cm5 (19990324)
+	- Screen buffer commits (for XShm) optimized in gfx.c
+	- Stop sound when entering new room
+	- Removed unnecessary save/restore_screen() from opcodes.c
+	- cmd_start_motion() fixed for ego; move_ego() declared in keyboard.h
+	  (Larry stops when moving between rooms 11 and 12)
+	- Enabled MOTION flag in cmd_ego_control() (Roger can walk in SQ1)
+
+0.4.2.6cm4 (19990323)
+	- Sound player filters vol==255, freq<16, freq>=960 (fixes SQ1, KQ3/4)
+	- Sound buffer size fixed
+	- Sound envelopes fixed (very stupid bug)
+
+0.4.2.6cm3 (19990322)
+	- Sound channels volume reset after playing a sound
+	- Sound channels end flag reset before playing a sound
+	- Flag set at end of sound playing (fixes PQ1 intro)
+	- Added sound envelopes (define USE_ENVELOPE to enable) -- note:
+	  this is causing segfaults in loops, view code has bad pointers.
+	- _UNIX_DEBUG renamed to _TRACE, trace code moved to defines.h
+	- Added CONTROL key translations to x11.c (tested with AGI piano)
+	- Added ALT key translations and IBM-PC scancode table to x11.c
+	- Added sample interpolation in the waveform mixer
+	- Set OSS fragments to reduce sound latency
+
+0.4.2.6cm2 (19990322)
+	- Fixed Makefile to include getopt.h in the distibution package
+	- Added sound support (sound.c, sound.h, sound_oss.c, sound_dummy.c)
+	- Added 3-channel sound driver for OSS /dev/dsp
+	- Fixed number of parameters for cmd_play_sound() in opcodes.c
+
+0.4.2.6cm1 (19990320)
+	- Changed decode_view() and update_objects() logic to reduce
+	  indentation levels in the source code
+	- Added workaround for bad view_table[entry].view->loop in
+	  set_loop()
+
+v0.4.2.6 (19990319)
+	- Fixed the set_cel bug claudio noticed :) Fixed them nasty
+	  garbage sprite bugs!!
+	- Fixed more errors in find_word() thinking "go"=="godzooky"
+	  by length of the first word.
+	- Fixed some memory leaks -> init_words()
+
+0.4.2.5cm3 (19990318)
+	- Fixed status line in picture view mode (-p)
+	- Added translations for XK_KP_Add and XK_KP_Subtract
+	- Added test for bad interpreter version (-v) in cli.c
+	- Started to hunt the word corruption bug
+	- Cosmetic changes
+
+0.4.2.5cm2 (19990316)
+	- XK_KP_Enter translates to KEY_ENTER in x11.c
+	- Fixed (agid->clen > agid->len) in agi_v3_load_vol_res(), agi-v3.c
+	- Fixed segfault when (offs >= num_words) in find_word(), words.c
+	- Optimized logic in find_word(), words.c
+	- Bug found (but not fixed) in set_cel(), see note in view.c
+
+0.4.2.5cm1 (19990314)
+	- Patches from 0.4.2.4cm2 not merged to 0.4.2.5 re-applied
+	- Cosmetic changes to avoid compiler warnings
+	- Changed BSD getopt.h to GNU getopt.h to match C sources
+
+v0.4.2.5 (19991408)
+	- Merged Claudios 0.4.2.4cm1 patch
+	- Fixed some textbox displays' (print.at, print)
+	- Fixed calc_direction
+	- Added some test follow_ego code
+	- Fixed follow ego code
+	- Fixed calc_direction() loop setting on direciton
+	- Re-wrote adj_pos()
+	- Fixed keyboard input, now its 98% done :)
+	- Fixed some more dictionary lookup bugs
+	- Fixed displaying of view's when the screen is in "Text Mode"
+	- Fixed calc_direction() crash if there is only 1 loop.
+	- Fixed lots of priority bugs!
+	- Added bypassing of Leisure Suit Larry questions.
+	- Fixed a lot of the sprite directional problems.
+
+0.4.2.4cm2 (19990313)
+	- Merged patches from 0.4.2.4df1
+	- Removed dot from DIR macro in defines.h
+	- Changed AGI v3 loader to look for lower case file names
+	- Added support for AGI v3 files (fixed __file_name() in x11.c)
+
+0.4.2.4cm1 (19990308)
+	- Changed getopt.h to GNU getopt.h to match C sources
+	- Changed _M_LINUX to _M_UNIX
+	- Minor optimizations in put_bitmap() and agi_put_bitmap()
+	- Fixed bug in priority bands in draw_obj(): band 4 should be
+	  used for y < 48 instead of y < 60.
+
+v0.4.2.4 (19990308)
+	- Merged Claudio's v0.2.3a into my v0.4.2.3-dev
+	- Fixed bugs in displaying text characters (lart vertical column was
+	  not being displayed!)
+	- Added keyboard input routines (90% functional... prompt dissappears
+	  from time to time...)
+	- Fixed bugs in words.c (dictionary lookup routines)
+	- Added getopt.h (Claudio, getopt.c is no good without getopt.h mate :)
+	- Broke the DOS graphic driver
+	- Broke the X11 driver, Fixed the Dos driver. Fixed the X11 driver :)
+	- Manage to get it so both drivers work (I hope)
+	- Cleaned up some scruffy code bug-san left behind.
+
+v0.4.2.3a (19990307)
+	- Changed custom command line parser to GNU getopt
+	- Changed Yggdrasil AGI to Sarien AGI in source file headers
+	- Fixed test for (y < _HEIGHT - 1) in agiFill()
+	- Added _M_MSDOS conditional to reset_graphics()
+	- Version number moved to file "Version" (included by Makefiles)
+	- Added save_screen() and restore_screen() to message_box()
+
+0.4.2.3 (19990307) - based on Dark Fiber's 0.4.2.2
+	- Adopted the new official name "Sarien"
+	- Added support for 8 bit pseudocolor visual
+	- Added UNIX debugging macros
+	- Changed get_keyboard() call to block (fixes version info and menus)
+	- Added command line option -S to double window size
+	- Fixed screen restore after message boxes
+
+v0.4.2.2
+	- Patched in Claudio's Linux diff's. (ack. broken keyboard.c)
+
+v0.4.2.1
+	- Made the FSF/GNU list of projects (so now we are an official GNU
+	  production)
+	- Worked in getting things more "GNU"ish. Version numbers,
+	  filenames, etc.
+	- Global find/replace of Yggdrasil -> Sarien to cope with the new
+	  name change.
+
+0.4.2 (19990306) - based on Dark Fiber's v0.4a Verdandi-02
+	- Changed getch() to getchar() (conforming to ANSI and POSIX.1)
+	- Renamed agi.txt to README.agi
+	- Renamed copying to COPYING
+	- Capitalized Makefiles
+	- Created new gfx driver functions: save_screen(), restore_screen(),
+	  poll_io() and poll_timer()
+	- IBM PC keyboard scan code translation
+	- init_machine() receives argc, argv
+	- screen blits in the menu routines
+
+v0.4a Verdandi-02
+	- Fixed "clear bitmap" bug so as not to erase the status line
+	  (makes Harry Soupsmith work with custom status bars as it should be)
+	- Fixed "vibration" bug (hopefully) when walking between screens
+	  (horizon bug).
+	- Fixed pause bug to stop the clock ticking over.
+	- Fixed that annoying walking bug in goldrush!!! (horizon control)
+	- Removed caching + force loading... way dodgy routines anyway.
+	- Fixed v3 game restarts
+	- Incorporated some minor patches from Claudio Matsuoka
+
+0.4.1 (based on v0.4a Verdandi-01)
+	- Initial X11 port
+
+v0.4a Verdandi-01
+	- Fixed broken "--version" switch. strange... shrugs...
+	- Fixed textmode/graphic mode switch commands and screen clear
+	  on text mode.
+	- Implemented enable.item / disable.item (menus)
+	- Implemented menus. yay. getting closer to a working engine.
+	  And close to what I had before I lost my source :>
+	- Fixed a bunch of minor bugs in the opcode engine
+	- Added ability to disable copyprotection on some games (kq4, etc)
+	- Fixed get/put bitmap co-ordinates. They were off by 1 pixel.
+	  eg: lights in sq1 on ceiling at start of game should be flush
+	  with ceiling.
+	  Watch the goldrush intro and see if jerrod's neck is flush on
+	  the frame.
+	- Fixed BIG BIG BIG BIG BIG bug! now many more games work
+	  properly!! bug in lindirect in that i did getvar() getvar()
+	  instead of var, getvar!
+	- Fixed (!?) bug in move.obj.v; I had
+		num *var *var *var *var
+	  when it should have been
+	  	num *var *var *var var
+	- Fixed bugs in print.at.v; I had
+		*var *var *var *var
+	  when it should have been
+		*var var var var
+	- Sat down and thought.. bugger.. I'm not going to throw away
+	  all this work! so I started back on Yggdrasil!
+	- Moop... Lost ALL revisions beyoned 0.3a....
+
+v0.3a Verdandi-01
+	- Replaced the line draw routine in picure.cc from using ints to floats
+	  with a routine provided by Joshua Neal (mods by me)
+	- Added Space Quest 2 v2.912 (new agi version!!) to the list
+	- Somehow introduced another bug in text printing.. argh!! (sq2 intro)
+	- Fixed "print" command to use timed output
+	- Mega-Kludge fixed the print.at / messagebox code.
+	  Basically it dumped the last col in the message box... hmmm
+	  I think its something that might rear up again later on...
+	  But its "fixed" for now.
+	- Fixed "test.posn" command :> silly typo of x1 instead of y2 &_&
+	- Fixed bug in V3 game driver that tried to load a directory
+	  file of > 256*3 byte entries (kq4 demo.. its strange....)
+	- Fixed a bug in the message box output code. It appears to be
+	  correct now :>
+	- Fixed printing of variables if it was 0. (removing leading
+	  zeroes bug)
+	- Fixed "quit", I forgot to delete a line of code from the
+	  old logic engine.
+	- Fixed "clear.lines" + "clear.text.rect" to use only colours
+	  black or white.
+	- Fixed / re-wrote "have.key" command
+	- Upped the version and reset release number.
+
+v0.2a Verdandi-03
+	- Made known this public release. Final v0.2a/03
+	- Fixed a clear.lines bug that forgot to refresh the buffer
+	  to the screen after clearing the lines.
+	- Upped release number to cover giving out source to someone
+	  who wants to try to start a port to OS2.
+	- Fixed a bug in the print_text routine (gfx.cc)
+	- Sorta kinda (i hope!!) fixed a bug in call + call.v logic
+	  commands...
+
+v0.2a Verdandi-02
+	- Fixed score display to match Sierra's version (no leading
+	  zero's on your current score.
+	- Fixed "BIG BIG BIG BIG" bug in the logic routines whic
+	  failed to load a logic script that had not text messages in
+	  it...
+	- Added kq3 v2.272 to the list of id'd games
+	- Added sq2 v2.936 to the list of id'd games
+	- Sorta kinda did control line stuff... works on the crocodiles
+	  in KQ1 in the moat... but the ship in the SQ2 intro doesnt
+	  work right... and the chicken in BC somehow still goes off
+	  screen.....
+	- Fixed another KQ2 intro bug that i re-introduced ^_^ yaaaay!
+	- Upped release number to compensate for a very limited public
+	  release on irc to a few people.
+
+v0.2a Verdandi-01
+	- Fixed status bar not being show bug (forced an update
+	  inside "show.pic"
+	- Fixed picture displaying bug with regards to
+	  "configure.screen" command.  This fixes the KQ1 intro bug.
+	- Added Space Quest 1 agi v2.089 to the ID check
+	- Fixed small bug in viewing pictures (cli -psk) options to
+	  ignore waiting for a keypress on each drawing command if
+	  you were not incrementally viewing it as it was drawn,
+	  eg "-psk verses -pk"
+	- Fixed v3 game detection + version ID
+	- Added v3 versions to the CLI driver
+	- Added a v3 game driver
+	- fixed text output bug noticeable in Larry 1, where it was
+	  printed 1 line too over what it should have been.
+	  (strange bug)
+	- Fixed "clear.text.rect" command, it now works properly.
+	- Fixed graphic glitch in the "add_view_to_table" command i
+	  fixed it by 'erasing' whatever was in there before, if
+	  there was something in there to start with tho. this fixed
+	  many noticable glitches :>
+	- In fixing the below bug, a new bug was found in the KQ2
+	  intro.... blah the text was left..
+	- Fixed text graphic bug (noticable in Black Cauldron v2.439)
+	  Complete screen was cleared when only bitmap area should
+	  have been cleared. (Required new function in the gfx driver)
+ 	- Fixed bug in logic "clear.lines" routine. did not clear
+	  last line of text.
+	- Re-wrote the "test" section of the logic engine
+	- Wow. the -D debugger doesnt seem to crash anymore... nya!
+	- Moved some generic agi-v2 code into generic agi driver
+	- Fixed several bugs in the logic section
+	- Re-wrote the "cmd" section of the logic engine
+
+v0.1a Verdandi-01
+	- first release of the source
+

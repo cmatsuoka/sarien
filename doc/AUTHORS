@@ -1,0 +1,54 @@
+
+- Dark Fiber <entropy@ihug.com.au>
+  * Main code
+  * DOS port
+
+- Lance Ewing <lance.e@ihug.co.nz>
+  * Picture resource decoding
+
+- Claudio Matsuoka <claudio@helllabs.org>
+  * Main code hacking
+  * X11 port
+  * SDL port
+
+- Felipe Rosinha <rosinha@dexter.damec.cefetpr.br>
+  * Main code hacking
+  * Win32 port
+  * Several bugfixes
+
+- XoXus <xoxus@usa.net>
+  * Linux SVGAlib port
+
+- Igor Nestorov <nest@rtsnet.ru>
+  * Win32 port hacking
+
+- Ari Heikkinen <aheikin@probe1.pspt.fi>
+  * IRIX port
+
+- Joshua Neal <>
+  * Line drawing routine
+
+- Sad Rejeb <sadrejeb@hotmail.com>
+  * X11 palette fixes
+
+- Robert Bihlmeyer <robbe@orcus.priv.at>
+  * Fullscreen SDL patch 
+
+- Ryan "Squeaker" Gordon <ryan_gordon@hotmail.com>
+  * SDL fixes
+  * Command line parsing fixes
+  * Portability hacks
+
+- Magnus Kristiansen <makris@online.no>
+  * Control line fixes
+
+- Paul Lunga <paul123@freenet.tlh.fl.us>
+  * IIgs/Mac/Tandy sound samples
+  * IIgs/Mac/Tandy AGI resources
+
+- Ian Schmidt <irsman@iag.net>
+  * IIgs sound documentation
+
+- Jeremy Penner <jeremy@astra.mb.ca>
+  * Photon graphics module
+

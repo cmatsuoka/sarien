@@ -1,0 +1,37 @@
+
+The SVGALib port is pretty simple (except for some keyboard stuff). Any
+problems are more likely to be interpreter problems than SVGALib problems.
+Send any problems with the interpreter to Dark Fiber, but if you are sure
+it's SVGALib related, you can send it to me (XoXus).
+
+
+System requirements
+===================
+
+GNU make, gcc, svgalib package, AGI game files.
+
+The SVGALib port is being tested on an i386 RedHat GNU/Linux box with
+glibc running kernel 2.2.1 on a 233MHz Cyrix machine. The video mode used
+is 320x200 at 256 colors, which should run on any machine at all.
+
+
+Building
+========
+
+Step 1
+------
+Run "./configure --with-svgalib" [without the quotes]
+
+Step 2
+------
+Run "make"
+
+Step 3
+------
+Run "chown root bin/sarien"
+
+Step 4
+------
+As root, run "chmod u+s bin/sarien". This is needed for SVGALib to change
+video modes.
+

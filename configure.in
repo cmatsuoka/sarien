@@ -1,0 +1,219 @@
+dnl Process this file with autoconf to produce a configure script.
+
+AC_INIT(src/core/agi.c)
+AC_CONFIG_AUX_DIR(./scripts)
+AC_CANONICAL_HOST
+AC_PROG_CC
+AC_PROG_RANLIB
+AC_PROG_INSTALL
+AC_PROG_MAKE_SET
+
+AC_SUBST(CONSOLE_DRIVER)
+AC_SUBST(SOUND_DRIVER)
+AC_SUBST(FILEIO_DRIVER)
+
+# XoXus: Modified this (was: "AC_ARG_WITH(sdl, [  --with-svgalib")
+AC_ARG_WITH(sdl, [  --with-sdl              use the Simple DirectMedia Layer])
+AC_ARG_WITH(svgalib, [  --with-svgalib          use SVGAlib for graphics])
+AC_ARG_WITH(alsa, [  --with-alsa             use ALSA for sound output])
+
+if test "${target}" = NONE; then
+	target=${host}
+	target_cpu=${host_cpu}
+	target_vendor=${host_vendor}
+	target_os=${host_os}
+fi                                                                              
+
+if test "${GCC-no}" = yes; then
+	CFLAGS="${CFLAGS} -Wall"
+fi
+
+
+dnl ----------------------------------------------
+dnl Checks for header files.
+dnl ----------------------------------------------
+
+AC_HEADER_STDC
+AC_CHECK_HEADERS(fcntl.h limits.h sys/ioctl.h sys/time.h unistd.h getopt.h)
+AC_CHECK_HEADERS(wingdi.h)
+
+
+dnl ----------------------------------------------
+dnl Check graphics support.
+dnl ----------------------------------------------
+
+AC_CHECKING([for graphics support])
+CONSOLE_DRIVER="x11"
+
+if test "${ac_cv_header_wingdi_h}" = "yes"; then
+	CONSOLE_DRIVER="win32"
+	AC_CHECK_LIB(cygwin, usleep)
+	LIBS="-lgdi32 ${LIBS}"
+elif test "${with_sdl}" = "yes"; then
+	AC_CHECK_HEADERS(SDL/SDL.h)
+	if test "${ac_cv_header_SDL_SDL_h}" = "yes"; then
+		CONSOLE_DRIVER="sdl"
+		LIBS="-lSDL ${LIBS}"
+		AC_CHECK_LIB(dl, dlopen)
+	fi
+	with_x="no"
+elif test "${with_svgalib}" = "yes"; then
+	AC_CHECK_HEADERS(vga.h)
+	if test "${ac_cv_header_vga_h}" = "yes"; then
+		CONSOLE_DRIVER="svgalib"
+		LIBS="-lvga ${LIBS}"
+	fi
+else
+	AC_PATH_X
+	AC_PATH_XTRA
+	AC_CHECK_HEADERS(X11/extensions/XShm.h X11/extensions/xf86dga.h \
+		X11/extensions/xf86vmode.h)
+	if test "${ac_cv_header_X11_extensions_XShm_h}" = "yes" -o \
+		"${ac_cv_header_X11_extensions_xf86dga_h}" = "yes"; then
+		X_LIBS="${X_LIBS} -lXext -lX11"
+	else
+		X_LIBS="${X_LIBS} -lX11"
+	fi
+	if test "${ac_cv_header_X11_extensions_XShm_h}" = "yes"; then
+		CFLAGS="${CFLAGS} -DMITSHM"
+	fi
+	if test "${ac_cv_header_X11_extensions_xf86dga_h}" = "yes" -a \
+		"${ac_cv_header_X11_extensions_xf86vmode_h}" = "yes"; then
+		CFLAGS="${CFLAGS} -DXF86DGA"
+		X_LIBS="${X_LIBS} -lXxf86dga -lXxf86vm"
+	fi
+fi
+AC_MSG_RESULT([using console driver: ${CONSOLE_DRIVER}])
+
+
+dnl ----------------------------------------------
+dnl Check sound support
+dnl ----------------------------------------------
+
+AC_CHECKING([for sound support])
+SOUND_DRIVER=""
+if test "${with_sdl}" = "yes"; then
+	SOUND_DRIVER="sdl"
+elif test "${with_svgalib}" = "yes"; then
+	SOUND_DRIVER="dummy"
+else case ${target_os} in
+linux*)
+	case ${target_cpu} in
+	sparc)
+		SOUND_DRIVER="bsd"
+		;;
+	i*86)
+		AC_CHECK_HEADERS(sys/soundcard.h)
+		AC_CHECK_HEADERS(sys/asoundlib.h)
+		if test "${ac_cv_header_sys_soundcard_h}" = "yes" -a \
+		    "${with_alsa}" != "yes"; then
+			SOUND_DRIVER="oss"
+		elif test "${ac_cv_header_sys_asoundlib_h}" = "yes"; then
+			SOUND_DRIVER="alsa"
+			AC_CHECK_LIB(asound, snd_pcm_open)
+		fi
+		;;
+	esac
+	;;
+freebsd*)
+	;;
+hpux*)
+	AC_CHECK_HEADERS(sys/audio.h)
+	if test "${ac_cv_header_sys_audio_h}" = "yes"; then
+		SOUND_DRIVER="hpux"
+	fi
+	;;
+solaris*)
+	AC_CHECK_HEADERS(sys/audioio.h)
+	if test "${ac_cv_header_sys_audioio_h}" = "yes"; then
+		SOUND_DRIVER="solaris"
+	fi
+	;;
+netbsd*|openbsd*)
+	AC_CHECK_HEADERS(sys/audioio.h)
+	if test "${ac_cv_header_sys_audioio_h}" = "yes"; then
+		SOUND_DRIVER="bsd"
+	fi
+	;;
+irix*)
+	AC_CHECK_HEADERS(dmedia/audio.h)
+	if test "${ac_cv_header_dmedia_audio_h}" = "yes"; then
+		SOUND_DRIVER="sgi"
+		LIBS="${LIBS} -laudio"
+	fi
+	;;
+openbsd*|netbsd*)
+	AC_CHECK_HEADERS(sys/audio.h)
+	if test "${ac_cv_header_sys_audio_h}" = "yes"; then
+		SOUND_DRIVER="bsd"
+	fi
+	;;
+cygwin*)
+	SOUND_DRIVER="win32"
+	;;
+default)
+	SOUND_DRIVER="dummy"
+	;;
+esac
+fi
+
+if test "${SOUND_DRIVER}" != "dummy" -a "${SOUND_DRIVER}" != "win32"; then
+	AC_CHECK_LIB(pthread, pthread_create,[		\
+		CFLAGS="${CFLAGS} -D_REENTRANT";	\
+		LIBS="-lpthread ${LIBS}"		\
+	], [						\
+		SOUND_DRIVER="dummy"			\
+	])
+fi
+
+AC_MSG_RESULT([using sound driver: ${SOUND_DRIVER}])
+
+
+dnl ----------------------------------------------
+dnl Check for file globbing support
+dnl ----------------------------------------------
+
+AC_CHECKING([for file globbing support])
+FILEIO_DRIVER=""
+AC_CHECK_FUNC(_dos_findfirst,[FILEIO_DRIVER="msdos"])
+AC_CHECK_FUNC(_findfirst,[FILEIO_DRIVER="win32"])
+AC_CHECK_FUNC(glob,[FILEIO_DRIVER="unix"])
+
+AC_MSG_RESULT([using file globbing method: ${FILEIO_DRIVER}])
+
+
+dnl ----------------------------------------------
+dnl Checks for typedefs, structures, and compiler
+dnl characteristics.
+dnl ----------------------------------------------
+
+AC_C_CONST
+AC_C_INLINE
+AC_HEADER_TIME
+
+if test "${ac_cv_c_inline}" != "no"; then
+	CFLAGS="${CFLAGS} -DINLINE=${ac_cv_c_inline}";		\
+fi
+
+
+dnl ----------------------------------------------
+dnl Checks for library functions.
+dnl ----------------------------------------------
+
+AC_PROG_GCC_TRADITIONAL
+AC_FUNC_MEMCMP
+AC_TYPE_SIGNAL
+AC_FUNC_VPRINTF
+AC_CHECK_FUNCS(vsnprintf gettimeofday strdup strstr strtoul getopt_long)
+
+if test "${ac_cv_header_getopt_h}" = "yes" -a		\
+	"${ac_cv_func_getopt_long}" = "yes"; then	\
+	CFLAGS="${CFLAGS} -DHAVE_GETOPT_LONG";		\
+fi
+
+if test "${ac_cv_func_vsnprintf}" = "yes"; then
+	CFLAGS="${CFLAGS} -DHAVE_VSNPRINTF";		\
+fi
+
+AC_OUTPUT(Rules)
+

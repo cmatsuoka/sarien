@@ -1,0 +1,74 @@
+
+prefix		= /usr/local
+exec_prefix 	= /usr/local
+BIN_DIR		= ${exec_prefix}/bin
+LIB_DIR		= ${exec_prefix}/lib
+MAN_DIR		= ${prefix}/man/man1
+
+CC		= i586-msdos-gcc
+CFLAGS		= -O2 -Wall -DVERSION='"$(VERSION)"' -U_TRACE \
+		  -DSTACK_PUSHPOP -DNO_DEBUG
+LD		= i586-msdos-gcc
+LDFLAGS		= -o $@
+LIBS		= -lalleg
+RANLIB		= i586-msdos-ranlib
+INSTALL		= /usr/bin/install -c
+X11CFLAGS	=
+X11LIBS		=
+SHELL		= /bin/sh
+MAKEFILE	= Makefile
+STRIP		= i586-msdos-strip
+
+SOUND_DRIVER	= dummy
+CONSOLE_DRIVER	= allegro
+FILEIO_DRIVER	= unix
+
+#
+# Ideally it should not be necessary to tweak parameters below this line
+#
+
+.c.o:
+	$(CC) -c $(CFLAGS) $(XCFLAGS) -o $@ $<
+
+.o.so:
+	ld -shared -o $@ $<
+
+dummy:
+
+clean distclean::
+	rm -f *.o core errlist depend $(BIN) $(CFILES)
+ifdef DDIRS
+	@for i in $(DDIRS); do \
+		(cd $$i; [ -f $(MAKEFILE) ] && $(MAKE) $@) \
+	done; true
+endif
+
+distclean::
+	rm -f $(DCFILES)
+
+depend:       
+	@echo Building dependencies...
+	@$(CC) $(CFLAGS) $(XCFLAGS) -MM -MG $(OBJS:.o=.c) $(XDEPS:.o=.c) >$@
+
+$(OBJS): $(MAKEFILE)
+
+$(LIB): $(LIB)($(OBJS) $(XOBJS))
+	$(RANLIB) $(LIB)
+
+subdist:
+	cp -dp $(DFILES) $(XDFILES) $(DISTDIR)
+ifdef DDIRS
+	for i in $(DDIRS); do \
+		mkdir $(DISTDIR)/$$i; \
+		( cd $$i; \
+		if [ -f $(MAKEFILE) ]; then \
+			$(MAKE) VERSION=$(VERSION) DISTDIR=../$(DISTDIR)/$$i \
+			subdist; \
+		else \
+			for j in *; do \
+				[ -f $$j ] && cp -dp $$j ../$(DISTDIR)/$$i; \
+			done; \
+		fi; ) \
+	done
+endif
+

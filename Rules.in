@@ -1,0 +1,73 @@
+
+prefix		= @prefix@
+exec_prefix 	= @prefix@
+BIN_DIR		= @bindir@
+LIB_DIR		= @libdir@
+MAN_DIR		= @mandir@/man1
+
+CC		= @CC@
+CFLAGS		= @CFLAGS@ -DVERSION='"$(VERSION)"' -U_TRACE
+LD		= @CC@
+LDFLAGS		= -o $@
+LIBS		= @LIBS@ #-lefence
+RANLIB		= @RANLIB@
+INSTALL		= @INSTALL@
+X11CFLAGS	= @X_CFLAGS@
+X11LIBS		= @X_LIBS@ @X_EXTRA_LIBS@
+SHELL		= /bin/sh
+MAKEFILE	= Makefile
+STRIP		= strip
+
+SOUND_DRIVER	= @SOUND_DRIVER@
+CONSOLE_DRIVER	= @CONSOLE_DRIVER@
+FILEIO_DRIVER	= @FILEIO_DRIVER@
+
+#
+# Ideally it should not be necessary to tweak parameters below this line
+#
+
+.c.o:
+	$(CC) -c $(CFLAGS) $(XCFLAGS) -o $@ $<
+
+.o.so:
+	ld -shared -o $@ $<
+
+dummy:
+
+clean distclean::
+	rm -f *.o errlist depend $(BIN) $(CFILES)
+ifdef DDIRS
+	@for i in $(DDIRS); do \
+		(cd $$i; [ -f $(MAKEFILE) ] && $(MAKE) $@) \
+	done; true
+endif
+
+distclean::
+	rm -f $(DCFILES)
+
+depend:       
+	@echo Building dependencies...
+	@$(CC) $(CFLAGS) $(XCFLAGS) -M $(OBJS:.o=.c) $(XDEPS:.o=.c) >$@
+
+$(OBJS): $(MAKEFILE)
+
+$(LIB): $(LIB)($(OBJS) $(XOBJS))
+	$(RANLIB) $(LIB)
+
+subdist:
+	cp -dp $(DFILES) $(XDFILES) $(DISTDIR)
+ifdef DDIRS
+	for i in $(DDIRS); do \
+		mkdir $(DISTDIR)/$$i; \
+		( cd $$i; \
+		if [ -f $(MAKEFILE) ]; then \
+			$(MAKE) VERSION=$(VERSION) DISTDIR=../$(DISTDIR)/$$i \
+			subdist; \
+		else \
+			for j in *; do \
+				[ -f $$j ] && cp -dp $$j ../$(DISTDIR)/$$i; \
+			done; \
+		fi; ) \
+	done
+endif
+
