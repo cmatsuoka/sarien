@@ -119,46 +119,45 @@ int agi_v3_init (void)
 
 	path = fixpath (GAMEDIR, DIR_);
 
-	if ((fp = fopen(path, "rb")) != NULL) {
-		/* build offset table for v3 directory format */
-		/* FIXME: not endian aware! */
-		fread (&xd, 1, 8, fp);
-		fseek (fp, 0, SEEK_END);
-
-		for(i = 0; i < 4; i++)
-			agi_vol3[i].sddr = xd[i];
-
-		agi_vol3[0].len = agi_vol3[1].sddr - agi_vol3[0].sddr;
-		agi_vol3[1].len = agi_vol3[2].sddr - agi_vol3[1].sddr;
-		agi_vol3[2].len = agi_vol3[3].sddr - agi_vol3[2].sddr;
-		agi_vol3[3].len = ftell(fp) - agi_vol3[3].sddr;
-
-		if (agi_vol3[3].len > 256 * 3)
-			agi_vol3[3].len = 256 * 3;
-
-		fseek(fp, 0, SEEK_SET);
-
-		/* read in directory files */
-  		ec = agi_v3_load_dir (game.dir_logic, fp, agi_vol3[0].sddr,
-			agi_vol3[0].len);
-
-  		if(ec == err_OK) {
-	  		ec = agi_v3_load_dir (game.dir_pic, fp, agi_vol3[1].sddr,
-				agi_vol3[1].len);
-		}
-
-  		if(ec == err_OK) {
-	  		ec = agi_v3_load_dir (game.dir_view, fp, agi_vol3[2].sddr,
-				agi_vol3[2].len);
-		}
-
-  		if(ec == err_OK) {
-	  		ec = agi_v3_load_dir (game.dir_sound, fp, agi_vol3[3].sddr,
-				agi_vol3[3].len);
-		}
-	} else {
+	if ((fp = fopen(path, "rb")) == NULL) {
 		printf ("Failed to open \"%s\"\n", path);
-		ec = err_BadFileOpen;
+		return err_BadFileOpen;
+	}
+	/* build offset table for v3 directory format */
+	/* FIXME: not endian aware! */
+	fread (&xd, 1, 8, fp);
+	fseek (fp, 0, SEEK_END);
+
+	for(i = 0; i < 4; i++)
+		agi_vol3[i].sddr = xd[i];
+
+	agi_vol3[0].len = agi_vol3[1].sddr - agi_vol3[0].sddr;
+	agi_vol3[1].len = agi_vol3[2].sddr - agi_vol3[1].sddr;
+	agi_vol3[2].len = agi_vol3[3].sddr - agi_vol3[2].sddr;
+	agi_vol3[3].len = ftell(fp) - agi_vol3[3].sddr;
+
+	if (agi_vol3[3].len > 256 * 3)
+		agi_vol3[3].len = 256 * 3;
+
+	fseek(fp, 0, SEEK_SET);
+
+	/* read in directory files */
+  	ec = agi_v3_load_dir (game.dir_logic, fp, agi_vol3[0].sddr,
+		agi_vol3[0].len);
+
+  	if(ec == err_OK) {
+  		ec = agi_v3_load_dir (game.dir_pic, fp, agi_vol3[1].sddr,
+			agi_vol3[1].len);
+	}
+
+  	if(ec == err_OK) {
+  		ec = agi_v3_load_dir (game.dir_view, fp, agi_vol3[2].sddr,
+			agi_vol3[2].len);
+	}
+
+  	if(ec == err_OK) {
+  		ec = agi_v3_load_dir (game.dir_sound, fp, agi_vol3[3].sddr,
+			agi_vol3[3].len);
 	}
 
 	return ec;

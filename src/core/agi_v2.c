@@ -97,6 +97,7 @@ static int agi_v2_load_dir (struct agi_dir *agid, char *fname)
 	}
 
 	free (mem);
+	fclose (fp);
 
 	return err_OK;
 }
