@@ -139,8 +139,10 @@ static void normal_motion (int em, int x, int y)
 	struct agi_view_table *vt_obj;
 	int cel_width;
 
-	if (VT_VIEW(view_table[em]).loop == NULL)
+	if (VT_VIEW(view_table[em]).loop == NULL) {
+		_D(_D_CRIT "Attempt to access NULL view_table[%d].loop", em);
 		return;
+	}
 
 	vt_obj = &view_table[em];
 	cel_width = VT_WIDTH(view_table[em]);
@@ -148,11 +150,12 @@ static void normal_motion (int em, int x, int y)
 	x += vt_obj->x_pos;
 	y += vt_obj->y_pos;
 	dir = vt_obj->direction;
-	e = em == EGO_VIEW_TABLE;
+	e = (em == EGO_VIEW_TABLE);
 
 	v = e ? V_border_touch_ego : V_border_touch_obj;
 
 	if (x < 0 && (dir == 8 || dir == 7 || dir == 6)) {
+		_D (_D_WARN "left border: vt %d, x %d, dir %d", em, x, dir); 
 		if (!e)
 			setvar (V_border_code, em);
 		setvar (v, 4);
@@ -160,6 +163,7 @@ static void normal_motion (int em, int x, int y)
 	}
 
 	if (x > _WIDTH - cel_width && (dir == 2 || dir == 3 || dir == 4)) {
+		_D (_D_WARN "right border: vt %d, x %d, dir %d", em, x, dir); 
 		if (!e)
 			setvar (V_border_code, em);
 		setvar (v, 2);
@@ -167,6 +171,7 @@ static void normal_motion (int em, int x, int y)
 	}
 
 	if (y > _HEIGHT - 1 && (dir == 4 || dir == 5 || dir == 6)) {
+		_D (_D_WARN "bottom border: vt %d, x %d, dir %d", em, x, dir); 
 		if (!e)
 			setvar (V_border_code, em);
 		setvar (v, 3);
@@ -174,6 +179,7 @@ static void normal_motion (int em, int x, int y)
 	}
 
 	if (y < game.horizon && (dir == 1 || dir == 2 || dir == 8)) {
+		_D (_D_WARN "top border: vt %d, x %d, dir %d", em, x, dir); 
 		if (!e)
 			setvar (V_border_code, em);
 		setvar (v, 1);
@@ -407,11 +413,9 @@ static void interpret_cycle ()
 		setflag (F_status_selects_items, FALSE);	/* 12? */
 
 		if (game.control_mode == CONTROL_PROGRAM) {
-			view_table[EGO_VIEW_TABLE].direction =
-				getvar (V_ego_dir);
+			view_table[EGO_VIEW_TABLE].direction = getvar (V_ego_dir);
 		} else {
-			setvar (V_ego_dir,
-				view_table[EGO_VIEW_TABLE].direction);
+			setvar (V_ego_dir, view_table[EGO_VIEW_TABLE].direction);
 		}
 
 		clean_input (); 
