@@ -106,7 +106,7 @@ cmd(normal_cycle)	{ vt.cycle = CYCLE_NORMAL; vt.flags |= CYCLING; }
 cmd(reverse_cycle)	{ vt.cycle = CYCLE_REVERSE; vt.flags |= CYCLING; }
 cmd(set_dir)		{ vt.direction = _v[p1]; }
 cmd(get_dir)		{ _v[p1] = vt.direction; }
-cmd(get_room_v)		{ _v[p1] = object_get_location (p0); }
+cmd(get_room_v)		{ _v[p1] = object_get_location (_v[p0]); }
 cmd(put)		{ object_set_location (p0, _v[p1]); }
 cmd(put_v)		{ object_set_location (_v[p0], _v[p1]); }
 cmd(drop)		{ object_set_location (p0, 0); }
