@@ -68,7 +68,7 @@ static int check_clutter (struct vt_entry *v)
 		if (v->y_pos >= u->y_pos)
 			continue;
 
-		if (v->y_pos <= u->y_pos)
+		if (v->y_pos2 <= u->y_pos2)
 			continue;
 
 return_1:

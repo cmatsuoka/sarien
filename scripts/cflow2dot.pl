@@ -31,6 +31,7 @@ while (<>) {
 	$x = $_;
 	if (/\t*(\w+) {(\w+)\.c/) {
 		(my $x, $_) = ($1, $2);
+		($x =~ /ccmd_/) && next;
 		/^graphic/ && print "\t$x [$graphic $lowlevel];\n";
 		/^sprite/  && print "\t$x [$graphic];\n";
 		/^console/ && print "\t$x [$sarien $optional];\n";
@@ -61,7 +62,9 @@ while (<>) {
 	(/[^\w](_D|report|[sg]etflag|[sg]etvar|main|fixpath)[^\w]/
 		|| /[^\w](memset|feof|strtok|atoi|atol|abs|tolower)[^\w]/
 		|| /[^\w](strtoul|fseek|ftell|abort)[^\w]/
-		|| /[^\w](lohi_|hilo_|__|test_|object_)/) && next;
+		|| /(_slot)[^\w]/
+		|| /[^\w](list_|ccmd_)/
+		|| /[^\w](lohi_|hilo_|__|test_|object_|read_)/) && next;
 
 	$edge{@m[$i - 1]} &&
 		($_ = "\tedge [$edge{@m[$i - 1]}];\n$_\tedge [$def_edge];\n");
