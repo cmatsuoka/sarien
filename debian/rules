@@ -5,14 +5,14 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-# This is the debhelper compatibility version to use.
+# This is the debhelper compatability version to use.
 export DH_COMPAT=3
 
 configure: configure-stamp
 configure-stamp:
 	dh_testdir
 	# Add here commands to configure the package.
-	./configure --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
+	./configure --with-sdl --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
 
 	touch configure-stamp
 
@@ -22,7 +22,7 @@ build-stamp:
 
 	# Add here commands to compile the package.
 	$(MAKE)
-	#/usr/bin/docbook-to-man debian/sarien.sgml > sarien.1
+	/usr/bin/docbook-to-man doc/manpage.sgml > sarien.6
 
 	touch build-stamp
 
@@ -33,6 +33,9 @@ clean:
 
 	# Add here commands to clean up after the build process.
 	-$(MAKE) distclean
+	-rm bin/sarien
+	-rm lib/libagi.a
+	-rm sarien.6
 
 	dh_clean
 
@@ -65,7 +68,7 @@ binary-arch: build install
 #	dh_installmime
 #	dh_installinit
 	dh_installcron
-	dh_installman
+	dh_installman sarien.6
 	dh_installinfo
 #	dh_undocumented
 	dh_installchangelogs 
