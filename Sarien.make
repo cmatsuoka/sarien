@@ -184,7 +184,7 @@ RezOptions		= -i :src:core:macos
 Sarien  ÄÄ  {Resources} {¥MondoBuild¥}
 	Rez {RezOptions} {Resources} -o Sarien
 
-Sarien  ÄÄ  {ObjFiles-PPC} {LibFiles-PPC} {¥MondoBuild¥}
+Sarien  ÄÄ  {ObjFiles-PPC} {LibFiles-PPC} {Resources} {¥MondoBuild¥}
 	PPCLink ¶
 		-o {Targ} ¶
 		{ObjFiles-PPC} ¶
@@ -194,7 +194,7 @@ Sarien  ÄÄ  {ObjFiles-PPC} {LibFiles-PPC} {¥MondoBuild¥}
 		-t 'APPL' ¶
 		-c 'FAGI'
 
-Sarien  ÄÄ  {ObjFiles-68K} {LibFiles-68K} {¥MondoBuild¥}
+Sarien  ÄÄ  {ObjFiles-68K} {LibFiles-68K} {Resources} {¥MondoBuild¥}
 	ILink ¶
 		-o {Targ} ¶
 		{ObjFiles-68K} ¶
