@@ -15,6 +15,7 @@
 #include "sarien.h"
 #include "agi.h"
 #include "gfx_agi.h"
+#include "gfx_base.h"
 #include "picture.h"
 
 #define next_byte data[foffs++]
