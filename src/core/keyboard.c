@@ -189,7 +189,6 @@ void handle_getstring (int key)
 {
 	static int pos = 0;		/* Cursor position */
 	static char buf[40];
-	int inputlen = 0;		/* Added by Marcos Maruo to fix #607635 */
 
 	if (KEY_ASCII(key) == 0)
 		return;
@@ -205,8 +204,9 @@ void handle_getstring (int key)
 		_D (_D_WARN "buffer=[%s]", buf);
 		buf[pos = 0] = 0;
 		new_input_mode (INPUT_NORMAL);
-		inputlen = strlen (game.strings[stringdata.str]);
-		break;
+		print_character (stringdata.x + strlen (game.strings[stringdata.str]) + 1, stringdata.y,
+			' ', game.color_fg, game.color_bg);
+		return;
 	case KEY_ESCAPE:
 		_D ("KEY_ESCAPE");
 		game.has_prompt = 0;
@@ -243,7 +243,7 @@ void handle_getstring (int key)
 	}
 
 	/* print cursor */
-	print_character (stringdata.x + inputlen + pos + 1, stringdata.y,
+	print_character (stringdata.x + pos + 1, stringdata.y,
 		(char)game.cursor_char, game.color_fg, game.color_bg);
 }
 
