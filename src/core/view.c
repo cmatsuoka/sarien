@@ -390,6 +390,14 @@ void draw_obj (int vt)
 	cel_width = VT_WIDTH(view_table[vt]);
 	cel_height = VT_HEIGHT(view_table[vt]);
 
+
+
+
+	reposition (vt);
+
+
+
+
 #if 0
 	/* DF: CLIPPING (FIXES OP:RECON BUG !! (speach bubbles) */
 

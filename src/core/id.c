@@ -244,13 +244,12 @@ int v3id_game ()
 
 int v4id_game (UINT32 crc)
 {
-	int ec = err_OK, y, ver;	
+	int ec = err_OK, ver;	
 
 	ver = match_version (crc);
 	agi_set_release (ver);
 	
-	switch((ver>>12)&0xFF)
-	{
+	switch ((ver>>12)&0xFF) {
 		case 2: ec=setup_v2_game(ver, crc); break;
 		case 3: ec=setup_v3_game(ver, crc); break;
 	}

@@ -124,6 +124,10 @@ static int check_borders (int em, int x, int y)
 	vt_obj = &view_table[em];
 	dir = vt_obj->direction;
 
+	/*********/
+	if (vt_obj->x_pos + cel_width > _WIDTH)
+		return -1;
+
 	v = em == EGO_VIEW_TABLE ? V_border_touch_ego : V_border_touch_obj;
 
 	if (x < 0 && (dir == 8 || dir == 7 || dir == 6)) {
@@ -205,6 +209,7 @@ static int check_surface (int em, int x, int y)
 		setflag (F_ego_water, FALSE);
 
 	w = 0;
+
 	for (i = x + cel_width - 1; i >= x; i--) {
 		if (xdata_data[y * _WIDTH + i] == 3 && em == EGO_VIEW_TABLE)
 			w++;
@@ -217,7 +222,7 @@ static int check_surface (int em, int x, int y)
 			vt_obj->x_pos = x;
 			vt_obj->y_pos = y;
 			setflag (F_ego_water, TRUE);
-			return -1;
+			//return -1;
 		}
 	}
 
@@ -268,35 +273,63 @@ static void normal_motion (int em, int x, int y)
 	 * correctly."
 	 */
 
-	/* Handles the "Budin offset" */
-	while (check_control_lines (em, vt_obj->x_pos, vt_obj->y_pos) == -1) {
-		if (vt_obj->x_pos > 0)
-			vt_obj->x_pos--;
-		else
-			break;
-
-		if (check_control_lines (em, vt_obj->x_pos, vt_obj->y_pos) == 0)
-			break;
-
-		if (vt_obj->y_pos < _HEIGHT)
-			vt_obj->y_pos++;
-		else
-			break;
-	}
 
 	x += vt_obj->x_pos;
 	y += vt_obj->y_pos;
 
-	if (check_borders (em, x, y) ||
-		check_control_lines (em, x, y) ||
+	if (check_borders (em, x, y) || check_control_lines (em, x, y) ||
 		check_surface (em, x, y))
 		return;
 
 	/* New object direction */
 	adj_direction (em, y - vt_obj->y_pos, x - vt_obj->x_pos);
 
-	vt_obj->x_pos = x;
 	vt_obj->y_pos = y;
+	vt_obj->x_pos = x;
+}
+
+
+void reposition (int em)
+{
+	struct agi_view_table *vt_obj = &view_table[em];
+	int count, dir, tries;
+
+	/* test horizon */
+
+	dir = 0;
+	count = tries = 1;
+
+	while (check_borders (em, vt_obj->x_pos, vt_obj->y_pos) ||
+		check_control_lines (em, vt_obj->x_pos, vt_obj->y_pos) ||
+		check_surface (em, vt_obj->x_pos, vt_obj->y_pos))
+	{
+		switch (dir) {
+		case 0:			/* west */
+			vt_obj->x_pos--;
+			if (--count) continue;
+			dir = 1;
+			break;
+		case 1:			/* south */
+			vt_obj->y_pos++;
+			if (--count) continue;
+			dir = 2;
+			tries++;
+			break;
+		case 2:			/* east */
+			vt_obj->x_pos++;
+			if (--count) continue;
+			dir = 3;
+			break;
+		case 3:			/* north */
+			vt_obj->y_pos--;
+			if (--count) continue;
+			dir = 0;
+			tries++;
+			break;
+		}
+
+		count = tries;
+	}
 }
 
 
@@ -308,9 +341,8 @@ static void set_motion (int em)
 		{ -1, -1 }
 	};
 
-	i = view_table[em].direction;
-
-	normal_motion (em, mt[i][0], mt[i][1]);
+	if ((i = view_table[em].direction))
+		normal_motion (em, mt[i][0], mt[i][1]);
 }
 
 
@@ -372,10 +404,12 @@ static void calc_obj_motion ()
 		if (~vt_obj->flags & UPDATE)
 			continue;
 
-		if (~vt_obj->flags & UPDATE) {
+#if 0
+		if (~vt_obj->flags & MOTION) {
 			check_surface (em, vt_obj->x_pos, vt_obj->y_pos);
 			continue;
 		}
+#endif
 
 		vt_obj->step_time_count += vt_obj->step_size;
 
