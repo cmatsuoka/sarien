@@ -29,7 +29,6 @@ UINT8  last_sentence[40];
 UINT8  IsGetString=FALSE;
 UINT16  xInput, yInput;
 
-
 extern struct sarien_console console;
 extern struct agi_view_table view_table[];
 
@@ -91,29 +90,38 @@ void clean_input ()
 
 /* Called if ego enters a new room */
 /* FIXME: remove lowlevel print_text call! */
+
 void print_line_prompt ()
 {
 	int k;
 
 	if (game.allow_kyb_input) {
 		/* Command prompt */
-		print_text (agi_printf (game.strings[0], 0), 0, 0,
-			game.line_user_input * 8, 40, txt_fg, txt_bg );
 
-		/* internal keyboard buffer */
-		for (k = 0; buffer[k]; k++) {
-			print_character ((k + 1) * 8, game.line_user_input * 8,
-				buffer[k], txt_fg, txt_bg );
+		/* FIXME : dont show line input if its a dialogue box */
+		if(open_dialogue==0){
+
+      		print_text (agi_printf (game.strings[0], 0), 0, 0,
+    			game.line_user_input * 8, 40, txt_fg, txt_bg );
+
+
+    		/* internal keyboard buffer */
+    		for (k = 0; buffer[k]; k++) {
+    			print_character ((k + 1) * 8, game.line_user_input * 8,
+    				buffer[k], txt_fg, txt_bg );
+    		}
+
+    		/* cursor prompt */
+    		if (IsGetString) {
+    			print_character (xInput + ((k + 1) * 8), yInput,
+    				txt_char, txt_fg, txt_bg );
+    		} else {
+    			print_character ((k + 1) * 8, game.line_user_input * 8,
+    				txt_char, txt_fg, txt_bg );
+    		}
+
 		}
 
-		/* cursor prompt */
-		if (IsGetString) {
-			print_character (xInput + ((k + 1) * 8), yInput,
-				txt_char, txt_fg, txt_bg );		
-		} else {
-			print_character ((k + 1) * 8, game.line_user_input * 8,
-				txt_char, txt_fg, txt_bg );
-		}
 	}
 }
 
@@ -160,7 +168,7 @@ void move_ego (UINT8 direction)
 
 			/* FR:
 			 * Set the loop (in ego view table) corresponding to
-			 * this direction 
+			 * this direction
 			 */
 			calc_direction( EGO_VIEW_TABLE );
 		} else {
@@ -207,7 +215,7 @@ void poll_keyboard (void)
 	while (gfx->keypress ()) {
 		xkey = gfx->get_key ();
 
-#ifdef MSDOS
+#ifdef _M_MSDOS
 		if (xkey != 0x5200 && xkey != 0x5300)
 			report ("xkey=%04X\n", xkey);
 #endif
@@ -220,7 +228,7 @@ void poll_keyboard (void)
 		if (console.active && console.input_active)
 			continue;
 
-#ifdef MSDOS
+#ifdef _M_MSDOS
 		report ("key pressed : %04X\n", xkey);
 #endif
 
