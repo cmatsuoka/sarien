@@ -340,7 +340,7 @@ int agi_v3_load_resource (int restype, int resnum)
 		}
 		break;
 	case rSOUND:
-		if (~game.dir_sound[resnum].flags & RES_LOADED)
+		if (game.dir_sound[resnum].flags & RES_LOADED)
 			break;
 
 		if ((data = agi_v3_load_vol_res (&game.dir_sound[resnum])) != NULL) {

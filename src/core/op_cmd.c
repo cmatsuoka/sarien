@@ -1551,13 +1551,13 @@ void cmd_version ()
 	/* FIXME */
 	char ver_msg[] = TITLE " v" VERSION;
 	char ver2_msg[] =
-		"\n"
-		"                             \n\n"
+			"\n"
+			"                             \n\n"
         	"Emulating Sierra AGI v%x.%03x\n";
 	char ver3_msg[]=
     		"\n"
-       		"                                   \n\n"
-       		" Emulating Sierra AGI v%x.002.%03x \n";
+       		"                             \n\n"
+       		"  Emulating AGI v%x.002.%03x\n"; // no Sierra as it wraps textbox
 	char *p, *q;
 	int ver, maj, min;
 
@@ -1565,11 +1565,10 @@ void cmd_version ()
 	maj = (ver >> 12) & 0xf;
 	min = ver & 0xfff;
 
-	q = ver == 2 ? ver2_msg : ver3_msg;
-
+	q = maj == 2 ? ver2_msg : ver3_msg;
 	p = strchr (q+1, '\n');
-	strncpy (q+1 + ((p-q>0 ? p-q : 1)/4), ver_msg, strlen (ver_msg));
 
+	strncpy (q+1 + ((p-q>0 ? p-q : 1)/4), ver_msg, strlen (ver_msg));
 	message_box (q, maj, min);
 }
 
