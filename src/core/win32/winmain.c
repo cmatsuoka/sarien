@@ -79,10 +79,10 @@ BOOL CheckForGame (char *szDir)
 
 int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg,LPARAM lp, LPARAM pData)
 {
-	CHAR szDir[MAX_PATH+1]	= { 0 };
-	HKEY hKey		= NULL;
-	DWORD dwDisposition	= 0;
-	DWORD cbData		= MAX_PATH;
+	CHAR szDir[MAX_PATH] = "";
+	HKEY hKey            = NULL;
+	DWORD dwDisposition  = 0;
+	DWORD cbData         = MAX_PATH;
 
 	switch(uMsg) {
 	case BFFM_INITIALIZED: 
@@ -127,9 +127,6 @@ int CALLBACK BrowseCallbackProc(HWND hwnd, UINT uMsg,LPARAM lp, LPARAM pData)
 	return 0;
 }
 
-/* BOOL CALLBACK
-FileOpenDlgProc (HWND hwnd, UINT Message, WPARAM wParam, LPARAM lParam) */
-/* static void open_file (HINSTANCE hThisInst, char *s) */
 void open_file (HWND hwnd)
 {
 	BROWSEINFO bi        = { 0 };
@@ -160,31 +157,30 @@ void open_file (HWND hwnd)
 	 */
 	bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_STATUSTEXT;
 	bi.lpfn = BrowseCallbackProc;
-	pidl = SHBrowseForFolder(&bi);
 
-	if (pidl) { 
+	if ((pidl = SHBrowseForFolder(&bi)) != 0) {
 		if (SHGetPathFromIDList(pidl,szDir)) 
 			strncpy(s, szDir, MAX_PATH);
-	}
 
-	if (ERROR_SUCCESS != RegCreateKeyEx (HKEY_CURRENT_USER,
-		"SOFTWARE\\FreeAGI", 0, NULL, REG_OPTION_NON_VOLATILE,
-		KEY_SET_VALUE, NULL, &hKey, &dwDisposition))
-	{
-		OutputDebugString("winmain.c: open_file(): "
-			"RegCreateKeyEx != ERROR_SUCESS");
-	}
+		if (ERROR_SUCCESS != RegCreateKeyEx (HKEY_CURRENT_USER,
+			"SOFTWARE\\FreeAGI", 0, NULL, REG_OPTION_NON_VOLATILE,
+			KEY_SET_VALUE, NULL, &hKey, &dwDisposition))
+		{
+			OutputDebugString("winmain.c: open_file(): "
+				"RegCreateKeyEx != ERROR_SUCCESS");
+		}
 
-	if (ERROR_SUCCESS != RegSetValueEx(hKey, "LastFolder", 0,
-		REG_SZ, (const unsigned char *)szDir, MAX_PATH))
-	{
-		OutputDebugString ("winmain.c: open_file(): "
-			"RegSetValueEx != ERROR_SUCESS");
-	}
+		if (ERROR_SUCCESS != RegSetValueEx(hKey, "LastFolder", 0,
+			REG_SZ, (const unsigned char *)szDir, MAX_PATH))
+		{
+			OutputDebugString ("winmain.c: open_file(): "
+				"RegSetValueEx != ERROR_SUCCESS");
+		}
 
-	if (ERROR_SUCCESS != RegCloseKey(hKey)) {
-		OutputDebugString("winmain.c: open_file(): "
-		"RegCloseKey != ERROR_SUCESS");
+		if (ERROR_SUCCESS != RegCloseKey(hKey)) {
+			OutputDebugString("winmain.c: open_file(): "
+			"RegCloseKey != ERROR_SUCCESS");
+		}
 	}
 
 	/* not c++ so vtbl */
