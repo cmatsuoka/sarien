@@ -2,7 +2,7 @@
 
 PROJECT= Sarien
 DIR= src/core/
-SRCS= src/core/agi.c src/core/agi_v2.c src/core/agi_v3.c src/core/checks.c src/core/cli.c src/core/console.c src/core/cycle.c src/core/font.c src/core/getopt.c src/core/getopt1.c src/core/global.c src/core/graphics.c src/core/hirespic.c src/core/id.c src/core/iff.c src/core/inv.c src/core/keyboard.c src/core/logic.c src/core/lzw.c src/core/main.c src/core/menu.c src/core/motion.c src/core/objects.c src/core/op_cmd.c src/core/op_dbg.c src/core/op_test.c src/core/patches.c src/core/picture.c src/core/picview.c src/core/rand.c src/core/savegame.c src/core/silent.c src/core/sound.c src/core/sprite.c src/core/text.c src/core/view.c src/core/words.c
+SRCS= src/core/agi.c src/core/agi_v2.c src/core/agi_v3.c src/core/checks.c src/core/cli.c src/core/console.c src/core/cycle.c src/core/font.c src/core/getopt.c src/core/getopt1.c src/core/global.c src/core/graphics.c src/core/hirespic.c src/core/id.c src/core/iff.c src/core/inv.c src/core/keyboard.c src/core/logic.c src/core/lzw.c src/core/main.c src/core/menu.c src/core/motion.c src/core/objects.c src/core/op_cmd.c src/core/op_dbg.c src/core/op_test.c src/core/patches.c src/core/picture.c src/core/picview.c src/core/rand.c src/core/savegame.c src/core/silent.c src/core/sound.c src/core/sprite.c src/core/text.c src/core/view.c src/core/words.c src/graphics/amiga/amiga.c
 HDRS=
 EXTRAS= 
 PDEFAULT= 
