@@ -266,6 +266,9 @@ static void fill_scanline (int x, int y)
 	int c;
 	int newspan_up, newspan_down;
 
+	if (!is_ok_fill_here (x, y))
+		return;
+
 	/* Scan for left border */
 	for (c = x - 1; is_ok_fill_here (c, y); c--);
 	

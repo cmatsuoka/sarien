@@ -304,6 +304,9 @@ static void hires_fill_scanline (int x, int y)
 	int c;
 	int newspan_up, newspan_down;
 
+	if (!hires_fill_here (x, y))
+		return;
+
 	/* Scan for left border */
 	for (c = x - 1; hires_fill_here (c, y); c--);
 	fix_pixel_left (c, y);
