@@ -13,6 +13,7 @@
 #include <string.h>
 
 #include "sarien.h"
+#include "agi.h"
 #include "gfx.h"
 #include "keyboard.h"
 #include "console.h"
@@ -23,8 +24,8 @@ static struct agi_menu *master_menu;
 struct agi_menu *menu;
 
 extern struct sarien_console console;
+extern struct agi_game game;
 extern struct agi_event events[];
-extern UINT8 clock_enabled;
 extern struct gfx_driver *gfx;
 
 
@@ -95,7 +96,7 @@ static void draw_vertical_menu (int h_menu, int cur_men, int max_men)
 	cx *= 8;
 	cy = 8;
 	draw_box (cx, cy, cx + ((2 + len)<<3), ((2 + max_men)<<3),
-		MENU_BG, MENU_LINE, LINES);
+		MENU_BG, MENU_LINE, LINES, 0);
 
 	men = down;
 	x = cx + 8;
@@ -198,8 +199,8 @@ void do_menus ()
 	struct agi_menu *men;
 	int clock_val;
 
-	clock_val = clock_enabled;
-	clock_enabled = FALSE;
+	clock_val = game.clock_enabled;
+	game.clock_enabled = FALSE;
 
 	save_screen ();
 	redraw_sprites ();
@@ -284,6 +285,6 @@ exit_menu:
 	restore_screen ();
 
 	setvar (V_key, 0);
-	clock_enabled = clock_val;
+	game.clock_enabled = clock_val;
 }
 

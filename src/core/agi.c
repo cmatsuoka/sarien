@@ -27,38 +27,10 @@
 #include "console.h"
 
 
-/* A bunch of global variables. Ick. */
+UINT8		path[1024];		/* holds expanded paths for files */
+struct agi_loader *loader;		/* loader */
 
 struct agi_game game;
-
-#if 0
-UINT8		*gname=NULL;		/* lead in id (eg, goldrush GR */
-UINT8		*gdir=NULL;		/* game dir (for v3 games, eg GR<dir> */
-UINT8		*gid=NULL;		/* game id */
-#endif
-
-UINT8		path[1024];		/* holds expanded paths for files */
-UINT8		horizon;		/* horizon marker */
-struct agi_loader *loader;		/* loader */
-struct agi_dir	dir_logic[MAX_DIRS];	/* directory entries for logics */
-struct agi_dir	dir_pic[MAX_DIRS];	/* directory entries for pictures */
-struct agi_dir	dir_view[MAX_DIRS];	/* directory entries for views */
-struct agi_dir	dir_sound[MAX_DIRS];	/* directory entries for sounds */
-UINT8		flags[MAX_FLAGS/CHAR_BIT];	/* 256 bit flags */
-UINT8		vars[MAX_VARS];		/* 256 byte variables */
-UINT16		ego_in_new_room;	/* new room flag */
-UINT8		control_mode;		/* who's in control */
-UINT8		quit_prog_now;		/* quit now */
-UINT8		status_line;		/* status line on/off */
-//UINT8		line_status;		/* line num to put status on */
-//UINT8		line_user_input;	/* line to put user input on */
-//UINT8		line_min_print;		/* num lines to print on */
-UINT8		allow_kyb_input;	/* allow keyboard input */
-UINT8		clock_enabled;		/* clock is on/off */
-//UINT8		timed_message_box;	/* timed message box */
-UINT16		message_box_key;	/* message box keypress */
-UINT32		game_flags;		/* game flags!! (important) */
-
 
 volatile UINT32	msg_box_secs2;		/* message box timeout in sec/2 */
 
@@ -69,6 +41,7 @@ extern struct agi_view views[];
 extern struct agi_object *objects;
 extern struct agi_events events[];
 extern UINT8 *font, font_english[], font_russian[];
+
 
 int agi_init ()
 {
@@ -121,13 +94,13 @@ int agi_init ()
 		break;
 	}
 
-	game_flags |= opt.amiga ? ID_AMIGA : 0;
-	game_flags |= opt.agds ? ID_AGDS : 0;
+	game.game_flags |= opt.amiga ? ID_AMIGA : 0;
+	game.game_flags |= opt.agds ? ID_AGDS : 0;
 
-	if (game_flags & ID_AMIGA)
+	if (game.game_flags & ID_AMIGA)
 		printf ("Amiga padded game detected\n");
 
-	if (game_flags & ID_AGDS)
+	if (game.game_flags & ID_AGDS)
 		printf ("AGDS mode enabled\n");
 
 	screen_mode=GFX_MODE;
@@ -150,16 +123,16 @@ int agi_init ()
 	/* Load logic 0 into memory, set cache flag for logic 0 */
 	if(ec == err_OK) {
 		ec = loader->load_resource(rLOGIC, 0);
-		dir_logic[0].flags |= RES_CACHED;	/* keep this one cached */
+		game.dir_logic[0].flags |= RES_CACHED;	/* keep this one cached */
 	}
 
 	/* if cached, enable caching options */
 	if (opt.cache) {
 		for(i=0; i<MAX_DIRS; i++) {
-			dir_logic[i].flags |= RES_CACHED;
-			dir_pic[i].flags |= RES_CACHED;
-			dir_view[i].flags |= RES_CACHED;
-			dir_sound[i].flags |= RES_CACHED;
+			game.dir_logic[i].flags |= RES_CACHED;
+			game.dir_pic[i].flags |= RES_CACHED;
+			game.dir_view[i].flags |= RES_CACHED;
+			game.dir_sound[i].flags |= RES_CACHED;
 		}
 	}
 
@@ -204,95 +177,18 @@ int agi_deinit ()
 	unload_objects();
 	unload_words();
 
-	ego_in_new_room = 0;
-	control_mode = 0;
-	quit_prog_now = 0;
-	status_line = FALSE;
+	game.ego_in_new_room = 0;
+	game.control_mode = 0;
+	game.quit_prog_now = 0;
+	game.status_line = FALSE;
 	game.line_status = 0;
 	game.line_user_input = 0;
 	game.line_min_print = 0;
-	allow_kyb_input = 0;
-	clock_enabled = 0;
-	//timed_message_box = 0;
-	message_box_key = 0;
+	game.allow_kyb_input = 0;
+	game.clock_enabled = 0;
+	game.message_box_key = 0;
 
 	return ec;
 }
 
-
-char *agi_printf (char *msg, int lognum)
-{
-	static char x[256], y[256];
-	char z[16], *p;
-	int xx, xy;
-
-	/* turn a AGI string into a real string */
-	p = x;
-
-	for (*p = xx = xy = 0; *msg; ) {
-		switch(*msg) {
-		case '%':
-			msg++;
-			switch(*msg++) {
-			case 'v':
-				xx = atoi((char*)msg);
-				while (isdigit(*msg)!=0) msg++;
-				sprintf((char*)z, "%03i", getvar(xx));
-
-				xy=99;
-				if(*msg=='|') {
-					msg++;
-					xy=atoi((char*)msg);
-					while(isdigit(*msg)!=0) msg++;
-				}
-				xx=0;
-				if(xy==99) {
-					/* remove all leading 0' */
-					/* dont remove the 3rd zero if 000 */
-					while(z[xx]=='0' && xx<2) xx++;
-				}
-				else
-					xx=3-xy;
-				strcat(p, z + xx);
-				break;
-			case '0':
-				strcat(p, objects[atol(msg)-1].name);
-				break;
-			case 'g':
-				strcat(p, logics[0].texts[atol(msg)-1]);
-				break;
-			case 'w':
-				strcat(p, ego_words[atol(msg)-1].word);
-				break;
-			case 's':
-				strcat(p, strings[atol(msg)]);
-				break;
-			case 'm':
-				strcat(p, logics[lognum].texts[atol(msg)-1]);
-				break;
-			default:
-				break;
-			}
-
-			while(isdigit(*msg)!=0) msg++;
-			while(*p!=0x0) p++;
-			break;
-
-		default:
-			*p=*msg;
-			msg++;
-			p++;
-			*p=0x0;
-			break;
-		}
-	}
-
-	p = x;
-	if (strchr (x, '%') != NULL) {
-		strcpy (y, x);
-		p = agi_printf (y, lognum);
-	}
-
-	return p;
-}
 

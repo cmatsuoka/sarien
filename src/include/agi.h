@@ -98,7 +98,6 @@ extern	UINT8	path[];
 
 int	agi_init	(void);
 int	agi_deinit	(void);
-char	*agi_printf	(char *, int);
 
 #ifdef __cplusplus
 };

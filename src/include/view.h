@@ -89,11 +89,13 @@ struct agi_view_table {
 	UINT8		parm4;
 };
 
+#if 0
 struct view_list {
 	struct view_list *up;
 	struct view_list *down;
 	struct agi_view_table *vt;
 };
+#endif
 
 
 void	init_view_table	(void);

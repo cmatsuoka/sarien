@@ -12,10 +12,9 @@ AC_SUBST(CONSOLE_DRIVER)
 AC_SUBST(SOUND_DRIVER)
 AC_SUBST(FILEIO_DRIVER)
 
-# XoXus: Modified this (was: "AC_ARG_WITH(sdl, [  --with-svgalib")
-AC_ARG_WITH(sdl, [  --with-sdl              use the Simple DirectMedia Layer])
-AC_ARG_WITH(svgalib, [  --with-svgalib          use SVGAlib for graphics])
-AC_ARG_WITH(alsa, [  --with-alsa             use ALSA for sound output])
+AC_ARG_WITH(sdl,    [  --with-sdl              use the Simple DirectMedia Layer])
+AC_ARG_WITH(svgalib,[  --with-svgalib          use SVGAlib for graphics])
+AC_ARG_WITH(alsa,   [  --with-alsa             use ALSA for sound output])
 
 if test "${target}" = NONE; then
 	target=${host}

@@ -8,6 +8,7 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
+#include <ctype.h>
 #include <string.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -15,10 +16,18 @@
 
 #include "sarien.h"
 #include "agi.h"
+#include "logic.h"
+#include "objects.h"
 #include "gfx.h"
 #include "text.h"
+#include "words.h"
 
 extern struct gfx_driver *gfx;
+extern struct agi_object *objects;
+extern struct agi_logic logics[];
+extern struct agi_word ego_words[];
+/* FIXME: remove */
+extern    UINT8           strings[MAX_WORDS1][MAX_WORDS2];
 
 static void print_text2 (int l, char *msg, int foff, int xoff, int yoff,
 	int len, int fg, int bg)
@@ -165,7 +174,7 @@ void textbox (char *message, int x, int y, int len)
 		yoff = (GFX_HEIGHT - 16 - ((lin + 2) * 8)) / 2;
 
 	draw_box (xoff, yoff, xoff + ((len + 2) * 8), yoff + ((lin + 2) * 8),
-		MSG_BOX_COLOUR, MSG_BOX_LINE, LINES);
+		MSG_BOX_COLOUR, MSG_BOX_LINE, LINES, game.line_min_print * 8);
 
 	print_text2 (2, msg, 0, 8 + xoff, 8 + yoff, len + 1,
 		MSG_BOX_TEXT, MSG_BOX_COLOUR);
@@ -228,3 +237,81 @@ void print_status (char *message, ...)
         print_text (x, 0, game.line_status, 0, 41, STATUS_FG, STATUS_BG);
 	gfx->put_block (0, 0, 319, 8);
 }
+
+
+char *agi_printf (char *msg, int lognum)
+{
+	static char x[256], y[256];
+	char z[16], *p;
+	int xx, xy;
+
+	/* turn a AGI string into a real string */
+	p = x;
+
+	for (*p = xx = xy = 0; *msg; ) {
+		switch(*msg) {
+		case '%':
+			msg++;
+			switch(*msg++) {
+			case 'v':
+				xx = atoi((char*)msg);
+				while (isdigit(*msg)!=0) msg++;
+				sprintf((char*)z, "%03i", getvar(xx));
+
+				xy=99;
+				if(*msg=='|') {
+					msg++;
+					xy=atoi((char*)msg);
+					while(isdigit(*msg)!=0) msg++;
+				}
+				xx=0;
+				if(xy==99) {
+					/* remove all leading 0' */
+					/* dont remove the 3rd zero if 000 */
+					while(z[xx]=='0' && xx<2) xx++;
+				}
+				else
+					xx=3-xy;
+				strcat(p, z + xx);
+				break;
+			case '0':
+				strcat(p, objects[atol(msg)-1].name);
+				break;
+			case 'g':
+				strcat(p, logics[0].texts[atol(msg)-1]);
+				break;
+			case 'w':
+				strcat(p, ego_words[atol(msg)-1].word);
+				break;
+			case 's':
+				strcat(p, strings[atol(msg)]);
+				break;
+			case 'm':
+				strcat(p, logics[lognum].texts[atol(msg)-1]);
+				break;
+			default:
+				break;
+			}
+
+			while(isdigit(*msg)!=0) msg++;
+			while(*p!=0x0) p++;
+			break;
+
+		default:
+			*p=*msg;
+			msg++;
+			p++;
+			*p=0x0;
+			break;
+		}
+	}
+
+	p = x;
+	if (strchr (x, '%') != NULL) {
+		strcpy (y, x);
+		p = agi_printf (y, lognum);
+	}
+
+	return p;
+}
+

@@ -18,7 +18,7 @@
  */
 
 /*
- * dark minister provided some info;
+ * Dark Minister provided some info:
  * variable v24 == max chars you can enter on the command line
  *
  * opcode 173 + 181
@@ -26,8 +26,6 @@
  * --- Activate keypressed control (ego only moves when a key is pressed)
  * unknown181 ()
  * --- Desactivate keypressed control (default control of ego)
- *
- *
  *
  * commands to FINISH o_O;;
  *
@@ -84,9 +82,6 @@
 
 static int window_nonblocking = 0;	/* Yuck! Remove it later! */
 
-//UINT16	new_room_num;
-//UINT8	exit_all_logics;
-
 extern struct agi_loader *loader;
 extern struct agi_object *objects;
 extern struct agi_logic logics[];
@@ -103,7 +98,6 @@ extern struct gfx_driver *gfx;
 
 void cmd_position (UINT8 entry, UINT8 x, UINT8 y)
 {
-	_D (("(%d, %d, %d)", entry, x, y));
 	vt.x_pos = x;
 	vt.y_pos = y;
 }
@@ -111,14 +105,12 @@ void cmd_position (UINT8 entry, UINT8 x, UINT8 y)
 
 void cmd_set_loop (UINT8 entry, UINT8 loop)
 {
-	_D (("(%d, %d)", entry, loop));
 	set_loop (entry, loop);
 }
 
 
 void cmd_set_view (UINT8 entry, UINT8 view)
 {
-	_D (("(%d, %d)", entry, view));
 	add_view_table (entry, view);
 }
 
@@ -127,8 +119,6 @@ void cmd_call (UINT8 log)
 {
 	UINT16 oip;
 	UINT16 osp;
-
-	/* _D (("(%d)", log)); */
 
 #ifndef NO_DEBUG
 	if (opt.debug == 4)
@@ -159,7 +149,6 @@ void cmd_load_logic (UINT8 log)
 
 void cmd_new_room (UINT8 room)
 {
-	_D (("(%d) -------------------------- ", room));
 	game.new_room_num = room;
 	game.ego_in_new_room = TRUE;
 	clear_buffer ();
@@ -1091,7 +1080,7 @@ void cmd_clear_text_rect (UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2, UINT8 c)
 	/*y1++;*/
 	x2++;
 	y2++;
-	draw_box (y1*8, x1*8, y2*8, x2*8, c, c, BX_SAVE | NO_LINES);
+	draw_box (y1*8, x1*8, y2*8, x2*8, c, c, BX_SAVE | NO_LINES, game.line_min_print * 8);
 	gfx->put_block (y1*8, x1*8, y2*8, x2*8);
 }
 
