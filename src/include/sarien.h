@@ -11,9 +11,10 @@
 #ifndef __SARIEN_H
 #define __SARIEN_H
 
-#undef PALMOS
-
-#ifndef PALMOS
+#ifdef PALMOS
+#include <Pilot.h>
+#else
+#include <stdlib.h>
 #define USE_CONSOLE
 #endif
 
@@ -107,7 +108,11 @@ typedef signed long	SINT32;
         ":%d] " _D_INFO, __LINE__); printf (args); printf ("\x1b[0m\n"); \
         } while (0)
 #else
-INLINE void _D(char *,...);
+#ifdef _D
+#undef _D
+#endif
+
+void _D(char *, ...);
 #endif
 
 #ifdef __cplusplus

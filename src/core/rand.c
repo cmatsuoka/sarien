@@ -8,8 +8,11 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#include <time.h>
 #include "sarien.h"
+
+#ifndef PALMOS
+
+#include <time.h>
 #include "rand.h"
 
 SINT32 rnd_seed;
@@ -45,3 +48,4 @@ SINT32 rnd(SINT32 maxrnd)
 	return maxrnd ? xrnd() % maxrnd : xrnd();
 }
 
+#endif /* !PALMOS */

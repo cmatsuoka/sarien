@@ -1,3 +1,5 @@
+#ifndef PALMOS
+
 /* Getopt for GNU.
    NOTE: getopt is now part of the C library, so if you don't know what
    "Keep this file name-space clean" means, talk to roland@gnu.ai.mit.edu
@@ -65,7 +67,7 @@
 
 /* This needs to come after some library #include
    to get __GNU_LIBRARY__ defined.  */
-#ifdef	__GNU_LIBRARY__
+#ifdef __GNU_LIBRARY__
 /* Don't include stdlib.h for non-GNU C libraries because some of them
    contain conflicting prototypes for getopt.  */
 #include <stdlib.h>
@@ -998,3 +1000,5 @@ main (argc, argv)
 }
 
 #endif /* TEST */
+
+#endif /* !PALMOS */

@@ -9,13 +9,7 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-
-/* DF : Whats this? I un-msdos'd it to compile on dos. */
-#ifndef _M_MSDOS
-#include <dirent.h>
-#endif
 
 #include "sarien.h"
 #include "agi.h"
@@ -47,28 +41,6 @@ struct agi_loader agi_v3 = {
 	agi_v3_load_resource,
 	agi_v3_unload_resource
 };
-
-/* CM: who uses this function? */
-#if !defined _M_MSDOS && !defined __BEOS__
-int match (char *s)
-{
-    struct dirent **namelist;
-    int n;
-
-    /* DJGPP has dirent.h but no scandir() */
-    n = scandir(".", &namelist, 0, alphasort);
-    if (n < 0)
-	return n;
-
-    while(n--) {
-        printf("%s\n", namelist[n]->d_name);
-        free(namelist[n]);
-    }
-    free(namelist);
-
-    return 0;
-}
-#endif
 
 
 int agi_v3_detect_game (char *gn)
@@ -107,8 +79,8 @@ int agi_v3_detect_game (char *gn)
 
 static int agi_v3_load_dir (struct agi_dir *agid, FILE *fp, UINT32 offs, UINT32 len)
 {
-	UINT8 *mem;
 	int ec = err_OK;
+	UINT8 *mem;
 	int i;
 
 	fseek (fp, offs, SEEK_SET);
@@ -144,6 +116,7 @@ struct agi3vol {
 int agi_v3_init (void)
 {
 	int ec = err_OK;
+#ifndef PALMOS
 	struct agi3vol agi_vol3[4];
 	int i;
 	UINT16 xd[4];
@@ -193,6 +166,7 @@ int agi_v3_init (void)
 		printf ("Failed to open \"%s\"\n", path);
 		ec = err_BadFileOpen;
 	}
+#endif /* !PALMOS */
 
 	return ec;
 }

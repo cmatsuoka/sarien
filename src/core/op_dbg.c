@@ -9,9 +9,7 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <ctype.h>
 
 #include "sarien.h"
@@ -24,6 +22,10 @@
 
 #define ip	(logics[lognum].cIP)
 #define code	(logics[lognum].data)
+
+#ifdef _L
+#undef _L
+#endif
 
 #ifdef USE_CONSOLE
 #define _L(a,b,c) { a, b, c }

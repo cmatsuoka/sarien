@@ -8,10 +8,8 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#include <ctype.h>
 #include <string.h>
 #include <stdarg.h>
-#include <stdlib.h>
 #include <stdio.h>
 
 #include "sarien.h"
@@ -257,15 +255,17 @@ char *agi_printf (char *msg, int lognum)
 			msg++;
 			switch(*msg++) {
 			case 'v':
-				xx = atoi((char*)msg);
-				while (isdigit(*msg)!=0) msg++;
-				sprintf((char*)z, "%03i", getvar(xx));
+				xx = atoi(msg);
+				while (*msg >= '0' && *msg <= '9')
+					msg++;
+				sprintf (z, "%03i", getvar(xx));
 
 				xy=99;
 				if(*msg=='|') {
 					msg++;
-					xy=atoi((char*)msg);
-					while(isdigit(*msg)!=0) msg++;
+					xy = atoi (msg);
+					while (*msg >= '0' && *msg <= '9')
+						msg++;
 				}
 				xx=0;
 				if(xy==99) {
@@ -296,7 +296,8 @@ char *agi_printf (char *msg, int lognum)
 				break;
 			}
 
-			while(isdigit(*msg)!=0) msg++;
+			while (*msg >= '0' && *msg <= '9')
+				msg++;
 			while(*p!=0x0) p++;
 			break;
 

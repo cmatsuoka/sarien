@@ -9,8 +9,8 @@
  */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+
 #include "sarien.h"
 #include "agi.h"
 #include "picture.h"
@@ -192,8 +192,8 @@ static int agi_v2_unload_resource (int restype, int resnum)
 
 UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 {
-	char x[MAX_PATH], *path;
 	UINT8 *data = NULL;
+	char x[MAX_PATH], *path;
 	FILE *fp;
 
 	_D ("(agi_dir = [offset:%ld, len:%ld])", agid->offset, agid->len);

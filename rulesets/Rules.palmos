@@ -1,0 +1,74 @@
+# $Id$
+
+prefix		= /usr/local
+exec_prefix 	= /usr/local
+BIN_DIR		= ${exec_prefix}/bin
+LIB_DIR		= ${exec_prefix}/lib
+MAN_DIR		= ${prefix}/man/man1
+
+CC		= m68k-palmos-coff-gcc
+CFLAGS		=  -DINLINE=inline -DPALMOS -DHAVE_STRING_H=1 -DHAVE_UNIX_STDIO_H=1 -DFILE=void -DSEEK_END=0 -DSEEK_SET=0 -DVERSION='"$(VERSION)"' -U_TRACE
+LD		= m68k-palmos-coff-gcc
+LDFLAGS		= -o $@
+LIBS		=  #-lefence
+RANLIB		= m68k-palmos-coff-ranlib
+INSTALL		= /usr/bin/install -c
+X11CFLAGS	=  -I/usr/X11R6/include
+X11LIBS		=  -L/usr/X11R6/lib -lX11 
+SHELL		= /bin/sh
+MAKEFILE	= Makefile
+STRIP		= strip
+
+SOUND_DRIVER	= dummy
+CONSOLE_DRIVER	= x11
+FILEIO_DRIVER	= unix
+
+#
+# Ideally it should not be necessary to tweak parameters below this line
+#
+
+.c.o:
+	$(CC) -c $(CFLAGS) $(XCFLAGS) -o $@ $<
+
+.o.so:
+	ld -shared -o $@ $<
+
+dummy:
+
+clean distclean::
+	rm -f *.o errlist depend $(BIN) $(CFILES)
+ifdef DDIRS
+	@for i in $(DDIRS); do \
+		(cd $$i; [ -f $(MAKEFILE) ] && $(MAKE) $@) \
+	done; true
+endif
+
+distclean::
+	rm -f $(DCFILES)
+
+depend:       
+	@echo Building dependencies...
+	@$(CC) $(CFLAGS) $(XCFLAGS) -M $(OBJS:.o=.c) $(XDEPS:.o=.c) >$@
+
+$(OBJS): $(MAKEFILE)
+
+$(LIB): $(LIB)($(OBJS) $(XOBJS))
+	$(RANLIB) $(LIB)
+
+subdist:
+	cp -dp $(DFILES) $(XDFILES) $(DISTDIR)
+ifdef DDIRS
+	for i in $(DDIRS); do \
+		mkdir $(DISTDIR)/$$i; \
+		( cd $$i; \
+		if [ -f $(MAKEFILE) ]; then \
+			$(MAKE) VERSION=$(VERSION) DISTDIR=../$(DISTDIR)/$$i \
+			subdist; \
+		else \
+			for j in *; do \
+				[ -f $$j ] && cp -dp $$j ../$(DISTDIR)/$$i; \
+			done; \
+		fi; ) \
+	done
+endif
+

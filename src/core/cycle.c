@@ -8,8 +8,6 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#include <stdlib.h>
-
 #include "sarien.h"
 #include "agi.h"
 #include "rand.h"
