@@ -94,7 +94,8 @@ int main (int argc, char *argv[])
 	}
 #endif
 
-	printf(
+	/* printf() breaks GCC 3.0 build */
+	fprintf (stdout,
 TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 "Copyright (C) 1999-2001 Stuart George\n"
 "Portions Copyright (C) 1998 Lance Ewing, (C) 1999 Felipe Rosinha,\n"

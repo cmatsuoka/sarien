@@ -22,7 +22,8 @@ extern char *optarg;
 
 static void help (int argc, char **argv)
 {
-	printf (
+	/* printf() breaks GCC 3.0 build */
+	fprintf (stdout,
 "Syntax is -:- %s [switches] [gamedir]\n"
 "\n"
 "Where [switches] are optionally:\n"

@@ -169,8 +169,11 @@ solaris*)
 	fi
 	;;
 netbsd*|openbsd*)
-	AC_CHECK_HEADERS(sys/audioio.h)
+	AC_CHECK_HEADERS(sys/audioio.h sys/audio.h)
 	if test "${ac_cv_header_sys_audioio_h}" = "yes"; then
+		SOUND_DRIVER="bsd"
+	fi
+	if test "${ac_cv_header_sys_audio_h}" = "yes"; then
 		SOUND_DRIVER="bsd"
 	fi
 	;;
@@ -179,12 +182,6 @@ irix*)
 	if test "${ac_cv_header_dmedia_audio_h}" = "yes"; then
 		SOUND_DRIVER="sgi"
 		LIBS="${LIBS} -laudio"
-	fi
-	;;
-openbsd*|netbsd*)
-	AC_CHECK_HEADERS(sys/audio.h)
-	if test "${ac_cv_header_sys_audio_h}" = "yes"; then
-		SOUND_DRIVER="bsd"
 	fi
 	;;
 cygwin*)
