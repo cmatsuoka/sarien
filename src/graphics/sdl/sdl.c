@@ -30,6 +30,8 @@
 #include "graphics.h"
 #include "keyboard.h"
 
+#include "scale2x.h"
+
 extern struct sarien_options opt;
 
 static int scale = 1;
@@ -100,7 +102,7 @@ _putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) {		\
 
 #define _putpixels_scale2(d) static void INLINE				\
 _putpixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) {		\
-	Uint##d *s, *t;						\
+	Uint##d *s, *t;							\
 	if (w == 0) return;						\
 	x <<= 1; y <<= 1;						\
 	s = (Uint##d *)screen->pixels + x + y * screen->w;		\
@@ -109,10 +111,14 @@ _putpixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) {		\
 		if (SDL_LockSurface (screen) < 0)			\
 			return;						\
 	}								\
-	while (w--) {							\
-		int c = mapped_color[*p];				\
-		*s++ = c; *s++ = c; *t++ = c; *t++ = c; p++;		\
-	}								\
+	if (y == 0 || y >= ((GFX_HEIGHT - 1) * 2)) {			\
+		while (w--) {						\
+              		int c = mapped_color[*p];			\
+               		*s++ = c; *s++ = c; *t++ = c; *t++ = c; p++;	\
+		}							\
+	} else								\
+		scale2x_##d##_map(s, t, p - GFX_WIDTH, p, p + GFX_WIDTH,\
+			 mapped_color, w);				\
 	if (SDL_MUSTLOCK (screen)) SDL_UnlockSurface (screen);		\
 }
 
@@ -149,13 +155,21 @@ _putpixels_fixratio_##d##bits_scale2 (int x, int y, int w, Uint8 *p0) {	\
 		if (SDL_LockSurface (screen) < 0)			\
 			return;						\
 	}								\
-	for (p = p0; w--; p++) {					\
-		int c = mapped_color[*p];				\
-		*s++ = c; *s++ = c; *t++ = c; *t++ = c;			\
-	}								\
-	for (p = p0; extra--; p++) {					\
-		int c = mapped_color[*p];				\
-		*u++ = c; *u++ = c;					\
+	if (y == 0 || y >= (ASPECT_RATIO(GFX_HEIGHT - 1) * 2)) {	\
+		for (p = p0; w--; p++) {				\
+              		int c = mapped_color[*p];			\
+               		*s++ = c; *s++ = c; *t++ = c; *t++ = c;		\
+		}							\
+		for (p = p0; extra--; p++) {				\
+              		int c = mapped_color[*p];			\
+               		*u++ = c; *u++ = c;				\
+		}							\
+	} else {							\
+		p = p0;							\
+		scale2x_##d##_map(s, t, p - GFX_WIDTH, p, p + GFX_WIDTH,\
+			 mapped_color, w);				\
+		scale2x_##d##_map(t, u, p - GFX_WIDTH, p, p + GFX_WIDTH,\
+			 mapped_color, extra);				\
 	}								\
 	if (SDL_MUSTLOCK (screen)) SDL_UnlockSurface (screen);		\
 }

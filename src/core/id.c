@@ -270,7 +270,6 @@ int v3id_game ()
 
 	ec = setup_v3_game(ver, crc);
 
-
 	return ec;
 }
 

@@ -32,8 +32,8 @@ Extra features:
 
 0.8.0:
 
-* Sierra v3 games finishable					70%
-* Sierra v2 games accurate					90%
+* Sierra v3 games finishable					OK
+* Sierra v2 games accurate					OK
 * Multi-slot savegames						OK
 * Fix quit/restart problems					OK
 * Major homemade games playable					OK
@@ -42,10 +42,10 @@ Extra features:
 
 * Macintosh port						90%
 * IIgs sound emulation						20%
-* Sierra v3 games accurate					50%
-* Mouse support							90%
-* Fix input prompt problems					90%
-* Major homemade games finishable				50%
+* Sierra v3 games accurate					80%
+* Mouse support							95%
+* Fix input prompt problems					95%
+* Major homemade games finishable				70%
 * unk commands implemented					90%
 
 1.0:

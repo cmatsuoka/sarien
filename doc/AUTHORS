@@ -60,6 +60,7 @@
 - Matt Hargett <matt@use.net>
   * VC++ build fixes
   * Memory usage profiling
+  * Scale2x patch for win32
 
 - Ian Hanschen <ian@stardock.com>
   * Win32 fixes and clean-ups
