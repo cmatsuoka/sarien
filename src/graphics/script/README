@@ -1,0 +1,9 @@
+
+This is the scriptable console driver. It's for debugging and test
+purposes only, it has no graphics output and reads input from a text
+file (a script) specified by the SARIEN_SCRIPT environment variable.
+If this variable is not set, it will try to read a file called "script"
+in the current directory.
+
+See demo2.script for a sample script.
+
