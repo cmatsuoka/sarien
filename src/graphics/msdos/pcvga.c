@@ -27,8 +27,6 @@
 #define __outp(a, b)	outportb(a, b)
 #endif
 
-#define move_memory(a, b, c) memmove((char*)a, (char*)b, (UINT32)c)
-
 #ifdef __WATCOMC__
 void DebugBreak(void);
 #pragma aux DebugBreak = "int 3" parm[];

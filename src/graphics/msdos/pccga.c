@@ -18,8 +18,6 @@
 
 #define __outp(a, b)	outportb(a, b)
 
-#define move_memory(a, b, c) memmove((char*)a, (char*)b, (UINT32)c)
-
 
 extern struct gfx_driver *gfx;
 extern struct sarien_options opt;
@@ -133,49 +131,55 @@ static int pc_deinit_vidmode ()
 static void pc_put_block (int x1, int y1, int x2, int y2)
 {
 	unsigned int i, h, w, p, p2;
+	UINT8 far *fbuffer;
+	UINT8 *sbuffer;
 
 	if (x1 >= GFX_WIDTH)  x1 = GFX_WIDTH  - 1;
 	if (y1 >= GFX_HEIGHT) y1 = GFX_HEIGHT - 1;
 	if (x2 >= GFX_WIDTH)  x2 = GFX_WIDTH  - 1;
 	if (y2 >= GFX_HEIGHT) y2 = GFX_HEIGHT - 1;
 
-	if (y1 & 1)		/* Always start at an even line */
-		y1 -= 1;
+	y1 &= ~1;			/* Always start at an even line */
 
 	h = y2 - y1 + 1;
 	w = (x2 - x1) / 4 + 1;
-
 	p = 40 * y1 + x1 / 4;		/* Note: (GFX_WIDTH / 4) * (y1 / 2) */
-	p2 = 80 * y1 + x1 / 4;
+	p2 = p + 40 * y1;
+
+	/* Writed to the interlaced CGA framebuffer */
+
+	fbuffer = (UINT8 far *)0xb8000000 + p;
+	sbuffer = screen_buffer + p2;
 	for (i = 0; i < h; i += 2) {
-		_fmemcpy ((UINT8 far *)0xb8000000 + p, screen_buffer + p2, w);
-		p += 80;
-		p2 += 160;
+		_fmemcpy (fbuffer, sbuffer, w);
+		fbuffer += 80;
+		sbuffer += 160;
 	}
 
-	p = 40 * y1 + x1 / 4;
-	p2 = 80 * y1 + x1 / 4 + 80;
+	fbuffer = (UINT8 far *)0xb8002000 + p;
+	sbuffer = screen_buffer + p2 + 80;
 	for (i = 1; i < h; i += 2) {
-		_fmemcpy ((UINT8 far *)0xb8002000 + p, screen_buffer + p2, w);
-		p += 80;
-		p2 += 160;
+		_fmemcpy (fbuffer, sbuffer, w);
+		fbuffer += 80;
+		sbuffer += 160;
 	}
 }
 
 
 static void pc_put_pixels(int x, int y, int w, UINT8 *p)
 {
-	UINT8 *s, mask, val, c;
+	UINT8 *s, mask, val, shift, c;
 
  	for (s = &screen_buffer[80 * y + x / 4]; w; w--, x++, p++) {
+		shift = (x % 4) * 2;
 
 		if (*p > 16)	/* Sorry, no transparent colors */
 			c = 0;
 		else
 			c = *p; /*cga_map[*p];  FIXME! */
 
-		mask = 0xc0 >> ((x % 4) * 2);
-		val = ((c & 0x03) << 6) >> ((x % 4) * 2);
+		mask = 0xc0 >> shift;
+		val = (c & 0x03) << (6 - shift);
 		*s = (*s & ~mask) | val;
 		
 		if ((x % 4) == 3)
@@ -197,14 +201,7 @@ static int pc_get_key ()
 
 	memset (&r, 0, sizeof(union REGS));
 	int86 (0x16, &r, &r);
-	switch (key = r.x.ax) {
-	default:
-		if(r.h.al == 0)
-			key = r.h.ah << 8;
-		else
-			key = r.h.al;
-		break;
-	}
+	key = r.h.al ? r.h.al : r.h.ah << 8;
 
 	return key;
 }
