@@ -321,42 +321,33 @@ static void process_events ()
 				break;
 			case XK_Up:
 			case XK_KP_Up:
-			case XK_KP_8:
 				key = KEY_UP;
 				break;
 			case XK_Left:
 			case XK_KP_Left:
-			case XK_KP_4:
 				key = KEY_LEFT;
 				break;
 			case XK_Down:
 			case XK_KP_Down:
-			case XK_KP_2:
 				key = KEY_DOWN;
 				break;
-			case XK_KP_5:
 			case XK_KP_Begin:
 				key = KEY_STATIONARY;
 				break;
 			case XK_Right:
 			case XK_KP_Right:
-			case XK_KP_6:
 				key = KEY_RIGHT;
 				break;
 			case XK_KP_Home:
-			case XK_KP_7:
 				key = KEY_UP_LEFT;
 				break;
 			case XK_KP_Page_Up:
-			case XK_KP_9:
 				key = KEY_UP_RIGHT;
 				break;
 			case XK_KP_Page_Down:
-			case XK_KP_3:
 				key = KEY_DOWN_RIGHT;
 				break;
 			case XK_KP_End:
-			case XK_KP_1:
 				key = KEY_DOWN_LEFT;
 				break;
 			case XK_KP_Enter:
@@ -424,6 +415,39 @@ static void process_events ()
 				break;
 			case XK_Escape:
 				key = 0x1b;
+				break;
+			case XK_KP_0:
+				key = '0';
+				break;
+			case XK_KP_1:
+				key = '1';
+				break;
+			case XK_KP_2:
+				key = '2';
+				break;
+			case XK_KP_3:
+				key = '3';
+				break;
+			case XK_KP_4:
+				key = '4';
+				break;
+			case XK_KP_5:
+				key = '5';
+				break;
+			case XK_KP_6:
+				key = '6';
+				break;
+			case XK_KP_7:
+				key = '7';
+				break;
+			case XK_KP_8:
+				key = '8';
+				break;
+			case XK_KP_9:
+				key = '9';
+				break;
+			case XK_KP_Decimal:
+				key = '.';
 				break;
 			default:
 				if (!isalpha (key & 0xff))
