@@ -1,5 +1,5 @@
 #
-# Makefile for Turbo C 3.0
+# Makefile for Turbo C 1.01
 #
 # $Id$
 #
@@ -28,7 +28,7 @@ OBJS	= agi.obj agi_v2.obj agi_v3.obj checks.obj cli.obj console.obj \
 	  id.obj iff.obj inv.obj keyboard.obj logic.obj lzw.obj main.obj \
 	  menu.obj motion.obj objects.obj op_cmd.obj op_dbg.obj op_test.obj \
 	  patches.obj picture.obj rand.obj savegame.obj silent.obj sound.obj \
-	  sprite.obj text.obj view.obj words.obj fileglob.obj dummy.obj \
+	  sprite.obj text.obj view.obj words.obj turboc.obj dummy.obj \
 	  ibm.obj
 
 #		*Explicit Rules*
@@ -69,7 +69,7 @@ lib\sprite.obj
 lib\text.obj
 lib\view.obj
 lib\words.obj
-lib\fileglob.obj
+lib\turboc.obj
 lib\dummy.obj
 lib\ibm.obj
 |
@@ -189,8 +189,8 @@ winmain.obj: sarien.cfg src\core\winmain.c
 words.obj: sarien.cfg src\core\words.c 
 	$(CC) -c src\core\words.c
 
-fileglob.obj: sarien.cfg src\fileglob\msdos\turboc.c 
-	$(CC) -c src\fileglob\msdos\fileglob.c
+turboc.obj: sarien.cfg src\fileglob\msdos\turboc.c 
+	$(CC) -c src\fileglob\msdos\turboc.c
 
 dummy.obj: sarien.cfg src\sound\dummy\dummy.c 
 	$(CC) -c src\sound\dummy\dummy.c
@@ -227,6 +227,6 @@ sarien.cfg: makefile.tc
 -D__interrupt=interrupt
 -D__far=far
 -L$(LIBPATH)
--Ff
+#-Ff
 | sarien.cfg
 

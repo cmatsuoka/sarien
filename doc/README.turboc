@@ -1,5 +1,6 @@
 $Id$
 
-To build sarien using Turbo C, run make -f Makefile.tc from the toplevel
-source directory.
+To build sarien using Turbo C 3.0, run make -f Makefile.tc from the
+toplevel source directory. Older versions of Turbo C may work with
+Makefile.tc1.
 
