@@ -66,7 +66,6 @@
 #define code	logics[lognum].data
 #define vt	view_table[entry]
 
-//int open_dialogue = 0;		/* fix this properly too */
 static int window_nonblocking = 0;	/* Yuck! Remove it later! */
 
 extern struct agi_logic logics[];
@@ -296,6 +295,7 @@ void cmd_object_on_water (UINT8 entry)
 
 void cmd_set_horizon (UINT8 h)
 {
+	report ("horizon set to %d", h);
 	game.horizon = h;
 }
 
@@ -440,19 +440,18 @@ void cmd_end_of_loop (UINT8 entry, UINT8 p1)
 
 void cmd_distance (UINT8 ob1, UINT8 ob2, UINT8 v)
 {
-	UINT8	x1, y1, x2, y2;
+	UINT8 x1, y1, x2, y2;
 
 	/* if ob1 & ob2 on screen, else v=255 */
-	if ((view_table[ob1].flags&DRAWN)==DRAWN && (view_table[ob2].flags&DRAWN)==DRAWN)
-	{
-		x1=view_table[ob1].x_pos;
-		y1=view_table[ob1].y_pos;
-		x2=view_table[ob2].x_pos;
-		y2=view_table[ob2].y_pos;
-		setvar (v,  abs (x1-x2)+abs (y1-y2));
+	if (view_table[ob1].flags & DRAWN && view_table[ob2].flags & DRAWN) {
+		x1 = view_table[ob1].x_pos;
+		y1 = view_table[ob1].y_pos;
+		x2 = view_table[ob2].x_pos;
+		y2 = view_table[ob2].y_pos;
+		setvar (v, abs (x1 - x2) + abs (y1 - y2));
+	} else {
+		setvar (v, 0xff);
 	}
-	else
-		setvar (v, 0xFF);
 }
 
 
@@ -535,7 +534,7 @@ void cmd_follow_ego (UINT8 entry, UINT8 sv, UINT8 f)
 }
 
 
-void cmd_wander ( UINT8 entry)
+void cmd_wander (UINT8 entry)
 {
 	vt.motion = MOTION_WANDER;
 	vt.flags |= MOTION;
@@ -553,8 +552,6 @@ void cmd_set_dir (UINT8 entry, UINT8 d)
 {
 	vt.direction = getvar (d);
 	calc_direction (entry);
-
-	/*set_cel (entry, 0);*/
 }
 
 
@@ -580,16 +577,14 @@ void cmd_observe_blocks (UINT8 entry)
 
 void cmd_move_obj (UINT8 entry, UINT8 x, UINT8 y, UINT8 step, UINT8 flag)
 {
-	_D ("(entry=%d, x=%d, y=%d, step=%d, flag=%d)", entry, x, y, step, flag);
+	_D("(entry=%d, x=%d, y=%d, step=%d, flag=%d)", entry, x, y, step, flag);
 
 	/* CM: I don't know if this is the correct behaviour, but
 	 *     KQ2 demo needs this in the lion sequence. This test
 	 *     won't permit move.obj() if you're already at the
 	 *     destination point!
 	 */
-	if (vt.parm1 == x && vt.parm2 == y &&
-		vt.x_pos == x && vt.y_pos == y)
-	{
+	if (vt.parm1 == x && vt.parm2 == y && vt.x_pos == x && vt.y_pos == y) {
 		_D (_D_WARN "Already at destination point!");
 		setflag (flag, TRUE);
 		return;
@@ -647,20 +642,18 @@ void cmd_set_cur_char (UINT8 logic, UINT8 msg)
 {
 	UINT8	*p=NULL;
 
-	if (logics[logic].texts != NULL && (msg-1) <= logics[logic].num_texts)
-	{
-		p=agi_printf (logics[logic].texts[msg-1], logic);
-		txt_char=*p;
-	}
-	else
+	if (logics[logic].texts != NULL && (msg-1) <= logics[logic].num_texts) {
+		p = agi_printf (logics[logic].texts[msg-1], logic);
+		txt_char = *p;
+	} else {
 		txt_char='_';
+	}
 }
 
 
 void cmd_set_text_attr (UINT8 fg, UINT8 bg)
 {
 	_D ("(%d, %d)", fg, bg);
-
 	txt_fg = fg;
 	txt_bg = bg;
 }

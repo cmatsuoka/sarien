@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
-
 #include "sarien.h"
 #include "agi.h"
 
@@ -84,7 +83,7 @@ void setflag (int n, int v)
 	if (v)
 		*set |= 1 << (n & 0x07);		/* set bit  */
 	else
-		*set &= ~(1 << (n & 0x07));		/* clear bit*/
+		*set &= ~(1 << (n & 0x07));		/* clear bit */
 }
 
 
@@ -99,7 +98,6 @@ void flipflag (int n)
 
 void setvar (int var, int val)
 {
-	/* _D (_D_WARN "var(%d) = %d", var, val);  */
 	game.vars[var] = val;
 }
 

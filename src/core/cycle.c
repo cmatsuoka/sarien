@@ -221,14 +221,16 @@ static int check_surface (int em, int x, int y)
 		}
 	}
 
-	if ((vt_obj->flags & ON_WATER) && !getflag (F_ego_water)) {
-		_D (_D_CRIT "failed: must stay ON_WATER");
-		return -1;
-	}
-
-	if ((vt_obj->flags & ON_LAND) && getflag (F_ego_water)) {
-		_D (_D_CRIT "failed: must stay ON_LAND");
-		return -1;
+	if (getflag (F_ego_water)) {
+		if (vt_obj->flags & ON_LAND) {
+			_D (_D_CRIT "failed: must stay ON_LAND");
+			return -1;
+		}
+	} else {
+		if (vt_obj->flags & ON_WATER) {
+			_D (_D_CRIT "failed: must stay ON_WATER");
+			return -1;
+		}
 	}
 
 	return 0;
@@ -366,15 +368,9 @@ static void calc_obj_motion ()
 		vt_obj = &view_table[em];
 
 		original_direction = vt_obj->direction;
-		check_surface (em, vt_obj->x_pos, vt_obj->y_pos);
 
-		if (~vt_obj->flags & UPDATE)
+		if (~vt_obj->flags & (UPDATE | MOTION))
 			continue;
-
-#if 0
-		if (~vt_obj->flags & MOTION)
-			continue;
-#endif
 
 		vt_obj->step_time_count += vt_obj->step_size;
 
