@@ -81,8 +81,6 @@ void unload_words ()
  */
 int find_word (char *word, int* flen)
 {
-	#define chrA 0x41
-	#define chrZ 0x5A
 	#define chra 0x61
 	#define chrz 0x7A
 
@@ -91,11 +89,9 @@ int find_word (char *word, int* flen)
 	UINT8* p = words;
 	*flen = 0;
 
-	if (word[0] >= chrA && word[0] <= chrZ)
-		fchr = word[0] - chrA;
-	else if (word[0] >= chra && word[0] <= chrz)
+	if (word[0] >= chra && word[0] <= chrz)
 		fchr = word[0] - chra;
-	else /* some special character */
+	else
 		return -1;
 
 	/* Get the offset to the first word beginning with the right character. */
