@@ -79,6 +79,8 @@ static UINT32 match_crc (UINT32 crc, char *path)
 						break;
 					}
 				}
+				t++;
+
 				for (; *t == ' ' || *t == '\t'; t++);
 			}
 
