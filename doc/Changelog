@@ -36,6 +36,7 @@ Revision History
 	- implemented picture offset according to configure.screen
 	- implemented invisible ego signaling
 	- fixed command get.num
+	- fixed controller reset (moved to the end of the cycle)
 
 0.6.2 (20010826)
 	- fixed cmd_clear_rect() to prevent crash with the IIgs demo

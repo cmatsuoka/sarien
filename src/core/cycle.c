@@ -119,6 +119,7 @@ static void interpret_cycle ()
 		game.exit_all_logics = FALSE;
 		reset_controllers ();
 	}
+	reset_controllers ();
 
 	game.view_table[0].direction = game.vars[V_ego_dir];
 
