@@ -598,8 +598,6 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 
 static int init_vidmode ()
 {
-	int i;
-
 	InitializeCriticalSection (&g_screen.cs);
 	InitializeCriticalSection (&g_key_queue.cs);
 
@@ -654,12 +652,9 @@ static int init_vidmode ()
 		goto exx;
 	}
 
-	/* First create the palete */
-	set_palette (palette, 0, 32); 
-
 	/* Fill in the bitmap info header */
 	g_screen.binfo = (BITMAPINFO *)malloc(sizeof(*g_screen.binfo) +
-		256 * sizeof(RGBQUAD));
+		32 * sizeof(RGBQUAD));
 
 	if (g_screen.binfo == NULL) {
 		OutputDebugString("win32.c: init_vidmode(): malloc of g_screen.binfo failed");
@@ -679,12 +674,8 @@ static int init_vidmode ()
 	g_screen.binfo->bmiHeader.biClrUsed       = 32;
 	g_screen.binfo->bmiHeader.biClrImportant  = 0;
 
-	for (i = 0; i < 32; i ++) {
-		g_screen.binfo->bmiColors[i].rgbRed   = (palette[i*3    ]) << 2;
-		g_screen.binfo->bmiColors[i].rgbGreen = (palette[i*3 + 1]) << 2;
-		g_screen.binfo->bmiColors[i].rgbBlue  = (palette[i*3 + 2]) << 2;
-		g_screen.binfo->bmiColors[i].rgbReserved = 0;
-	}
+	/* Create the palete */
+	set_palette (palette, 0, 32); 
 
 	/* Create the offscreen bitmap buffer */
 	hdc = GetDC (hwndMain);
@@ -800,37 +791,47 @@ static void win32_new_timer ()
 static int set_palette (UINT8 *pal, int scol, int numcols)
 {
 	int i;
+
+#if 0
 	HDC hdc;
 	LOGPALETTE *palette;
 	PALETTEENTRY *entries;
 
 	hdc = GetDC(hwndMain);
 
-	if (GetDeviceCaps(hdc, PLANES) * GetDeviceCaps(hdc, BITSPIXEL) <= 8 ) {
-		palette = malloc(sizeof(*palette) + 32 * sizeof(PALETTEENTRY));
-		if (NULL == palette) {
-			OutputDebugString("malloc failed for palette");
-			return err_Unk;
-		}
-
-		palette->palVersion = 0x300;
-		palette->palNumEntries = 32;
-
-		GetSystemPaletteEntries(hdc, 0, 32, palette->palPalEntry);
-		g_hPalette = CreatePalette(palette);
+	if (GetDeviceCaps(hdc, PLANES) * GetDeviceCaps(hdc, BITSPIXEL) <= 8) {
 		entries = (PALETTEENTRY *)malloc(32 * sizeof(PALETTEENTRY));
 
-		for (i = 0; i < 32; i++) {
+		for (i = scol; i < numcols; i++) {
 			entries[i].peRed   = pal[i*3    ] << 2;
 			entries[i].peGreen = pal[i*3 + 1] << 2;
 			entries[i].peBlue  = pal[i*3 + 2] << 2;
 			entries[i].peFlags = PC_NOCOLLAPSE;
 		}
 
+		palette = malloc(sizeof(*palette) + 32 * sizeof(PALETTEENTRY));
+		if (palette == NULL) {
+			OutputDebugString("malloc failed for palette");
+			return err_Unk;
+		}
+		palette->palVersion = 0x300;
+		palette->palNumEntries = 32;
+		g_hPalette = CreatePalette(palette);
+		free(palette);
+
 		SetPaletteEntries(g_hPalette, 0, 32, entries);
 		SelectPalette(hdc, g_hPalette, FALSE);
 		RealizePalette(hdc);
+	} else
+#endif
+
+	for (i = scol; i < numcols; i ++) {
+		g_screen.binfo->bmiColors[i].rgbRed  = (pal[i*3    ]) << 2;
+		g_screen.binfo->bmiColors[i].rgbGreen= (pal[i*3 + 1]) << 2;
+		g_screen.binfo->bmiColors[i].rgbBlue = (pal[i*3 + 2]) << 2;
+		g_screen.binfo->bmiColors[i].rgbReserved = 0;
 	}
+
 
 	ReleaseDC(hwndMain, hdc);
 

@@ -56,7 +56,7 @@ CAPTION "About Sarien"
 FONT 8, "Helv"
 BEGIN
 	CTEXT "Sarien - A Sierra AGI Resource Interpreter Engine\r\n\
-Version 0.8.0 (Sep 2002)", -1, 5, 5, 240, 20
+Version 0.8.0", -1, 5, 5, 240, 20
 
     CTEXT "Written by Stuart George, Lance Ewing, Felipe Rosinha, \
 Claudio Matsuoka, Igor Nesterov, Vasyl Tsvirkunov and Thomas Akesson. \
