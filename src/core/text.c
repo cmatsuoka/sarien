@@ -54,8 +54,8 @@ static void print_text2 (int l, char *msg, int foff, int xoff, int yoff,
 			if (*m >= 0x20 || *m == 1 || *m == 2 || *m == 3) {
 				/* FIXME */
 
-				if((x1!=(len-1) || x1==39) && ((y1*8)+yoff <= 192)) {
-					put_text_character (l, (x1 * 8) + xoff + foff,
+				if((x1!=(len-1) || x1==39) && ((y1*CHAR_LINES)+yoff <= (GFX_HEIGHT - CHAR_LINES))) {
+					put_text_character (l, (x1 * CHAR_COLS) + xoff + foff,
 						(y1 * 8) + yoff, *m, fg, bg);
 					if (x1>maxx)
 						maxx=x1;
@@ -164,18 +164,18 @@ void textbox (char *message, int x, int y, int len)
 		lin = (GFX_HEIGHT / 8);
 
 	if (xoff == -1)
-		xoff = (GFX_WIDTH - ((len + 2) * 8)) / 2;
+		xoff = (GFX_WIDTH - ((len + 2) * CHAR_COLS)) / 2;
 
 	if (yoff == -1)
-		yoff = (GFX_HEIGHT - 16 - ((lin + 2) * 8)) / 2;
+		yoff = (GFX_HEIGHT - 2 * CHAR_LINES - ((lin + 2) * CHAR_LINES)) / 2;
 
-	draw_box (xoff, yoff, xoff + ((len + 2) * 8), yoff + ((lin + 2) * 8),
-		MSG_BOX_COLOUR, MSG_BOX_LINE, LINES, game.line_min_print * 8);
+	draw_box (xoff, yoff, xoff + ((len + 2) * CHAR_COLS), yoff + ((lin + 2) * CHAR_LINES),
+		MSG_BOX_COLOUR, MSG_BOX_LINE, LINES, game.line_min_print * CHAR_LINES);
 
-	print_text2 (2, msg, 0, 8 + xoff, 8 + yoff, len + 1,
+	print_text2 (2, msg, 0, CHAR_COLS + xoff, CHAR_LINES + yoff, len + 1,
 		MSG_BOX_TEXT, MSG_BOX_COLOUR);
 
-	put_block (xoff, yoff, xoff + ((len + 2) * 8), yoff + ((lin + 2) * 8));
+	put_block (xoff, yoff, xoff + ((len + 2) * CHAR_COLS), yoff + ((lin + 2) * CHAR_LINES));
 
 	free (msg);
 }

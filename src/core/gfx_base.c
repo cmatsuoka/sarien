@@ -50,7 +50,6 @@ UINT8		txt_fg;			/* fg colour */
 UINT8		txt_bg;			/* bg colour */
 UINT8		txt_char;		/* input character */
 
-#undef PALMOS
 
 /* for the blitter routine */
 static int x_min = GFX_WIDTH, x_max = 0, y_min = GFX_HEIGHT, y_max = 0;
@@ -62,7 +61,7 @@ static int x_min = GFX_WIDTH, x_max = 0, y_min = GFX_HEIGHT, y_max = 0;
 void put_pixel_buffer (int x, int y, int c)
 {
 #ifdef PALMOS
-	y = y * 160 / 168;	/* ick! */
+	y = y * 140 / 168;	/* ick! */
 #else
 	x <<= 1;
 	put_pixel (x + 1, y, c);
@@ -259,9 +258,9 @@ void put_text_character (int l, int x, int y, int c, int fg, int bg)
 	int x1, y1, xx, yy, cc;
 	UINT8 *p;
 
-	p = font + (c << 3);
-	for (y1 = 0; y1 < 8; y1++) {
-		for(x1 = 0; x1 < 8; x1 ++) {
+	p = font + (c * CHAR_LINES);
+	for (y1 = 0; y1 < CHAR_LINES; y1++) {
+		for (x1 = 0; x1 < CHAR_COLS; x1 ++) {
 			xx = x + x1;
 			yy = y + y1;
 			cc = (*p & (1 << (7 - x1))) ? fg : bg;
@@ -323,7 +322,7 @@ void do_blit ()
 {
 	if (x_min < x_max && y_min < y_max) {
 #ifdef PALMOS
-		gfx->put_block (x_min, y_min * 160 / 168, x_max + 1, y_max * 160 / 168);
+		gfx->put_block (x_min, y_min * 140 / 168, x_max + 1, y_max * 140 / 168);
 #else
 		gfx->put_block (x_min << 1, y_min, (x_max << 1) + 1, y_max);
 #endif

@@ -11,7 +11,11 @@
 #ifndef __SARIEN_H
 #define __SARIEN_H
 
+#undef PALMOS
+
+#ifndef PALMOS
 #define USE_CONSOLE
+#endif
 
 #if defined (NATIVE_WIN32)
 #define INLINE __forceinline
@@ -77,11 +81,14 @@ typedef signed long	SINT32;
 #define STATUS_FG_CLEAN	0x00		/* Black */
 
 
+#ifndef PALMOS
 #define AGDS_SUPPORT			/* enable support for AGDS games */
-#define	DISABLE_COPYPROTECTION		/* only works on some games */
 #define OPT_LIST_OBJECTS
 #define OPT_PICTURE_VIEWER
 #define OPT_LIST_DICT
+#endif /* PALMOS */
+
+#define	DISABLE_COPYPROTECTION		/* only works on some games */
 
 
 #define EGO_VIEW_TABLE	0

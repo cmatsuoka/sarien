@@ -354,11 +354,11 @@ void handle_keys ()
 			break;
 
 		if (IsGetString) { 
-			print_character (xInput + (bufindex + 1) * 8, yInput,
+			print_character (xInput + (bufindex + 1) * CHAR_COLS, yInput,
 				txt_char, txt_bg, txt_bg );
 		} else {
-			print_character ((bufindex + 1) * 8,
-				game.line_user_input * 8,
+			print_character ((bufindex + 1) * CHAR_COLS,
+				game.line_user_input * CHAR_LINES,
 				txt_char, txt_bg, txt_bg);
 		}
 
@@ -374,12 +374,12 @@ void handle_keys ()
 			buffer[bufindex]=0;
 
 			if (IsGetString) {
-				print_character (xInput + (bufindex * 8),
+				print_character (xInput + (bufindex * CHAR_COLS),
 					yInput, buffer[bufindex - 1],
 					txt_fg, txt_bg );
 			} else {
-				print_character (bufindex * 8,
-					game.line_user_input * 8,
+				print_character (bufindex * CHAR_COLS,
+					game.line_user_input * CHAR_LINES,
 					buffer[bufindex - 1], txt_fg, txt_bg);
 			}
 		}
@@ -405,18 +405,18 @@ void handle_keys ()
 	   			cmd_clear_lines (game.line_user_input,
 					game.line_user_input, txt_bg);
 	   			print_text (agi_printf (game.strings[0], 0), 0, 0,
-					game.line_user_input * 8,
+					game.line_user_input * CHAR_LINES,
 					40, txt_fg, txt_bg);
        			}
 		}
 
 		/* Print txt_char */
 		if (IsGetString) {
-			print_character (xInput + ((bufindex + 1) * 8),
+			print_character (xInput + ((bufindex + 1) * CHAR_COLS),
 				yInput, txt_char, txt_fg, txt_bg);
 		} else {
-			print_character ((bufindex + 1) * 8,
-				game.line_user_input * 8, txt_char,
+			print_character ((bufindex + 1) * CHAR_COLS,
+				game.line_user_input * CHAR_LINES, txt_char,
 				txt_fg, txt_bg );
 		}
 	}

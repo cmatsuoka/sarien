@@ -865,7 +865,7 @@ void cmd_print_at (UINT8 logic, UINT8 msg, SINT8 y, SINT8 x, SINT8 len)
 
 	p = agi_printf (logics[logic].texts[msg-1], logic);
 	if (len != -1)
-		textbox (p, (x-1)*8, y*8, len);
+		textbox (p, (x-1) * CHAR_COLS, y * CHAR_LINES, len);
 	else
 		textbox (p, -1, -1, -1);
 
@@ -1336,7 +1336,7 @@ void cmd_restart_game ()
 {
 	/* implement restart game */
 	save_screen ();
-	textbox ((UINT8*)"Press ENTER to restart the game.\n"
+	textbox ("Press ENTER to restart the game.\n"
 		"Press ESC to continue this game.", -1, -1, 24);
 	switch (wait_key ()) {
 	case 0x0A:
