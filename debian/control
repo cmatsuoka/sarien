@@ -1,0 +1,19 @@
+Source: sarien
+Section: contrib/games
+Priority: extra
+Maintainer: Peter Makholm <peter@makholm.net>
+Standards-Version: 3.0.1
+
+Package: sarien
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: An interprenter for AGI resources
+ The old Sierra games is made with the AGI engine. Sarien 
+ is a free interprenter for AGI resources
+ .
+ Games written in AGI includes:
+   * Kings Quest I - IV
+   * Police Quest
+   * Leisure Suit Larry
+ .
+ You need the files from the original games.

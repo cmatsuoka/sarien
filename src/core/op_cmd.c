@@ -114,7 +114,7 @@ cmd(put_v)		{ object_set_location (_v[p0], _v[p1]); }
 cmd(drop)		{ _D ("p0 = %d", p0); object_set_location (p0, 0); }
 cmd(get)		{ object_set_location (p0, EGO_OWNED); }
 cmd(get_v)		{ object_set_location (_v[p0], EGO_OWNED); }
-cmd(parse)		{ dictionary_words (agi_sprintf(game.strings[p1],p0)); }
+cmd(parse)		{ dictionary_words (agi_sprintf(game.strings[p0],0)); }
 cmd(set_text_attr)	{ game.color_fg = p0; game.color_bg = p1; }
 cmd(shake_screen)	{ shake_screen (p0); }
 cmd(word_to_string)	{ strcpy (game.strings[p0], game.ego_words[p1].word); }
