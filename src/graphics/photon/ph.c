@@ -27,6 +27,7 @@
 #include "sarien.h"
 #include "graphics.h"
 #include "keyboard.h"
+#include "agi.h"
 
 extern struct sarien_options opt;
 extern struct gfx_driver *gfx;
@@ -39,6 +40,10 @@ static PgColor_t ph_pal[32];
 static int __argc;
 static char **__argv;
 
+static PgDisplaySettings_t oldvidmode;
+static PdDirectContext_t *dc;
+
+static struct mouse ph_mouse;
 
 #define KEY_QUEUE_SIZE 16
 static int key_queue[KEY_QUEUE_SIZE];
@@ -57,18 +62,20 @@ static void	ph_put_pixels	(int, int, int, UINT8*);
 static int	ph_keypress	(void);
 static int	ph_get_key	(void);
 static void	ph_new_timer	(void);
+static void	ph_update_mouse	(void);
 
 void *		photon_thread	(void *);
 static void	ph_raw_draw_cb	(PtWidget_t *, PhTile_t *);
 static int	ph_keypress_cb	(PtWidget_t *, void *, PtCallbackInfo_t *);
 static int	ph_cause_damage	(void *, int, void *, size_t);
 static int	ph_mouse_cb	(PtWidget_t *widget, void *data, PtCallbackInfo_t *cb);
-
+static int	ph_close_cb	(PtWidget_t *widget, void *data, PtCallbackInfo_t *cb);
 
 static pthread_t ph_tid;
 static PhImage_t *phimage;
 static pthread_barrier_t barrier;
-static pthread_mutex_t mut_image;
+static pthread_mutex_t mut_image = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t mut_mouse = PTHREAD_MUTEX_INITIALIZER;
 
 static PtWidget_t *rawwidget;
 
@@ -110,8 +117,6 @@ static int init_vidmode (void)
 
 	fprintf (stderr, "ph: Photon support by jeremy@astra.mb.ca\n");
 
-	opt.fullscreen = FALSE;		/* We can implement later. */
-
 	for (i = 0; i < 32; i ++) {
 		ph_pal[i] = (palette[i * 3] << 18) + 
 			    (palette[i * 3 + 1] << 10) +
@@ -135,6 +140,13 @@ static int deinit_vidmode ()
 	fprintf (stderr, "ph: deiniting video mode\n");
 	pthread_cancel (ph_tid);
 	PhReleaseImage(phimage);
+
+	if (opt.fullscreen)
+	{
+		PdDirectStop (dc);
+		PdReleaseDirectContext(dc);
+		PgSetVideoMode (&oldvidmode);
+	}
 
 	return err_OK;
 }
@@ -217,6 +229,8 @@ static int ph_keypress ()
 	retcode = key_queue_start != key_queue_end ? TRUE : FALSE;
 	pthread_sleepon_unlock();
 
+	ph_update_mouse();
+
 	return (retcode);
 }
 
@@ -232,6 +246,8 @@ static int ph_get_key (void)
 	key_dequeue (k);
 
 	pthread_sleepon_unlock ();
+
+	ph_update_mouse();
 
 	return k;
 }
@@ -256,20 +272,39 @@ static void ph_new_timer ()
 
 }
 
+static void ph_update_mouse(void)
+{
+	pthread_mutex_lock (&mut_mouse);
+
+	mouse = ph_mouse;
+
+	pthread_mutex_unlock (&mut_mouse);
+}
+
 /* PHOTON THREAD */
 
 void *photon_thread (void *pidarg)
 {
-	PtArg_t args[4];
+	PtArg_t args[6];
 	PtWidget_t *window;
+	PhRect_t rect;
 	PhDim_t dim;
 	PhArea_t area;
+	PhRid_t rid;
+	PgVideoModes_t modelist;
+	PgVideoModeInfo_t modeinfo;
+	PgDisplaySettings_t modesettings;
+	PhDrawContext_t *olddc;
 	PtRawCallback_t keycb[] = {{ Ph_EV_KEY , ph_keypress_cb, NULL },
                                    { Ph_EV_BUT_PRESS, ph_mouse_cb, NULL },
                                    { Ph_EV_BUT_RELEASE, ph_mouse_cb, NULL },
                                    { Ph_EV_PTR_MOTION_NOBUTTON, ph_mouse_cb, NULL },
                                    { Ph_EV_PTR_MOTION_BUTTON, ph_mouse_cb, NULL }};
+	PtCallback_t closecb[] = { { ph_close_cb, NULL } };
+
 	int recpid = (int)pidarg;
+	int index;
+	char found;
 
 	dim.w = GFX_WIDTH * scale;
 	dim.h = GFX_HEIGHT * scale;
@@ -277,7 +312,10 @@ void *photon_thread (void *pidarg)
 	PtSetArg(&args[0], Pt_ARG_WINDOW_TITLE, "Sarien for Photon", 0);
 	PtSetArg(&args[1], Pt_ARG_WINDOW_RENDER_FLAGS, Pt_FALSE, Ph_WM_RENDER_RESIZE);
 	PtSetArg(&args[2], Pt_ARG_DIM, &dim, sizeof (dim));
-	window = PtAppInit( NULL, NULL, NULL, 3, args);
+	PtSetArg(&args[3], Pt_ARG_WINDOW_MANAGED_FLAGS, Pt_FALSE, Ph_WM_CLOSE);
+	PtSetArg(&args[4], Pt_ARG_WINDOW_NOTIFY_FLAGS, Pt_TRUE, Ph_WM_CLOSE);
+	PtSetArg(&args[5], Pt_CB_WINDOW, closecb, 1);
+	window = PtAppInit( NULL, NULL, NULL, 6, args);
 
 	if (!window)
 	{
@@ -299,15 +337,80 @@ void *photon_thread (void *pidarg)
 	PtAppAddInput (NULL, recpid, ph_cause_damage, NULL);
 
 	area.size = dim;
-	area.pos.x = 0;
-	area.pos.y = 0;
+	if (!opt.fullscreen)
+	{
+		area.pos.x = 0;
+		area.pos.y = 0;
+	}
+	else
+	{
+		PhWindowQueryVisible (Ph_QUERY_INPUT_GROUP | Ph_QUERY_EXACT, 0, 0, &rect);
+		area.pos.x = rect.ul.x;
+		area.pos.y = rect.ul.y;
+	}
 
 	PtSetArg(&args[0], Pt_ARG_AREA, &area, 0);
-	PtSetArg(&args[1], Pt_ARG_RAW_DRAW_F, ph_raw_draw_cb, 0);
-	PtSetArg(&args[2], Pt_ARG_FLAGS, Pt_TRUE, Pt_GETS_FOCUS);
-	rawwidget = PtCreateWidget (PtRaw, window, 3, args);
-
+	PtSetArg(&args[1], Pt_ARG_FLAGS, Pt_TRUE, Pt_GETS_FOCUS);
+	if (!opt.fullscreen)
+	{
+		PtSetArg(&args[2], Pt_ARG_RAW_DRAW_F, ph_raw_draw_cb, 0);
+		rawwidget = PtCreateWidget (PtRaw, window, 3, args);
+	}
+	else
+	{
+		PtSetArg(&args[2], Pt_ARG_REGION_INFRONT, Ph_DEV_RID, 0);
+		PtSetArg(&args[3], Pt_ARG_REGION_OPAQUE, Pt_TRUE, Ph_EV_KEY | 
+			Ph_EV_BUT_PRESS | Ph_EV_BUT_RELEASE | Ph_EV_PTR_MOTION_NOBUTTON |
+			Ph_EV_PTR_MOTION_BUTTON);
+		PtSetArg(&args[4], Pt_ARG_REGION_FLAGS, Pt_TRUE,
+			Ph_FOLLOW_IG_SIZE | Ph_FORCE_FRONT);
+		PtSetArg(&args[5], Pt_ARG_REGION_FIELDS, Pt_TRUE,
+			Ph_REGION_FLAGS | Ph_REGION_EV_OPAQUE |
+			Ph_REGION_IN_FRONT);
+		rawwidget = PtCreateWidget (PtRegion, Pt_NO_PARENT, 6, args);
+		PtRealizeWidget (rawwidget);
+	}
 	PtAddEventHandlers (rawwidget, keycb, 5);
+
+	if (opt.fullscreen)
+	{
+		olddc = PhDCGetCurrent();
+		PdGetDevices(&rid, 1);
+		PdSetTargetDevice (olddc, rid);
+
+		PgGetVideoMode(&oldvidmode);
+
+		PgGetVideoModeList (&modelist);
+		found = 0;
+		for (index = 0; index < modelist.num_modes; index ++)
+		{
+			PgGetVideoModeInfo(modelist.modes[index], &modeinfo);
+			printf("%ux%ux%u\n", modeinfo.width,
+				modeinfo.height, modeinfo.bits_per_pixel);
+#if 0
+			if (modeinfo.width == GFX_WIDTH * scale &&
+				modeinfo.height == GFX_HEIGHT * scale &&
+				modeinfo.bits_per_pixel == 8)
+#endif
+			if (modeinfo.width == 640 &&
+				modeinfo.height == 480 &&
+				modeinfo.bits_per_pixel == 8)
+			{
+				modesettings.refresh = 0;
+				modesettings.mode = modelist.modes[index];
+				found = 1;
+			}
+		}
+		if (!found)
+		{
+			fprintf (stderr, "Unable to initialize %ux%ux8\n", 
+				GFX_WIDTH * scale, GFX_HEIGHT * scale);
+			exit(0);
+		}
+		PgSetVideoMode(&modesettings);			
+		dc = PdCreateDirectContext();
+		PdDirectStart(dc);
+	}
 
 	pthread_barrier_wait (&barrier); /* sync with original thread */
 
@@ -317,6 +420,18 @@ void *photon_thread (void *pidarg)
 	return (0);
 }
 
+static void ph_draw_image (PhRect_t *area)
+{
+	PgSetPalette( ph_pal, 0, 0, 32, Pg_PALSET_SOFT, 0);
+
+	pthread_mutex_lock (&mut_image);
+	
+	PgDrawPhImageRectmx (&(area->ul), phimage, area, 0);
+	
+	pthread_mutex_unlock (&mut_image);
+
+        PgFlush();
+}
 
 static void ph_raw_draw_cb (PtWidget_t *widget, PhTile_t *damage)
 {
@@ -338,13 +453,7 @@ static void ph_raw_draw_cb (PtWidget_t *widget, PhTile_t *damage)
 	if (draw_area.lr.x > raw_canvas.lr.x)
 		draw_area.lr.x = raw_canvas.lr.x;
 
-	PgSetPalette( ph_pal, 0, 0, 32, Pg_PALSET_SOFT, 0);
-
-	pthread_mutex_lock (&mut_image);
-
-	PgDrawPhImageRectmx (&draw_area.ul, phimage, &draw_area, 0);
-
-	pthread_mutex_unlock (&mut_image);
+	ph_draw_image (&draw_area);
 
 	PtClipRemove();
 
@@ -513,31 +622,55 @@ static int ph_mouse_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 
 	mouse_event = PhGetData(cb->event);
 
+	/* Don't modify global variables from the Photon thread! */
+	pthread_mutex_lock (&mut_mouse);
+
 	if (cb->event->type == Ph_EV_BUT_PRESS)
 	{
-		mouse.button = TRUE;
+		ph_mouse.button = TRUE;
+		pthread_sleepon_lock();
+
 		key_enqueue ((mouse_event->buttons == Ph_BUTTON_SELECT) 
 						? BUTTON_LEFT : BUTTON_RIGHT);
+		pthread_sleepon_signal (key_queue);
+		pthread_sleepon_unlock();
 	}
+
         /* If all buttons released */
 	if (cb->event->type == Ph_EV_BUT_RELEASE)
-		mouse.button = FALSE;
+		ph_mouse.button = FALSE;
 
-	mouse.x = PhGetRects(cb->event)->ul.x / opt.scale;
-	mouse.y = PhGetRects(cb->event)->ul.y / opt.scale;
+	ph_mouse.x = PhGetRects(cb->event)->ul.x / opt.scale;
+	ph_mouse.y = PhGetRects(cb->event)->ul.y / opt.scale;
 #if 0
 	/* FIXME: Photon driver doesn't support this flag yet */
         if (opt.fixratio)
-		mouse.y = mouse.y * 5 / 6;
+		ph_mouse.y = ph_mouse.y * 5 / 6;
 #endif
+
+	pthread_mutex_unlock (&mut_mouse);
+
         return (Pt_CONSUME);
 }	
+
+static int ph_close_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
+{
+	fprintf (stderr, "In ph_close_cb!\n");
+	game.quit_prog_now = TRUE;
+	/* FIXME: It'd be fun to pop up a message box. */
+
+	return (Pt_CONTINUE);
+}
+
 static int ph_cause_damage (void *data, int rcvid, void *message, size_t mbsize)
 {
 	PhRect_t *rect;
 
 	rect = message;
-	PtDamageExtent (rawwidget, rect);
+	if (opt.fullscreen)
+		ph_draw_image (rect);
+	else
+		PtDamageExtent (rawwidget, rect);
 
 	MsgReply(rcvid, EOK, NULL, 0);
 
