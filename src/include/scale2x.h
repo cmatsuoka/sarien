@@ -46,7 +46,7 @@
 #ifndef __SCALE2X_H
 #define __SCALE2X_H
 
-#include <assert.h>
+/* #include <assert.h> */
 
 /***************************************************************************/
 /* basic types */

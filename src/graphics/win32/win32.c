@@ -196,7 +196,7 @@ static void _putpixels_fixratio_scale2 (int x, int y, int w, BYTE *p)
 	p2 = p1 + xsize;
 
 	EnterCriticalSection(&g_screen.cs);
-	if (!opt.hires || y > 0 || y < (GFX_HEIGHT - 1)) {
+	if (!opt.hires || y > 0 || y < ASPECT_RATIO(GFX_HEIGHT - 1)) {
 		for (_p = p; w--; p++) {
 			*p0++ = *p;
 			*p0++ = *p;
