@@ -100,12 +100,12 @@ int main (int argc, char *argv[])
 	game.color_fg = 15;
 	game.color_bg = 0;
 
-	if ((game.sbuf = malloc (_WIDTH * _HEIGHT)) == NULL) {
+	if ((game.sbuf = calloc (_WIDTH, _HEIGHT)) == NULL) {
 		ec = err_NotEnoughMemory;
 		goto bail_out;
 	}
 #ifdef USE_HIRES
-	if ((game.hires = malloc (_WIDTH * _HEIGHT * 2)) == NULL) {
+	if ((game.hires = calloc (_WIDTH * 2, _HEIGHT)) == NULL) {
 		ec = err_NotEnoughMemory;
 		goto bail_out_2;
 	};

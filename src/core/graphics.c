@@ -462,11 +462,11 @@ int init_video ()
 	init_console ();
 #endif
 
-	if ((sarien_screen = malloc (GFX_WIDTH * GFX_HEIGHT)) == NULL)
+	if ((sarien_screen = calloc (GFX_WIDTH, GFX_HEIGHT)) == NULL)
 		return err_NotEnoughMemory;
 
 #ifdef USE_CONSOLE
-	if ((console_screen = malloc (GFX_WIDTH * GFX_HEIGHT)) == NULL) {
+	if ((console_screen = calloc (GFX_WIDTH, GFX_HEIGHT)) == NULL) {
 		free (sarien_screen);
 		return err_NotEnoughMemory;
 	}
@@ -649,7 +649,7 @@ void clear_screen (int c)
  */
 void clear_console_screen (int n)
 {
-	memset (console_screen + n * GFX_WIDTH, 0, (200 - n) * GFX_WIDTH);
+	memset (console_screen + n * GFX_WIDTH, 0, (GFX_HEIGHT - n) * GFX_WIDTH);
 }
 #endif
 

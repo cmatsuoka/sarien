@@ -215,10 +215,10 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 	game.color_fg = 15;
 	game.color_bg = 0;
 
-	if ((game.sbuf = malloc (_WIDTH * _HEIGHT)) == NULL)
+	if ((game.sbuf = calloc (_WIDTH, _HEIGHT)) == NULL)
 		goto bail_out;
 #ifdef USE_HIRES
-	if ((game.hires = malloc (_WIDTH * _HEIGHT * 2)) == NULL)
+	if ((game.hires = malloc (_WIDTH * 2, _HEIGHT)) == NULL)
 		goto bail_out2;
 #endif
 	if (init_sprites () != err_OK)

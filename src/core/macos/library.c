@@ -14,20 +14,34 @@ char *strdup (char *s)
 void *my_malloc (int n)
 {
 	int i = MaxBlock ();
-	printf ("Malloc = %d, MaxBlock = %d\n", n, i);
+	void *x;
+
 	if (n >= i)
 		exit (-1);
-	return (void *)NewPtr(n);
+
+	if ((x = (void *)NewPtr(n)) == NULL) {
+		_D (D_CRIT "Error: %d\n", MemError());
+		exit (-1);
+	}
+
+	return x;
 }
 
 
 void *my_calloc (int n, int s)
 {
 	int i = MaxBlock ();
-	printf ("Calloc = %d*%d, MaxBlock = %d\n", n, s, i);
+	void *x;
+
 	if (n * s >= i)
 		exit (-1);
-	return (void *)NewPtrClear(n * s);
+
+	if ((x = (void *)NewPtrClear(n * s)) == NULL) {
+		_D (D_CRIT "Error: %d\n", MemError());
+		exit (-1);
+	}
+	
+	return x;
 }
 
 

@@ -117,7 +117,7 @@ static INLINE void putpixel_8 (void *img, int idx, int p)
 #define _putpixels_scale1(d) static void \
 _putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
 	if (w == 0) return; \
-	x += y * (GFX_WIDTH + 8); \
+	x += y * bpl; \
 	while (w--) { putpixel_##d (screen_buffer, x++, rgb_palette[*p++]); }\
 }
 
@@ -125,8 +125,8 @@ _putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
 _putpixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) { \
 	register int c; if (w == 0) return; \
 	x <<= 1; y <<= 1; \
-	x += y * ((GFX_WIDTH << 1) + 8); \
-	y = x + ((GFX_WIDTH << 1) + 8); \
+	x += y * bpl; \
+	y = x + bpl; \
 	while (w--) { \
 		c = rgb_palette[*p++]; \
 		putpixel_##d (screen_buffer, x++, c); \
@@ -162,9 +162,9 @@ _putpixels_fixratio_##d##bits_scale2 (int x, int y, int w, UINT8 *p0) { \
 	x <<= 1; y <<= 1; \
 	if (y < ((GFX_WIDTH - 1) << 2) && ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2)) extra = w; \
 	y = ASPECT_RATIO(y); \
-	x += y * (GFX_WIDTH << 1); \
-	y = x + (GFX_WIDTH << 1); \
-	z = x + (GFX_WIDTH << 2); \
+	x += y * bpl; \
+	y = x + bpl; \
+	z = y + bpl; \
 	for (p = p0; w--; ) { \
 		c = rgb_palette[*p++]; \
 		putpixel_##d (screen_buffer, x++, c); \
@@ -336,46 +336,50 @@ static int macos_init_vidmode ()
 	set_palette (palette, 0, 32);
 
 	/* Create offscreen pixmap */
-	SetRect (&gworld_rect, 0, 0, GFX_WIDTH * scale - 1,
-		GFX_HEIGHT * scale - 1);
+	SetRect (&gworld_rect, 0, 0, GFX_WIDTH * scale,
+		GFX_HEIGHT * scale);
 	if (NewGWorld (&gworld, depth, &gworld_rect, NULL, NULL, 0) != noErr)
 		return -1;
-
-	GetGWorld (&old_gw, &old_gd);
-	SetGWorld (gworld, NULL);
-	BackColor (blackColor);
-	EraseRect (&gworld->portRect);
-	SetGWorld (old_gw, old_gd);
-
-	/* Set optimized put_pixels handler */
-	gfx_macos.put_pixels = _putpixels_16bits_scale2;
 
 	/* Create window */
 	SetRect (&window_rect, 50, 50, 50 + GFX_WIDTH * scale - 1,
 		50 + GFX_HEIGHT * scale - 1);
 	window = NewCWindow (NULL, &window_rect, "\pSarien", true,
 		noGrowDocProc, (WindowPtr) -1, false, NULL);
-
+		
 	/* Initialize pixmap pointers */
 	pix = GetGWorldPixMap (gworld);
 	LockPixels (pix);
 	wpix = ((CGrafPort *)window)->portPixMap;
+	LockPixels (wpix);
 	bpl = (*pix)->rowBytes & 0x3fff;
+	bpl = GFX_WIDTH * scale + 4 * 32 / depth;
 	screen_buffer = (UINT8 *)GetPixBaseAddr(pix);
-
+	
 	/* set window to current graf port */
 	SetPort (window);
 
+	/* Clear offscreen gworld */
+	GetGWorld (&old_gw, &old_gd);
+	SetGWorld (gworld, NULL);
+	BackColor (blackColor);
+	EraseRect (&gworld->portRect);
+	SetGWorld (old_gw, old_gd);
+	
 	/* CopyBits needs these */
 	ForeColor (blackColor);
 	BackColor (whiteColor);
 
+	/* Set optimized put_pixels handler */
+	gfx_macos.put_pixels = _putpixels_16bits_scale2;
+	
 	return err_OK;
 }
 
 
 static int macos_deinit_vidmode ()
 {
+	UnlockPixels (wpix);
 	UnlockPixels (pix);
 	DisposePtr ((char *) gworld);
 	DisposeWindow (window);
@@ -395,8 +399,8 @@ static void macos_put_block (int x1, int y1, int x2, int y2)
 
 	x1 *= scale;
 	y1 *= scale;
-	x2 = (x2 + 1) * scale - 1;
-	y2 = (y2 + 1) * scale - 1;
+	x2 = (x2 + 1) * scale;
+	y2 = (y2 + 1) * scale;
 
 	SetRect (&r, x1, y1, x2, y2);
 	CopyBits ((BitMap *)*pix, (BitMap *)*wpix, &r, &r, srcCopy, 0L);
