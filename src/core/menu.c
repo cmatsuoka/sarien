@@ -137,7 +137,8 @@ static void draw_menu_option (int h_menu)
 		d = list_entry (h, struct agi_menu_option, list);
 		draw_text (d->text, 0, (m->wincol + 1) * CHAR_COLS,
 			(d->index + 2) * CHAR_LINES + d->index * 2,
-			m->width + 2, MENU_FG, MENU_BG);
+			m->width + 2,
+			d->enabled ? MENU_FG : MENU_DISABLED, MENU_BG);
 #else
 	draw_box (m->wincol * CHAR_COLS, 1 * CHAR_LINES,
 		(m->wincol + m->width + 2) * CHAR_COLS,
@@ -146,7 +147,8 @@ static void draw_menu_option (int h_menu)
 	list_for_each (h, &m->down, next) {
 		d = list_entry (h, struct agi_menu_option, list);
 		print_text (d->text, 0, m->wincol + 1, d->index + 2,
-			m->width + 2, MENU_FG, MENU_BG);
+			m->width + 2,
+			d->enabled ? MENU_FG : MENU_DISABLED, MENU_BG);
 #endif
 	}
 }

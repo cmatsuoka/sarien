@@ -118,16 +118,12 @@ extern "C"{
 
 #ifdef FANCY_BOX
 #  define	MSG_BOX_COLOUR	0x07		/* Grey */
-#  define	MENU_BG		0x07		/* Grey */
 #else
 #  define	MSG_BOX_COLOUR	0x0f		/* White */
-#  define	MENU_BG		0x0f		/* White */
 #endif
 
 #define MSG_BOX_TEXT	0x00		/* Black */
 #define MSG_BOX_LINE	0x04		/* Red */
-#define MENU_FG		0x00		/* Black */
-#define MENU_LINE	0x00		/* Black */
 #define STATUS_FG	0x00		/* Black */
 #define	STATUS_BG	0x0f		/* White */
 #define PATCH_LOGIC	/* disable copy protection on some games */

@@ -15,6 +15,17 @@
 extern "C"{
 #endif
 
+#ifdef FANCY_BOX
+#  define MENU_BG	0x07		/* Grey */
+#  define MENU_DISABLED	0x08		/* Grey */
+#else
+#  define MENU_BG	0x0f		/* White */
+#  define MENU_DISABLED	0x07		/* Grey */
+#endif
+
+#define MENU_FG		0x00		/* Black */
+#define MENU_LINE	0x00		/* Black */
+
 void	menu_init	(void);
 void	menu_deinit	(void);
 void	menu_add	(char *);
