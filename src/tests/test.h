@@ -7,9 +7,24 @@
 
 #define MAX_LEN 1024
 
-void	test_format	(void);
+#define TEST_FAIL	0
+#define TEST_OK		1
+#define TEST_SKIP	2
 
-extern int num_tests;
-extern int num_failed;
+#define TEST(x)	do { test_count(); test_result(skip?TEST_SKIP:(x)); } while (0)
+
+extern int skip;
+
+void	test_name	(char *);
+void	test_count	(void);
+void	test_result	(int);
+void	test_say	(char *);
+int	test_load_game	(char *);
+void	test_disable	(char *);
+void	test_enable	(void);
+
+void	test_format	(void);
+void	test_arith	(void);
+
 
 
