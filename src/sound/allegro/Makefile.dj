@@ -1,0 +1,20 @@
+#
+# Makefile for DJGPP v2
+#
+# $Id$
+#
+
+include $(TOPDIR)/Rules.dj
+
+OBJS = s_alleg.o
+
+all: sound.a
+
+sound.a: $(OBJS)
+	ar rsv sound.a $(OBJS)
+
+clean:
+	@if exist *.a del *.a
+	@if exist *.o del *.o
+	@if exist *.bak del *.bak
+

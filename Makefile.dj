@@ -25,7 +25,7 @@ drivers:
 	make -f Makefile.dj TOPDIR=../../..
 	cd ..\..\..
 	@echo Building sound driver
-	cd src\sound\dummy
+	cd src\sound\allegro
 	make -f Makefile.dj TOPDIR=../../..
 	cd ..\..\..
 

@@ -1,43 +1,242 @@
 $Id$
 
-Quick notes - see docs/README.* for detailed information
-
-Directories:
-
-./VC++6.0		Visual C++ files
-./eVC3			PocketPC files
-./doc			Documentation
-./etc			Configuration files
-./rulesets		Extra rulesets for different architectures
-./src/core		AGI interpreter core files
-./src/graphics		Graphic drivers
-./src/sound		Sound drivers
-./src/filesys		Filesystem access drivers
-
-The following compilers/environments can be used to build sarien:
-
-	Compiler	Operating System
-	--------------- ---------------------------------	
-	GNU C compiler	UNIX, Linux, BeOS, QNX, AmigaOS
-	Cygwin/Mingw32	Win32
-	Visual C++	Win32
-	Embedded VC	WinCE
-	MIPSpro		IRIX
-	DJGPP		MS-DOS (uses Allegro)
-	Watcom C	MS-DOS
-	Turbo C++ 3.0	MS-DOS 16-bit
-	DICE C		AmigaOS
-	MPW		MacOS 8
-	Apple cc (gcc)	MacOS X
 
 
-To build in UNIX and UNIX-like platforms (including Cygwin, BeOS and
-MacOS X), run './configure; make'. Run ./configure --help to see the
-build options. Use Makefile.dj and Makefile.tc to build with DJGPP and
-Turbo C.
+                   Sarien Sierra Adventure Game Interpreter
+                                 Version 0.8
 
-To build using VC++, use the files in the appropriate directory.
 
-The list of known bugs can be browsed at
-http://sourceforge.net/tracker/?group_id=24759&atid=382570
+
+What Is Sarien?
+===============
+Sarien is a Sierra AGI resource interpreter engine that enables you to
+play early Sierra On-Line(tm) AGI version 2 and version 3 games, as well
+as AGI games written by other people.
+
+It is being written to be very portable. See doc/README.ports for a
+list of current supported platforms.
+
+Sarien is covered by the Free Software Foundation's GNU Public License
+and is an open source development. Up to date information, bug tracker
+and daily development snapshots are available at http://sarien.sf.net/.
+
+
+Command Line Switches
+=====================
+Syntax is: sarien [switches] [gamedir]
+
+Where [switches] are optionally:
+  -a --agds          Enables sarien to play AGDS created games.
+  -A --amiga         Forces the game to be seen as an Amiga word padded game.
+  -C --crc           CRC and identify the game files and stop.
+  -c --cga-palette   Use PC CGA video mode emulation.
+  -d --list-dictionary
+                     List dictionary words.
+  -e --ega-palette   Use PC EGA palette instead of amiga-ish palette
+  -L --list-games    List all the games in the ID file
+  -F --full-screen   Run in full-screen mode if allowed by the graphics device
+  -g --no-gfx-optimizations
+                     Disable optimized graphic driver hacks (if available).
+  -H --hires {0|1}   Enable/disable hi-res mode.
+  -h --help          Display this help screen.
+  -m --agimouse      AGI Mouse 1.0 compatibility mode.
+  -n --no-sound      Disable sound output.
+  -p --picture-viewer
+                     Interactive picture viewer.
+  -o --list-objects  List objects.
+  -S --scale {num}   Window size scale (only for windowed graphics).
+  -s --emulate-sound {type}
+                     Emulate the sound of Sierra AGI running in different
+                     computers. Valid emulations are pc, mac and amiga
+  -r --aspect-ratio {0|1}
+                     Adjust aspect ratio to match the PC EGA 320x200 screen.
+  -v --emulate-version {version}
+                     Force version to emulate. Valid v2 game versions are:
+                     2.089, 2.272, 2.440, 2.917, 2.936. Valid v3 games are:
+                     3.002.086, 3.002.149.
+  -V --version       Display version information.
+  -x --no-x-shm      Disable X shared memory extension (if available).
+
+[gamedir] is optionally the directory the game is in, if no directory is
+specified, the current directory is assumed.
+
+
+Playing Games
+=============
+In order to play games, you will need,
+
+	1) A Game or Demo
+	2) A binary of Sarien.
+
+For a AGI V2 games you only need the following files
+
+	logdir
+	object
+	picdir
+	snddir
+	viewdir
+	vol.*
+	words.tok
+
+For an AGI V3 game you need;
+
+	*dir	(eg: bcdir, dmdir, grdir, kq4dir, mhdir)
+	*vol.*	(eg: bcvol.*, dmvol.*, etc)
+	object
+	words.tok
+
+
+Version Emulation
+=================
+Sierra Games currently ID'd:
+
+    IBM-PC versions
+	Black Cauldron (2.00)		2.439		 6/14/87
+	Kings Quest 1 (2.0F)		2.917
+	Kings Quest 2           	2.411
+	Kings Quest 2 (2.2)    		2.917
+	Kings Quest 3 (1.01)    	2.272		11/08/86
+	Kings Quest 3 (2.00)    	2.435		 5/25/87
+	Kings Quest 3 (2.14)    	2.936		 3/15/88
+	Kings Quest 3 (2.14)    	2.936		 3/15/88
+	Larry 1 (1.00)          	2.440		 6/1/87
+	Mixed Up Mother Goose   	2.915
+	Police Quest 1 (2.0A)   	2.911		10/23/87
+	Police Quest 1 (2.0G)   	2.917		12/03/87
+	Police Quest 1 (2.0G)   	2.917		12/03/87
+	Space Quest 1 (1.0X)    	2.089
+	Space Quest 1 (1.1A)    	2.272
+	Space Quest 1 (2.2)     	2.426
+	Space Quest 2           	2.912
+	Space Quest 2 (2.0A)    	2.912
+	Space Quest 2 (2.0C)    	2.915
+	Space Quest 2 (2.0F)    	2.936
+	XMAS Card 1986          	2.272
+	Demo 1                  	2.915
+	Demo 2                  	2.915
+	Demo 3                  	2.917
+	Demo 5                  	2.425
+	Kings Quest 4 (v2.0)		3.002.086	 7/27/88
+	Kings Quest 4 (v2.2)		3.002.086	 9/27/88
+	Black Cauldron			3.002.098
+	Demo 4				3.002.102
+	Kings Quest 4 demo		3.002.102
+	Manhunter 1 (1.22)		3.002.107	 8/31/88
+	Manhunter 2 (3.02)		3.002.149	 7/26/89
+	Gold Rush (5.25)		3.002.149
+	Gold Rush (3.5)			3.002.149
+	GR (Cracked) (3.5)		3.002.149
+	GR (Cracked) (5.25)		3.002.149
+
+
+    Apple IIgs versions
+	Kings Quest 1 (1.0S-88223)	2.272
+	Mixed Up Mother Goose		2.917
+	Police Quest 1 (2.0A)		2.917
+	Demo Disk 1.0C (Censored)	2.917 (guessed)
+	Black Cauldron 1.0O		3.002.149	 2/24/89
+	Manhunter New York 2.0E		3.002.149	10/05/88
+
+
+    Apple Macintosh versions
+	Kings Quest 1 (2.0C)		2.440
+	Kings Quest 2 (2.0R)		2.440
+	Larry 1 (1.05)                  2.440		 6/26/87
+	Space Quest 2 (2.0D)		2.936
+
+
+    Atari ST versions
+	Donald Duck's Playground 1.0C	2.272		 8/08/86
+
+
+    Amiga versions
+	Kings Quest 2 (2.0J)		2.440
+	Space Quest 2 (2.0F)		2.936
+	Leisure Suit Larry 1 (1.05)	2.440		 6/26/87
+
+
+    AGDS games
+	Groza, AGDS sample game		2.440
+
+
+    Notes
+    	Space Quest 1 v2.426 and v2.917 are 100% identical with the
+        exception of the version of the interpreter used to play them.
+        Since 2.917 is the same as 2.426, I use 2.426 as the
+        emulation.
+
+	Leisure Suit Larry 1 v2.440 and v2.917 have 100% identicle
+        files, just 'agi' is different. Since they are the same, I
+        choose to emulate v2.440, even for the 2.917 version of the
+        game.  Since they are the same it should work ok.
+
+
+
+Copy protection
+===============
+Original Sierra adventure games employed copy protection in various
+different schemes on several architectures.
+
+* Key Disk
+
+  The most common for of copy proection most Sierra gamers will be
+  familiar with, is the key disk copy protection of 99% of the early
+  AGI games.
+
+  Since this copy protection was part of the Sierra interpreter and
+  not a part of the actual game data files (defeating it required
+  creating a hacked version of sierra.com/sierra.exe), when these
+  games are played by Sarien, there is in effect, no copy protection
+  at all.
+
+* Manual Protection
+
+  Some later games required information that was part of the
+  documentation that came with the games, which included games such
+  as Police Quest 1, Gold Rush, Kings Quest 4, Manhunter and Space
+  Quest.
+
+  Games such as Police Quest 1 and Space Quest made the copy protection
+  part of the game itself and can't be bypassed (ie: Drink Driving
+  procedures in Police Quest 1). You will still need the manuals/
+  documentation to complete these games.
+
+For other games mentioned such as Kings Quest 4 AGI, Gold Rush etc,
+Sarien can activly detect and bypass this protection if compiled witj
+the "Logic Patching" option. This can be tested by running sarien
+with the '-V' option.
+
+
+Unidentified Games
+==================
+Unidentified games are emulated with the 'standard' system for that
+AGI version.
+
+    	For V2 AGI games its v2.917
+    	For V3 AGI games its 3.002.149
+
+These are the most 'common' versions around for v2 and v3 games.
+
+
+Differences between Sarien and Sierra AGI
+=========================================
+- "Fastest" speed is not available. Reasons: the effect is quite silly
+  and potentially dangerous -- in modern computers it makes ego run
+  at light speed and makes the game unplayable anyway. In
+  multitasking systems "fastest" throws the system load at 100%. As a
+  side effect, the "SIERRA" word in the Sierra demopack intros will
+  pulse in a gentle, pleasant rhythm instead of the epilepsy-inducing
+  stroboscopic effect of the "fastest" mode.
+
+- System console. A transparent "Quake console" is available pressing
+  the ` key. SHIFT-` toggles game input when the console is active.
+  AGI commands can be issued directly in the console, use "help" for
+  a list of available commands.
+
+
+Credits
+=======
+Sarien is being written by a loony bunch of people working in their
+spare time to squash bugs and add new features. See the AUTHORS file
+for the credits list.
 

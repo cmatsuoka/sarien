@@ -1,0 +1,43 @@
+$Id$
+
+Quick notes - see docs/README.* for detailed information
+
+Directories:
+
+./VC++6.0		Visual C++ files
+./eVC3			PocketPC files
+./doc			Documentation
+./etc			Configuration files
+./rulesets		Extra rulesets for different architectures
+./src/core		AGI interpreter core files
+./src/graphics		Graphic drivers
+./src/sound		Sound drivers
+./src/filesys		Filesystem access drivers
+
+The following compilers/environments can be used to build sarien:
+
+	Compiler	Operating System
+	--------------- ---------------------------------	
+	GNU C compiler	UNIX, Linux, BeOS, QNX, AmigaOS
+	Cygwin/Mingw32	Win32
+	Visual C++	Win32
+	Embedded VC	WinCE
+	MIPSpro		IRIX
+	DJGPP		MS-DOS (uses Allegro)
+	Watcom C	MS-DOS
+	Turbo C++ 3.0	MS-DOS 16-bit
+	DICE C		AmigaOS
+	MPW		MacOS 8
+	Apple cc (gcc)	MacOS X
+
+
+To build in UNIX and UNIX-like platforms (including Cygwin, BeOS and
+MacOS X), run './configure; make'. Run ./configure --help to see the
+build options. Use Makefile.dj and Makefile.tc to build with DJGPP and
+Turbo C.
+
+To build using VC++, use the files in the appropriate directory.
+
+The list of known bugs can be browsed at
+http://sourceforge.net/tracker/?group_id=24759&atid=382570
+
