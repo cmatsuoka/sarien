@@ -454,20 +454,12 @@ void init_palette (UINT8 *p)
  */
 int init_video ()
 {
-#ifndef PALMOS
-#ifndef _WIN32
-	/* XXX: this causes the win32 debug build to crash for some reason */
-	fprintf (stderr, "Initializing graphics: %dx%d (scale = %d)\n",
-		GFX_WIDTH, GFX_HEIGHT, opt.scale);
-#endif
-
 	if (opt.egapal)
 		init_palette (ega_palette);
 	else
 		init_palette (new_palette);
 
 	init_console ();
-#endif
 
 	if ((sarien_screen = calloc (GFX_WIDTH, GFX_HEIGHT)) == NULL)
 		return err_NotEnoughMemory;
