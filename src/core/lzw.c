@@ -28,7 +28,7 @@
 #define TABLE_SIZE	18041		/* strange number */
 #define START_BITS	9
 
-static SINT32	BITS  /*, MAX_VALUE, MAX_CODE*/;
+static SINT32	BITS, MAX_VALUE, MAX_CODE;
 static UINT32	*prefix_code;
 static UINT8	*append_character;
 static UINT8	*decode_stack;
@@ -51,7 +51,6 @@ static void closeLZW ()
 	free (append_character);
 }
 
-#if 0
 /***************************************************************************
 ** setBITS
 **
@@ -69,7 +68,6 @@ int setBITS (SINT32 value)
 
 	return FALSE;
 }
-#endif
 
 /***************************************************************************
 ** decode_string
@@ -134,9 +132,7 @@ void LZW_expand(UINT8 *in, UINT8 *out, SINT32 len)
 
 	initLZW();
 
-#if 0
-	bits = setBITS(START_BITS);	/* Starts at 9-bits */
-#endif
+	setBITS(START_BITS);		/* Starts at 9-bits */
 	lzwnext = 257;			/* Next available code to define */
 
 	end = (unsigned char *)((long)out + (long)len);
@@ -149,9 +145,7 @@ void LZW_expand(UINT8 *in, UINT8 *out, SINT32 len)
 		if (lzwnew == 0x100) {
 			/* Code to "start over" */
 			lzwnext = 258;
-#if 0
-			bits = setBITS(START_BITS);
-#endif
+			setBITS(START_BITS);
 			lzwold = input_code(&in);
 			c = lzwold;
 			*out++ = (char)c;
@@ -172,10 +166,8 @@ void LZW_expand(UINT8 *in, UINT8 *out, SINT32 len)
 			while (s >= decode_stack)
 				*out++ = *s--;
 
-#if 0
 			if (lzwnext > MAX_CODE)
-				bits = setBITS(BITS + 1);
-#endif
+				setBITS(BITS + 1);
 
 			prefix_code[lzwnext] = lzwold;
 			append_character[lzwnext] = c;
