@@ -164,7 +164,7 @@ void dictionary_words (char *msg)
  				break;
  			default:
  				/* an OK word */
- 				_D (_D_WARN "ok word (%d)", wc1);
+ 				/* _D (_D_WARN "ok word (%d)", wc1); */
  				game.ego_words[game.num_ego_words].id = wid;
  				game.ego_words[game.num_ego_words].word = strndup(p, wlen);
  				game.num_ego_words++;
