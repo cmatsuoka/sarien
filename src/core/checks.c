@@ -22,6 +22,8 @@ static int dir_table_y[9] = {
 
 static int check_position (struct vt_entry *v)
 {
+	_D ("check position @ %d, %d", v->x_pos, v->y_pos);
+
 	if (	v->x_pos < 0 ||
 		v->x_pos + v->x_size > _WIDTH ||
 		v->y_pos + v->y_size + 1 < 0 ||
@@ -29,8 +31,8 @@ static int check_position (struct vt_entry *v)
 		v->y_pos >= _HEIGHT ||
 		((~v->flags & IGNORE_HORIZON) && v->y_pos <= game.horizon))
 	{
-		/*_D (_D_WARN "check position failed: x=%d, y=%d, h=%d, w=%d",
-			v->x_pos, v->y_pos, v->x_size, v->y_size);*/
+		_D (_D_WARN "check position failed: x=%d, y=%d, h=%d, w=%d",
+			v->x_pos, v->y_pos, v->x_size, v->y_size);
 		return 0;
 	}
 
@@ -158,7 +160,7 @@ _check_ego:
 void update_position ()
 {
 	struct vt_entry *v;
-	int x, x2, y, y2, dir, step, border;
+	int x, y, old_x, old_y, dir, step, border;
 
 	game.vars[V_border_code] = 0;
 	game.vars[V_border_touch_ego] = 0;
@@ -178,10 +180,11 @@ void update_position ()
 
 		v->step_time_count = v->step_time;
 
-		x = x2 = v->x_pos;
-		y = y2 = v->y_pos;
+		x = old_x = v->x_pos;
+		y = old_y = v->y_pos;
 		
-		if (~v->flags & FLAG10) {
+		/* If object has moved, update its position */
+		if (~v->flags & UPDATE_POS) {
 			dir = v->direction;
 			step = v->step_size;
 			
@@ -189,15 +192,20 @@ void update_position ()
 			y += step * dir_table_y[dir];
 		}
 
+		/* Now check if it touched the borders */
 		border = 0;
 
+		/* Check left/right borders */
 		if (x < 0) {
 			x = 0;
 			border = 4;
 		} else if (x + v->x_size > _WIDTH) {
 			x = 160 - v->x_size;
 			border = 2;
-		} else if (y - v->y_size + 1 < 0) {
+		}
+
+		/* Check top/bottom borders. */
+		if (y - v->y_size + 1 < 0) {
 			y = v->y_size - 1;
 			border = 1;
 		} else if (y > _HEIGHT - 1) {
@@ -208,12 +216,12 @@ void update_position ()
 			border = 1;
 		}
 
+		/* Test new position. rollback if test fails */
 		v->x_pos = x;
 		v->y_pos = y;
-		
 		if (check_clutter (v) || !check_priority (v)) {
-			v->x_pos = x2;
-			v->y_pos = y2;
+			v->x_pos = old_x;
+			v->y_pos = old_y;
 			border = 0;
 			fix_position (v->entry);
 		}
@@ -230,7 +238,7 @@ void update_position ()
 			}
 		}
 
-		v->flags &= ~FLAG10;
+		v->flags &= ~UPDATE_POS;
 	}
 }
 
