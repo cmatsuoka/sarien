@@ -445,10 +445,10 @@ int loadgame_dialog ()
 		flush_screen ();
 		do_update ();
 #else
-		{
-			game.vars[V_border_touch_ego] = 0;
-			new_room (game.vars[0]);
-		}
+		game.vars[V_border_touch_ego] = 0;
+		new_room (game.vars[0]);
+		setflag (F_new_room_exec, TRUE);
+		game.input_mode = INPUT_NORMAL;
 #endif
 	} else {
 		message_box ("Error loading game.");

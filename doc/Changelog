@@ -9,6 +9,7 @@ Revision History
 	- changed palette to use Amiga-ish colors instead of PC EGA
 	- added "crc" command to the interpreter console
 	- sprite blitting algorithm changed to work with hidden screens
+	- fixed add.to.pic to erase and re-blit all sprites
 
 0.6.1 (20010722)
 	- fixed QNX build and Photon driver
