@@ -57,8 +57,8 @@
     scale = newScale;
     
     newRect             = [self frame];
-    newRect.size.width  = GFX_WIDTH  * newScale;
-    newRect.size.height = GFX_HEIGHT * newScale;
+    newRect.size.width  = (GFX_WIDTH  * newScale) + 12;
+    newRect.size.height = (GFX_HEIGHT * newScale) + 12;
     [self setFrame:newRect display:TRUE animate:TRUE];
 }
 

@@ -3,12 +3,14 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 34;
+	objectVersion = 39;
 	objects = {
 		00C940990173921B7F000001 = {
 			isa = PBXFileReference;
+			lastKnownFileType = image.icns;
 			path = SarienIcon.icns;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		00C9409A0173921B7F000001 = {
 			fileRef = 00C940990173921B7F000001;
@@ -27,10 +29,13 @@
 //013
 //014
 		01471944014DD51D7F000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = path.c;
 			path = ../src/filesys/unix/path.c;
 			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		01471945014DD51D7F000001 = {
 			fileRef = 01471944014DD51D7F000001;
@@ -66,6 +71,7 @@
 			isa = PBXGroup;
 			name = Classes;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		089C165CFE840E0CC02AAC07 = {
 			children = (
@@ -75,13 +81,16 @@
 			isa = PBXVariantGroup;
 			name = InfoPlist.strings;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		089C165DFE840E0CC02AAC07 = {
 			fileEncoding = 10;
 			isa = PBXFileReference;
+			lastKnownFileType = text.plist.strings;
 			name = English;
 			path = English.lproj/InfoPlist.strings;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		089C165EFE840E0CC02AAC07 = {
 			fileRef = 089C165CFE840E0CC02AAC07;
@@ -107,12 +116,16 @@
 			isa = PBXGroup;
 			name = "Linked Frameworks";
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		1058C7A1FEA54F0111CA2CBB = {
+			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = Cocoa.framework;
 			path = /System/Library/Frameworks/Cocoa.framework;
 			refType = 0;
+			sourceTree = "<absolute>";
 		};
 		1058C7A2FEA54F0111CA2CBB = {
 			children = (
@@ -125,6 +138,7 @@
 			isa = PBXGroup;
 			name = "Other Frameworks";
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		1058C7A3FEA54F0111CA2CBB = {
 			fileRef = 1058C7A1FEA54F0111CA2CBB;
@@ -143,9 +157,12 @@
 //173
 //174
 		17587328FF379C6511CA2CBB = {
+			explicitFileType = wrapper.application;
+			fallbackIsa = PBXFileReference;
 			isa = PBXApplicationReference;
 			path = Sarien.app;
 			refType = 3;
+			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 //170
 //171
@@ -164,6 +181,7 @@
 			isa = PBXGroup;
 			name = Products;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 //190
 //191
@@ -176,10 +194,13 @@
 //293
 //294
 		29B97313FDCFA39411CA2CEA = {
+			buildSettings = {
+			};
 			buildStyles = (
 				4A9504CCFFE6A4B311CA0CBA,
 				4A9504CDFFE6A4B311CA0CBA,
 			);
+			hasScannedForEncodings = 1;
 			isa = PBXProject;
 			mainGroup = 29B97314FDCFA39411CA2CEA;
 			projectDirPath = "";
@@ -201,6 +222,7 @@
 			name = Sarien;
 			path = "";
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		29B97315FDCFA39411CA2CEA = {
 			children = (
@@ -211,11 +233,15 @@
 			name = "Other Sources";
 			path = "";
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		29B97316FDCFA39411CA2CEA = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = main.m;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		29B97317FDCFA39411CA2CEA = {
 			children = (
@@ -227,6 +253,7 @@
 			name = Resources;
 			path = "";
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		29B97318FDCFA39411CA2CEA = {
 			children = (
@@ -237,12 +264,15 @@
 			name = MainMenu.nib;
 			path = "";
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		29B97319FDCFA39411CA2CEA = {
 			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
 			name = English;
 			path = English.lproj/MainMenu.nib;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		29B97323FDCFA39411CA2CEA = {
 			children = (
@@ -253,18 +283,25 @@
 			name = Frameworks;
 			path = "";
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		29B97324FDCFA39411CA2CEA = {
+			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = AppKit.framework;
 			path = /System/Library/Frameworks/AppKit.framework;
 			refType = 0;
+			sourceTree = "<absolute>";
 		};
 		29B97325FDCFA39411CA2CEA = {
+			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = Foundation.framework;
 			path = /System/Library/Frameworks/Foundation.framework;
 			refType = 0;
+			sourceTree = "<absolute>";
 		};
 		29B97326FDCFA39411CA2CEA = {
 			buildPhases = (
@@ -277,7 +314,8 @@
 				FRAMEWORK_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/\"";
 				HEADER_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = "";
-				OTHER_CFLAGS = "-DMACOSX";
+				OPTIMIZATION_CFLAGS = "-O3";
+				OTHER_CFLAGS = "-DMACOSX -DVERSION=\\\\\\\"0.7\\\\\\\"";
 				PRODUCT_NAME = Sarien;
 				SECTORDER_FLAGS = "";
 				WARNING_CFLAGS = "-Wmost -Wno-four-char-constants -Wno-unknown-pragmas";
@@ -290,8 +328,8 @@
 			productName = Sarien;
 			productReference = 17587328FF379C6511CA2CBB;
 			productSettingsXML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-<!DOCTYPE plist SYSTEM \"file://localhost/System/Library/DTDs/PropertyList.dtd\">
-<plist version=\"0.9\">
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
@@ -316,7 +354,6 @@
 </dict>
 </plist>
 ";
-			shouldUseHeadermap = 1;
 		};
 		29B97327FDCFA39411CA2CEA = {
 			buildActionMask = 2147483647;
@@ -328,7 +365,7 @@
 				F53A970C01A48B8B013B94F6,
 			);
 			isa = PBXHeadersBuildPhase;
-			name = Headers;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		29B97328FDCFA39411CA2CEA = {
 			buildActionMask = 2147483647;
@@ -338,7 +375,7 @@
 				00C9409A0173921B7F000001,
 			);
 			isa = PBXResourcesBuildPhase;
-			name = "Bundle Resources";
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		29B9732BFDCFA39411CA2CEA = {
 			buildActionMask = 2147483647;
@@ -388,7 +425,7 @@
 				F562A78801C54C0E010DC54F,
 			);
 			isa = PBXSourcesBuildPhase;
-			name = Sources;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		29B9732CFDCFA39411CA2CEA = {
 			fileRef = 29B97316FDCFA39411CA2CEA;
@@ -407,7 +444,7 @@
 				F562A78A01C54C78010DC54F,
 			);
 			isa = PBXFrameworksBuildPhase;
-			name = "Frameworks & Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 //290
 //291
@@ -424,7 +461,14 @@
 			);
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_CPU = G3;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				OPTIMIZATION_CFLAGS = "-O0";
+				ZERO_LINK = YES;
 			};
 			isa = PBXBuildStyle;
 			name = Development;
@@ -434,6 +478,10 @@
 			);
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_CPU = G3;
+				GCC_MODEL_TUNING = G5;
+				ZERO_LINK = NO;
 			};
 			isa = PBXBuildStyle;
 			name = Deployment;
@@ -449,10 +497,13 @@
 //F53
 //F54
 		F53A970B01A48B8B013B94F6 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = portdefs.h;
 			path = ../src/include/portdefs.h;
 			refType = 2;
+			sourceTree = SOURCE_ROOT;
 		};
 		F53A970C01A48B8B013B94F6 = {
 			fileRef = F53A970B01A48B8B013B94F6;
@@ -461,10 +512,13 @@
 			};
 		};
 		F5607D290144005201000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = picview.c;
 			path = ../src/core/picview.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5607D2A0144005201000001 = {
 			fileRef = F5607D290144005201000001;
@@ -473,10 +527,13 @@
 			};
 		};
 		F562A78701C54C0E010DC54F = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = sound_macos.c;
 			path = ../src/sound/macos/sound_macos.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F562A78801C54C0E010DC54F = {
 			fileRef = F562A78701C54C0E010DC54F;
@@ -485,10 +542,13 @@
 			};
 		};
 		F562A78901C54C78010DC54F = {
+			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = Carbon.framework;
 			path = /System/Library/Frameworks/Carbon.framework;
 			refType = 0;
+			sourceTree = "<absolute>";
 		};
 		F562A78A01C54C78010DC54F = {
 			fileRef = F562A78901C54C78010DC54F;
@@ -497,34 +557,52 @@
 			};
 		};
 		F5742F780140638F01000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SarienApplication.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5742F790140638F01000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = SarienApplication.m;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5742F7A0140638F01000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SarienWindow.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5742F7B0140638F01000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = SarienWindow.m;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5742F7C0140638F01000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.objc;
 			path = SarienView.m;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5742F7D0140638F01000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = SarienView.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5742F7E0140638F01000001 = {
 			fileRef = F5742F780140638F01000001;
@@ -573,27 +651,38 @@
 		};
 		F583AEFF014136CA01000001 = {
 			isa = PBXFileReference;
+			lastKnownFileType = wrapper.nib;
 			name = French;
 			path = French.lproj/MainMenu.nib;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F583AF00014136CA01000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = text.plist.strings;
 			name = French;
 			path = French.lproj/InfoPlist.strings;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E82D01403B8801000001 = {
+			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = ApplicationServices.framework;
 			path = /System/Library/Frameworks/ApplicationServices.framework;
 			refType = 0;
+			sourceTree = "<absolute>";
 		};
 		F5C2E82E01403B8801000001 = {
+			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = CoreAudio.framework;
 			path = /System/Library/Frameworks/CoreAudio.framework;
 			refType = 0;
+			sourceTree = "<absolute>";
 		};
 		F5C2E82F01403B8801000001 = {
 			fileRef = F5C2E82D01403B8801000001;
@@ -608,10 +697,13 @@
 			};
 		};
 		F5C2E83601403BDD01000001 = {
+			fallbackIsa = PBXFileReference;
 			isa = PBXFrameworkReference;
+			lastKnownFileType = wrapper.framework;
 			name = CoreGraphics.framework;
 			path = /System/Library/Frameworks/ApplicationServices.framework/Versions/A/Frameworks/CoreGraphics.framework;
 			refType = 0;
+			sourceTree = "<absolute>";
 		};
 		F5C2E83701403C4A01000001 = {
 			children = (
@@ -658,216 +750,322 @@
 			isa = PBXGroup;
 			name = "Sarien Sources";
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E83801403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = agi_v2.c;
 			path = ../src/core/agi_v2.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E83901403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = agi_v3.c;
 			path = ../src/core/agi_v3.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E83A01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = agi_v4.c;
 			path = ../src/core/agi_v4.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E83B01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = agi.c;
 			path = ../src/core/agi.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E83C01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = checks.c;
 			path = ../src/core/checks.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E83D01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = cli.c;
 			path = ../src/core/cli.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E83E01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = console.c;
 			path = ../src/core/console.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E83F01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = cycle.c;
 			path = ../src/core/cycle.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E84001403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = font.c;
 			path = ../src/core/font.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E84101403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = getopt.c;
 			path = ../src/core/getopt.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E84201403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = getopt1.c;
 			path = ../src/core/getopt1.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E84301403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = global.c;
 			path = ../src/core/global.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E84401403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = graphics.c;
 			path = ../src/core/graphics.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E84501403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = id.c;
 			path = ../src/core/id.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E84701403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = inv.c;
 			path = ../src/core/inv.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E84801403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = keyboard.c;
 			path = ../src/core/keyboard.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E84901403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = logic.c;
 			path = ../src/core/logic.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E84A01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = lzw.c;
 			path = ../src/core/lzw.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E84B01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = main.c;
 			path = ../src/core/main.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E84C01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = menu.c;
 			path = ../src/core/menu.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E84D01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = motion.c;
 			path = ../src/core/motion.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E84E01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = objects.c;
 			path = ../src/core/objects.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E84F01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = op_cmd.c;
 			path = ../src/core/op_cmd.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E85001403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = op_dbg.c;
 			path = ../src/core/op_dbg.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E85101403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = op_test.c;
 			path = ../src/core/op_test.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E85201403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = patches.c;
 			path = ../src/core/patches.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E85301403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = picture.c;
 			path = ../src/core/picture.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E85401403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = rand.c;
 			path = ../src/core/rand.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E85501403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = savegame.c;
 			path = ../src/core/savegame.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E85601403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = silent.c;
 			path = ../src/core/silent.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E85701403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = sound.c;
 			path = ../src/core/sound.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E85801403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = sprite.c;
 			path = ../src/core/sprite.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E85901403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = text.c;
 			path = ../src/core/text.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E85A01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = view.c;
 			path = ../src/core/view.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E85B01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = words.c;
 			path = ../src/core/words.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E85C01403CD401000001 = {
 			children = (
@@ -894,114 +1092,169 @@
 			isa = PBXGroup;
 			name = "Sarien Headers";
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E85D01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = agi.h;
 			path = ../src/include/agi.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E85E01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = console.h;
 			path = ../src/include/console.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E85F01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = getopt.h;
 			path = ../src/include/getopt.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E86001403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = graphics.h;
 			path = ../src/include/graphics.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E86201403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = keyboard.h;
 			path = ../src/include/keyboard.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E86301403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = list.h;
 			path = ../src/include/list.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E86401403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = logic.h;
 			path = ../src/include/logic.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E86501403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = lzw.h;
 			path = ../src/include/lzw.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E86601403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = menu.h;
 			path = ../src/include/menu.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E86701403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = opcodes.h;
 			path = ../src/include/opcodes.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E86801403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = picture.h;
 			path = ../src/include/picture.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E86901403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = rand.h;
 			path = ../src/include/rand.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E86A01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = sarien.h;
 			path = ../src/include/sarien.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E86B01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = savegame.h;
 			path = ../src/include/savegame.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E86C01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = sound.h;
 			path = ../src/include/sound.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E86D01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = sprite.h;
 			path = ../src/include/sprite.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E86E01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = text.h;
 			path = ../src/include/text.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E86F01403CD401000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			name = view.h;
 			path = ../src/include/view.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E88301403CD401000001 = {
 			fileRef = F5C2E83801403CD401000001;
@@ -1214,10 +1467,13 @@
 			};
 		};
 		F5C2E8A701403D1801000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.c;
 			name = fileglob.c;
 			path = ../src/filesys/unix/fileglob.c;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5C2E8A801403D1801000001 = {
 			fileRef = F5C2E8A701403D1801000001;
@@ -1226,9 +1482,12 @@
 			};
 		};
 		F5F6248A0141197101000001 = {
+			fileEncoding = 5;
 			isa = PBXFileReference;
+			lastKnownFileType = sourcecode.c.h;
 			path = main.h;
 			refType = 4;
+			sourceTree = "<group>";
 		};
 		F5F6248B0141197101000001 = {
 			fileRef = F5F6248A0141197101000001;
