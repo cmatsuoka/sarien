@@ -28,6 +28,7 @@
 
 extern struct gfx_driver *gfx;
 extern struct sarien_options opt;
+extern UINT8 ega_palette[], new_palette[];
 
 
 static int	macos_init_vidmode	(void);
@@ -59,6 +60,8 @@ static UINT8 *screen_buffer;
 static int depth = 16;
 static int scale = 1;
 static int fixratio = 1;
+static int egapal = 0;
+
 static int bpl;
 
 #define KEY_QUEUE_SIZE 16
@@ -238,6 +241,16 @@ static void adjust_menu ()
 	
 	menu = GetMenuHandle (mView);
 	
+	if (egapal)
+		SetMenuItemText (menu, iPal, "\nSarien colors");
+	else
+		SetMenuItemText (menu, iPal, "\nPC EGA colors");
+	
+	if (opt.hires)
+		SetMenuItemText (menu, iHires, "\nLo-res mode");
+	else
+		SetMenuItemText (menu, iHires, "\nHi-res mode");
+		
 	if (scale == 1)
 		SetMenuItemText (menu, iSize, "\pDouble size");
 	else
@@ -281,6 +294,25 @@ static void process_menu (int mc)
 		break;
 	case mView:
 		switch (item) {
+		case iPal:
+			if (egapal) {
+				init_palette (new_palette);
+				egapal = 0;
+			} else {
+				init_palette (ega_palette);
+				egapal = 1;
+			}
+			set_palette (palette, 0, 32);
+			flush_screen ();
+			adjust_menu ();
+			break;
+		case iHires:
+			opt.hires = !opt.hires;
+			erase_both ();
+			show_pic ();
+			blit_both ();
+			adjust_menu ();
+			break;
 		case iSize:
 			if (scale == 1)
 				scale = 2;

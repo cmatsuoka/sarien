@@ -61,7 +61,7 @@ UINT8 ega_palette [16 * 3]= {
 /**
  * 16 color amiga-ish palette.
  */
-UINT8 palette[32 * 3]= {
+UINT8 new_palette[16 * 3]= {
 	0x00, 0x00, 0x00,
 	0x00, 0x00, 0x3f,
 	0x00, 0x2A, 0x00,
@@ -79,6 +79,8 @@ UINT8 palette[32 * 3]= {
 	0x3b, 0x3b, 0x00,
 	0x3F, 0x3F, 0x3F
 };
+
+UINT8 palette[32 * 3];
 
 
 struct update_block {
@@ -141,10 +143,6 @@ static void put_pixels (const int x, const int y, const int w, UINT8 *p)
 static void init_console ()
 {
 	int i;
-
-	/* "Transparent" colors */
-	for (i = 0; i < 48; i++)
-		palette[i + 48] = (palette[i] + 0x30) >> 2;
 
 	/* Console */
 	console.line[0] = calloc (CONSOLE_LINES_BUFFER, CONSOLE_LINE_SIZE + 1);
@@ -439,6 +437,16 @@ int keypress ()
  * Public functions
  */
 
+void init_palette (UINT8 *p)
+{
+	int i;
+
+	for (i = 0; i < 48; i++) {
+		palette[i] = p[i];
+		palette[i + 48] = (p[i] + 0x30) >> 2;
+	}
+}
+
 /**
  * Initialize graphics device.
  *
@@ -453,11 +461,10 @@ int init_video ()
 		GFX_WIDTH, GFX_HEIGHT, opt.scale);
 #endif
 
-	if (opt.egapal) {
-		int i;
-		for (i = 0; i < 48; i++)
-			palette[i] = ega_palette[i];
-	}
+	if (opt.egapal)
+		init_palette (ega_palette);
+	else
+		init_palette (new_palette);
 
 	init_console ();
 #endif
