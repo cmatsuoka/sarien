@@ -37,77 +37,77 @@
 <title/OPTIONS/
 
 <variablelist>
-  <listentry>
+  <varlistentry>
     <term/<parameter/-A, --amiga//
     <listitem><para>
       Tell the interpreter to read Amiga word-aligned resource files.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-a, --agds//
     <listitem><para>
       Tell the interpreter to read AGDS games.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-C, --crc//
     <listitem><para>
       Compute the CRC of the game resources and exit.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-c, --cga-palette//
     <listitem><para>
       Emulate the PC CGA color palette. Appropriate for use with the PC
       speaker sound emulation (see option <parameter/-E/).
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-d, --list-dictionary//
     <listitem><para>
       List dictionary words and exit.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-E, --emulate-sound/ <replaceable/type//
     <listitem><para>
       Set the sound generator to emulate the output of Sierra's AGI in
       different platforms. The available types are: <parameter/pc/,
       <parameter/mac/ and <parameter/amiga/.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-e, --ega-palette//
     <listitem><para>
       Emulate the PC EGA color palette.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-F, --full-screen//
     <listitem><para>
       Run the interpreter in full-screen mode, if supported by the
       graphics driver. This mode is currently supported only by the SDL
       driver.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-g, --no-gfx-optimizations//
     <listitem><para>
       Disable any graphics driver optimizations in use by the graphics
       driver. This option should be used with the X11 driver if the
       display is being exported to a server with different endianness.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-H, --hires/ <property/0|1//
     <listitem><para>
       Enable or disable double horizontal resolution for picture
@@ -115,93 +115,93 @@
       may appear. Hi-res mode can be also enabled or disabled from the
       interpreter console at runtime.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-h, --help//
     <listitem><para>
       Display a summary of available command-line parameters.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-L, --list-games//
     <listitem><para>
       List recognized games and versions.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-m, --agimouse//
     <listitem><para>
       Enable AGI Mouse 1.0 protocol emulation. Use this option only with
       AGI Mouse games, since it interferes with normal AGI commands and
       regular mouse operation.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-n, --no-sound//
     <listitem><para>
       Disable sound output.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-p, --picture-viewer//
     <listitem><para>
       Run the interpreter in picture viewer mode. See the PICTURE
       VIEWER section below for further information on this mode.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-o, --list-objects//
     <listitem><para>
       List game objects and exit.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-S, --scale/ <replaceable/num//
     <listitem><para>
       Set window scaling to <replaceable/num/. This option is available
       in windowed graphics environments only. (Default scale is 2.)
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-r, --aspect-ratio/ <property/0|1//
     <listitem><para>
       Enable or disable aspect ratio correction for square-pixel graphics
       modes to match the PC EGA 320x200 display. Aspect ratio correction
       is enabled by default in the drivers that support this feature.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-v, --emulate-version/ <replaceable/version//
     <listitem><para>
       Emulate the specified AGI version, overriding any autodetected
       defaults. Valid version numbers are: 2.089, 2.272, 2.440, 2.917,
       2.936, 3.002.086, 3.002.149.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-V, --version//
     <listitem><para>
       Show version number and exit.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/-x, --no-x-shm//
     <listitem><para>
       Disable X11 shared memory extension. This option should be used
       if you're exporting the display to a remote X server.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 </variablelist>
 
 </refsect1>
@@ -219,7 +219,7 @@
 </para>
 
 <variablelist>
-  <listentry>
+  <varlistentry>
     <term/<parameter/Arrow keys, numeric keypad//
     <listitem><para>
       Control direction of ego walk. The destination point can be also
@@ -227,30 +227,30 @@
       direction twice or pressing <keycap/5/ on the numeric keypad causes
       ego to stop.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/<keycap/`///
     <listitem><para>
       Switch the interpter console on and off.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/<keycap/F11///
     <listitem><para>
       Toggle debug information on the status line. If enabled, the current
       room number, previous room number, current ego coordinates and last
       clicked coordinates are shown on the status line.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<parameter/<keycap/F12///
     <listitem><para>
       Show or hide the priority screen. 
     </para></listitem>
-  </listentry>
+  </varlistentry>
 </variablelist>
 
 <para>
@@ -271,68 +271,68 @@
 </para>
 
 <variablelist>
-  <listentry>
+  <varlistentry>
     <term/<command/agiver//
     <listitem><para>
       Show the AGI version we're emulating. AGI versions are listed in
       <filename>/etc/sarien.conf</filename> or set using the <parameter/-v/
       command line argument
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<command/cont//
     <listitem><para>
       Resume interpreter execution after a debugging session.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<command/crc//
     <listitem><para>
       Show the CRC of the currently loaded AGI game. CRCs are used in
       <filename>/etc/sarien.conf</filename> to identify games and set the
       correct AGI version.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<command/debug//
     <listitem><para>
       Enter debug mode. AGI script execution will stop, and scripts
       can be single-stepped using the <command/step/ command.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<command/flags//
     <listitem><para>
       Show the value of all AGI flags.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<command/f<replaceable/n///
     <listitem><para>
       Show the value of the AGI flag <replaceable/n/.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<command/f<replaceable/n/ = 0|1//
     <listitem><para>
       Set or reset the AGI flag <replaceable/n/.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<command/help//
     <listitem><para>
       Show a summary of the available console commands.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<command/hires on|off//
     <listitem><para>
       Switch hi-res mode on/off. Pictures usually look better in hi-res
@@ -341,71 +341,71 @@
       you want traditional Sierra AGI resolution. Hi-res mode affects
       picture resources only.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<command/logic0 on|off//
     <listitem><para>
       In debug mode, enable or disable single stepping on logic script 0.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
-    <term/<command/load/ <replaceable/gamedir/
+  <varlistentry>
+    <term/<command/load/ <replaceable/gamedir//
     <listitem><para>
       Load and execute the AGI game specified by <replaceable/gamedir/.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<command/objs//
     <listitem><para>
       List all available objects and their locations.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<command/opcode on|off//
     <listitem><para>
       In debug mode, show or hide opcodes of the piece of code being
       executed.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<command/step/ <replaceable/n//
     <listitem><para>
       In debug mode, single-step through <replaceable/n/ AGI instructions.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<command/vars//
     <listitem><para>
       List all AGI variables and their values.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<command/v<replaceable/n///
     <listitem><para>
       Show the value of the AGI variable <replaceable/n/.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<command/v<replaceable/n/ = <replaceable/m///
     <listitem><para>
       Set the value of the AGI flag <replaceable/n/ to <replaceable/m/.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 
-  <listentry>
+  <varlistentry>
     <term/<command/ver//
     <listitem><para>
       Show the Sarien interpreter version.
     </para></listitem>
-  </listentry>
+  </varlistentry>
 </variablelist>
 
 </refsect1>
@@ -437,7 +437,9 @@
 <refsect1>
 <title/AUTHORS/
 <para>
-
+  Stuart George, Lance Ewing, Claudio Matsuoka, Felipe Rosinha,
+  Igor Nesterov, Vasyl Tsvirkunov, Thomas Akesson and others, See
+  the AUTHORS file in the distribution package for a complete list.
 </para>
 </refsect1>
 
