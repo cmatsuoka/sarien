@@ -21,6 +21,7 @@
 #include <Processes.h>
 #include <Timer.h>
 #include "sarien.h"
+#include "agi.h"
 #include "graphics.h"
 #include "keyboard.h"
 #include "resource.h"
@@ -182,6 +183,21 @@ _putpixels_fixratio_scale2 (16);
 _putpixels_fixratio_scale2 (32);
 
 /* ===================================================================== */
+
+/*
+ * Dialogs
+ */
+ 
+void about_sarien (void)
+{
+	DialogPtr dialog;
+	short item;
+
+	dialog = GetNewDialog (rAbout, NULL, (WindowPtr)-1);
+	ModalDialog (nil, &item);
+	DisposeDialog (dialog);
+}
+
 
 /*
  * AppleEvents
@@ -348,6 +364,7 @@ static void process_menu (int mc)
 	case mApple:
 		switch (item) {
 		case iAbout:
+			about_sarien ();
 			break;
 		default:
 			menu = GetMenuHandle (mApple);
