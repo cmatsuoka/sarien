@@ -209,6 +209,16 @@ int main_cycle ()
 	poll_timer ();		/* msdos driver -> does nothing */
 	update_timer ();
 
+	if (game.ver == 0) {
+		message_box ("Warning: this game has not been correctly "
+			"detected by the interpreter and may be incorrectly "
+			"executed. Please check if the configuration file "
+			"is correctly installed. If this game is not listed "
+			"in the configuration file please contact the "
+			"authors.");
+		game.ver = -1;
+	}
+
 	key = do_poll_keyboard ();
 
 #ifdef USE_MOUSE

@@ -15,7 +15,7 @@
 #include "sarien.h"
 #include "graphics.h"
 
-UINT8			*exec_name;
+UINT8		*exec_name;
 static BITMAP	*screen_buffer;
 
 static int	init_vidmode	(void);

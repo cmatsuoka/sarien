@@ -131,6 +131,7 @@ struct agi_game {
 	char id[8];		/**< game id */	
 	char dir[MAX_PATH];	/**< game dir */
 	UINT32 crc;		/**< game CRC */
+	UINT32 ver;		/**< detected game version */
 
 	/* game flags and variables */
 	UINT8 flags[MAX_FLAGS];	/**< 256 1-bit flags */

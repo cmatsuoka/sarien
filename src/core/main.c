@@ -21,9 +21,6 @@
 #include "graphics.h"
 
 
-/* For the interactive picture viewer */
-UINT8	show_screen_mode = 'x';
-
 volatile UINT32 clock_ticks;
 volatile UINT32 clock_count;
 
@@ -48,7 +45,7 @@ int main (int argc, char *argv[])
 	/* we must do this before _ANYTHING_ else if using allegro!! */
 #ifdef HAVE_ALLEGRO
 	allegro_init ();
-	install_keyboard();
+	install_keyboard ();
 #endif
 
 #ifdef __MSDOS__
