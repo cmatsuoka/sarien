@@ -19,7 +19,6 @@
 #include "gfx_agi.h"
 #include "keyboard.h"
 #include "rand.h"
-#include "objects.h"
 #include "picture.h"
 #include "view.h"
 #include "logic.h"
@@ -40,7 +39,6 @@ extern struct sarien_options opt;
 extern struct agi_picture pictures[];
 extern struct agi_logic logics[];
 extern struct agi_view views[];
-extern struct agi_object *objects;
 extern UINT8 *font, font_english[], font_russian[];
 
 

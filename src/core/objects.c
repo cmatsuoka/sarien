@@ -15,12 +15,16 @@
 
 #include "sarien.h"
 #include "agi.h"
-#include "objects.h"
 #include "console.h"
 
 extern struct agi_game game;
 
-struct agi_object *objects;		/* objects in the game */
+struct agi_object {
+        int location;
+        char *name;
+};
+
+static struct agi_object *objects;		/* objects in the game */
 
 
 int load_objects (char *fname)
@@ -133,3 +137,20 @@ int show_objects ()
 	return err_OK;
 }
 
+
+void object_set_location (int n, int i)
+{
+	objects[n].location = i;
+}
+
+
+int object_get_location (int n)
+{
+	return objects[n].location;
+}
+
+
+char *object_name (int n)
+{
+	return objects[n].name;
+}

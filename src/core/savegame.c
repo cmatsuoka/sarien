@@ -15,7 +15,6 @@
 #include "agi.h"
 #include "keyboard.h"
 #include "view.h"
-#include "objects.h"
 #include "opcodes.h"
 #include "savegame.h"
 #include "iff.h"
@@ -23,7 +22,6 @@
 static int loading_ok;
 
 extern struct agi_view_table view_table[];
-extern struct agi_object *objects;
 
 
 /* Words are big-endian */
@@ -162,7 +160,7 @@ int save_game (char *s, char *d)
 
 	write32 (game.num_objects, f);
 	for (i = 0; i < game.num_objects; i++) {
-		write8 (objects[i].location, f);
+		write8 (object_get_location (i), f);
 	}
 
 	for (i = 0; i < MAX_VIEWTABLE; i++) {
@@ -292,7 +290,7 @@ static void get_objs (int size, UINT8 *buffer)
 	buffer += 4;
 
 	for (i = 0; i < n; i++) {
-		objects[i].location = hilo_getbyte (buffer++);
+		object_set_location (i, hilo_getbyte (buffer++));
 	}
 }
 

@@ -28,7 +28,6 @@
 #include "gfx_base.h"
 #include "text.h"
 #include "keyboard.h"
-#include "objects.h"
 #include "opcodes.h"
 #include "console.h"
 
@@ -41,8 +40,6 @@ struct console_command {
 
 struct sarien_console console;
 struct sarien_debug debug;
-
-extern struct agi_object *objects;
 
 static struct console_command *ccmd_head = NULL;
 static UINT8 has_console;
@@ -244,8 +241,8 @@ static void ccmd_inv ()
 	int i, j;
 
 	for (j = i = 0; i < game.num_objects; i++) {
-		if (objects[i].location == EGO_OWNED) {
-			report ("%3d]%-16.16s", i, objects[i].name);
+		if (object_get_location (i) == EGO_OWNED) {
+			report ("%3d]%-16.16s", i, object_name (i));
 			if (j % 2)
 				report ("\n");
 			j++;
@@ -265,8 +262,8 @@ static void ccmd_objs ()
 	int i;
 
 	for (i = 0; i < game.num_objects; i++) {
-		report ("%3d]%-24s(%3d)\n", i, objects[i].name,
-			objects[i].location);
+		report ("%3d]%-24s(%3d)\n", i, object_name (i),
+			object_get_location (i));
 	}
 }
 

@@ -17,14 +17,13 @@
 #include "sarien.h"
 #include "agi.h"
 #include "logic.h"
-#include "objects.h"
+#include "gfx_agi.h"
 #include "gfx_base.h"
 #include "text.h"
 
 extern struct gfx_driver *gfx;
-extern struct agi_object *objects;
 extern struct agi_logic logics[];
-/* FIXME: remove */
+
 
 static void print_text2 (int l, char *msg, int foff, int xoff, int yoff,
 	int len, int fg, int bg)
@@ -276,7 +275,7 @@ char *agi_printf (char *msg, int lognum)
 				strcat(p, z + xx);
 				break;
 			case '0':
-				strcat(p, objects[atol(msg)-1].name);
+				strcat(p, object_name (atol(msg)-1));
 				break;
 			case 'g':
 				strcat(p, logics[0].texts[atol(msg)-1]);

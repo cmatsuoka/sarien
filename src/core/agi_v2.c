@@ -13,7 +13,6 @@
 #include <string.h>
 #include "sarien.h"
 #include "agi.h"
-#include "objects.h"
 #include "picture.h"
 #include "view.h"
 #include "logic.h"

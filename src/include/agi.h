@@ -27,13 +27,6 @@ struct agi_word {
 	char *word;
 };
 
-int	show_words	(void);
-int	load_words	(char *);
-void	unload_words	(void);
-int	find_word	(char *);
-void	dictionary_words(char *);
-
-
 struct agi_dir {
 	UINT8  volume;
 	UINT32 offset;
@@ -130,6 +123,20 @@ int	agi_detect_game		(char *);
 int	agi_load_resource	(int, int);
 int	agi_unload_resource	(int, int);
 
+/* words */
+int	show_words	(void);
+int	load_words	(char *);
+void	unload_words	(void);
+int	find_word	(char *);
+void	dictionary_words(char *);
+
+/* objects */
+int	show_objects	(void);
+int	load_objects	(char *fname);
+void	unload_objects	(void);
+char*	object_name	(int);
+int	object_get_location (int);
+void	object_set_location (int, int);
 
 
 #ifdef __cplusplus

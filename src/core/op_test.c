@@ -18,7 +18,6 @@
 #include "agi.h"
 #include "keyboard.h"
 #include "opcodes.h"
-#include "objects.h"
 #include "view.h"
 #include "logic.h"
 
@@ -27,7 +26,6 @@ extern struct agi_game game;
 extern struct agi_logic logics[];
 extern struct agi_view views[];
 extern struct agi_view_table view_table[];
-extern struct agi_object *objects;
 
 //UINT16	test_if_code	(UINT16);
 static UINT8	test_obj_right	(UINT8, UINT8, UINT8, UINT8, UINT8);
@@ -45,8 +43,8 @@ static UINT8	test_keypressed	(void);
 #define test_less(v1,v2)	(getvar(v1) < (v2))
 #define test_greater(v1,v2)	(getvar(v1) > (v2))
 #define test_isset(flag)	(getflag (flag))
-#define test_has(obj)		(objects[obj].location == EGO_OWNED)
-#define test_obj_in_room(obj,v)	(objects[obj].location == getvar (v))
+#define test_has(obj)		(object_get_location (obj) == EGO_OWNED)
+#define test_obj_in_room(obj,v)	(object_get_location (obj) == getvar (v))
 #define test_compare_strings(s1,s2) (!strcmp(game.strings[s1], game.strings[s2]))
 
 

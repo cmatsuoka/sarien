@@ -14,7 +14,6 @@
 #include "sarien.h"
 #include "agi.h"
 #include "lzw.h"
-#include "objects.h"
 #include "picture.h"
 #include "view.h"
 #include "logic.h"

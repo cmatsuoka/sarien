@@ -16,7 +16,6 @@
 #include "sarien.h"
 #include "agi.h"
 #include "gfx_base.h"
-#include "objects.h"
 #include "picture.h"
 #include "sound.h"
 #include "console.h"

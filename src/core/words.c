@@ -17,7 +17,7 @@
 #include "agi.h"
 #include "console.h"
 
-struct agi_word *words;			/* words in the game */
+static struct agi_word *words;			/* words in the game */
 
 static int num_words, num_syns;
 

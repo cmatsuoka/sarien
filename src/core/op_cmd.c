@@ -54,7 +54,6 @@
 #include "gfx_base.h"		/* FIXME: hmm.. */
 #include "keyboard.h"
 #include "opcodes.h"
-#include "objects.h"
 #include "picture.h"
 #include "view.h"
 #include "logic.h"
@@ -75,7 +74,6 @@
 int open_dialogue = 0;		/* fix this properly too */
 static int window_nonblocking = 0;	/* Yuck! Remove it later! */
 
-extern struct agi_object *objects;
 extern struct agi_logic logics[];
 extern struct agi_view views[];
 extern struct agi_view_table view_table[];
@@ -644,25 +642,25 @@ void cmd_move_obj (UINT8 entry, UINT8 p1, UINT8 p2, UINT8 sv, UINT8 p4)
 
 void cmd_get_roomv (UINT8 o, UINT8 v)
 {
-	setvar (v, objects[o].location);
+	setvar (v, object_get_location (o));
 }
 
 
 void cmd_put (UINT8 o, UINT8 v)
 {
-	objects[o].location = v;
+	object_set_location (o, v);
 }
 
 
 void cmd_drop (UINT8 o)
 {
-	objects[o].location = 0;
+	object_set_location (o, 0);
 }
 
 
 void cmd_get (UINT8 o)
 {
-	objects[o].location = EGO_OWNED;
+	object_set_location (o, EGO_OWNED);
 }
 
 

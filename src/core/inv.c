@@ -14,8 +14,8 @@
 
 #include "sarien.h"
 #include "agi.h"
+#include "gfx_agi.h"
 #include "gfx_base.h"
-#include "objects.h"
 #include "keyboard.h"
 #include "text.h"
 #include "keyboard.h"
@@ -36,7 +36,6 @@
 #define SELECT_Y	(24<<3)
 #define SELECT_MSG	"Press ENTER to select, ESC to cancel."
 
-extern struct agi_object *objects;
 
 extern struct gfx_driver *gfx;
 
@@ -63,12 +62,12 @@ void inventory ()
 	intobj = malloc (4 + game.num_objects);
 
 	for (x = y = cx = 0, cy = 2, objcount = 0; x < game.num_objects; x++) {
-		if ((objects + x)->location == EGO_OWNED) {
+		if (object_get_location (x) == EGO_OWNED) {
 			/* add object to our list! */
 			intobj[objcount++] = x;
 
-			print_text ((objects + x)->name, 0,
-				(cy % 2 ? 40 - strlen ((objects + x)->name) :
+			print_text (object_name (x), 0,
+				(cy % 2 ? 40 - strlen (object_name (x)) :
 				0) << 3, ((cy / 2) + 1) << 3, 40,
 				STATUS_FG, STATUS_BG);
 
@@ -121,16 +120,14 @@ void inventory ()
 					NOTHING_Y+8);
 				} else {
 					if (ls) {
-						print_text ((objects +
-						intobj[ls-1])->name,
+						print_text (object_name (intobj[ls-1]),
 						0, lx1, (((ly1/2)+1)<<3),
 						40, STATUS_FG, STATUS_BG);
 						gfx->put_block(lx1, ly1,
 						lx2, cy+8);
 					}
 
-					jlen = strlen ((objects +
-						intobj[fsel])->name);
+					jlen = strlen (object_name(intobj[fsel]));
 					joffs = (cy % 2 == 0 ? 0 : 40-jlen)<<3;
 
 					lx1 = joffs;
@@ -138,8 +135,7 @@ void inventory ()
 					lx2 = joffs+(jlen*8);
 					ls = fsel+1;		// ls ALWAYS >0
 
-					print_text ((objects +
-						intobj[fsel])->name,
+					print_text (object_name (intobj[fsel]),
 						0, lx1, (((cy/2)+1)<<3), 40,
 						STATUS_BG, STATUS_FG);
 					gfx->put_block (lx1, ly1, lx2, cy+8);
