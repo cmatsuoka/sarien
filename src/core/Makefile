@@ -20,7 +20,7 @@ XLIBS	= -L../../lib -lagi -lsarien
 LIB	= ../../lib/libagi.a
 LIB2	= ../../lib/libsarien.a
 
-all: fixcr $(LIB) $(LIB2) archfiles ../../bin/sarien
+all: fixcr $(LIB) $(LIB2) archfiles exefile
 
 arch:
 	(cd $(CORE_ARCH); $(MAKE) all)
@@ -32,7 +32,9 @@ include ../../Rules
 
 archfiles: $(ARCH_SUBDIR)
 
-../../bin/sarien: $(MAIN_FILE).o ../../lib/libagi.a ../../lib/libsarien.a
+exefile: ../../bin/sarien$(EXE_SUFFIX)
+
+../../bin/sarien$(EXE_SUFFIX): $(MAIN_FILE).o $(LIB) $(LIB2)
 	$(LD) $(LDFLAGS) $(XLDFLAGS) $(MAIN_FILE).o id.o $(XLIBS) $(X11LIBS) $(LIBS)
 
 graph: callgraph.ps
