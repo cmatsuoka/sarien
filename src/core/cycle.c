@@ -175,6 +175,7 @@ int main_cycle ()
 
 	key = poll_keyboard ();
 
+#ifdef USE_CONSOLE
 	if (key == KEY_PRIORITY) {
 		erase_both ();
 		debug.priority = !debug.priority;
@@ -182,6 +183,7 @@ int main_cycle ()
 		blit_both ();
 		key = 0;
 	}
+#endif
 
 	kascii = KEY_ASCII (key);
 

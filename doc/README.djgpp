@@ -1,0 +1,5 @@
+$Id$
+
+To build sarien using DJGPP, run make -f Makefile.dj from the toplevel
+source directory.
+

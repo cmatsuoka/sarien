@@ -62,6 +62,7 @@ In development:
          Compiler  Driver    Driver   Graphics  Graphics    Sound
 ---------+-------+---------+---------+---------+---------+---------+
  MS-DOS  | DJGPP | allegro | allegro |    no   |   yes   |   yes   |
+ MS-DOS  |Turbo C|   Raw   |  dummy  |    no   |   yes   |    no   |
 ---------+-------+---------+---------+---------+---------+---------+
  Linux   |  gcc  |XF86 DGA |OSS,ALSA |    no   |   yes   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+

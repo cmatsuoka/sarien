@@ -1,6 +1,6 @@
 .AUTODEPEND
 
-.PATH.obj = D:\SARIEN\BIN
+.PATH.obj = D:\SARIEN\LIB
 
 #		*Translator Definitions*
 CC = tcc +SARIEN.CFG
@@ -15,98 +15,60 @@ INCLUDEPATH = D:\SARIEN\SRC\INCLUDE;D:\TC\INCLUDE
 .c.obj:
   $(CC) -c {$< }
 
-.cpp.obj:
-  $(CC) -c {$< }
-
 #		*List Macros*
 
-
-EXE_dependencies =  \
- agi.obj \
- agi_v2.obj \
- agi_v3.obj \
- checks.obj \
- cli.obj \
- cycle.obj \
- font.obj \
- getopt.obj \
- getopt1.obj \
- global.obj \
- id.obj \
- iff.obj \
- inv.obj \
- keyboard.obj \
- logic.obj \
- lzw.obj \
- main.obj \
- menu.obj \
- motion.obj \
- objects.obj \
- op_cmd.obj \
- op_dbg.obj \
- op_test.obj \
- patches.obj \
- picture.obj \
- rand.obj \
- savegame.obj \
- silent.obj \
- sound.obj \
- sprite.obj \
- text.obj \
- view.obj \
- words.obj \
- fileglob.obj \
- graphics.obj \
- console.obj \
- dummy.obj
+OBJS	= agi.obj agi_v2.obj agi_v3.obj checks.obj cli.obj console.obj \
+	  cycle.obj font.obj getopt.obj getopt1.obj global.obj graphics.obj \
+	  id.obj iff.obj inv.obj keyboard.obj logic.obj lzw.obj main.obj \
+	  menu.obj motion.obj objects.obj op_cmd.obj op_dbg.obj op_test.obj \
+	  patches.obj picture.obj rand.obj savegame.obj silent.obj sound.obj \
+	  sprite.obj text.obj view.obj words.obj fileglob.obj dummy.obj \
+	  ibm.obj
 
 #		*Explicit Rules*
-d:\sarien\bin\sarien.exe: sarien.cfg $(EXE_dependencies)
-  $(TLINK) /v/x/c/L$(LIBPATH) @&&|
-c0s.obj+
-d:\sarien\bin\agi.obj+
-d:\sarien\bin\agi_v2.obj+
-d:\sarien\bin\agi_v3.obj+
-d:\sarien\bin\checks.obj+
-d:\sarien\bin\cli.obj+
-d:\sarien\bin\console.obj+
-d:\sarien\bin\cycle.obj+
-d:\sarien\bin\font.obj+
-d:\sarien\bin\getopt.obj+
-d:\sarien\bin\getopt1.obj+
-d:\sarien\bin\global.obj+
-d:\sarien\bin\graphics.obj+
-d:\sarien\bin\id.obj+
-d:\sarien\bin\iff.obj+
-d:\sarien\bin\inv.obj+
-d:\sarien\bin\keyboard.obj+
-d:\sarien\bin\logic.obj+
-d:\sarien\bin\lzw.obj+
-d:\sarien\bin\main.obj+
-d:\sarien\bin\menu.obj+
-d:\sarien\bin\motion.obj+
-d:\sarien\bin\objects.obj+
-d:\sarien\bin\op_cmd.obj+
-d:\sarien\bin\op_dbg.obj+
-d:\sarien\bin\op_test.obj+
-d:\sarien\bin\patches.obj+
-d:\sarien\bin\picture.obj+
-d:\sarien\bin\rand.obj+
-d:\sarien\bin\savegame.obj+
-d:\sarien\bin\silent.obj+
-d:\sarien\bin\sound.obj+
-d:\sarien\bin\sprite.obj+
-d:\sarien\bin\text.obj+
-d:\sarien\bin\view.obj+
-d:\sarien\bin\words.obj+
-d:\sarien\bin\fileglob.obj+
-d:\sarien\bin\dummy.obj
-d:\sarien\bin\sarien
-		# no map file
-emu.lib+
-maths.lib+
-cs.lib
+sarien: sarien.cfg $(OBJS)
+   $(CC) -eagi @&&|
+lib\agi.obj
+lib\agi_v2.obj
+lib\agi_v3.obj
+lib\checks.obj
+lib\cli.obj
+lib\console.obj
+lib\cycle.obj
+lib\font.obj
+lib\getopt.obj
+lib\getopt1.obj
+lib\global.obj
+lib\graphics.obj
+lib\id.obj
+lib\iff.obj
+lib\inv.obj
+lib\keyboard.obj
+lib\logic.obj
+lib\lzw.obj
+lib\main.obj
+lib\menu.obj
+lib\motion.obj
+lib\objects.obj
+lib\op_cmd.obj
+lib\op_dbg.obj
+lib\op_test.obj
+lib\patches.obj
+lib\picture.obj
+lib\rand.obj
+lib\savegame.obj
+lib\silent.obj
+lib\sound.obj
+lib\sprite.obj
+lib\text.obj
+lib\view.obj
+lib\words.obj
+lib\fileglob.obj
+lib\dummy.obj
+lib\ibm.obj
 |
+   copy lib\agi.exe bin\sarien.exe
+
 
 
 #		*Individual File Dependencies*
@@ -191,6 +153,9 @@ patches.obj: sarien.cfg src\core\patches.c
 picture.obj: sarien.cfg src\core\picture.c 
 	$(CC) -c src\core\picture.c
 
+picview.obj: sarien.cfg src\core\picview.c 
+	$(CC) -c src\core\picview.c
+
 rand.obj: sarien.cfg src\core\rand.c 
 	$(CC) -c src\core\rand.c
 
@@ -224,12 +189,14 @@ fileglob.obj: sarien.cfg src\fileglob\msdos\fileglob.c
 dummy.obj: sarien.cfg src\sound\dummy\dummy.c 
 	$(CC) -c src\sound\dummy\dummy.c
 
+ibm.obj: sarien.cfg src\graphics\msdos\ibm.c 
+	$(CC) -c src\graphics\msdos\ibm.c
+
 #		*Compiler Configuration File*
 sarien.cfg: makefile.tc
   copy &&|
+-ml
 -a
--v
--y
 -O
 -Z
 -d
@@ -248,9 +215,12 @@ sarien.cfg: makefile.tc
 -w-ibc
 -w-pre
 -w-nst
--nD:\SARIEN\BIN
+-nD:\SARIEN\LIB
 -I$(INCLUDEPATH)
 -DVERSION="0.7.0"
+-D__interrupt=interrupt
+-D__far=far
 -L$(LIBPATH)
+-Ff
 | sarien.cfg
 

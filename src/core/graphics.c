@@ -28,10 +28,15 @@
 #endif
 
 
+#ifdef __TURBOC__
+#define GFX_AREA (64000)
+#else
+#define GFX_AREA (GFX_WIDTH * GFX_HEIGHT)
+#endif
 
-static UINT8 sarien_screen[GFX_WIDTH * GFX_HEIGHT];
+static UINT8 sarien_screen[GFX_AREA];
 #ifdef USE_CONSOLE
-static UINT8 console_screen[GFX_WIDTH * GFX_HEIGHT];
+static UINT8 console_screen[GFX_AREA];
 #endif
 
 
@@ -141,9 +146,10 @@ static void init_console ()
 /* Based on LAGII 0.1.5 by XoXus */
 void shake_screen (int n)
 {
+#ifndef __TURBOC__
 #define MAG 3
 	int i;
-	UINT8 b[GFX_WIDTH * GFX_HEIGHT], c[GFX_WIDTH * GFX_HEIGHT];
+	UINT8 b[GFX_AREA], c[GFX_AREA];
 	
 	memset (c, 0, GFX_WIDTH * GFX_HEIGHT);
 	memcpy (b, sarien_screen, GFX_WIDTH * GFX_HEIGHT);
@@ -160,6 +166,7 @@ void shake_screen (int n)
 		flush_block (0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
 	}
 #undef MAG
+#endif
 }
 
 
@@ -338,7 +345,9 @@ void put_pixels_a (int x, int y, int n, UINT8 *p)
 	y += 8;
 	for (x *= 2; n--; p++, x += 2) {
 		register UINT16 q = ((UINT16)*p << 8) | *p;
+#ifdef USE_CONSOLE
 		if (debug.priority) q >>= 4;
+#endif
 		*(UINT16 *)&sarien_screen[x + y * GFX_WIDTH] = q & 0x0f0f;
 	}
 }
@@ -451,6 +460,7 @@ void clear_screen (int c)
 	flush_screen ();
 }
 
+#ifdef USE_CONSOLE
 /**
  * Clear the console screen.
  * This function clears the top n lines of the console screen.
@@ -460,6 +470,7 @@ void clear_console_screen (int n)
 {
 	memset (console_screen + n * GFX_WIDTH, 0, (200 - n) * GFX_WIDTH);
 }
+#endif
 
 /**
  * Save a block of the Sarien screen

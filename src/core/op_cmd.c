@@ -239,6 +239,7 @@ cmd(overlay_pic) {
 }
 
 cmd(show_pri_screen) {
+#ifdef USE_CONSOLE
 	debug.priority = 1;
 	erase_both();
 	show_pic ();
@@ -248,6 +249,7 @@ cmd(show_pri_screen) {
 	erase_both();
 	show_pic ();
 	blit_both ();
+#endif
 }
 
 cmd(animate_obj) {

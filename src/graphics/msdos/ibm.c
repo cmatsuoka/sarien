@@ -12,8 +12,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dos.h>
-#include <conio.h>
+//#include <conio.h>
+
+#ifdef __WATCOMC__
 #include <i86.h>
+#endif
 
 #include "sarien.h"
 #include "graphics.h"
@@ -40,28 +43,28 @@ UINT8	*screen_buffer;
 
 void	(__interrupt __far *prev_08)	(void);
 void	__interrupt __far new_timer	(void);
-static int	IBM_init_vidmode	(void);
-static int	IBM_deinit_vidmode	(void);
-static void	IBM_blit_block		(int, int, int, int);
-static void	IBM_put_pixels		(int, int, int, UINT8 *);
-static void	IBM_dummy		(void);
-static int	IBM_get_key		(void);
-static int	IBM_keypress		(void);
+static int	pc_init_vidmode	(void);
+static int	pc_deinit_vidmode	(void);
+static void	pc_put_block		(int, int, int, int);
+static void	pc_put_pixels		(int, int, int, UINT8 *);
+static void	pc_dummy		(void);
+static int	pc_get_key		(void);
+static int	pc_keypress		(void);
 
 
 #define TICK_SECONDS 18
 
 static struct gfx_driver GFX_ibm = {
-	IBM_init_vidmode,
-	IBM_deinit_vidmode,
-	IBM_blit_block,
-	IBM_put_pixels,
-	IBM_dummy,
-	IBM_keypress,
-	IBM_get_key
+	pc_init_vidmode,
+	pc_deinit_vidmode,
+	pc_put_block,
+	pc_put_pixels,
+	pc_dummy,
+	pc_keypress,
+	pc_get_key
 };
 
-static void IBM_dummy ()
+static void pc_dummy ()
 {
 	/* dummy */
 	static UINT32 cticks = (SINT32)-1;
@@ -75,16 +78,14 @@ int init_machine (int argc, char **argv)
 {
 	gfx = &GFX_ibm;
 
-	exec_name=(UINT8*)strdup(argv[0]);
+	exec_name = (UINT8*)strdup(argv[0]);
 
-	screen_mode=GFX_MODE;
-	screen_buffer=(UINT8*)malloc(GFX_WIDTH*GFX_HEIGHT);
-	clear_buffer();
+	screen_buffer = (UINT8*)malloc (GFX_WIDTH*GFX_HEIGHT);
 
 	clock_count=0;
 	clock_ticks=0;
 
-	prev_08=_dos_getvect(0x08);
+	prev_08 = _dos_getvect(0x08);
 	_dos_setvect(0x08, new_timer);
 
 	return err_OK;
@@ -99,44 +100,58 @@ int deinit_machine ()
 	return err_OK;
 }
 
-static int IBM_init_vidmode ()
+static int pc_init_vidmode ()
 {
 	union REGS r;
 	int i;
 
 	memset (&r, 0x0, sizeof(union REGS));
+#ifdef __WATCOMC__
 	r.w.ax = 0x13;
 	int386 (0x10, &r, &r);
-
 	__outp(0x3C8, 0l);
-	for(i=0; i<16*3; i++)
-		__outp(0x3C9, palette[i]);
+	for (i = 0; i < 16 * 3; i++)
+		__outp (0x3c9, palette[i]);
+#endif
+	
+#ifdef __TURBOC__
+	r.x.ax = 0x13;
+	int86 (0x10, &r, &r);
+	outportb (0x3c8, 0);
+	for (i = 0; i < 16 * 3; i++)
+		outportb (0x3c9, palette[i]);
+#endif
 
-	screen_mode=GFX_MODE;
+
+
 
 	return err_OK;
 }
 
 
-static int IBM_deinit_vidmode ()
+static int pc_deinit_vidmode ()
 {
 	union REGS r;
 
 	memset (&r, 0x0, sizeof(union REGS));
+
+#ifdef __WATCOMC__
 	r.w.ax = 0x03;
 	int386 (0x10, &r, &r);
+#endif
 
-	screen_mode=TXT_MODE;
+#ifdef __TURBOC__
+	r.x.ax = 0x03;
+	int86 (0x10, &r, &r);
+#endif
 
 	return err_OK;
 }
 
 
 /* blit a block onto the screen */
-static void IBM_blit_block(UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
+static void pc_put_block (int x1, int y1, int x2, int y2)
 {
-//	for( ; y1<y2; y1++)
-//		move_memory(0xA0000, screen_buffer+(y1*GFX_WIDTH)+x1, x2-x1);
 	int i, h;
 
 	if (x1 >= GFX_WIDTH)
@@ -149,45 +164,52 @@ static void IBM_blit_block(UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
 		y2 = GFX_HEIGHT - 1;
 
 	h = y2 - y1 + 1;
-	for (i = 0; i < h; i++)
+	for (i = 0; i < h; i++) {
 		memcpy ((UINT8*)0xA0000 + 320 * (y1 + i) + x1,
 			screen_buffer + 320 * (y1 + i) + x1, x2 - x1 + 1);
+	}
 }
 
-static void IBM_put_pixels(int x, int y, int w, UINT8 *p)
+
+static void pc_put_pixels(int x, int y, int w, UINT8 *p)
 {
 	UINT8 *s = &screen_buffer[y * 320 + x];
 	while (w--) *s++ = *p++;
 }
 
 
-static int IBM_keypress ()
+static int pc_keypress ()
 {
 	return !!kbhit();
 }
 
 
-static int IBM_get_key ()
+static int pc_get_key ()
 {
 	union REGS r;
 	UINT16 key;
 
 	memset (&r, 0, sizeof(union REGS));
+#ifdef __WATCOMC__
 	int386 (0x16, &r, &r);
-
-	switch(r.w.ax)
+	switch (key = r.w.ax)
+#endif
+#ifdef __TURBOC__
+	int86 (0x16, &r, &r);
+	switch (key = r.x.ax)
+#endif
+	
 	{
 		case KEY_PGDN:
 		case KEY_PGUP:
 		case KEY_HOME:
 		case KEY_END:
-			key=r.w.ax;
 			break;
 		default:
-			if(r.h.al==0)
-				key=r.h.ah<<8;
+			if(r.h.al == 0)
+				key = r.h.ah << 8;
 			else
-				key=r.h.al;
+				key = r.h.al;
 			break;
 	}
 
