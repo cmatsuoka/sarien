@@ -51,6 +51,7 @@ int main (int argc, char **argv)
 
 	test_register_module (sarien, test_flag, "flag operations");
 	test_register_module (sarien, test_arith, "arithmetic operations");
+	test_register_module (sarien, test_random, "random numbers");
 	test_register_module (sarien, test_format, "string formatting");
 	test_register_module (sarien, test_picture, "picture drawing");
 

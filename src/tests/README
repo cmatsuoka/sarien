@@ -14,8 +14,10 @@ Creating a test suite
 ---------------------
 Before running your tests, a test suite must be created. This can be done
 using test_initialize(name), where "name" is a free-form string. It
-returns the suite handler used to register test modules.
+returns the suite handler used to register test modules. The suite handler
+is declared as TEST_SUITE(suite).
 
+	TEST_SUITE(suite);
 	suite = test_initialize ("Suite");
 
 
@@ -26,7 +28,8 @@ such as arithmetic commands, drawing or resource decoding. The module main
 function is declared as TEST_MODULE(module_name) and contains declarations
 in the form TEST(name, result). "name" is a free-form string and "result"
 is an enumeration test_result, which contains TEST_OK, TEST_FAIL and
-TEST_SKIP. 
+TEST_SKIP. A module handler "module" and suite handler "suite" are defined
+inside the module main function.
 
 A simple test module:
 
@@ -34,6 +37,7 @@ A simple test module:
 
 	TEST_MODULE(example)
 	{
+		test_report ("This is a test");
 		TEST("name", TEST_OK));
 	}
 
@@ -44,12 +48,60 @@ free-form description as arguments:
 	test_register_module (suite, example, "Example test");
 
 
+Skipping tests
+--------------
+Sometimes a test can't be executed because a prerequisite is missing,
+and that doesn't mean a failure. Skipped tests don't count as successful
+or failed tests. To skip tests in a module, use test_disable(module,reason)
+where "module" is the module handler and "reason" is a free-form string 
+that explains why the following tests hae been skipped. To re-enable
+tests, use test_enable(module).
+
+Example:
+
+	TEST_MODULE(example)
+	{
+		test_report ("Buffer test");
+		if (num_buf < 5)
+			test_disable(module, "Not enough buffers");
+		TEST("buffering", test_buffers(5));
+	}
+
+
 Executing tests
 ---------------
+Registered test modules are executed calling test_run_modules(suite)
+where "suite" is the suite handler. Each module of the suite is executed
+sequentially. The output looks like:
 
+	>>> Running module: Testsuite::arithmetic operations
+	+++ 015: [addition] 2 + 2 = 4 ... ok
+	+++ 016: [subtraction] 5 - 3 = 2 ... ok
+	xxx 017: [multiplication] 3 * 2 = 7 [Expected: 6] ... FAILED
+	--- 018: [division] [Don't know how to divide] ... SKIPPED
+	<<< Test results: 2 succeeded, 1 failed, 1 skipped
 
 
 Summarizing
 -----------
+After executing the tests, a summary of the results is obtained using
+test_summarize(suite). This function also closes the suite handler,
+unregisters modules and deallocates memory. The structure of the test
+program should always be:
+
+	#include "orat.h"
+
+	TEST_MODULE(example1);
+	TEST_MODULE(example2);
+
+	test() {
+		TEST_SUITE(mysuite);
+
+		mysuite = test_initialize ("Suite");
+		test_register_module (mysuite, example1, "Example");
+		test_register_module (mysuite, example2, "Another example");
+		test_run_modules (mysuite);
+		test_summarize (mysuite);
+	}
 
 

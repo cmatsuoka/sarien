@@ -156,7 +156,7 @@ void test_execute (struct test_suite *s, struct test_module *m, char *name, test
 		printf ("---");
 		s->skipped++;
 		m->skipped++;
-		test_report ("[%s]\t... SKIPPED\n", m->skip_reason);
+		test_report ("[%s] ... SKIPPED\n", m->skip_reason);
 		break;
 	default:
 		abort();

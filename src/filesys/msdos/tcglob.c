@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999,2002 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -21,7 +21,7 @@
 /*
  * We want a large stack for recursive flood fills and stuff
  */
-extern unsigned _stklen = 20000U;
+extern unsigned _stklen = 32000U;
 
 
 int file_isthere (char *fname)
@@ -83,4 +83,5 @@ char *fixpath (int flag, char *fname)
 	return path;
 }
 
+/* end: tcglob.c */
 

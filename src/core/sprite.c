@@ -43,8 +43,12 @@ struct sprite {
 #undef ALLOC_DEBUG
 
 #ifdef USE_HIRES
-#  define POOL_SIZE 68000	/* Gold Rush mine room needs > 50000 */
+#  ifndef __TURBOC__
+#    define POOL_SIZE 68000	/* Gold Rush mine room needs > 50000 */
 				/* Speeder bike challenge needs > 67000 */
+#  else
+#    define POOL_SIZE 32000	/* Can't afford that much in Turbo C! */
+#  endif
 #else
 #  define POOL_SIZE 25000
 #endif

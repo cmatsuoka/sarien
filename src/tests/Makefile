@@ -2,7 +2,7 @@
 
 XCFLAGS	= -I../include
 XLDFLAGS=
-OBJS	= format.o arith.o flag.o picture.o
+OBJS	= format.o arith.o flag.o picture.o random.o
 DFILES	= Makefile $(TESTS:.=.c) orat.c orat.h test.c test.h
 CFILES	=
 DDIRS	= data

@@ -23,7 +23,8 @@ INCLUDEPATH = ..\INCLUDE;\TC\INCLUDE
 
 #		*List Macros*
 
-OBJS	= test.obj orat.obj format.obj arith.obj flag.obj picture.obj
+OBJS	= test.obj orat.obj format.obj arith.obj flag.obj picture.obj \
+	  random.obj
 
 #		*Explicit Rules*
 test.exe: test.cfg $(OBJS)
@@ -34,6 +35,7 @@ format.obj
 arith.obj
 flag.obj
 picture.obj
+random.obj
 ..\..\lib\sarien.lib
 |
 
