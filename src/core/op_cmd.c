@@ -511,7 +511,7 @@ cmd(set_menu) {
 
 cmd(set_menu_item) {
 	_D ("text %02x of %02x", p0, cur_logic->num_texts);
-	if (cur_logic->texts != NULL && p0 < cur_logic->num_texts)
+	if (cur_logic->texts != NULL && p0 <= cur_logic->num_texts)
 		add_menu_item (cur_logic->texts[p0 - 1], p1);
 }
 

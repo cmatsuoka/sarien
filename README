@@ -28,7 +28,8 @@ The following compilers/environments can be used to build sarien:
 	Watcom C	MS-DOS
 	Turbo C++ 3.0	MS-DOS 16-bit
 	DICE C		AmigaOS
-	MPW		MacOS (in progress)
+	MPW		MacOS 8
+	ProjectBuilder	MacOS X
 
 
 To build in UNIX platforms, run './configure; make'. ./configure --help
