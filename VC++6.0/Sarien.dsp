@@ -111,10 +111,6 @@ SOURCE=..\src\core\checks.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\core\cli.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\src\core\console.c
 # End Source File
 # Begin Source File
@@ -124,14 +120,6 @@ SOURCE=..\src\core\cycle.c
 # Begin Source File
 
 SOURCE=..\src\core\font.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\src\core\getopt.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\src\core\getopt1.c
 # End Source File
 # Begin Source File
 

@@ -424,7 +424,7 @@ static void fill ()
 ** Draws pixels, circles, squares, or splatter brush patterns depending
 ** on the pattern code.
 **************************************************************************/
-void plotPattern(int x, int y)
+void plotPattern(unsigned int x, unsigned int y)
 {
 	static UINT8 circles[][15] = {		/* agi circle bitmaps */
 		{ 0x80 },

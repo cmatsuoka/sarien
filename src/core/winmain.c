@@ -20,16 +20,14 @@
 volatile UINT32 clock_ticks;
 volatile UINT32 clock_count;
 
-UINT8 *cur_font;
-UINT8 *font_english;
-
 struct sarien_options opt;
 struct game_id_list game_info;
 struct agi_game game;
 
-#ifndef _TRACE
-void _D (char *s, ...) { }
-#endif
+void _D (char *x, ...) 
+{ 
+//	OutputDebugString(x); 
+}
 
 
 BOOL CheckForGame(char *szDir)
@@ -67,7 +65,7 @@ BOOL CheckForGame(char *szDir)
 
 int CALLBACK BrowseCallbackProc(HWND hwnd,UINT uMsg,LPARAM lp, LPARAM pData)
 {
-	CHAR szDir[MAX_PATH]	= {0};
+	CHAR szDir[MAX_PATH + 1]= {0};
 	DWORD ret				= 0;
 	HKEY hKey				= NULL;
 	DWORD dwDisposition		= 0;
@@ -97,31 +95,33 @@ int CALLBACK BrowseCallbackProc(HWND hwnd,UINT uMsg,LPARAM lp, LPARAM pData)
 
 			SendMessage(hwnd,BFFM_SETSELECTION,TRUE,(LPARAM)szDir);
 
-		if (ERROR_SUCCESS != RegCloseKey(hKey))
-		{
-			OutputDebugString("winmain.c: open_file(): RegCloseKey != ERROR_SUCESS");
-		}
-
-
+			if (ERROR_SUCCESS != RegCloseKey(hKey))
+			{
+				OutputDebugString("winmain.c: open_file(): RegCloseKey != ERROR_SUCESS");
+			}
 			break;
 
 		}
-		case BFFM_SELCHANGED: 
-		if (SHGetPathFromIDList((LPITEMIDLIST) lp ,szDir)) 
 
-		{
-			if(CheckForGame(szDir))
+		case BFFM_SELCHANGED: 
+			if (SHGetPathFromIDList((LPITEMIDLIST) lp ,szDir)) 
 			{
-				SendMessage(hwnd, BFFM_ENABLEOK, 0, TRUE);
-				SendMessage(hwnd,BFFM_SETSTATUSTEXT,0,(LPARAM)szDir);
+				if(CheckForGame(szDir))
+				{
+					SendMessage(hwnd, BFFM_ENABLEOK, 0, TRUE);
+					SendMessage(hwnd,BFFM_SETSTATUSTEXT,0,(LPARAM)szDir);
+				}
+					else
+				{
+					SendMessage(hwnd, BFFM_ENABLEOK, 0, FALSE);
+				}
 			}
-			else
-				SendMessage(hwnd, BFFM_ENABLEOK, 0, FALSE);
-	   }
-	   break;
-	default:
-	   break;
+			break;
+
+		default:
+			break;
 	}
+
 	return 0;
 }
 
@@ -188,6 +188,15 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 	
 	game.clock_enabled = FALSE;
 	game.state = STATE_INIT;
+
+	/* Set defaults */
+	memset (&opt, 0, sizeof (struct sarien_options));
+	opt.gamerun = GAMERUN_RUNGAME;
+	opt.scale = 2;
+	opt.fixratio = TRUE;
+	opt.gfxhacks = TRUE;
+	opt.hires = TRUE;
+	opt.soundemu = SOUND_EMU_NONE;
 
 	for (c = GetCommandLine(); *c && *c != 0x20; c++);
 

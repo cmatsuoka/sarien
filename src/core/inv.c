@@ -69,7 +69,7 @@ static int find_item ()
 
 static int show_items ()
 {
-	int x, i;
+	unsigned int x, i;
 
 	for (x = i = 0; x < game.num_objects; x++) {
 		if (object_get_location (x) == EGO_OWNED) {

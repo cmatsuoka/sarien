@@ -106,9 +106,9 @@ extern struct gfx_driver *gfx;
 static char *apptext = TITLE " " VERSION;
 static HDC  hDC;
 static WNDCLASS wndclass;
+	
 
-
-#define ASPECT_RATIO(x) ((x) * 6 / 5)
+#define ASPECT_RATIO(x) ((x) * 5 / 6)
 
 /* ====================================================================*/
 
@@ -116,39 +116,37 @@ static WNDCLASS wndclass;
 
 static void _putpixels_scale1 (int x, int y, int w, BYTE *p)
 {
-        BYTE *p0 = g_screen.screen_pixels; /* Word aligned! */
+	BYTE *p0 = g_screen.screen_pixels; /* Word aligned! */
 	EnterCriticalSection(&g_screen.cs);
 
-        y = GFX_HEIGHT - y - 1;
+	y = GFX_HEIGHT - y - 1;
 
 	p0 += x + y * GFX_WIDTH;
-	while (w--) { *p0++ = *p++; }
+	while (w--) 
+	{ 
+		*p0++ = *p++; 
+	}
 
 	LeaveCriticalSection(&g_screen.cs);
 }
 
 static void _putpixels_scale2 (int x, int y, int w, BYTE *p)
 {
-        BYTE *p0 = g_screen.screen_pixels, *p1; /* Word aligned! */
+	BYTE *p0 = g_screen.screen_pixels, *p1; /* Word aligned! */
 	int extra = 0;
 
 	EnterCriticalSection(&g_screen.cs);
 
-	x <<= 1; y <<= 1;
-        y = (GFX_HEIGHT * 2) - y - 1;
-	if (y < ((GFX_WIDTH - 1) << 2) &&
-		ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2)) 
+	y = GFX_HEIGHT - y - 1;
+	x *= scale; y *= scale;
+	p0 += x + y * (GFX_WIDTH * scale);
+	p1 = p0 + (GFX_WIDTH * scale);
+
+	while (w--) 
 	{
-		extra = w;
-	}
-
-	y = ASPECT_RATIO(y);
-
-	p0 += x + y * GFX_WIDTH * 2;
-	p1 = p0 + GFX_WIDTH * 2;
-	while (w--) {
-		*p0++ = *p1++ = *p;
-		*p0++ = *p1++ = *p++;
+		*p0++ = *p; *p0++ = *p;
+		*p1++ = *p; *p1++ = *p;
+		p++;
 	}
 
 	LeaveCriticalSection(&g_screen.cs);
@@ -168,33 +166,45 @@ static void _putpixels_fixratio_scale1 (int x, int y, int w, UINT8 *p)
 
 static void _putpixels_fixratio_scale2 (int x, int y, int w, BYTE *p)
 {
-        BYTE *p0 = g_screen.screen_pixels, *p1, *p2, *_p; /* Word aligned! */
+	BYTE *p0 = g_screen.screen_pixels, *p1, *p2, *_p; /* Word aligned! */
 	int extra = 0;
+
+	if (0 == w)
+		return;
 
 	EnterCriticalSection(&g_screen.cs);
 
-	x <<= 1; y <<= 1;
-        y = (GFX_HEIGHT * 2) - y - 1;
-	if (y < ((GFX_WIDTH - 1) << 2) &&
-		ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2))
+	y = GFX_HEIGHT - y - 1;
+	x *= scale; y *= scale;
+
+	if (y < ((GFX_WIDTH - 1) << 2) && ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2))
 	{
 		extra = w;
 	}
 
 	y = ASPECT_RATIO(y);
 
-	p0 += x + y * GFX_WIDTH * 2;
-	p1 = p0 + GFX_WIDTH * 2;
-	p2 = p1 + GFX_WIDTH * 2;
+	p0 += x + y * GFX_WIDTH * scale;
+	p1 = p0 + GFX_WIDTH * scale;
+	p2 = p1 + GFX_WIDTH * scale;
 
-	for (_p = p; w--; p++) {
-		*p0++ = *p1++ = *p;
-		*p0++ = *p1++ = *p;
+	_p = p;
+
+	while (w--) 
+	{
+		*p0++ = *p; 
+		*p0++ = *p;
+		*p1++ = *p; 
+		*p1++ = *p;
+		p++;
 	}
 
-	for (p = _p; extra--; p++) {
+	p = _p;
+	while (extra--)
+	{
 		*p2++ = *p;
 		*p2++ = *p;
+		p++;
 	}
 
 	LeaveCriticalSection (&g_screen.cs);
@@ -223,6 +233,12 @@ static void INLINE gui_put_block (int x1, int y1, int x2, int y2)
 		 y1 *= scale;
 		 x2 = (x2 + 1) * scale - 1;
 		 y2 = (y2 + 1) * scale - 1;
+	}
+
+	if (opt.fixratio)
+	{
+		y1 = ASPECT_RATIO(y1);
+		y2 = ASPECT_RATIO(y2);
 	}
 
 	hDC = GetDC (hwndMain);
@@ -257,7 +273,7 @@ static void update_mouse_pos(int x, int y)
 		mouse.y /= opt.scale;
 	}
 	if (opt.fixratio)
-		mouse.y = mouse.y * 5 / 6;
+		mouse.y = ASPECT_RATIO(mouse.y);
 }
 
 
@@ -286,11 +302,11 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			0,
 			0,
 			GFX_WIDTH * scale,
-			GFX_HEIGHT * scale,
+			(opt.fixratio ? ASPECT_RATIO(GFX_HEIGHT) : GFX_HEIGHT) * scale,
 			0,
 			0,
 			GFX_WIDTH,
-			GFX_HEIGHT,
+			(opt.fixratio ? ASPECT_RATIO(GFX_HEIGHT) : GFX_HEIGHT),
 			g_screen.screen_pixels,
 			g_screen.binfo,
 			DIB_RGB_COLORS,
@@ -505,7 +521,7 @@ static int init_vidmode ()
 	wndclass.hbrBackground = GetStockObject (BLACK_BRUSH);
 
 	if (!RegisterClass(&wndclass)) {
-		fprintf( stderr, "win32: can't register class\n");
+		OutputDebugString("win32.c: init_vidmode(): can't register class");
 		g_err = err_Unk;
 		goto exx;
 	}
@@ -517,7 +533,7 @@ static int init_vidmode ()
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
 		(GFX_WIDTH * scale) + GetSystemMetrics (SM_CXFRAME),
-			(GFX_HEIGHT * scale) + GetSystemMetrics (SM_CYCAPTION) +
+		(opt.fixratio ? ASPECT_RATIO(GFX_HEIGHT) : GFX_HEIGHT) * scale + GetSystemMetrics (SM_CYCAPTION) +
 			GetSystemMetrics (SM_CYFRAME),
 		NULL,
 		NULL,
@@ -533,14 +549,14 @@ static int init_vidmode ()
 		256 * sizeof(RGBQUAD));
 
 	if (g_screen.binfo == NULL) {
-		fprintf (stderr, "win32: can't create DIB section\n");
+		OutputDebugString("win32.c: init_vidmode(): malloc of g_screen.binfo failed");
 		g_err =  err_Unk;
 		goto exx;
 	}
 
 	g_screen.binfo->bmiHeader.biSize          = sizeof(BITMAPINFOHEADER);
 	g_screen.binfo->bmiHeader.biWidth         = GFX_WIDTH * scale;
-	g_screen.binfo->bmiHeader.biHeight        = GFX_HEIGHT * scale;
+	g_screen.binfo->bmiHeader.biHeight        = (opt.fixratio ? ASPECT_RATIO(GFX_HEIGHT) : GFX_HEIGHT) * scale;
 	g_screen.binfo->bmiHeader.biPlanes        = 1;
 	g_screen.binfo->bmiHeader.biBitCount      = 8;   /* should be fine */
 	g_screen.binfo->bmiHeader.biCompression   = BI_RGB;
@@ -563,8 +579,9 @@ static int init_vidmode ()
 		DIB_RGB_COLORS, (void **)(&g_screen.screen_pixels), NULL, 0);
 	ReleaseDC (hwndMain, hDC);
 
-	if (g_screen.screen_bmp == NULL || g_screen.screen_pixels == NULL) {
-		fprintf( stderr, "win32: can't create DIB section\n");
+	if (g_screen.screen_bmp == NULL || g_screen.screen_pixels == NULL) 
+	{
+		OutputDebugString("win32.c: init_vidmode(): CreateDIBSection failed");
 		g_err = err_Unk;
 	} else {
 		ShowWindow (hwndMain, TRUE);
@@ -632,10 +649,16 @@ static void win32_put_block (int x1, int y1, int x2, int y2)
 	if (y2 >= GFX_HEIGHT)
 		y2 = GFX_HEIGHT - 1;
 
-	p->x1 = x1 * scale;
-	p->y1 = y1 * scale;
-	p->x2 = x2 * scale;
-	p->y2 = y2 * scale;
+	p->x1 = x1;
+	p->y1 = y1;
+	p->x2 = x2;
+	p->y2 = y2;
+
+	if (opt.fixratio)
+	{
+		p->y1 = ASPECT_RATIO(y1);
+		p->y2 = ASPECT_RATIO(y2);
+	}
 
 	PostMessage (hwndMain, WM_PUT_BLOCK, 0, (LPARAM)p);
 }
@@ -693,7 +716,7 @@ static int set_palette (UINT8 *pal, int scol, int numcols)
 	if (GetDeviceCaps(hDC, PLANES) * GetDeviceCaps(hDC, BITSPIXEL) <= 8 ) {
 		palette = malloc(sizeof(*palette) + 16 * sizeof(PALETTEENTRY));
 		if (NULL == palette) {
-			fprintf(stderr, "malloc failed for palette\n");
+			OutputDebugString("malloc failed for palette");
 			return err_Unk;
 		}
 

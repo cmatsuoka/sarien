@@ -520,7 +520,7 @@ static void plot_hires_pattern(UINT8 x, UINT8 y)
 **************************************************************************/
 static void plot_hires_brush ()
 {
-	int x1, y1;
+	UINT8 x1, y1;
 
 	while (42) {
 		if (patCode & 0x20) {

@@ -255,8 +255,8 @@ int view_pictures (void);
 
 struct mouse {
 	int button;
-	int x;
-	int y;
+	unsigned int x;
+	unsigned int y;
 };
 
 

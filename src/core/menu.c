@@ -183,7 +183,7 @@ static void new_menu_selected (i)
     	draw_menu_option (i);
 }
 
-static int mouse_over_text (int line, int col, char *s)
+static int mouse_over_text (unsigned int line, unsigned int col, char *s)
 {
 	if (mouse.x < col * CHAR_COLS)
 		return FALSE;
