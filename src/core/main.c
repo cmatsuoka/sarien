@@ -114,18 +114,24 @@ update_statusline:
     			case 'p':
     			case 'z':
 				show_screen_mode = 'p';
+#if 0 /* temporarily commented out for tests --claudio */
     				dump_pri (resnum);
+#endif
  				break;
     			case 'c':
 				show_screen_mode = 'c';
+#if 0 /* temporarily commented out for tests --claudio */
     				dump_con (resnum);
+#endif
 				break;
 			case 'd':
 				opt.showscreendraw = !opt.showscreendraw;
 				goto update_statusline;
     			case 'x':
 				show_screen_mode = 'x';
+#if 0 /* temporarily commented out for tests --claudio */
     				dump_x (resnum);
+#endif
   				break;
 			case 'r':
 				goto next_pic;

@@ -59,13 +59,6 @@ extern UINT8 old_prio;		/* Used in add_to_pic() */
 
 #ifdef OPT_PICTURE_VIEWER
 
-void dump_screen (int resnum)
-{
-	put_block_buffer (pictures[resnum].sdata);
-	put_screen ();
-}
-
-
 void dump_screen2 ()
 {
 	put_block_buffer (screen_data);
@@ -73,13 +66,13 @@ void dump_screen2 ()
 }
 
 
-void dump_pri (int resnum)
+void dump_pri ()
 {
-	put_block_buffer (pictures[resnum].pdata);
+	put_block_buffer (priority_data);
 	put_screen ();
 }
 
-
+#if 0
 void dump_con (int resnum)
 {
 	put_block_buffer (pictures[resnum].cdata);
@@ -92,6 +85,7 @@ void dump_x (int resnum)
 	put_block_buffer (pictures[resnum].xdata);
 	put_screen ();
 }
+#endif
 
 void dump_screen3 ()
 {
@@ -710,8 +704,8 @@ void splitPriority (int resnum)
 
 	_D ("(%d)", resnum);
 
-	p = pictures[resnum].xdata;
-	c = pictures[resnum].cdata;
+	p = xdata_data;
+	c = control_data;
 
 	for (x = 0; x < _WIDTH; x++) {
 		for (y = 0; y < _HEIGHT; y++, p++, c++) {
@@ -864,23 +858,13 @@ int decode_picture (int resnum)
 	flen = game.dir_pic[resnum].len;
 	foffs = 0;
 
-	pictures[resnum].sdata = malloc (_WIDTH * _HEIGHT);
-	pictures[resnum].pdata = malloc (_WIDTH * _HEIGHT);
-	pictures[resnum].cdata = malloc (_WIDTH * _HEIGHT);
-	pictures[resnum].xdata = malloc (_WIDTH * _HEIGHT);
+	/* ancillary buffers removed to reduce complexity and memory
+	 * footprint. check if it control lines "painted over" with
+	 * priority data still work!
+	 */
 
 	draw_picture ();
-
-	memcpy (pictures[resnum].sdata, &screen_data, _WIDTH * _HEIGHT);
-	memcpy (pictures[resnum].pdata, &priority_data, _WIDTH * _HEIGHT);
-	memcpy (pictures[resnum].cdata, &control_data, _WIDTH * _HEIGHT);
-	memcpy (pictures[resnum].xdata, &xdata_data, _WIDTH * _HEIGHT);
-
 	splitPriority (resnum);
-
-	/* FIXME: Ugh! */
-	memcpy (&priority_data, pictures[resnum].pdata, _WIDTH * _HEIGHT);
-	memcpy (&control_data, pictures[resnum].cdata, _WIDTH * _HEIGHT);
 
 	return ec;
 }
@@ -890,12 +874,6 @@ int unload_picture (int resnum)
 {
 	/* remove visual buffer & priority buffer if they exist */
 	if (game.dir_pic[resnum].flags & RES_LOADED) {
-		if (~game.dir_pic[resnum].flags & 0x80) {
-			free (pictures[resnum].pdata);	/* free prio image */
-			free (pictures[resnum].sdata);	/* free screen image */
-			free (pictures[resnum].cdata);	/* free control image */
-			free (pictures[resnum].xdata);	/* free p+c image */
-		}
 		free (pictures[resnum].rdata);	
 		game.dir_pic[resnum].flags &= ~RES_LOADED;
 	}

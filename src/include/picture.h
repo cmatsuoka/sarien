@@ -18,10 +18,6 @@ extern "C"{
 struct agi_picture {
 	UINT32	flen;			/* size of raw data */
 	UINT8	*rdata;			/* raw vector image data */
-	UINT8	*sdata;			/* screen bitmap image */
-	UINT8	*pdata;			/* priority bitmap image */
-	UINT8	*cdata;			/* control lines image */
-	UINT8	*xdata;			/* combined p+c images */
 };
 
 /* kludge */
@@ -39,10 +35,7 @@ int	unload_picture (int);
 
 /* FIXME: too many dump_ functions!! */
 void	dump_screen (int);
-void	dump_pri (int);
-void	dump_con (int);
-void	dump_x (int);
-
+void	dump_pri (void);
 void	dump_pri_screen (void);
 void	dump_con_screen (void);
 void	dump_x_screen (void);
