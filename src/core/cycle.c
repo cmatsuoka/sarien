@@ -127,32 +127,21 @@ void adj_direction (int entry, int h, int w)
 }
 
 
-static void normal_motion (int em, int x, int y)
+static int check_boundaries (int em, int x, int y)
 {
 	int dir, v, i, e, w;
-	struct agi_view_table *vt_obj;
 	int cel_width;
-
-	if (VT_VIEW(view_table[em]).loop == NULL) {
-		_D(_D_CRIT "Attempt to access NULL view_table[%d].loop", em);
-		return;
-	}
-
-	if (view_table[em].current_cel >= VT_LOOP(view_table[em]).num_cels) {
-		_D(_D_CRIT "Attempt to access cel(%d) >= num_cels(%d) in vt%d",
-			view_table[em].current_cel,
-			VT_LOOP(view_table[em]).num_cels, em);
-		return;
-	}
+	struct agi_view_table *vt_obj;
 
 	vt_obj = &view_table[em];
-	cel_width = VT_WIDTH(view_table[em]);
-
-	x += vt_obj->x_pos;
-	y += vt_obj->y_pos;
 	dir = vt_obj->direction;
 	e = (em == EGO_VIEW_TABLE);
+	cel_width = VT_WIDTH(view_table[em]);
 
+/* FIXME: this test shouldn't be here, but DDP demo intro in
+ *        demopack 6 fails if non-ego objects hit the border
+ */
+if (e) {
 	v = e ? V_border_touch_ego : V_border_touch_obj;
 
 	if (x < 0 && (dir == 8 || dir == 7 || dir == 6)) {
@@ -160,7 +149,7 @@ static void normal_motion (int em, int x, int y)
 		if (!e)
 			setvar (V_border_code, em);
 		setvar (v, 4);
-		return;
+		return -1;
 	}
 
 	if (x > _WIDTH - cel_width && (dir == 2 || dir == 3 || dir == 4)) {
@@ -168,7 +157,7 @@ static void normal_motion (int em, int x, int y)
 		if (!e)
 			setvar (V_border_code, em);
 		setvar (v, 2);
-		return;
+		return -1;
 	}
 
 	if (y > _HEIGHT - 1 && (dir == 4 || dir == 5 || dir == 6)) {
@@ -176,7 +165,7 @@ static void normal_motion (int em, int x, int y)
 		if (!e)
 			setvar (V_border_code, em);
 		setvar (v, 3);
-		return;
+		return -1;
 	}
 
 	if (y < game.horizon && (dir == 1 || dir == 2 || dir == 8)) {
@@ -184,8 +173,9 @@ static void normal_motion (int em, int x, int y)
 		if (!e)
 			setvar (V_border_code, em);
 		setvar (v, 1);
-		return;
+		return -1;
 	}
+}
 
 	if (e) {
 		setflag (F_ego_water, FALSE);
@@ -198,10 +188,10 @@ static void normal_motion (int em, int x, int y)
 	for (i = x + cel_width - 1; i >= x; i--) {
 		switch (control_data[y * _WIDTH + i]) {
 		case 0:	/* unconditional black. no go at all! */
-			return;
+			return -1;
 		case 1:			/* conditional blue */
 			if (~vt_obj->flags & IGNORE_BLOCKS)
-				return;
+				return -1;
 			break;
 		case 2:			/* trigger */
 			if (!e)
@@ -209,7 +199,7 @@ static void normal_motion (int em, int x, int y)
 			setflag (3, TRUE);
 			vt_obj->x_pos = x;
 			vt_obj->y_pos = y;
-			return;
+			return -1;
 		case 3:			/* water */
 			if (!e)
 				break;
@@ -225,7 +215,7 @@ static void normal_motion (int em, int x, int y)
 			vt_obj->x_pos = x;
 			vt_obj->y_pos = y;
 			setflag (F_ego_water, TRUE);
-			return;
+			return -1;
 		}
 	}
 
@@ -233,16 +223,44 @@ static void normal_motion (int em, int x, int y)
 		int z;
 
 		if (y < game.horizon || y >= _HEIGHT || i < 0 || i >= _WIDTH)
-			return;
+			return -1;
 
 		z = control_data[y * _WIDTH + i];
 
 		if ((vt_obj->flags & ON_WATER) && z != 3)
-			return;
+			return -1;
 
 		if ((vt_obj->flags & ON_LAND) && z != 4)
-			return;
+			return -1;
 	}
+
+	return 0;
+}
+
+
+static void normal_motion (int em, int x, int y)
+{
+	struct agi_view_table *vt_obj;
+
+	if (VT_VIEW(view_table[em]).loop == NULL) {
+		_D(_D_CRIT "Attempt to access NULL view_table[%d].loop", em);
+		return;
+	}
+
+	if (view_table[em].current_cel >= VT_LOOP(view_table[em]).num_cels) {
+		_D(_D_CRIT "Attempt to access cel(%d) >= num_cels(%d) in vt%d",
+			view_table[em].current_cel,
+			VT_LOOP(view_table[em]).num_cels, em);
+		return;
+	}
+
+	vt_obj = &view_table[em];
+
+	x += vt_obj->x_pos;
+	y += vt_obj->y_pos;
+
+	if (check_boundaries (em, x, y) < 0)
+		return;
 
 	/* New object direction */
 	adj_direction (em, y - vt_obj->y_pos, x - vt_obj->x_pos);
@@ -291,6 +309,8 @@ static void adj_pos (int em, int x2, int y2)
 
 	/* adjust the direction */
 	adj_direction (em, y2 - y1, x2 - x1);
+
+	check_boundaries (em, x1, y2);
 
 #define CLAMP_MAX(a,b,c) { if(((a)+=(c))>(b)) { (a)=(b); } }
 #define CLAMP_MIN(a,b,c) { if(((a)-=(c))<(b)) { (a)=(b); } }
@@ -375,6 +395,7 @@ static void calc_obj_motion ()
 				vt_obj->flags &= ~MOTION;
 				vt_obj->motion = MOTION_NORMAL;
 			}
+
 			break;
 		}
 
