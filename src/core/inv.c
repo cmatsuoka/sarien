@@ -26,6 +26,7 @@
 #include "gfx.h"
 #include "objects.h"
 #include "keyboard.h"
+#include "text.h"
 
 extern struct agi_object *objects;
 extern int num_objects;

@@ -17,6 +17,7 @@
 #include "agi.h"
 #include "gfx.h"
 #include "view.h"
+#include "text.h"
 
 extern struct agi_loader *loader;
 extern struct sarien_options opt;
@@ -170,6 +171,7 @@ void new_room_resources ()
 
 UINT8 o_status = 0;	/* FIXME */
 
+/* FIXME: remove lowlevel print_text() call from here! */
 void update_status_line (UINT8 force)
 {
 	char x[64], y[64];

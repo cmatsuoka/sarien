@@ -52,7 +52,7 @@ UINT8		txt_char;		/* input character */
 
 
 /* for the blitter routine */
-static UINT16 x_min = 320, x_max = 0, y_min = 200, y_max = 0;
+static int x_min = 320, x_max = 0, y_min = 200, y_max = 0;
 
 /* Ugly kludge for nonblocking windows */
 static int k_x1, k_y1, k_x2, k_y2;
@@ -64,9 +64,9 @@ int greatest_kludge_of_all_time = 0;
 
 
 /* driver wrapper */
-/*static*/ void INLINE put_pixel2 (UINT16 x, UINT16 y, UINT16 c)
+static void INLINE put_pixel2 (int x, int y, int c)
 {
-	UINT16 k;
+	int k;
 
 	if (console.y <= y) {
 		gfx->put_pixel (x, y, c);
@@ -137,10 +137,12 @@ void restore_screen_area ()	/* Yuck! */
 
 	report ("Debug: restore_screen_area: %d %d %d %d\n",
 		k_x1, k_y1, k_x2, k_y2);
+
 	for (i = k_y1; i <= k_y2; i++)
 		memcpy (&layer1_data[320 * i + k_x1],
 			&back_buffer[320 * i + k_x1],
 			k_x2 - k_x1 + 1);
+
 	redraw_sprites ();
 	flush_block (k_x1, k_y1, k_x2, k_y2);
 	release_sprites ();
@@ -218,207 +220,11 @@ void set_block (int x1, int y1, int x2, int y2)
 }
 
 
-void message_box (char *message, ...)
-{
-	char	x[512];
-	va_list	args;
-
-	_D (("(message, ...)"));
-	va_start (args, message);
-
-#ifdef HAVE_VSNPRINTF
-	vsnprintf (x, 510, message, args);
-#else
-	vsprintf (x, message, args);
-#endif
-
-	va_end (args);
-
-	save_screen ();
-	redraw_sprites ();
-
-	/* FR:
-	 * Messy...
-	 */
-	allow_kyb_input = FALSE;
-
-	textbox (x, -1, -1, -1);
-	message_box_key = wait_key();
-
-	allow_kyb_input = TRUE;
-
-	release_sprites ();
-	restore_screen ();
-}
-
-
-/* len is in characters, not pixels!!
- */
-void textbox(char *message, int x, int y, int len)
-{
-	/* if x | y = -1, then centre the box */
-	int	xoff, yoff, lin;
-	UINT8	*msg, *m;
-
-	_D (("(\"%s\", %d, %d, %d)", message, x, y, len));
-
-	if (len <= 0 || len >= 40)
-		//len = 29;		/* FIXME: 29 or 39?? */
-		len=30;
-
-	xoff = x;
-	yoff = y;
-	len--;
-
-	m = msg = word_wrap_string (message, &len);
-
-	for (lin = 1; *m; m++)
-		if (*m == '\n')
-			lin++;
-
-	_D ((": lin=%d", lin));
-
-	if (lin * 8 > GFX_HEIGHT)
-		lin = (GFX_HEIGHT / 8);
-
-	if (xoff == -1)
-		xoff = (GFX_WIDTH - ((len + 2) * 8)) / 2;
-
-	if (yoff == -1)
-		yoff = (GFX_HEIGHT - 16 - ((lin + 2) * 8)) / 2;
-
-	draw_box (xoff, yoff, xoff + ((len + 2) * 8), yoff + ((lin + 2) * 8),
-		MSG_BOX_COLOUR, MSG_BOX_LINE, LINES);
-
-	print_text2 (2, msg, 0, 8 + xoff, 8 + yoff, len + 1,
-		MSG_BOX_TEXT, MSG_BOX_COLOUR);
-
-	gfx->put_block (xoff, yoff, xoff + ((len + 2) * 8),
-		yoff + ((lin + 2) * 8));
-
-	free (msg);
-}
-
-
-void print_text (char *msg, int foff, int xoff, int yoff, int len, int fg, int bg)
-{
-	print_text2 (0, msg, foff, xoff, yoff, len, fg, bg);
-}
-
-
-void print_text_layer (char *msg, int foff, int xoff, int yoff, int len, int fg, int bg)
-{
-	print_text2 (1, msg, foff, xoff, yoff, len, fg, bg);
-}
-
-
-void print_text2 (int l, char *msg, int foff, int xoff, int yoff, int len, int fg, int bg)
-{
-	char *m;
-	int x1, y1;
-	int maxx, minx, ofoff;
-	int update;
-
-	/* kludge! */
-	update = 1;
-	if (l == 2) {
-		update = l = 0;
-	}
-
-	/*_D (("(\"%s\", %d, %d, %d, %d, %d, %d, %d",
-		msg, foff, xoff, yoff, len, fg, bgc, f));*/
-
-	/* FR :
-	 * Changed here
-	 * The string with len == 1 wasn't being printed...
-	 */
-	if (len == 1) {
-		put_text_character (l, xoff + foff,	yoff, *msg, fg, bg);
-		maxx  = 1;
-		minx  = 0;
-		ofoff = foff;
-		y1 = 0;		/* Check this */
-	} else {
-		maxx  = 0;
-		minx  = 320;
-		ofoff = foff;
-		for (m = msg, x1 = y1 = 0; *m; m++) {
-			if (*m >= 0x20 || *m == 1 || *m == 2 || *m == 3) {
-				/* FIXME */
-
-				if((x1!=(len-1) || x1==39) && ((y1*8)+yoff <= 192)) {
-					put_text_character (l, (x1 * 8) + xoff + foff,
-						(y1 * 8) + yoff, *m, fg, bg);
-					if (x1>maxx)
-						maxx=x1;
-					if (x1<minx)
-						minx=x1;
-				}
-				x1++;
-				//if(x1 == len - 1 && m[1] != '\n')
-				/* DF: removed the len-1 to len... */
-				if(x1 == len && m[1] != '\n')
-					y1++, x1 = foff = 0;
-			} else {
-				y1++;
-				x1=foff=0;
-			}
-		}
-	}
-
-	if (l)
-		return;
-
-	if (maxx < minx)
-		return;
-
-	maxx <<= 3;
-	minx <<= 3;
-
-	if (update)
-		gfx->put_block (foff+xoff+minx, yoff, ofoff+xoff+maxx+7, yoff+y1*8+9);
-}
-
-
-/* CM: Ok, this is my attempt to make a good line wrapping algorithm.
- *     Sierra like, that is.
- */
-char* word_wrap_string (char *mesg, int *len)
-{
-	char *msg, *v, *e;
-	int maxc, c, l = *len;
-
-	_D (("(\"%s\", %d)", mesg, *len));
-	v = msg = strdup ((char*)mesg);
-	e = msg + strlen ((char*)msg);
-	maxc = 0;
-
-	while (42) {
-		while ((c = strcspn (v, "\n")) <= l) {
-			if (c > maxc)
-				maxc = c;
-			if ((v += c + 1) >= e)
-				goto end;
-		}
-		c = l;
-		if ((v += l) >= e)
-			break;
-		if (*v != ' ')
-			for (; *v != ' '; v--, c--);
-		if (c > maxc)
-			maxc = c;
-		*v++ = '\n';
-	}
-end:
-	*len = maxc;
-	return (UINT8*)msg;
-}
-
 
 void put_text_character (int l, int x, int y, int c, int fg, int bg)
 {
 	int x1, y1, xx, yy, cc;
-	UINT8	*p;
+	UINT8 *p;
 
 	p = font + (c << 3);
 	for (y1 = 0; y1 < 8; y1++) {
@@ -480,12 +286,12 @@ void draw_box (int x1, int y1, int x2, int y2, int colour1, int colour2, int f)
 
 void get_bitmap (UINT8 *dst, UINT8 *src, int x1, int y1, int w, int h)
 {
-	UINT16	y, x;
+	int y, x;
 
-	for(y1++, y=0; y<h; y++) {
-		for(x=0; x<w; x++) {
-			if(y1+y<_HEIGHT && x1+x<_WIDTH)
-				dst[(y*w)+x]=src[((y1+y)*_WIDTH)+(x1+x)];
+	for (y1++, y = 0; y < h; y++) {
+		for (x = 0; x < w; x++) {
+			if (y1 + y < _HEIGHT && x1 + x < _WIDTH)
+				dst[(y*w) + x] = src[((y1+y)*_WIDTH) + (x1+x)];
 		}
 	}
 }
@@ -496,13 +302,10 @@ void put_bitmap (UINT8 *dst, UINT8 *src, int x1, int y1, int w, int h, int trans
 	int x, y, xx, yy;
 	int c;
 
-	/* _D (("(%p, %p, %d, %d, %d, %d, %d, %d)",
-		dst, src, x1, y1, w, h, trans, prio)); */
-
 	if (prio < 4)
 		prio = 4;
 
-	for (y1++, y=0; y<h; y++) {
+	for (y1++, y = 0; y < h; y++) {
 		for (yy = (y1 + y) * _WIDTH, x=0; x<w; x++) {
 			if ((c=src[x + y*w]) == trans)
 				continue;
@@ -540,10 +343,8 @@ void agi_put_bitmap (UINT8 *src, int x1, int y1, int w, int h, int trans, int pr
 		return;
 	}
 
-	for(y1++, y=0; y<h; y++)
-	{
-		for (yy = (y1 + y) * _WIDTH, x = 0; x < w; x++)
-		{
+	for(y1++, y = 0; y < h; y++) {
+		for (yy = (y1 + y) * _WIDTH, x = 0; x < w; x++) {
 			if ((c = src[x + y * w]) == trans)
 				continue;
 

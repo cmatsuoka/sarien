@@ -17,6 +17,7 @@
 #include "keyboard.h"
 #include "console.h"
 #include "menu.h"
+#include "text.h"
 
 static struct agi_menu *master_menu;
 struct agi_menu *menu;

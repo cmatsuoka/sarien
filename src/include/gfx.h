@@ -8,8 +8,8 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#ifndef __AGI_GFX
-#define __AGI_GFX
+#ifndef __AGI_GFX_H
+#define __AGI_GFX_H
 
 #ifdef __cplusplus
 extern "C"{
@@ -39,16 +39,9 @@ extern	UINT8		txt_char;
 extern UINT8	layer1_data[];
 extern UINT8	layer2_data[];
 
-
-void	message_box	(char *, ...);
-void	textbox		(char *, int, int, int);
-char	*word_wrap_string (char *, int *);
 void	get_bitmap	(UINT8 *, UINT8 *, int, int, int, int);
 void	put_bitmap	(UINT8 *, UINT8 *, int, int, int, int, int, int);
 void	draw_box	(int, int, int, int, int, int, int);
-void	print_text	(char *, int, int, int, int, int, int);
-void	print_text2	(int, char *, int, int, int, int, int, int);
-void	print_text_layer(char *, int, int, int, int, int, int);
 void 	put_text_character(int, int, int, int, int, int);
 void	agi_put_bitmap	(UINT8 *, int, int, int, int, int, int);
 void	agi_put_bitmap_save(UINT8 *, int, int, int, int, int, int);

@@ -71,6 +71,7 @@
 #include "menu.h"
 #include "savegame.h"
 #include "console.h"
+#include "text.h"	/* remove later */
 
 /* shw msgs boxes on commands 171+ */
 /*#define DISPLAY_DUDCODE*/
@@ -493,15 +494,15 @@ void cmd_word_to_string (UINT8 sn, UINT8 wn)
 }
 
 
+/* FIXME: remove lowlevel print_text() call from here */
 void cmd_get_num (UINT8 logic, UINT8 msg, UINT8 num)
 {
 	UINT8	*p=NULL;
 
-	if (logics[logic].texts!=NULL && (msg-1)<=logics[logic].num_texts)
-	{
-		p=agi_printf (logics[logic].texts[msg-1], logic);
+	if (logics[logic].texts!=NULL && (msg-1)<=logics[logic].num_texts) {
+		p = agi_printf (logics[logic].texts[msg-1], logic);
 		print_text (p, 0, 0, 23*8, strlen ((char*)p) + 1, txt_fg, txt_bg);
-		p=get_string (8* (strlen ((char*)p)-1), 23*8, 4);
+		p = get_string (8* (strlen ((char*)p)-1), 23*8, 4);
 		while (*p!=0x0 && isspace (*p)!=0)
 			p++;
 		setvar (num, (UINT8)atoi ((char*)p));

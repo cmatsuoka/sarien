@@ -21,6 +21,7 @@
 #include "picture.h"
 #include "sound.h"
 #include "console.h"
+#include "text.h"
 
 
 UINT16	run_game2(void);

@@ -21,6 +21,7 @@
 #include "menu.h"
 #include "opcodes.h"	/* remove later */
 #include "console.h"
+#include "text.h"	/* remove later */
 
 AGI_EVENT events[MAX_DIRS];	/* keyboard events */
 
@@ -104,7 +105,8 @@ void print_character (int x, int y, char c, int fg, int bg)
 	}
 }
 
-/* Called if ego enters a new room*/
+/* Called if ego enters a new room */
+/* FIXME: remove lowlevel print_text call! */
 void print_line_prompt(void)
 {
 	UINT8 k;

@@ -3,7 +3,7 @@ XCFLAGS	= -I../include
 OBJS	= global.o agi_v2.o agi_v3.o agi.o cli.o words.o objects.o \
 	  picture.o id.o view.o logic.o gfx.o op_test.o op_misc.o op_cmd.o \
 	  op_dbg.o keyboard.o rand.o menu.o font.o lzw.o getopt.o getopt1.o \
-	  sound.o savegame.o silent.o iff.o console.o cycle.o inv.o
+	  sound.o savegame.o silent.o iff.o console.o cycle.o inv.o text.o
 DFILES	= Makefile $(OBJS:.o=.c) main.c Makefile.wat Makefile.dj
 CFILES	= $(LIB)
 DDIRS	=

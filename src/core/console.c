@@ -26,6 +26,7 @@
 #include "sarien.h"
 #include "agi.h"
 #include "gfx.h"
+#include "text.h"
 #include "keyboard.h"
 #include "objects.h"
 #include "opcodes.h"
