@@ -84,6 +84,12 @@ static INLINE UINT16 _POP ()
 		if (stack_seg == 0) {
 			return 0xffff;
 		} else {
+			/* release stack when not in use */
+			if(stack_num_segs>0)
+			{
+				free(stack[stack_num_segs]);
+				stack_num_segs--;
+			}
 			stack_seg--;
 			stack_ptr = STACK_SEG_SIZE;
 		}
