@@ -33,8 +33,8 @@ The following compilers/environments can be used to build sarien:
 
 To build in UNIX and UNIX-like platforms (including Cygwin, BeOS and
 MacOS X), run './configure; make'. Run ./configure --help to see the
-build options. If you're using djgpp with a UNIX-like shell (ksh, bash),
-copy the appropriate ruleset from rulesets/ to ./Rules.
+build options. Use Makefile.dj and Makefile.tc to build with DJGPP and
+Turbo C.
 
 To build using VC++, use the files in the appropriate directory.
 

@@ -13,7 +13,7 @@ DIST	= $(PKG)-$(VERSION)
 DFILES	= configure configure.in Makefile Makefile.wat Makefile.dj \
 	  Makefile.tc Makefile.dc Sarien.make Sarien.DICE Rules.in \
 	  Rules.dj Rules.wat Version README
-DDIRS	= VC++6.0 eVC3 doc scripts bin debian etc lib src rulesets
+DDIRS	= VC++6.0 eVC3 doc scripts bin debian etc lib src
 CFILES	=
 DCFILES	= Rules config.log config.status config.cache
 

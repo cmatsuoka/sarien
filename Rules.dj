@@ -2,7 +2,7 @@
 
 include $(TOPDIR)/Version
 
-CFLAGS = -I$(TOPDIR)/src/include -O2 -mcpu=386 -DVERSION='"$(VERSION)"' -DHAVE_ALLEGRO -Wall -D__MSDOS__
+CFLAGS = -I$(TOPDIR)/src/include -O2 -DVERSION='"$(VERSION)"' -DHAVE_ALLEGRO -Wall -D__MSDOS__
 
 %.o : %.asm
 	$(NSM) -f coff $< -o$@

@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2003 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -10,7 +10,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <limits.h>
 #include "sarien.h"
 #include "agi.h"
 

@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2003 Stuart George and Claudio Matsuoka
  *
  *  $Id$
  *
@@ -90,10 +90,10 @@ static int init_vidmode ()
 
 	set_gfx_mode(GFX_VGA, GFX_WIDTH, GFX_HEIGHT, 0, 0);
 
-	for(i=0; i<16; i++) {
-		p.r=palette[(i*3)+0];
-		p.g=palette[(i*3)+1];
-		p.b=palette[(i*3)+2];
+	for(i = 0; i < 16; i++) {
+		p.r = palette[(i*3)+0];
+		p.g = palette[(i*3)+1];
+		p.b = palette[(i*3)+2];
 		set_color(i, &p);
 	}
 
@@ -152,7 +152,7 @@ static int gfx_get_key ()
 {
 	UINT16 key;
 
-	key=readkey();
+	key = readkey();
 
 	if ((key & 0x00FF) == 0)
 		key &= 0xFF00;
