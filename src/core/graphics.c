@@ -77,9 +77,6 @@ struct gfx_driver *gfx;			/* graphics driver */
 
 
 
-
-
-
 /*
  *  Layer 4:  640x480?  ==================  User display
  *                              ^

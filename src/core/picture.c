@@ -50,7 +50,7 @@ static void put_virt_pixel (int x, int y)
 
 struct point_xy {
 	struct point *next;
-	int x, y;
+	unsigned int x, y;
 };
 
 static int stack_ptr;

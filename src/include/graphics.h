@@ -8,24 +8,28 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#ifndef __GRAPHICS_H
-#define __GRAPHICS_H
+#ifndef __AGI_GRAPHICS_H
+#define __AGI_GRAPHICS_H
 
 #ifdef __cplusplus
 extern "C"{
 #endif
 
 #if defined PALMOS || defined FAKE_PALMOS
+
 #define GFX_WIDTH	160
 #define GFX_HEIGHT	160
 #define CHAR_COLS	4
 #define CHAR_LINES	6
 #define PIC_HEIGHT	(22 * CHAR_LINES)
+
 #else
+
 #define GFX_WIDTH	320
 #define GFX_HEIGHT	200
 #define CHAR_COLS	8
 #define CHAR_LINES	8
+
 #endif
 
 struct gfx_driver {
@@ -82,5 +86,5 @@ UINT8	*get_sarien_screen (void);
 };
 #endif
 
-#endif /* __GRAPHICS_H */
+#endif /* __AGI_GRAPHICS_H */
 

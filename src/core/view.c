@@ -38,7 +38,7 @@ static void mirror_cel (struct view_cel *vc)
 
 static void decode_cel (struct view_cel *vc, UINT8 *data)
 {
-	int h, w, c, l, d;
+	int h, c, l, d;
 	UINT8 *p;
 
 	p = vc->data;
@@ -48,7 +48,6 @@ static void decode_cel (struct view_cel *vc, UINT8 *data)
 		return;
 
 	for (d = h = 0; h < vc->height; h++) {
-		w = 0;
 		p = vc->data + (h * vc->width);
 
 		while (42) {

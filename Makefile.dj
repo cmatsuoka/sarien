@@ -12,21 +12,21 @@ all: core drivers sarien
 core:
 	@echo Building core engine
 	cd src\core
-	make -f makefile.dj TOPDIR=../..
+	make -f Makefile.dj TOPDIR=../..
 	cd ..\..
 
 drivers:
 	@echo Building graphics driver
 	cd src\graphics\msdos
-	make -f makefile.dj TOPDIR=../../..
+	make -f Makefile.dj TOPDIR=../../..
 	cd ..\..\..
 	@echo Building fileglob driver
 	cd src\fileglob\msdos
-	make -f makefile.dj TOPDIR=../../..
+	make -f Makefile.dj TOPDIR=../../..
 	cd ..\..\..
 	@echo Building sound driver
 	cd src\sound\dummy
-	make -f makefile.dj TOPDIR=../../..
+	make -f Makefile.dj TOPDIR=../../..
 	cd ..\..\..
 
 clean:
@@ -34,19 +34,19 @@ clean:
 	if exist bin\*.exe @del bin\*.exe
 	echo Cleaing core
 	cd src\core
-	make -f makefile.dj clean TOPDIR=../..
+	make -f Makefile.dj clean TOPDIR=../..
 	cd ..\..
 	echo Cleaning msdos code
 	cd src\graphics\msdos
-	make -f makefile.dj clean TOPDIR=../../..
+	make -f Makefile.dj clean TOPDIR=../../..
 	cd ..\..\..
 	echo Cleaning sound driver
 	cd src\sound\dummy
-	make -f makefile.dj clean TOPDIR=../../..
+	make -f Makefile.dj clean TOPDIR=../../..
 	cd ..\..\..
 	echo Cleaning fileglob
 	cd src\fileglob\msdos
-	make -f makefile.dj clean TOPDIR=../../..
+	make -f Makefile.dj clean TOPDIR=../../..
 	cd ..\..\..
 
 sarien:
@@ -58,7 +58,7 @@ sarien:
 		-lalleg -o bin/sarien.exe
 
 tarball:
-	make -f makefile.dj clean
+	make -f Makefile.dj clean
 	cd ..
 	tar cvfz sarien-$(VERSION).tar.gz sarien-$(VERSION)
 

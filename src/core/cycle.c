@@ -168,7 +168,7 @@ void old_input_mode ()
 /* If main_cycle returns FALSE, don't process more events! */
 int main_cycle ()
 {
-	int key, kascii;
+	unsigned int key, kascii;
 
 	poll_timer ();		/* msdos driver -> does nothing */
 	update_timer ();

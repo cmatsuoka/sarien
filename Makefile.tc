@@ -1,0 +1,256 @@
+.AUTODEPEND
+
+.PATH.obj = D:\SARIEN\BIN
+
+#		*Translator Definitions*
+CC = tcc +SARIEN.CFG
+TASM = TASM
+TLIB = tlib
+TLINK = tlink
+LIBPATH = D:\TC\LIB
+INCLUDEPATH = D:\SARIEN\SRC\INCLUDE;D:\TC\INCLUDE
+
+
+#		*Implicit Rules*
+.c.obj:
+  $(CC) -c {$< }
+
+.cpp.obj:
+  $(CC) -c {$< }
+
+#		*List Macros*
+
+
+EXE_dependencies =  \
+ agi.obj \
+ agi_v2.obj \
+ agi_v3.obj \
+ checks.obj \
+ cli.obj \
+ cycle.obj \
+ font.obj \
+ getopt.obj \
+ getopt1.obj \
+ global.obj \
+ id.obj \
+ iff.obj \
+ inv.obj \
+ keyboard.obj \
+ logic.obj \
+ lzw.obj \
+ main.obj \
+ menu.obj \
+ motion.obj \
+ objects.obj \
+ op_cmd.obj \
+ op_dbg.obj \
+ op_test.obj \
+ patches.obj \
+ picture.obj \
+ rand.obj \
+ savegame.obj \
+ silent.obj \
+ sound.obj \
+ sprite.obj \
+ text.obj \
+ view.obj \
+ words.obj \
+ fileglob.obj \
+ graphics.obj \
+ console.obj \
+ dummy.obj
+
+#		*Explicit Rules*
+d:\sarien\bin\sarien.exe: sarien.cfg $(EXE_dependencies)
+  $(TLINK) /v/x/c/L$(LIBPATH) @&&|
+c0s.obj+
+d:\sarien\bin\agi.obj+
+d:\sarien\bin\agi_v2.obj+
+d:\sarien\bin\agi_v3.obj+
+d:\sarien\bin\checks.obj+
+d:\sarien\bin\cli.obj+
+d:\sarien\bin\console.obj+
+d:\sarien\bin\cycle.obj+
+d:\sarien\bin\font.obj+
+d:\sarien\bin\getopt.obj+
+d:\sarien\bin\getopt1.obj+
+d:\sarien\bin\global.obj+
+d:\sarien\bin\graphics.obj+
+d:\sarien\bin\id.obj+
+d:\sarien\bin\iff.obj+
+d:\sarien\bin\inv.obj+
+d:\sarien\bin\keyboard.obj+
+d:\sarien\bin\logic.obj+
+d:\sarien\bin\lzw.obj+
+d:\sarien\bin\main.obj+
+d:\sarien\bin\menu.obj+
+d:\sarien\bin\motion.obj+
+d:\sarien\bin\objects.obj+
+d:\sarien\bin\op_cmd.obj+
+d:\sarien\bin\op_dbg.obj+
+d:\sarien\bin\op_test.obj+
+d:\sarien\bin\patches.obj+
+d:\sarien\bin\picture.obj+
+d:\sarien\bin\rand.obj+
+d:\sarien\bin\savegame.obj+
+d:\sarien\bin\silent.obj+
+d:\sarien\bin\sound.obj+
+d:\sarien\bin\sprite.obj+
+d:\sarien\bin\text.obj+
+d:\sarien\bin\view.obj+
+d:\sarien\bin\words.obj+
+d:\sarien\bin\fileglob.obj+
+d:\sarien\bin\dummy.obj
+d:\sarien\bin\sarien
+		# no map file
+emu.lib+
+maths.lib+
+cs.lib
+|
+
+
+#		*Individual File Dependencies*
+agi.obj: sarien.cfg src\core\agi.c 
+	$(CC) -c src\core\agi.c
+
+agi_v2.obj: sarien.cfg src\core\agi_v2.c 
+	$(CC) -c src\core\agi_v2.c
+
+agi_v3.obj: sarien.cfg src\core\agi_v3.c 
+	$(CC) -c src\core\agi_v3.c
+
+checks.obj: sarien.cfg src\core\checks.c 
+	$(CC) -c src\core\checks.c
+
+cli.obj: sarien.cfg src\core\cli.c 
+	$(CC) -c src\core\cli.c
+
+console.obj: sarien.cfg src\core\console.c 
+	$(CC) -c src\core\console.c
+
+cycle.obj: sarien.cfg src\core\cycle.c 
+	$(CC) -c src\core\cycle.c
+
+font.obj: sarien.cfg src\core\font.c 
+	$(CC) -c src\core\font.c
+
+getopt.obj: sarien.cfg src\core\getopt.c 
+	$(CC) -c src\core\getopt.c
+
+getopt1.obj: sarien.cfg src\core\getopt1.c 
+	$(CC) -c src\core\getopt1.c
+
+global.obj: sarien.cfg src\core\global.c 
+	$(CC) -c src\core\global.c
+
+graphics.obj: sarien.cfg src\core\graphics.c 
+	$(CC) -c src\core\graphics.c
+
+id.obj: sarien.cfg src\core\id.c 
+	$(CC) -c src\core\id.c
+
+iff.obj: sarien.cfg src\core\iff.c 
+	$(CC) -c src\core\iff.c
+
+inv.obj: sarien.cfg src\core\inv.c 
+	$(CC) -c src\core\inv.c
+
+keyboard.obj: sarien.cfg src\core\keyboard.c 
+	$(CC) -c src\core\keyboard.c
+
+logic.obj: sarien.cfg src\core\logic.c 
+	$(CC) -c src\core\logic.c
+
+lzw.obj: sarien.cfg src\core\lzw.c 
+	$(CC) -c src\core\lzw.c
+
+main.obj: sarien.cfg src\core\main.c 
+	$(CC) -c src\core\main.c
+
+menu.obj: sarien.cfg src\core\menu.c 
+	$(CC) -c src\core\menu.c
+
+motion.obj: sarien.cfg src\core\motion.c 
+	$(CC) -c src\core\motion.c
+
+objects.obj: sarien.cfg src\core\objects.c 
+	$(CC) -c src\core\objects.c
+
+op_cmd.obj: sarien.cfg src\core\op_cmd.c 
+	$(CC) -c src\core\op_cmd.c
+
+op_dbg.obj: sarien.cfg src\core\op_dbg.c 
+	$(CC) -c src\core\op_dbg.c
+
+op_test.obj: sarien.cfg src\core\op_test.c 
+	$(CC) -c src\core\op_test.c
+
+patches.obj: sarien.cfg src\core\patches.c 
+	$(CC) -c src\core\patches.c
+
+picture.obj: sarien.cfg src\core\picture.c 
+	$(CC) -c src\core\picture.c
+
+rand.obj: sarien.cfg src\core\rand.c 
+	$(CC) -c src\core\rand.c
+
+savegame.obj: sarien.cfg src\core\savegame.c 
+	$(CC) -c src\core\savegame.c
+
+silent.obj: sarien.cfg src\core\silent.c 
+	$(CC) -c src\core\silent.c
+
+sound.obj: sarien.cfg src\core\sound.c 
+	$(CC) -c src\core\sound.c
+
+sprite.obj: sarien.cfg src\core\sprite.c 
+	$(CC) -c src\core\sprite.c
+
+text.obj: sarien.cfg src\core\text.c 
+	$(CC) -c src\core\text.c
+
+view.obj: sarien.cfg src\core\view.c 
+	$(CC) -c src\core\view.c
+
+winmain.obj: sarien.cfg src\core\winmain.c 
+	$(CC) -c src\core\winmain.c
+
+words.obj: sarien.cfg src\core\words.c 
+	$(CC) -c src\core\words.c
+
+fileglob.obj: sarien.cfg src\fileglob\msdos\fileglob.c 
+	$(CC) -c src\fileglob\msdos\fileglob.c
+
+dummy.obj: sarien.cfg src\sound\dummy\dummy.c 
+	$(CC) -c src\sound\dummy\dummy.c
+
+#		*Compiler Configuration File*
+sarien.cfg: makefile.tc
+  copy &&|
+-a
+-v
+-y
+-O
+-Z
+-d
+-vi-
+-w-ret
+-w-nci
+-w-inl
+-w-par
+-w-cpt
+-w-dup
+-w-pia
+-w-ill
+-w-sus
+-w-ext
+-w-ias
+-w-ibc
+-w-pre
+-w-nst
+-nD:\SARIEN\BIN
+-I$(INCLUDEPATH)
+-DVERSION="0.7.0"
+-L$(LIBPATH)
+| sarien.cfg
+

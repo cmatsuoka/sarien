@@ -38,7 +38,7 @@
 
 void inventory ()
 {
-	int x, y, cx, cy;
+	int x, y, cy;
 	UINT8 *intobj = NULL;
 	int objcount;
 	int joffs = 0, jlen = 0;
@@ -58,7 +58,7 @@ void inventory ()
 
 	intobj = malloc (4 + game.num_objects);
 
-	for (x = y = cx = 0, cy = 2, objcount = 0; x < game.num_objects; x++) {
+	for (x = y = 0, cy = 2, objcount = 0; x < game.num_objects; x++) {
 		if (object_get_location (x) == EGO_OWNED) {
 			/* add object to our list! */
 			intobj[objcount++] = x;

@@ -27,7 +27,6 @@ char* file_name (char *fname)
 {
 	int rc;
 	struct find_t fdata;
-	short l;
 
 	_D ("(\"%s\")", fname);
 	fdata.name[0] = 0;
@@ -35,10 +34,9 @@ char* file_name (char *fname)
 	while (rc == 0) {
 		rc = _dos_findnext(&fdata);
 		if(rc == 0) {
-			l=strlen (fdata.name);
 			strlwr (fdata.name);
 			if (strstr (fdata.name, "dir.")!=NULL)
-			    rc = 1;
+				rc = 1;
 		}
 	}
 
