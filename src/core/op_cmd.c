@@ -399,7 +399,7 @@ cmd(player_control) {
 }
 
 cmd(program_control) {
-	game.player_control = TRUE;
+	game.player_control = FALSE;
 }
 
 cmd(follow_ego) {
