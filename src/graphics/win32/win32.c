@@ -615,7 +615,7 @@ static void win32_put_block (int x1, int y1, int x2, int y2)
 	p->y2 = y2;
 
 	if (opt.fixratio) {
-		p->y1 = ASPECT_RATIO(y1 + 1) - 1;
+		p->y1 = ASPECT_RATIO(y1);
 		p->y2 = ASPECT_RATIO(y2 + 1) - 1;
 	}
 
