@@ -14,6 +14,12 @@
  * Extra fixes and hacks by Matt Hargett <matt@use.net>
  * More fixes and hacks by Claudio Matsuoka <claudio@helllabs.org>
  */
+
+/*
+ * Scale2x support added by Matt Hargett
+ * Scale2x Copyright (C) 2001-2002 Andrea Mazzoleni
+ */
+
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
@@ -31,6 +37,8 @@
 #include "console.h"
 #include "win32.h"
 #include "../../core/win32/resource.h"
+
+#include "scale2x.h"
 
 #define TICK_SECONDS		18
 #define TICK_IN_MSEC		(1000 / (TICK_SECONDS))
@@ -142,10 +150,14 @@ static void _putpixels_scale2 (int x, int y, int w, BYTE *p)
 	p1 = p0 + xsize;
 
 	EnterCriticalSection(&g_screen.cs);
-	while (w--) {
-		*p0++ = *p; *p0++ = *p;
-		*p1++ = *p; *p1++ = *p;
-		p++;
+	if (!opt.hires || y > 0 || y < (GFX_HEIGHT - 1)) {
+		while (w--) {
+			*p0++ = *p; *p0++ = *p;
+			*p1++ = *p; *p1++ = *p;
+			p++;
+		}
+	} else {
+		scale2x_8_def(p0, p1, p - GFX_WIDTH, p, p + GFX_WIDTH, w);
 	}
 	LeaveCriticalSection (&g_screen.cs);
 }
@@ -184,16 +196,20 @@ static void _putpixels_fixratio_scale2 (int x, int y, int w, BYTE *p)
 	p2 = p1 + xsize;
 
 	EnterCriticalSection(&g_screen.cs);
-	for (_p = p; w--; p++) {
-		*p0++ = *p;
-		*p0++ = *p;
-		*p1++ = *p;
-		*p1++ = *p;
-	}
-
-	for (p = _p; extra--; p++) {
-		*p2++ = *p;
-		*p2++ = *p;
+	if (!opt.hires || y > 0 || y < (GFX_HEIGHT - 1)) {
+		for (_p = p; w--; p++) {
+			*p0++ = *p;
+			*p0++ = *p;
+			*p1++ = *p;
+			*p1++ = *p;
+		}
+		for (p = _p; extra--; p++) {
+			*p2++ = *p;
+			*p2++ = *p;
+		}
+	} else {
+		scale2x_8_def(p0, p1, p - GFX_WIDTH * 2, p, p + GFX_WIDTH * 2, w);
+		scale2x_8_def(p1, p2, p - GFX_WIDTH * 2, p, p + GFX_WIDTH * 2, extra);
 	}
 	LeaveCriticalSection (&g_screen.cs);
 }
