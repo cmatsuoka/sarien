@@ -375,6 +375,10 @@ int savegame_dialog ()
 	redraw_sprites ();
 
 	home = getenv (HOMEDIR);
+	if (home == NULL) home = getenv ("SARIEN");
+#ifdef WIN32
+	if (home == NULL) home = getenv ("WINDIR");
+#endif
 
 	textbox (
 		"Multi-slot savegames are under development and"
@@ -413,6 +417,10 @@ int loadgame_dialog ()
 	redraw_sprites ();
 
 	home = getenv (HOMEDIR);
+	if (home == NULL) home = getenv ("SARIEN");
+#ifdef WIN32
+	if (home == NULL) home = getenv ("WINDIR");
+#endif
 
 	snprintf (path, MAX_PATH, "%s/" DATADIR "/", home);
 	mkdir (path, 0755);
