@@ -39,7 +39,7 @@ static int check_position (struct vt_entry *v)
 /**
  * Check if there's another object on the way
  */
-static int check_clutter (struct vt_entry *v)
+static int check_collision (struct vt_entry *v)
 {
 	struct vt_entry *u;
 
@@ -67,19 +67,18 @@ static int check_clutter (struct vt_entry *v)
 			goto return_1;
 
 		/* Crossed the baseline, return error! */
-	 	if ((v->y_pos > u->y_pos && v->y_pos2 < u->y_pos2))
+	 	if ((v->y_pos > u->y_pos && v->y_pos2 < u->y_pos2) ||
+		    (v->y_pos < u->y_pos && v->y_pos2 > u->y_pos2))
+		{
 			goto return_1;
-
-		/* Didn't cross baseline */
-		if (v->y_pos >= u->y_pos || v->y_pos2 <= u->y_pos2)
-			continue;
-
-return_1:
-		_D (_D_WARN "check returns 1 (object %d)", v->entry);
-		return 1;
+		}
 	}
 	
 	return 0;
+
+return_1:
+	_D (_D_WARN "check returns 1 (object %d)", v->entry);
+	return 1;
 }
 
 static int check_priority (struct vt_entry *v)
@@ -228,7 +227,7 @@ void update_position ()
 		/* Test new position. rollback if test fails */
 		v->x_pos = x;
 		v->y_pos = y;
-		if (check_clutter (v) || !check_priority (v)) {
+		if (check_collision (v) || !check_priority (v)) {
 			v->x_pos = old_x;
 			v->y_pos = old_y;
 			border = 0;
@@ -275,7 +274,7 @@ void fix_position (int n)
 	dir = 0;
 	count = size = 1;
 
-	while (!check_position(v) || check_clutter(v) || !check_priority(v)) {
+	while (!check_position(v) || check_collision(v) || !check_priority(v)) {
 		switch (dir) {
 		case 0:			/* west */
 			v->x_pos--;

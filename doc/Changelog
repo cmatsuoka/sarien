@@ -34,6 +34,7 @@ Revision History
 	- fixed ESC key handling in KQ3 and Atari ST GR (closes: #606454)
 	- added input state field to savegame (closes: #590642)
 	- fixed old position setting in AGI commands position, position.v
+	- fixed assignment of block bottom-right y coordinate (closes: #608126)
 	- fixed geometry of win32 window (closes: #606452, #604435)
 	- enabling menu options on restart (closes: #607643)
 	- added CGA palette emulation

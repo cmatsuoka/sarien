@@ -390,7 +390,7 @@ cmd(block) {
 	game.block.x1 = p0;
 	game.block.y1 = p1;
 	game.block.x2 = p2;
-	game.block.y2 = p4;
+	game.block.y2 = p3;
 }
 
 cmd(unblock) {

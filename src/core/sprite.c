@@ -664,7 +664,7 @@ void blit_upd_sprites ()
 }
 
 /**
- * Blit updating sprites.
+ * Blit non-updating sprites.
  * This function follows the list of all non-updating sprites and blits
  * them on the AGI screen.
  *
