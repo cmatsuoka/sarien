@@ -91,6 +91,10 @@
 - Brian Peek <brian@ganksoft.com>
   * Dreamcast port
 
+- Michael Montague <mikem@treyarch.com>
+  * DirectX 8 driver
+  * Win32 fixes
+
 
 Special thanks to:
 

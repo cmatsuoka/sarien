@@ -28,9 +28,10 @@ Tested ports:
 Dreamcast|   ?   |   dc    |   dc    |    no   |   yes   |brianpeek|
 ---------+-------+---------+---------+---------+---------+---------+
  Windows |Mingw32|   DIB   |  dummy  |   yes   |    no   |rosinha, |
- Windows*|Mingw32|   SDL   |   SDL   |   yes   |   yes   |igor,matt|
+ Windows |Mingw32|   SDL   |   SDL   |   yes   |   yes   |igor,matt|
  Windows |  VC++ |   DIB   |  WinMM  |   yes   |    no   |justin,  |
  Windows |Cygwin |   DIB   |  WinMM  |   yes   |    no   |ryan&more|
+ Windows |VC/Cyg | DirectX |  WinMM  |   yes   |   yes   |  tarix  | 
 ---------+-------+---------+---------+---------+---------+---------+
  WinCE   | eVC3  |  WinCE  |  WinCE  |    no   |   yes   |  Vasyl  |
 ---------+-------+---------+---------+---------+---------+---------+
