@@ -120,11 +120,10 @@ static void _putpixels_scale1 (int x, int y, int w, BYTE *p)
 	BYTE *p0 = g_screen.screen_pixels; /* Word aligned! */
 
 	y = GFX_HEIGHT - y - 1;
-	p0 += x + y * GFX_WIDTH;
+	p0 += x + y * xsize;
 
 	EnterCriticalSection(&g_screen.cs);
-	while (w--)
-		*p0++ = *p++;
+	while (w--) *p0++ = *p++;
 	LeaveCriticalSection(&g_screen.cs);
 }
 
@@ -134,8 +133,8 @@ static void _putpixels_scale2 (int x, int y, int w, BYTE *p)
 
 	y = GFX_HEIGHT - y - 1;
 	x <<= 1; y <<= 1; 
-	p0 += x + y * (GFX_WIDTH * scale);
-	p1 = p0 + (GFX_WIDTH * scale);
+	p0 += x + y * xsize;
+	p1 = p0 + xsize;
 
 	EnterCriticalSection(&g_screen.cs);
 	while (w--) {
@@ -166,67 +165,35 @@ static void _putpixels_fixratio_scale2 (int x, int y, int w, BYTE *p)
 	if (0 == w)
 		return;
 
-
 	y = GFX_HEIGHT - y - 1;
 	x <<= 1; y <<= 1; 
 
-	if (y < ((GFX_WIDTH - 1) << 2) && ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2))
-	{
+	if (y < ((GFX_WIDTH - 1) << 2) && ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2)) {
 		extra = w;
 	}
 
 	y = ASPECT_RATIO(y);
 
-	p0 += x + y * GFX_WIDTH * 2;
-	p1 = p0 + GFX_WIDTH * 2;
-	p2 = p1 + GFX_WIDTH * 2;
-
-	_p = p;
+	p0 += x + y * xsize;
+	p1 = p0 + xsize;
+	p2 = p1 + xsize;
 
 	EnterCriticalSection(&g_screen.cs);
-	while (w--) {
+	for (_p = p; w--; p++) {
 		*p0++ = *p;
 		*p0++ = *p;
 		*p1++ = *p;
 		*p1++ = *p;
-		p++;
 	}
 
-	p = _p;
-	while (extra--) {
+	for (p = _p; extra--; p++) {
 		*p2++ = *p;
 		*p2++ = *p;
-		p++;
 	}
 	LeaveCriticalSection (&g_screen.cs);
 }
 
 /* ====================================================================*/
-
-static void INLINE gui_put_block (int x1, int y1, int x2, int y2)
-{
-	HDC hDC;
-	int h, w;
-
-	hDC = GetDC (hwndMain);
-
-	w = x2 - x1 + 1;
-	h = y2 - y1 + 1;
-
-	EnterCriticalSection (&g_screen.cs);
-	StretchDIBits (
-		hDC,
-		x1, y1, w, h,
-		x1, ysize - y2 - 1, w, h,
-		g_screen.screen_pixels,
-		g_screen.binfo,
-		DIB_RGB_COLORS,
-		SRCCOPY);
-	LeaveCriticalSection (&g_screen.cs);
-
-	ReleaseDC (hwndMain, hDC);
-}
-
 
 static void update_mouse_pos(int x, int y)
 {
@@ -246,21 +213,32 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
 	HDC          hDC;
 	PAINTSTRUCT  ps;
-	int          key = 0;
+	int          h, w, key = 0;
+	xyxy         *p = (xyxy *)lParam;
 
 	switch (nMsg) {
-	case WM_PUT_BLOCK: {
-		xyxy *p = (xyxy *)lParam;
-		gui_put_block (
-			p->x1 * scale,
-			p->y1 * scale,
-			(p->x2 + 1) * scale - 1,
-			(p->y2 + 1) * scale - 1);
-		} break;
+	case WM_PUT_BLOCK:
+		hDC = GetDC (hwndMain);
+		w = p->x2 - p->x1 + 1;
+		h = p->y2 - p->y1 + 1;
+		EnterCriticalSection (&g_screen.cs);
+		StretchDIBits (
+			hDC,
+			p->x1, p->y1, w, h,
+			p->x1, ysize - p->y2 - 1, w, h,
+			g_screen.screen_pixels,
+			g_screen.binfo,
+			DIB_RGB_COLORS,
+			SRCCOPY);
+		LeaveCriticalSection (&g_screen.cs);
+		ReleaseDC (hwndMain, hDC);
+		break;
+
 	case WM_DESTROY:
 		deinit_vidmode ();
 		exit (-1);
 		return 0;
+
 	case WM_PAINT:
 		hDC = BeginPaint (hwndMain, &ps);
 		EnterCriticalSection(&g_screen.cs);
@@ -272,7 +250,6 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			g_screen.binfo,
 			DIB_RGB_COLORS,
 			SRCCOPY);
-
 		EndPaint (hwndMain, &ps);
 		LeaveCriticalSection(&g_screen.cs);
 		return 0;
@@ -466,6 +443,8 @@ static int init_vidmode ()
 {
 	int i;
 
+	opt.fixratio = 0;
+
 #if 0
 	/* FIXME: place this in an "About" box or something... */
 	fprintf (stderr,
@@ -617,14 +596,14 @@ static void win32_put_block (int x1, int y1, int x2, int y2)
 	if (x2 >= GFX_WIDTH)  x2 = GFX_WIDTH - 1;
 	if (y2 >= GFX_HEIGHT) y2 = GFX_HEIGHT - 1;
 
-	p->x1 = x1;
-	p->y1 = y1;
-	p->x2 = x2;
-	p->y2 = y2;
+	p->x1 = x1 * scale;
+	p->y1 = y1 * scale;
+	p->x2 = (x2 + 1) * scale - 1;
+	p->y2 = (y2 + 1) * scale - 1;
 
 	if (opt.fixratio) {
-		p->y1 = ASPECT_RATIO(y1);
-		p->y2 = ASPECT_RATIO(y2 + 1) - 1;
+		p->y1 = ASPECT_RATIO(p->y1);
+		p->y2 = ASPECT_RATIO(p->y2 + 1) - 1;
 	}
 
 	PostMessage (hwndMain, WM_PUT_BLOCK, 0, (LPARAM)p);
@@ -716,4 +695,5 @@ static int set_palette (UINT8 *pal, int scol, int numcols)
 
 	return err_OK;
 }
+
 
