@@ -585,8 +585,9 @@ void write_status ()
 #endif /* USE_CONSOLE */
 
 	if (!game.status_line) {
-		clear_lines (0, 0, 0);
-		flush_lines (0, 0);
+		int l = game.line_status;
+		clear_lines (l, l, 0);
+		flush_lines (l, l);
 		return;
 	}
 
@@ -603,6 +604,9 @@ void write_prompt ()
 {
 	int l, fg, bg, pos;
 
+	if (!game.input_enabled || game.input_mode != INPUT_NORMAL)
+		return;
+
 	l = game.line_user_input;
 	fg = game.color_fg;
 	bg = game.color_bg;
@@ -611,12 +615,10 @@ void write_prompt ()
 	_D (_D_WARN "erase line %d", l);
 	clear_lines (l, l, game.color_bg);
 
-	if (game.input_enabled && game.input_mode == INPUT_NORMAL) {
-		_D (_D_WARN "prompt = '%s'", agi_sprintf (game.strings[0]));
-		print_text (game.strings[0], 0, 0, l, 1, fg, bg);
-		print_text (game.input_buffer, 0, 1, l, pos + 1, fg, bg);
-		print_character (pos + 1, l, game.cursor_char, fg, bg);
-	}
+	_D (_D_WARN "prompt = '%s'", agi_sprintf (game.strings[0]));
+	print_text (game.strings[0], 0, 0, l, 1, fg, bg);
+	print_text (game.input_buffer, 0, 1, l, pos + 1, fg, bg);
+	print_character (pos + 1, l, game.cursor_char, fg, bg);
 
 	flush_lines (l, l);
 	do_update ();

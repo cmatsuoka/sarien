@@ -25,7 +25,7 @@ Revision History
 	- emulating AGI 2.272 move.obj and move.obj.v (closes: #542692)
 	- correctly ordering sprites in the blit list (closes: #539394)
 	- input prompt and user input fixes (closes: #518734, #540840,
-	  #540734, #540843, #540736, #607241)
+	  #540734, #540843, #540736, #607241, #686123)
 	- fixed object position test in cmd_reposition (closes: #518731)
 	- fixed end.of.loop and reverse.loop handling (closes: #475912)
 	- fixed left screen border detection for KQ4 (closes: #590462)
