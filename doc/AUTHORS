@@ -51,6 +51,13 @@
 - Magnus Kristiansen <>
   * Status line display fixes
 
+- Matt Hargett <matt@use.net>
+  * VC++ build fixes
+  * Memory usage profiling
+
+- Ian Hanschen <ian@stardock.com>
+  * Win32 fixes and clean-ups
+
 
 Special thanks to:
 
@@ -66,8 +73,4 @@ Special thanks to:
 
 - Nick Sonneveld <sonneveld@dingoblue.net.au>
   * AGI internals consultant
-
-- Matt Hargett <matt@use.net>
-  * VC++ build fixes
-  * Memory usage profiling
 

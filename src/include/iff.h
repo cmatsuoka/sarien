@@ -1,3 +1,12 @@
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *
+ *  $Id$
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; see docs/COPYING for further details.
+ */
 
 #ifndef __IFF_H
 #define __IFF_H
@@ -21,7 +30,7 @@ struct iff_info {
 };
 
 void iff_chunk (FILE *);
-void iff_register (char *, void (*));
+void iff_register (char *, void (*)(int, UINT8*));
 void iff_idsize (int);
 void iff_setflag (int);
 void iff_release (void);

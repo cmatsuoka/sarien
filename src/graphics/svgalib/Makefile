@@ -2,7 +2,7 @@
 
 XCFLAGS	= -I../../include
 OBJS	= svgalib.o
-DFILES	= Makefile $(OBJS:.o=.c) svgalib.h
+DFILES	= Makefile $(OBJS:.o=.c)
 CFILES	=
 DDIRS	=
 XDFILES	=

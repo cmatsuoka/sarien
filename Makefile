@@ -12,7 +12,7 @@ XCFLAGS	= -Iloaders/include
 DIST	= $(PKG)-$(VERSION)
 DFILES	= configure configure.in Makefile Makefile.wat Makefile.dj Rules.in \
 	  Version README
-DDIRS	= VC++6.0 doc scripts bin etc lib src rulesets
+DDIRS	= VC++6.0 doc scripts bin debian etc lib src rulesets
 CFILES	=
 DCFILES	= Rules config.log config.status config.cache
 

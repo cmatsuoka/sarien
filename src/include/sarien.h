@@ -59,9 +59,9 @@ extern "C"{
 #  define free(x) MemPtrFree(x)
 #else
    typedef unsigned char	UINT8;
-   typedef signed char	SINT8;
+   typedef signed char		SINT8;
    typedef unsigned short	UINT16;
-   typedef signed short	SINT16;
+   typedef signed short		SINT16;
 #  ifdef _M_MSDOS
      typedef unsigned long	UINT32;
      typedef signed long	SINT32;
