@@ -111,7 +111,7 @@ static void blit_textbox (char *p, int y, int x, int len)
 	yoff = y * CHAR_LINES;
 	len--;
 
-	m = msg = word_wrap_string (agi_sprintf (p, 0), &len);
+	m = msg = word_wrap_string (agi_sprintf (p), &len);
 
 	for (lin = 1; *m; m++) {
 		if (*m == '\n')
@@ -186,7 +186,7 @@ void print_text (char *msg, int f, int x, int y, int len, int fg, int bg)
 	x *= CHAR_COLS;
 	y *= CHAR_LINES;
 
-	print_text2 (0, agi_sprintf (msg, 0), f, x, y, len, fg, bg);
+	print_text2 (0, agi_sprintf (msg), f, x, y, len, fg, bg);
 }
 
 /**
@@ -334,7 +334,7 @@ void print_status (char *message, ...)
  * @param s  string containing the format specifier
  * @param n  logic number
  */
-char *agi_sprintf (char *s, int n)
+char *agi_sprintf (char *s)
 {
 	static char x[512], y[512];
 	char z[16], *p;
@@ -387,7 +387,7 @@ char *agi_sprintf (char *s, int n)
 				strcat(p, game.strings[atol(s)]);
 				break;
 			case 'm':
-				strcat(p, game.logics[n].texts[atol(s)-1]);
+				strcat(p, game.logics[game.lognum].texts[atol(s)-1]);
 				break;
 			default:
 				break;
@@ -408,7 +408,7 @@ char *agi_sprintf (char *s, int n)
 	p = x;
 	if (strchr (x, '%') != NULL) {
 		strcpy (y, x);
-		p = agi_sprintf (y, n);
+		p = agi_sprintf (y);
 	}
 
 	return p;

@@ -19,7 +19,7 @@
 #include "opcodes.h"
 #include "menu.h"
 #include "savegame.h"
-#include "text.h"	/* remove later */
+#include "text.h"
 
 #define p0	(p[0])
 #define p1	(p[1])
@@ -114,7 +114,7 @@ cmd(put_v)		{ object_set_location (_v[p0], _v[p1]); }
 cmd(drop)		{ _D ("p0 = %d", p0); object_set_location (p0, 0); }
 cmd(get)		{ object_set_location (p0, EGO_OWNED); }
 cmd(get_v)		{ object_set_location (_v[p0], EGO_OWNED); }
-cmd(parse)		{ dictionary_words (agi_sprintf(game.strings[p0],0)); }
+cmd(parse)		{ dictionary_words (agi_sprintf(game.strings[p0])); }
 cmd(set_text_attr)	{ game.color_fg = p0; game.color_bg = p1; }
 cmd(shake_screen)	{ shake_screen (p0); }
 cmd(word_to_string)	{ strcpy (game.strings[p0], game.ego_words[p1].word); }
@@ -154,8 +154,13 @@ cmd(cancel_line)	{ report ("Not implemented: cancel.line\n"); }
 cmd(obj_status_v)	{ report ("Not implemented: obj.status.v\n"); }
 
 /* unknown commands:
- * unk_173: Activate keypressed control (ego only moves when a key is pressed)
- * unk_181: Desactivate keypressed control (default control of ego)
+ * unk_170: Force savegame name -- j5
+ * unk_171: script save -- j5
+ * unk_172: script restore -- j5
+ * unk_173: Activate keypressed control (ego only moves while key is pressed)
+ * unk_174: Change priority table (used in KQ4) -- j5
+ * unk_177: Disable menus completely -- j5
+ * unk_181: Deactivate keypressed control (default control of ego)
  */
 cmd(unk_170)		{ message_box ("cmd_unk_170"); }
 cmd(unk_171)		{ message_box ("cmd_unk_171"); }
@@ -875,6 +880,7 @@ int run_logic (int n)
 		agi_load_resource (rLOGIC, n);
 	}
 
+	game.lognum = n;
 	cur_logic = &game.logics[n];
 
 	code = cur_logic->data;
