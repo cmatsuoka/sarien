@@ -8,7 +8,6 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#include <assert.h>
 #include <string.h>	/* for memcpy() */
 #include "sarien.h"
 #include "list.h"

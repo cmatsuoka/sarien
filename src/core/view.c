@@ -10,7 +10,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
 #include "sarien.h"
 #include "agi.h"
 #include "sprite.h"

@@ -6,11 +6,11 @@
  */
 
 #ifdef DREAMCAST
-#define DC_BASE_PATH	"/cd"
-#define DC_GFX_PATH		"/cd/gfx"
-#define VMU_PATH		"/vmu/%s/SDC-%s-%d"
-#define UNKNOWN_GAME	"Unknown"
-#undef USE_COMMAND_LINE
+#  define DC_BASE_PATH		"/cd"
+#  define DC_GFX_PATH		"/cd/gfx"
+#  define VMU_PATH		"/vmu/%s/SDC-%s-%d"
+#  define UNKNOWN_GAME		"Unknown"
+#  undef USE_COMMAND_LINE
 char g_gamename[255];
 static char g_vmu_port[2];
 #endif
@@ -27,6 +27,7 @@ static char g_vmu_port[2];
 #  undef OPT_LIST_DICT
 #else
 #  include <stdlib.h>
+#  include <assert.h>
 #endif
 
 #ifdef FAKE_PALMOS
