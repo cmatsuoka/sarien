@@ -55,14 +55,17 @@ int agi_v3_detect_game (char *gn)
 	strcpy (x, "*vol.0");
 	path = fixpath (GAMEDIR, x);
 
-	if (!__file_exists(path)) {
-		xname = __file_name (path);
+	_D (_D_WARN "path = %s", path);
+	if (file_exists(path)) {
+		_D(_D_WARN "getting xname for path = %s", path);
+		xname = file_name (path);
 		/* remove the DIR from xname */
 		l = strlen (xname);
 		if (l >= 5)
 			l -= 5;
 		xname[l] = 0;
 		strncpy (game.name, xname, 8);
+		_D (_D_WARN "game.name = %s", game.name);
 
 		agi_v3.int_version = 0x3149;	/* setup for 3.002.149 */
 		ec = v3id_game();
@@ -119,7 +122,7 @@ int agi_v3_init (void)
 	FILE *fp;
 	char *path;
 
-	path = fixpath (GAMEDIR, DIR);
+	path = fixpath (GAMEDIR, DIR_);
 
 	if ((fp = fopen(path, "rb")) != NULL) {
 		/* build offset table for v3 directory format */

@@ -133,7 +133,6 @@ void unload_view (int n)
 {
 	int x, y;
 
-	_D ("(%d)", n);
 	if (~game.dir_view[n].flags & RES_LOADED)
 		return;
 
@@ -537,7 +536,7 @@ int decode_view (int resnum)
 
 			decode_cel (vc, v + cofs);
 
-			_D (_D_WARN "mirror=%d, loop=%d", vc->mirror,vc->mirror_loop);
+			_D ("mirror=%d, loop=%d", vc->mirror,vc->mirror_loop);
     			if (vc->mirror == 1 && vc->mirror_loop != loop) {
 				_D (_D_WARN "mirror_loop = %d", vc->mirror_loop);
     				mirror_cel (vc);

@@ -235,7 +235,7 @@ int v3id_game ()
 
 	/* no do the directory file */
 
-	path = fixpath (GAMEDIR, DIR);
+	path = fixpath (GAMEDIR, DIR_);
 
 	if ((fp = fopen(path, "rb")) != NULL) {
 		for (len = 1; len > 0; ) {

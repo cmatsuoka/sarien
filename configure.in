@@ -57,7 +57,7 @@ dnl Checks for header files.
 dnl ----------------------------------------------
 
 AC_HEADER_STDC
-AC_CHECK_HEADERS(string.h getopt.h glob.h dirent.h)
+AC_CHECK_HEADERS(string.h getopt.h dirent.h)
 
 
 dnl ----------------------------------------------
@@ -181,7 +181,7 @@ cygwin*)
 	LIBS="-lwinmm ${LIBS}"
 	SOUND_DRIVER="win32"
 	;;
-default)
+*)
 	SOUND_DRIVER="dummy"
 	;;
 esac
@@ -190,12 +190,12 @@ fi
 case "${SOUND_DRIVER}" in
 dummy|win32|sdl)
 	;;
-default)
-	AC_CHECK_LIB(pthread, pthread_create,[		\
-		CFLAGS="${CFLAGS} -D_REENTRANT";	\
-		LIBS="-lpthread ${LIBS}"		\
-	], [						\
-		SOUND_DRIVER="dummy"			\
+*)
+	AC_CHECK_LIB(pthread, pthread_create,[
+		CFLAGS="${CFLAGS} -D_REENTRANT"
+		LIBS="-lpthread ${LIBS}"
+	], [
+		SOUND_DRIVER="dummy"
 	])
 	;;
 esac
@@ -209,7 +209,7 @@ AC_CHECKING([for file globbing support])
 FILEIO_DRIVER="unix"
 AC_CHECK_FUNC(_dos_findfirst,[FILEIO_DRIVER="msdos"])
 AC_CHECK_FUNC(_findfirst,[FILEIO_DRIVER="win32"])
-AC_CHECK_FUNC(glob,[FILEIO_DRIVER="unix"])
+dnl AC_CHECK_FUNC(glob,[FILEIO_DRIVER="unix"])
 
 
 dnl ----------------------------------------------
@@ -234,7 +234,7 @@ AC_PROG_GCC_TRADITIONAL
 AC_FUNC_MEMCMP
 dnl AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS(vsnprintf gettimeofday glob getopt_long)
+AC_CHECK_FUNCS(vsnprintf gettimeofday getopt_long)
 
 AC_MSG_RESULT([----------------------------------------------------------])
 AC_MSG_RESULT([using console driver: ${CONSOLE_DRIVER}])

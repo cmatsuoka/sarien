@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
 TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 "Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka\n"
 "Portions Copyright (C) 1998 Lance Ewing, (C) 1999 Felipe Rosinha\n"
-#if !defined(HAVE_GETOPT_LONG) || !defined(HAVE_GLOB_H)
+#ifndef HAVE_GETOPT_LONG
 "Portions Copyright (C) 1989-1997 Free Software Foundation, Inc.\n"
 #endif
 "\n"

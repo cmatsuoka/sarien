@@ -20,19 +20,16 @@
 #include "agi.h"
 
 
-int __file_exists (char *fname)
+int file_exists (char *fname)
 {
-	int rc;
 	struct _finddata_t fdata;
 
 	fdata.attrib = _A_NORMAL | _A_ARCH | _A_RDONLY;
-	rc = (0 >= _findfirst (fname, &fdata));
-
-	return rc;
+	return _findfirst (fname, &fdata) > 0;
 }
 
 
-char* __file_name (char *fname)
+char* file_name (char *fname)
 {
 	int rc, f;
 	struct _finddata_t fdata;

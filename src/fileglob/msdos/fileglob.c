@@ -16,14 +16,14 @@
 #include "agi.h"
 
 
-int __file_exists (char *fname)
+int file_exists (char *fname)
 {
 	struct find_t fdata;
-	return _dos_findfirst (fname, _A_NORMAL | _A_ARCH | _A_RDONLY, &fdata);
+	return !_dos_findfirst (fname, _A_NORMAL | _A_ARCH | _A_RDONLY, &fdata);
 }
 
 
-char* __file_name (char *fname)
+char* file_name (char *fname)
 {
 	int rc;
 	struct find_t fdata;

@@ -1,6 +1,6 @@
 
 XCFLAGS	= -I../../include
-OBJS	= fileglob.o glob.o fnmatch.o
+OBJS	= fileglob.o
 DFILES	= Makefile $(OBJS:.o=.c)
 CFILES	=
 DDIRS	=

@@ -41,21 +41,6 @@ struct agi_loader agi_v2 = {
 };
 
 
-static int file_exists (char *s)
-{
-	FILE *f;
-
-	/* Should use stat(), but fopen() is more portable :\ */
-	
-	if ((f = fopen (s, "r")) != NULL) {
-		fclose (f);
-		return 1;
-	}
-
-	return 0;
-}
-
-
 static int agi_v2_detect_game (char *gn)
 {
 	strncpy (game.dir, gn, MAX_PATH);

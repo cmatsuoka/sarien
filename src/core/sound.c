@@ -143,8 +143,6 @@ static int note_to_period (int note)
 
 void unload_sound (int resnum)
 {
-	_D ("(%d)", resnum);
-
 	if (game.dir_sound[resnum].flags & RES_LOADED) {
 		if (sounds[resnum].flags & SOUND_PLAYING)
 			/* FIXME: Stop playing */

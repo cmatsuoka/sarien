@@ -17,9 +17,10 @@ Revision History
 	- added AGI specs SGML documentation; currently converting from
 	  linuxdoc to DocBook
 	- added Lance Ewing's AGI utilities to the bundle
-	- Added Demo Pack 5 to the game ID list
+	- added Demo Pack 5 to the game ID list
 	- buildsystem fixes for XF86 DGA and BeOS
 	- added support for BeOS 5 and SDL
+	- case-insensitive matching to load AGI resource files in UNIX
 
 0.5.2 (20000512) *DEVELOPMENT*
 	- Fixed speach bubbles bug for going outside of screen (draw_obj)

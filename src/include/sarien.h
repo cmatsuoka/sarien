@@ -37,7 +37,7 @@ typedef signed long	SINT32;
 #define VERSION "Win32 native experimental version"
 #endif
 
-#define DIR		"dir."
+#define DIR_		"dir."
 
 #define LOGDIR		"logdir"
 #define PICDIR		"picdir"
@@ -139,8 +139,8 @@ extern	volatile UINT32	msg_box_secs2;
 
 int	init_machine	(int, char **);
 int	deinit_machine	(void);
-int	__file_exists	(char *fname);
-char*	__file_name	(char *fname);
+int	file_exists	(char *fname);
+char*	file_name	(char *fname);
 
 char*	fixpath		(int flag, char *fname);
 
