@@ -17,6 +17,7 @@ Revision History
 	- patching enabled by default only when tracing is enabled
 	- checking null pointers when parsing AGI strings (closes: #491334)
 	- reseting current cel in end.of.loop if KQ4 (closes: #475912)
+	- implemented multi-slot savegames
 
 0.7.0 (20011122)
 	- added QNX4 native sound driver (untested)

@@ -569,7 +569,7 @@ static int select_slot (char *path)
 		sprintf (name, "%s/%08d.sav", path, i);
 		f = fopen (name, "rb");
 		if (f == NULL) {
-			strcpy (desc[i], "(unused slot)");
+			strcpy (desc[i], "          (empty slot)");
 		} else {
 			read_bytes (f, sig, 8);
 			if (strncmp (sig, strSig, 8)) {
@@ -633,6 +633,7 @@ int savegame_dialog ()
 	char home[MAX_PATH], path[MAX_PATH];
 	char *desc;
 	char *buttons[] = { "Do as I say!", "I regret", NULL }; 
+	char dstr[200];
 	int rc, slot = 0;
 	int hm = 2 * CHAR_COLS, vm = 3 * CHAR_LINES;	/* box margins */
 
@@ -659,15 +660,19 @@ int savegame_dialog ()
 
 	slot = select_slot (path);
 
-	rc = selection_box ("Are you sure you want to save the game "
-		"described as:\n\nbla\n\nin slot 5?\n\n\n", buttons);
+ 	desc = "Save game test";
+
+	sprintf (dstr, "Are you sure you want to save the game "
+		"described as:\n\n%s\n\nin slot %d?\n\n\n",
+		desc, slot);
+
+	rc = selection_box (dstr, buttons);
 
 	if (rc > 0) {
 		message_box ("Game NOT saved.");
 		return err_OK;
 	}
 
- 	desc = "Save game test";
 
 	sprintf (path, "%s/" DATA_DIR "/%s/%08d.sav",
 		home, game.id, slot);
@@ -684,27 +689,43 @@ int savegame_dialog ()
 int loadgame_dialog ()
 {
 	char home[MAX_PATH], path[MAX_PATH];
-	int slot = 0;
-	int rc;
+	char *buttons[] = { "I do!", "Of course not", NULL }; 
+	int rc, slot = 0;
+	int hm = 2 * CHAR_COLS, vm = 3 * CHAR_LINES;	/* box margins */
 
 	if (get_app_dir (home, MAX_PATH) < 0) {
 		message_box ("Error loading game.");
 		return err_BadFileOpen;
 	}
 
-	sprintf (path, "%s/" DATA_DIR "/", home);
-	MKDIR (path, 0755);
 	sprintf (path, "%s/" DATA_DIR "/%s/", home, game.id);
-	MKDIR (path, 0711);
+
+	erase_both ();
+	draw_window (hm, vm, GFX_WIDTH - hm, GFX_HEIGHT - vm);
+	draw_text ("Select a game which you wish to\nrestore:",
+		0, hm + CHAR_COLS, vm + CHAR_LINES,
+		(GFX_WIDTH - 2 * hm) / CHAR_COLS - 1,
+		MSG_BOX_TEXT, MSG_BOX_COLOUR);
+	draw_text ("Press ENTER to select, ESC cancels",
+		0, hm + CHAR_COLS, vm + 17 * CHAR_LINES,
+		(GFX_WIDTH - 2 * hm) / CHAR_COLS - 1,
+		MSG_BOX_TEXT, MSG_BOX_COLOUR);
+
+	slot = select_slot (path);
+
+	if (slot < 0) {
+		message_box ("Game NOT restored.");
+		return err_OK;
+	}
 	
 	sprintf (path, "%s/" DATA_DIR "/%s/%08d.sav",
 		home, game.id, slot);
 
 	stop_sound();
 	if((rc = load_game (path)) == err_OK)
-		message_box ("Game loaded.");
+		message_box ("Game restored.");
 	else
-		message_box ("Error loading game.");
+		message_box ("Error restoring game.");
 
 	return rc;
 }
