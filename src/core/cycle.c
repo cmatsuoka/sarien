@@ -86,6 +86,16 @@ void new_room (int n)
 	/* function 0x38d5 */
 }
 
+static void reset_controllers ()
+{
+	int i;
+
+	for (i = 0; i < MAX_DIRS; i++) {
+		game.ev_scan[i].occured = FALSE;
+		game.ev_keyp[i].occured = FALSE;
+	}
+}
+
 static void interpret_cycle ()
 {
 	int old_sound, old_score;
@@ -107,6 +117,7 @@ static void interpret_cycle ()
 		old_score = game.vars[V_score];
 		setflag (F_entered_cli, FALSE);
 		game.exit_all_logics = FALSE;
+		reset_controllers ();
 	}
 
 	game.view_table[0].direction = game.vars[V_ego_dir];
