@@ -33,7 +33,7 @@ void iff_chunk (FILE *f)
 }
 
 
-void iff_register (char *id, void (*loader) ())
+void iff_register (char *id, void (*loader) (UINT32, UINT8 *))
 {
 	struct iff_info *f;
 

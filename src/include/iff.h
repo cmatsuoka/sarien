@@ -30,7 +30,7 @@ struct iff_info {
 };
 
 void iff_chunk (FILE *);
-void iff_register (char *, void (*loader));
+void iff_register (char *, void (*) (UINT32, UINT8 *));
 void iff_idsize (int);
 void iff_setflag (int);
 void iff_release (void);

@@ -192,17 +192,17 @@ int save_game (char *s, char *d)
 
 #define read_num(x) hilo_getdword ((UINT8 *)((UINT32*)(x))++)
 
-static void get_apic (int size, UINT8 *b)
+static void get_apic (UINT32 size, UINT8 *b)
 {
 	memcpy (game.sbuf, b, size);
 }
 
-static void get_spic (int size, UINT8 *b)
+static void get_spic (UINT32 size, UINT8 *b)
 {
 	memcpy (get_sarien_screen (), b, size);
 }
 
-static void get_view (int size, UINT8 *b)
+static void get_view (UINT32 size, UINT8 *b)
 {
 	UINT32 i;
 	struct vt_entry *v;
@@ -250,7 +250,7 @@ static void get_view (int size, UINT8 *b)
 }
 
 
-static void get_stri (int size, UINT8 *buffer)
+static void get_stri (UINT32 size, UINT8 *buffer)
 {
 	UINT32 i, j, n;
 	UINT8 b;
@@ -269,7 +269,7 @@ static void get_stri (int size, UINT8 *buffer)
 }
 
 
-static void get_flag (int size, UINT8 *buffer)
+static void get_flag (UINT32 size, UINT8 *buffer)
 {
 	int n;
 
@@ -282,7 +282,7 @@ static void get_flag (int size, UINT8 *buffer)
 }
 
 
-static void get_vars (int size, UINT8 *buffer)
+static void get_vars (UINT32 size, UINT8 *buffer)
 {
 	int n;
 
@@ -296,7 +296,7 @@ static void get_vars (int size, UINT8 *buffer)
 }
 
 
-static void get_objs (int size, UINT8 *buffer)
+static void get_objs (UINT32 size, UINT8 *buffer)
 {
 	UINT32 i, n;
 
@@ -311,7 +311,7 @@ static void get_objs (int size, UINT8 *buffer)
 }
 
 
-static void get_agid (int size, UINT8 *buffer)
+static void get_agid (UINT32 size, UINT8 *buffer)
 {
 	_D ("(%d, %p)", size, buffer);
 
@@ -325,7 +325,7 @@ static void get_agid (int size, UINT8 *buffer)
 }
 
 
-static void get_gcrc (int size, UINT8 *buffer)
+static void get_gcrc (UINT32 size, UINT8 *buffer)
 {
 	_D ("(%d, %p)", size, buffer);
 }
