@@ -2,7 +2,7 @@
 
 TARGET = sarien
 APPNAME = "Sarien"
-APPID = "P0RN"
+APPID = "FAGI"
 
 OBJS = $(TARGET).o
 LIBS =

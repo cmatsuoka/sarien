@@ -395,8 +395,8 @@
 </para><para>
   So here are the conventions to follow. (They summarize a number of
   style elements already in use in the source code, so just reading
-  the existing codebase and using a similar style will result in
-  style-compliant code.)
+  the existing codebase and using a similar style should give the same
+  results.)
 
   <itemizedlist>
     <listitem><para>
@@ -429,8 +429,17 @@
        functions perform non-obvious or hackish tasks. Code clean-ups
        are frequent and tend to eliminate obscure constructions, and
        commenting hacks helps this process. Sometimes a kludge can't be
-       avoided, so be sure to document it. Avoid intentional obfuscation
+       avoided, so be sure to document it.
+    </para></listitem>
+    <listitem><para>
+       This should be needless to say: avoid intentional obfuscation
        at any cost.
+    </para></listitem>
+    <listitem><para>
+       Avoid project-wide global variables. If they're really global, put
+       it in <function/struct agi_game/, or if they're local to the module
+       declare them as static. In a similar way, declare functions local
+       to a module as static.
     </para></listitem>
   </itemizedlist>
   
@@ -558,11 +567,78 @@
     <graphic fileref="images/hg/main_loop.eps" format="eps"></graphic>
   </figure>
 
+<para>
+  The AGI cycle runs in "spriteless mode". All sprites are removed before
+  running logic 0 and updated when logic 0 finishes. All graphic operations
+  are performed on the AGI 160x160 buffers, actual image blitting (to the
+  output device) happens only at the end of the main loop. 
+</para>
+
 </sect1>
 
 <sect1 id="arch-data">
 <title>Data structures</title>
 <para>
+  AGI-related global variables, accessible from any part of the code, are
+  fields of <function/struct agi_game/, defined in <filename/agi.h/ as
+  follows:
+
+  <programlisting>
+struct agi_game {
+	char name[8];		/* lead in id (eg, goldrush GR */
+	char id[8];		/* game id */	
+	char dir[MAX_PATH];	/* game dir (for v3 games, eg GR&lt;dir&gt;) */
+
+	/* game flags and variables */
+	UINT8 flags[MAX_FLAGS];	/* 256 flags */
+	UINT8 vars[MAX_VARS];	/* 256 variables */
+
+	/* internal variables */
+	int horizon;		/* horizon marker */
+	int line_status;	/* line num to put status on */
+	int line_user_input;	/* line to put user input on */
+	int line_min_print;	/* num lines to print on */
+	int new_room_num;
+	int keypress;
+#define INPUT_NORMAL	0x01
+#define INPUT_GETSTRING	0x02
+#define INPUT_MENU	0x03
+#define INPUT_NONE	0x04
+	int input_mode;
+
+	/* internal flags */
+	int ego_in_new_room;	/* new room flag */
+	int control_mode;	/* who's in control */
+	int quit_prog_now;	/* quit now */
+	int status_line;	/* status line on/off */
+	int clock_enabled;	/* clock is on/off */
+	int exit_all_logics;
+#define ID_AGDS		0x00000001
+#define ID_AMIGA	0x00000002
+	int game_flags;		/* game flags!! (important) */
+
+	UINT32 msg_box_ticks;	/* timed message box tick counter */
+
+	/* directory entries for resources */
+	struct agi_dir dir_logic[MAX_DIRS];
+	struct agi_dir dir_pic[MAX_DIRS];
+	struct agi_dir dir_view[MAX_DIRS];
+	struct agi_dir dir_sound[MAX_DIRS];
+
+	/* player command line */
+	struct agi_word ego_words[MAX_WORDS];
+	int num_ego_words;
+	int num_objects;
+
+	struct agi_event events[MAX_DIRS];	/* keyboard events */
+	char strings[MAX_WORDS1][MAX_WORDS2];	/* strings */
+};
+  </programlisting>
+
+</para><para>
+   Some of the members of <function/struct agi_game/ are redundant and
+   should be removed in a near future. (For example, the "internal flags"
+   might be bitmapped into <parameter/game_flags/).
 </para>
 </sect1>
 

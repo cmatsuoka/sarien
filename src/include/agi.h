@@ -50,8 +50,8 @@ struct agi_game {
 	char dir[MAX_PATH];	/* game dir (for v3 games, eg GR<dir>) */
 
 	/* game flags and variables */
-	UINT8 flags[MAX_FLAGS];		/* 256 flags (byte is easier to debug! */
-	UINT8 vars[MAX_VARS];			/* 256 variables */
+	UINT8 flags[MAX_FLAGS];	/* 256 flags (byte is easier to debug! */
+	UINT8 vars[MAX_VARS];	/* 256 variables */
 
 	/* internal variables */
 	int horizon;		/* horizon marker */

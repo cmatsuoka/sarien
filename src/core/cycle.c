@@ -571,10 +571,14 @@ int main_cycle ()
 			console_cycle ();
 			return FALSE;
 		case INPUT_NONE:
-		default:
 			handle_controller (key);
 			if (key) game.keypress = key;
 			break;
+		}
+	} else {
+		if (game.input_mode == INPUT_MENU) {
+			console_cycle ();
+			return FALSE;
 		}
 	}
 
