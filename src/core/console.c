@@ -627,6 +627,10 @@ int console_keyhandler (int k)
 	SINT16 y1,y2;
 	char m[2];
 
+	/* Right button switches console on/off*/
+	if (k == BUTTON_RIGHT)
+		k = CONSOLE_ACTIVATE_KEY;
+
 	if (!console.active) {
 		if (k == CONSOLE_ACTIVATE_KEY) {
 			console.active = 1;
@@ -652,6 +656,10 @@ int console_keyhandler (int k)
 
 	if (y1 < 0) y1 = 0;
 	if (y2 < 0) y2 = 0;
+
+	/* Ignore left button in console */
+	if (k == BUTTON_LEFT)
+		return TRUE;
 
 	if (k) {
 		if (k != KEY_ENTER && console.first_line != CONSOLE_LINES_BUFFER -

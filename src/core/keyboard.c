@@ -180,8 +180,6 @@ int handle_controller (int key)
 			v->parm1 = WIN_TO_PIC_X(mouse.x);
 			v->parm2 = WIN_TO_PIC_Y(mouse.y);
 			return TRUE;
-		case BUTTON_RIGHT:
-			return TRUE;
 		} 
 
 		v->flags &= ~ADJ_EGO_XY;
