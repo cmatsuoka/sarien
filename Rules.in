@@ -35,9 +35,12 @@ EXE_SUFFIX	= @EXE_SUFFIX@
 #
 # Ideally it should not be necessary to tweak parameters below this line
 #
-.SUFFIXES: .c .o .a .so .html .sgml .lint
+.SUFFIXES: .c .o .m .a .so .html .sgml .lint
 
 .c.o:
+	$(CC) -c $(CFLAGS) $(XCFLAGS) -o $@ $<
+
+.m.o:
 	$(CC) -c $(CFLAGS) $(XCFLAGS) -o $@ $<
 
 .o.so:

@@ -33,11 +33,11 @@ struct sarien_options opt;
 struct game_id_list game_info;
 struct agi_game game;
 
-#if (!defined(_TRACE) && !defined(__GNUC__)) || defined(NATIVE_MACOSX)
+#if (!defined(_TRACE) && !defined(__GNUC__)) /* || defined(MACOSX) */
 INLINE void _D (char *s, ...) { s = s; }
 #endif
 
-#ifdef NATIVE_MACOSX
+#ifdef MACOSX
 #define main gamemain
 #endif
 

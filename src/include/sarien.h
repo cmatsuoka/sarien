@@ -78,18 +78,18 @@ extern "C"{
 #    define _D_WARN "W: "
 #    define _D fflush(stdout); printf("\n%s:%d: ", __FILE__, __LINE__); printf
 #  endif /* __GNUC__ */
-#else /* _TRACE */
+#else /* !_TRACE */
 #  define _D_INFO
 #  define _D_CRIT
 #  define _D_WARN
-#  if defined (__GNUC__) && !defined (NATIVE_MACOSX)
+#  ifdef _D
+#    undef _D
+#  endif
+#  if defined(__GNUC__) /* && !defined(MACOSX) */
 #    define _D(args...)
 #  else
-#    ifdef _D
-#      undef _D
-#    endif
      void _D(char *, ...);
-#  endif /* __GNUC__ && !NATIVE_MACOSX */
+#  endif
 #endif /* _TRACE */
 
 

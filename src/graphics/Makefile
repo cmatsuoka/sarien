@@ -5,7 +5,7 @@ OBJS	=
 DFILES	= Makefile
 CFILES	=
 DDIRS	= msdos sdl x11 svgalib win32 photon dive macos amiga script dc \
-	  directx
+	  directx cocoa
 XDFILES =
 LIB	=
 

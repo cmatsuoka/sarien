@@ -1,10 +1,10 @@
-# $Id$
 
 XCFLAGS	= -I../../include
-OBJS	= sound_macos.o
-DFILES	= Makefile sound_macos.c
+OBJS	= SarienAudio.o
+DFILES	= Makefile $(OBJS:.o=.m)
 CFILES	=
 DDIRS	=
+XDFILES	=
 LIB	= ../../../lib/libsarien.a
 
 all: $(LIB)

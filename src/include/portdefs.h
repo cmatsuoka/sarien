@@ -151,7 +151,3 @@ static char g_vmu_port[2];
 #  define VERSION __TIMESTAMP__
 #endif
 
-#ifdef NATIVE_MACOSX
-#  define VERSION "MacOS X native experimental version"
-#endif
-

@@ -1,4 +1,4 @@
-#if !defined PALMOS && !defined WIN32
+#if !defined(PALMOS) && !defined(WIN32)
 
 /* Getopt for GNU.
    NOTE: getopt is now part of the C library, so if you don't know what

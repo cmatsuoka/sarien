@@ -1,3 +1,4 @@
+# $Id$
 
 XCFLAGS	= -I../../include $(X11CFLAGS)
 OBJS	= x11.o
