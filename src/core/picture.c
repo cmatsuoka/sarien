@@ -24,7 +24,7 @@ static UINT32	flen;
 static UINT32	foffs;
 
 static UINT8	pat_code;
-static UINT8	patNum;
+static UINT8	pat_num;
 static UINT8	pri_on;
 static UINT8	scr_on;
 static UINT8	scr_colour;
@@ -471,7 +471,7 @@ static void fill ()
 {
 	int x1, y1;
 
-	while ((x1 = next_byte) < 0xF0 && (y1 = next_byte) < 0xF0)
+	while ((x1 = next_byte) < 0xF0 && (y1 = next_byte) < 0xf0)
 		agiFill (x1, y1);
 
 	foffs--;
@@ -485,16 +485,14 @@ static void fill ()
 ** on the pattern code.
 **************************************************************************/
 
-/* Extra randomness in hi-res mode added to brush fill, and double width
- * to single pixels (makes MUMG and others look a lot nicer). 
- */
-
 static int plot_pattern_point (int x, int y, int bitpos, int res)
 {
 	if (pat_code & 0x20) {
 		if ((splatterMap[bitpos >> 3] >> (7 - (bitpos & 7))) & 1) {
 #ifdef USE_HIRES
 			if (res > 1) {
+				/* extra randomness in hi-res brush fill
+				 */
 				if (rnd(4))  put_virt_pixel(x * 2, y, 2);
 				if (!rnd(4)) put_virt_pixel(x * 2 + 1, y, 2);
 			} else
@@ -509,6 +507,9 @@ static int plot_pattern_point (int x, int y, int bitpos, int res)
 	} else {
 #ifdef USE_HIRES
 		if (res > 1) {
+			/* double width pixels make MUMG and others
+			 * look nicer
+			 */
  			put_virt_pixel (x * 2, y, 2);
 			put_virt_pixel (x * 2 + 1, y, 2);
 		} else
@@ -525,7 +526,7 @@ static int plot_pattern_point (int x, int y, int bitpos, int res)
 static void plot_pattern (int x, int y, int res)
 {
 	SINT32 circlePos = 0;
-	UINT32 x1, y1, pensize, bitpos = splatterStart[patNum];
+	UINT32 x1, y1, pensize, bitpos = splatterStart[pat_num];
 
 	pensize = (pat_code & 7);
 
@@ -563,9 +564,9 @@ static void plot_brush (int res)
 
 	while (42) {
 		if (pat_code & 0x20) {
-			if ((patNum = next_byte) >= 0xF0)
+			if ((pat_num = next_byte) >= 0xF0)
 				break;
-			patNum = (patNum >> 1) & 0x7f;
+			pat_num = (pat_num >> 1) & 0x7f;
 		}
 
 		if ((x1 = next_byte) >= 0xf0)
@@ -593,7 +594,7 @@ static void draw_picture ()
 #endif
 
  	pat_code = 0;
- 	patNum = 0;
+ 	pat_num = 0;
  	pri_on = scr_on = FALSE;
  	scr_colour = 0xf;
  	pri_colour = 0x4;
@@ -767,7 +768,7 @@ int decode_picture (int n, int clear)
 	_D (_D_WARN "(%d)", n);
 
 	pat_code = 0;
-	patNum = 0;
+	pat_num = 0;
 	pri_on = scr_on = FALSE;
 	scr_colour = 0xF;
 	pri_colour = 0x4;
