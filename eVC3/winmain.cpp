@@ -29,7 +29,7 @@ void _D (char *s, ...) { }
 volatile UINT32 clock_ticks;
 volatile UINT32 clock_count;
 
-extern "C" UINT8 *font, font_english[];
+//extern "C" UINT8 *font, font_english[];
 
 struct sarien_options opt;
 struct game_id_list game_info;
@@ -91,7 +91,7 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPWSTR lpszArgs, in
 	game.color_fg = 15;
 	game.color_bg = 0;
 
-	font = font_english;
+//	font = font_english;
 
 	if (init_video () != err_OK) {
 		ec = err_Unk;
