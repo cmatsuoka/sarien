@@ -86,212 +86,231 @@ static void update_objects ()
 }
 
 
-void adj_direction (int entry, int h, int w)
+void adj_direction (struct agi_view_table *v, int h, int w)
 {
-	struct agi_view_table *vt_obj;
+	int dir;
 
 	if (h == 0 && w == 0)
 		return;
 
-	vt_obj = &view_table[entry];
+	dir = v->direction;
 
 	if (abs(w) > abs(h)) {
 		if (w > 0)
-			vt_obj->direction = h < 0 ? 2 : h > 0 ? 4 : 3;
+			dir = h < 0 ? 2 : h > 0 ? 4 : 3;
 		else if (w < 0)
-			vt_obj->direction = h < 0 ? 8 : h > 0 ? 6 : 7;
+			dir = h < 0 ? 8 : h > 0 ? 6 : 7;
 		else
-			vt_obj->direction = h <= 0 ? 1 : 5;
+			dir = h <= 0 ? 1 : 5;
 	} else {
 		if (h > 0)
-			vt_obj->direction = w < 0 ? 6 : w > 0 ? 4 : 5;
+			dir = w < 0 ? 6 : w > 0 ? 4 : 5;
 		else if (h < 0)
-			vt_obj->direction = w < 0 ? 8 : w > 0 ? 2 : 1;
+			dir = w < 0 ? 8 : w > 0 ? 2 : 1;
 		else
-			vt_obj->direction = w <= 0 ? 7 : 3;
+			dir = w <= 0 ? 7 : 3;
 	}
 
 	/* Always call calc_direction to avoid moonwalks */
-	calc_direction (entry);
+	calc_direction (v->entry);
 }
 
 
-static int check_borders (int em, int x, int y)
+static int check_position (struct agi_view_table *v)
 {
-	struct agi_view_table *vt_obj = &view_table[em];
-	int dir, v, cel_width = VT_WIDTH(view_table[em]);
-
-	vt_obj = &view_table[em];
-	dir = vt_obj->direction;
-
-	/*********/
-	if (vt_obj->x_pos + cel_width > _WIDTH)
+	if (v->x_pos + VT_WIDTH((*v)) > _WIDTH)
 		return -1;
 
-	v = em == EGO_VIEW_TABLE ? V_border_touch_ego : V_border_touch_obj;
-
-	if (x < 0 && (dir == 8 || dir == 7 || dir == 6)) {
-		_D (_D_WARN "left border: vt %d, x %d, dir %d", em, x, dir); 
-		if (em != EGO_VIEW_TABLE)
-			setvar (V_border_code, em);
-		setvar (v, 4);
+	if (v->y_pos < VT_HEIGHT((*v)))
 		return -1;
-	}
 
-	if (x > _WIDTH - cel_width && (dir == 2 || dir == 3 || dir == 4)) {
-		_D (_D_WARN "right border: vt %d, x %d, dir %d", em, x, dir); 
-		if (em != EGO_VIEW_TABLE)
-			setvar (V_border_code, em);
-		setvar (v, 2);
+	if (v->y_pos > _HEIGHT)
 		return -1;
-	}
 
-	if (y > _HEIGHT - 1 && (dir == 4 || dir == 5 || dir == 6)) {
-		_D (_D_WARN "bottom border: vt %d, x %d, dir %d", em, x, dir); 
-		if (em != EGO_VIEW_TABLE)
-			setvar (V_border_code, em);
-		setvar (v, 3);
+	if (~v->flags & IGNORE_HORIZON && v->y_pos <= game.horizon)
 		return -1;
-	}
-
-	if (y < game.horizon && (dir == 1 || dir == 2 || dir == 8)) {
-		_D (_D_WARN "top border: vt %d, x %d, dir %d", em, x, dir); 
-		if (em != EGO_VIEW_TABLE)
-			setvar (V_border_code, em);
-		setvar (v, 1);
-		return -1;
-	}
 
 	return 0;
 }
 
 
-static int check_control_lines (int em, int x, int y)
+static int check_clutter (struct agi_view_table *v)
 {
-	struct agi_view_table *vt_obj = &view_table[em];
-	int i, w, cel_width = VT_WIDTH(view_table[em]);
+	struct agi_view_table *u;
 
-	if (em == EGO_VIEW_TABLE)
-		setflag (F_ego_touched_p2, FALSE);
+	if (v->flags & IGNORE_OBJECTS)
+		return 0;
 
-	w = 0;
-	for (i = x + cel_width - 1; i >= x; i--) {
-		switch (xdata_data[y * _WIDTH + i]) {
-		case 0:	/* unconditional black. no go at all! */
-			return -1;
-		case 1:			/* conditional blue */
-			if (~vt_obj->flags & IGNORE_BLOCKS) {
-				_D (_D_CRIT "Blocks observed!");
-				return -1;
+	for (u = &view_table[0]; u <= &view_table[MAX_VIEWTABLE]; u++) {
+		if ((u->flags & (ANIMATED|DRAWN)) == (ANIMATED|DRAWN))
+			continue;
+
+		if (u->flags & IGNORE_OBJECTS)
+			continue;
+
+		if (v->entry == u->entry)
+			continue;
+
+		if (v->x_pos + VT_WIDTH((*v)) < u->x_pos)
+			continue;
+
+		if (v->x_pos > u->x_pos + VT_WIDTH((*u)))
+			continue;
+
+#if 0
+		if (v->y_pos != u->y_pos) {
+			if (v->y_pos > u->y_pos) {
+				if (v->old_y_pos < u->old_y_pos) {
+					
+				}
 			}
+		}
+#endif
+
+		if (v->y_pos >= u->y_pos)
+			continue;
+
+#if 0
+		if (v->old_y_pos <= u->old_y_pos)
+			continue;	
+#endif
+
+		return 0;
+	}
+	
+	return -1;
+}
+
+
+static int check_priority (struct agi_view_table *v)
+{
+	int i, cel_width = VT_WIDTH((*v));
+	int trigger, water, pass;
+
+	if (~v->flags & FIXED_PRIORITY) {
+		v->priority = v->y_pos < 48 ? 4 :
+			v->y_pos / 12 + 1;
+	}
+
+	trigger = 0;
+	water = 1;
+	pass = 1;
+
+	for (i = v->x_pos + cel_width - 1; i >= v->x_pos; i--) {
+		UINT8 x = xdata_data[v->y_pos * _WIDTH + i];
+
+		if (x == 0) {		/* unconditional black. no go at all! */
+			pass = 0;
 			break;
-		case 2:			/* trigger */
-			if (em == EGO_VIEW_TABLE) {
-				setflag (3, TRUE);
-				vt_obj->x_pos = x;
-				vt_obj->y_pos = y;
-				_D (_D_CRIT "Trigger pressed!");
-				return -2;
-			}
+		}
+
+		if (x == 3)		/* water surface */
+			continue;
+
+		water = 0;
+
+		if (x == 1) {		/* conditional blue */
+			if (~v->flags & IGNORE_BLOCKS)
+				continue;
+
+			_D (_D_WARN "Blocks observed!");
+			pass = 0;
+			break;
+		}
+
+		if (x == 2) { 		/* trigger */
+			_D (_D_WARN "stepped on trigger");
+			trigger = 1;
 		}
 	}
 
-	return 0;
+	if (pass) {
+		if (!water && v->flags & ON_WATER)
+			pass = 0;
+		if (water && v->flags & ON_LAND)
+			pass = 0;
+	}
+
+	if (v->entry == 0) {
+		setflag (F_ego_touched_p2, trigger ? TRUE : FALSE);
+		setflag (F_ego_water, water ? TRUE : FALSE);
+	}
+
+	return pass ? 0 : -1;
 }
 
 
-static int check_surface (int em, int x, int y)
+static void normal_motion (struct agi_view_table *v)
 {
-	struct agi_view_table *vt_obj = &view_table[em];
-	int i, w, cel_width = VT_WIDTH(view_table[em]);
+	int dir, var, w = VT_WIDTH((*v));
+	int x, y, mt[9][2] = {
+		{  0,  0 }, {  0, -1 }, {  1, -1 }, {  1,  0 },
+		{  1,  1 }, {  0,  1 }, { -1,  1 }, { -1,  0 },
+		{ -1, -1 }
+	};
 
-	if (em == EGO_VIEW_TABLE)
-		setflag (F_ego_water, FALSE);
+	if ((dir = v->direction) == 0)		/* stationary */
+		return;
 
-	w = 0;
+	x = mt[dir][0];
+	y = mt[dir][1];
 
-	for (i = x + cel_width - 1; i >= x; i--) {
-		if (xdata_data[y * _WIDTH + i] == 3 && em == EGO_VIEW_TABLE)
-			w++;
-	}
-
-	if (em == EGO_VIEW_TABLE) {
-		/* Check if ego is completely on water */
-		if (w >= cel_width) {
-			_D (_D_WARN "Ego is completely on water");
-			vt_obj->x_pos = x;
-			vt_obj->y_pos = y;
-			setflag (F_ego_water, TRUE);
-			//return -1;
-		}
-	}
-
-	if (getflag (F_ego_water)) {
-		if (vt_obj->flags & ON_LAND) {
-			_D (_D_CRIT "failed: must stay ON_LAND");
-			return -1;
-		}
-	} else {
-		if (vt_obj->flags & ON_WATER) {
-			_D (_D_CRIT "failed: must stay ON_WATER");
-			return -1;
-		}
-	}
-
-	return 0;
-}
-
-
-static void normal_motion (int em, int x, int y)
-{
-	struct agi_view_table *vt_obj;
-
-	if (VT_VIEW(view_table[em]).loop == NULL) {
-		_D(_D_CRIT "Attempt to access NULL view_table[%d].loop", em);
+	if (VT_VIEW((*v)).loop == NULL) {
+		_D(_D_CRIT "Attempt to access NULL view_table[%d].loop",
+			v->entry);
 		return;
 	}
 
-	if (view_table[em].current_cel >= VT_LOOP(view_table[em]).num_cels) {
+	if (v->current_cel >= VT_LOOP((*v)).num_cels) {
 		_D(_D_CRIT "Attempt to access cel(%d) >= num_cels(%d) in vt%d",
-			view_table[em].current_cel,
-			VT_LOOP(view_table[em]).num_cels, em);
+			v->current_cel, VT_LOOP((*v)).num_cels, v->entry);
 		return;
 	}
 
-	vt_obj = &view_table[em];
+	var = v->entry == 0 ? V_border_touch_ego : V_border_touch_obj;
 
-	/* Positions should be adjusted if the object is stepping
-	 * on a control line, as reported by Nat Budin.
-	 *
-	 * This is not the correct solution: it breaks DDP and KQ1 intros
-	 * but fixes hooker and honeymoon suite door in LSL1.
-	 *
-	 * "I found that the object would usually go further down and to
-	 * the left than I told AGI to place it. This wasn't completely
-	 * consistent, though.  You might want to email Nick Sonneveld
-	 * about this, because his interpreter seems to place the views
-	 * correctly."
-	 */
-
-
-	x += vt_obj->x_pos;
-	y += vt_obj->y_pos;
-
-	if (check_borders (em, x, y) || check_control_lines (em, x, y) ||
-		check_surface (em, x, y))
+	if (x + v->x_pos < 0 && (dir == 8 || dir == 7 || dir == 6)) {
+		if (v->entry) setvar (V_border_code, v->entry);
+		setvar (var, 4);
 		return;
+	}
+
+	if (x + v->x_pos > _WIDTH - w && (dir == 2 || dir == 3 || dir == 4)) {
+		if (v->entry) setvar (V_border_code, v->entry);
+		setvar (var, 2);
+		return;
+	}
+
+	if (y + v->y_pos > _HEIGHT - 1 && (dir == 4 || dir == 5 || dir == 6)) {
+		if (v->entry) setvar (V_border_code, v->entry);
+		setvar (var, 3);
+		return;
+	}
+
+	if (y + v->y_pos < game.horizon && (dir == 1 || dir == 2 || dir == 8)) {
+		if (v->entry) setvar (V_border_code, v->entry);
+		setvar (var, 1);
+		return;
+	}
+
+	v->x_pos += x;
+	v->y_pos += y;
+
+	if (check_position (v) || check_priority (v)) {
+		v->x_pos -= x;
+		v->y_pos -= y;
+		return;
+	}
 
 	/* New object direction */
-	adj_direction (em, y - vt_obj->y_pos, x - vt_obj->x_pos);
-
-	vt_obj->y_pos = y;
-	vt_obj->x_pos = x;
+	adj_direction (v, y, x);
 }
 
 
+/* Budin-Sonneveld offset */
 void reposition (int em)
 {
-	struct agi_view_table *vt_obj = &view_table[em];
+	struct agi_view_table *v = &view_table[em];
 	int count, dir, tries;
 
 	/* test horizon */
@@ -299,29 +318,26 @@ void reposition (int em)
 	dir = 0;
 	count = tries = 1;
 
-	while (check_borders (em, vt_obj->x_pos, vt_obj->y_pos) ||
-		check_control_lines (em, vt_obj->x_pos, vt_obj->y_pos) ||
-		check_surface (em, vt_obj->x_pos, vt_obj->y_pos))
-	{
+	while (check_position (v) || check_priority (v)) {
 		switch (dir) {
 		case 0:			/* west */
-			vt_obj->x_pos--;
+			v->x_pos--;
 			if (--count) continue;
 			dir = 1;
 			break;
 		case 1:			/* south */
-			vt_obj->y_pos++;
+			v->y_pos++;
 			if (--count) continue;
 			dir = 2;
 			tries++;
 			break;
 		case 2:			/* east */
-			vt_obj->x_pos++;
+			v->x_pos++;
 			if (--count) continue;
 			dir = 3;
 			break;
 		case 3:			/* north */
-			vt_obj->y_pos--;
+			v->y_pos--;
 			if (--count) continue;
 			dir = 0;
 			tries++;
@@ -330,19 +346,6 @@ void reposition (int em)
 
 		count = tries;
 	}
-}
-
-
-static void set_motion (int em)
-{
-	int i, mt[9][2] = {
-		{  0,  0 }, {  0, -1 }, {  1, -1 }, {  1,  0 },
-		{  1,  1 }, {  0,  1 }, { -1,  1 }, { -1,  0 },
-		{ -1, -1 }
-	};
-
-	if ((i = view_table[em].direction))
-		normal_motion (em, mt[i][0], mt[i][1]);
 }
 
 
@@ -370,11 +373,10 @@ static void adj_pos (int em, int x2, int y2)
 	}
 
 	/* adjust the direction */
-	adj_direction (em, y2 - y1, x2 - x1);
+	adj_direction (vt_obj, y2 - y1, x2 - x1);
 
-	check_borders (em, x1, y2);
-	check_control_lines (em, x1, y2);
-	check_surface (em, x1, y2);
+	//check_position (em, x1, y2);
+	//check_priority (em, x1, y2);
 
 #define CLAMP_MAX(a,b,c) { if(((a)+=(c))>(b)) { (a)=(b); } }
 #define CLAMP_MIN(a,b,c) { if(((a)-=(c))<(b)) { (a)=(b); } }
@@ -420,12 +422,12 @@ static void calc_obj_motion ()
 
 		switch(vt_obj->motion) {
 		case MOTION_NORMAL:		/* normal */
-			set_motion (em);
+			normal_motion (vt_obj);
 			break;
 		case MOTION_WANDER:		/* wander */
 			ox = vt_obj->x_pos;
 			oy = vt_obj->y_pos;
-			set_motion (em);
+			normal_motion (vt_obj);
 
 			/* CM: FIXME: when object walks offscreen (x < 0)
 			 *     it returns x_pos == ox, y_pos == oy and

@@ -255,6 +255,7 @@ void dictionary_words (char *msg)
  		}
 	}
 
+	_D (_D_WARN "num_ego_words = %d", game.num_ego_words);
 	if (game.num_ego_words > 0) {
 		setflag (F_entered_cli, TRUE);
 		setflag (F_said_accepted_input, FALSE);

@@ -37,6 +37,7 @@ struct agi_view {
 };
 
 struct agi_view_table {
+	UINT8		entry;
 	UINT8		x_pos;
 	UINT8		y_pos;
 
@@ -108,6 +109,7 @@ void	add_to_pic	(int, int, int, int, int, int, int);
 void	reset_views	(void);
 void	reset_view	(int);
 void	calc_direction	(int);
+void    adj_direction   (struct agi_view_table *, int, int);
 void	draw_obj	(int);
 
 #ifdef __cplusplus

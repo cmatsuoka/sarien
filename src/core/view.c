@@ -83,6 +83,7 @@ void init_view_table ()
 	_D ("()");
 	for (i = 0; i < MAX_VIEWTABLE; i++) {
 		memset (&view_table[i], 0, sizeof (struct agi_view_table));
+		view_table[i].entry = i;
 		view_table[i].step_time = 1;
 		view_table[i].step_time_count = 1;
 		view_table[i].step_size = 1;

@@ -231,6 +231,7 @@ static void _draw_sprites (int all)
 	for (i = 0; i < MAX_VIEWTABLE; i++)
 		list[i] = i;
 
+#if 0
 	for(i = 0; i < MAX_VIEWTABLE; i++) {
 		/* Calculate priority bands */
 		if (~view_table[i].flags & FIXED_PRIORITY) {
@@ -239,6 +240,7 @@ static void _draw_sprites (int all)
 				view_table[i].y_pos / 12 + 1;
 		}
 	}
+#endif
 
 	qsort (list, MAX_VIEWTABLE, sizeof (int), cmp_pri);
 

@@ -607,7 +607,7 @@ void cmd_move_obj (UINT8 entry, UINT8 x, UINT8 y, UINT8 step, UINT8 flag)
 	/* FR: Guess the direction of the movement (should call adj_direction)
 	 * CM: Ok, calling adj_direction
 	 */
-	adj_direction (entry, y - vt.y_pos, x - vt.x_pos);
+	adj_direction (&vt, y - vt.y_pos, x - vt.x_pos);
 
 	/* CM: added according to AGDS docs */
 	if (!entry)
