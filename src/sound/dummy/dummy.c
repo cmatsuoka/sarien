@@ -18,7 +18,7 @@ static void dummy2_close_sound (void);
 static struct sound_driver sound_dummy2 = {
 	"Dummy sound driver",
 	dummy2_init_sound,
-	dummy2_close_sound,
+	dummy2_close_sound
 };
 
 
