@@ -20,7 +20,6 @@ static int check_step (int delta, int step)
 
 static int check_block (int x, int y)
 {
-printf ("%d,%d   %d,%d;%d,%d\n", x, y, game.block.x1, game.block.y1, game.block.x2, game.block.y2);
 	if (x <= game.block.x1 || x >= game.block.x2)
 		return FALSE;
 
