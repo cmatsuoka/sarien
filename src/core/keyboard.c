@@ -23,9 +23,9 @@
 #include "console.h"
 #include "text.h"	/* remove later */
 
-AGI_EVENT events[MAX_DIRS];	/* keyboard events */
+struct agi_event events[MAX_DIRS];	/* keyboard events */
 
-int num_ego_words;		/* number of words entered */
+int num_ego_words	;		/* number of words entered */
 struct agi_word ego_words[MAX_WORDS];	/* words entered by player */
 
 UINT8 strings[MAX_WORDS1][MAX_WORDS2];	/* strings */
@@ -47,8 +47,7 @@ extern struct gfx_driver *gfx;
 /*
  * IBM-PC keyboard scancodes
  */
-UINT8 scancode_table[26] =
-{
+UINT8 scancode_table[26] = {
 	30,			/* A */
 	48,			/* B */
 	46,			/* C */
@@ -86,30 +85,22 @@ void init_words ()
 
 void clean_input ()
 {
-	UINT16 i;
+	int i;
 
 	for (i = 0; i < MAX_WORDS; i++) {
 		ego_words[i].word = "";
 		ego_words[i].id = 0xffff;
 	}
+
 	num_ego_words = 0;
 }
 
-
-void print_character (int x, int y, char c, int fg, int bg)
-{
-	if (allow_kyb_input) {
-		put_text_character( 0, x, y, c, fg, bg );
-		/* CM: the extra pixel in y is for the underline cursor */
-		gfx->put_block (x, y, x + 7, y + 8); 
-	}
-}
 
 /* Called if ego enters a new room */
 /* FIXME: remove lowlevel print_text call! */
 void print_line_prompt ()
 {
-	UINT8 k;
+	int k;
 
 	if (allow_kyb_input) {
 		/* Command prompt */
@@ -358,32 +349,38 @@ void handle_keys ()
 	if (old_keyboard_status != allow_kyb_input) {
 		old_keyboard_status = allow_kyb_input;
 
-		if (allow_kyb_input)
-			print_line_prompt();
-		else
-			cmd_clear_lines (line_user_input, line_user_input, txt_bg);
-
-	} else {
 		if (allow_kyb_input) {
-			if (new_line) {
-				new_line = 0;
+			print_line_prompt();
+		} else {
+			cmd_clear_lines (line_user_input,
+				line_user_input, txt_bg);
+		}
+	} else if (allow_kyb_input) {
+		if (new_line) {
+			new_line = 0;
 
-            /* TODO: Should handle IsGetString */
+			/* TODO: Should handle IsGetString */
 
-            if ( !IsGetString )
-            {
-				   cmd_clear_lines (line_user_input, line_user_input, txt_bg);
-				   print_text( agi_printf(strings[0], 0), 0, 0, line_user_input*8, 40, txt_fg, txt_bg );
-            }
-			}
+           		if (!IsGetString) {
+	   			cmd_clear_lines (line_user_input,
+					line_user_input, txt_bg);
+	   			print_text (agi_printf (strings[0], 0), 0, 0,
+					line_user_input * 8,
+					40, txt_fg, txt_bg);
+       			}
+		}
 
-			/* Print txt_char */
-			if ( IsGetString )
-   			print_character( xInput + ((bufindex + 1) * 8), yInput, txt_char, txt_fg, txt_bg );		
-			else
-				print_character( (bufindex + 1) * 8, line_user_input * 8, txt_char, txt_fg, txt_bg );
+		/* Print txt_char */
+		if (IsGetString) {
+			print_character (xInput + ((bufindex + 1) * 8),
+				yInput, txt_char, txt_fg, txt_bg);
+		} else {
+			print_character ((bufindex + 1) * 8,
+				line_user_input * 8, txt_char,
+				txt_fg, txt_bg );
 		}
 	}
+
 
 	if (key < 0x100)
 		return;
@@ -417,9 +414,9 @@ void handle_keys ()
 }
 
 
-UINT8 wait_key ()
+int wait_key ()
 {
-	UINT8 x;
+	int x;
 
 	while(42) {
 		main_cycle (FALSE);

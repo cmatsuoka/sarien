@@ -66,6 +66,8 @@ void	release_sprites	(void);
 void	draw_sprites	(void);
 void	redraw_sprites	(void);
 
+void	print_character	(int, int, char, int, int);
+
 #ifdef __cplusplus
 };
 #endif

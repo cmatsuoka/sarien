@@ -34,6 +34,7 @@ extern struct sarien_debug debug;
 extern struct agi_logic logics[];
 extern struct agi_view_table view_table[];
 extern struct agi_object *objects;
+extern struct agi_event events[];
 extern UINT8 quit_prog_now;
 
 UINT16	test_if_code	(UINT16);

@@ -90,6 +90,7 @@ extern struct agi_loader *loader;
 extern struct agi_object *objects;
 extern struct agi_logic logics[];
 extern struct agi_view views[];
+extern struct agi_event events[];
 extern struct agi_view_table view_table[];
 extern struct agi_menu *menu;
 extern struct sarien_options opt;

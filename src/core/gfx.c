@@ -520,3 +520,13 @@ void redraw_sprites ()
 	_draw_sprites (0);
 }
 
+
+void print_character (int x, int y, char c, int fg, int bg)
+{
+	if (allow_kyb_input) {
+		put_text_character( 0, x, y, c, fg, bg );
+		/* CM: the extra pixel in y is for the underline cursor */
+		gfx->put_block (x, y, x + 7, y + 8); 
+	}
+}
+
