@@ -110,7 +110,7 @@ static UINT8 test_said (UINT8 nwords, UINT8 *cc)
 	int c, n = game.num_ego_words;
 	int z = 0;
 
-	if (!getflag (F_entered_cli))
+	if (getflag (F_said_accepted_input) || !getflag (F_entered_cli))
 		return FALSE;
 
 	/* FR:
@@ -155,15 +155,17 @@ static UINT8 test_said (UINT8 nwords, UINT8 *cc)
 	/* The interpreter string shouldn't be entirely parsed, but next
 	 * word must be 9999.
 	 */
-	if (nwords != 0 && lohi_getword(cc) != 9999)    
+	if (nwords != 0 && lohi_getword(cc) != 9999)
 		return FALSE;
 
 	setflag (F_said_accepted_input, TRUE);
 
+#if 0
 	/* FR :
 	 * Hack  (Fixes some bugs in larry 1)
 	 */
 	setflag (F_entered_cli, FALSE);
+#endif
 
 	return TRUE;
 }
