@@ -114,7 +114,7 @@ Sarien  ÄÄ  {ObjFiles-68K} {LibFiles-68K} {¥MondoBuild¥}
 		{Sym-68K} ¶
 		-mf -d ¶
 		-t 'APPL' ¶
-		-c '????' ¶
+		-c 'FAGI' ¶
 		-model near ¶
 		-state rewrite ¶
 		-compact -pad 0

@@ -32,7 +32,7 @@ static struct agi_menu *master_menu = NULL;
 static struct agi_menu *menu = NULL;
 
 
-static void draw_horizontal_menu_bar (int cur_menu, int max_menu)
+static void draw_horizontal_menu_bar (int cur_menu)
 {
 	struct agi_menu *men = NULL;
 	int col, z;
@@ -227,7 +227,7 @@ int menu_keyhandler (int key)
    			men = men->next;
    		for (v_max_menu = 0; men; v_max_menu++, men = men->down) {}
 	
-   		draw_horizontal_menu_bar (h_cur_menu, h_max_menu);
+   		draw_horizontal_menu_bar (h_cur_menu /* , h_max_menu */);
    		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
 		menu_active = TRUE;
 	}
@@ -275,7 +275,7 @@ int menu_keyhandler (int key)
 			men=men->next;
 		for (v_max_menu = 0; men; v_max_menu++, men = men->down) {}
 		v_cur_menu = 0;
-		draw_horizontal_menu_bar (h_cur_menu, h_max_menu);
+		draw_horizontal_menu_bar (h_cur_menu /* , h_max_menu */);
     		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
     		break;
     	case KEY_LEFT:
@@ -291,7 +291,7 @@ int menu_keyhandler (int key)
 			men=men->next;
 		for (v_max_menu = 0; men; v_max_menu++, men=men->down) {}
 		v_cur_menu = 0;
-		draw_horizontal_menu_bar (h_cur_menu, h_max_menu);
+		draw_horizontal_menu_bar (h_cur_menu /*, h_max_menu */);
     		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
     		break;
     	}

@@ -10,8 +10,10 @@
 
 #include <stdio.h>
 #include <string.h>
+#ifndef __MPW__
 #include <sys/stat.h>
 #include <sys/types.h>
+#endif
 
 #include "sarien.h"
 #include "agi.h"
@@ -85,7 +87,7 @@ int save_game (char *s, char *d)
 	s_flag = WORD_ALIGN (MAX_FLAGS) + 4;
 	s_objs = game.num_objects + 4;	/* 1 byte / object */
 	s_stri = 4;
-	for (i = 0; i < MAX_WORDS1; s_stri += strlen (game.strings[i++]) + 1);
+	for (i = 0; i < MAX_WORDS1; s_stri += strlen (game.strings[i++]) + 1) {}
 	s_view = 26 * 4;
 	s_apic = WORD_ALIGN (_WIDTH * _HEIGHT);
 	s_spic = WORD_ALIGN (GFX_WIDTH * GFX_HEIGHT);
@@ -192,12 +194,12 @@ int save_game (char *s, char *d)
 
 static void get_apic (int size, UINT8 *b)
 {
-	memcpy (game.sbuf, b, _WIDTH * _HEIGHT);
+	memcpy (game.sbuf, b, size);
 }
 
 static void get_spic (int size, UINT8 *b)
 {
-	memcpy (get_sarien_screen (), b, GFX_WIDTH * GFX_HEIGHT);
+	memcpy (get_sarien_screen (), b, size);
 }
 
 static void get_view (int size, UINT8 *b)

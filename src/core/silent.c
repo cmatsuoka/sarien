@@ -25,6 +25,7 @@ struct sound_driver sound_dummy = {
 static int dummy_init_sound (SINT16 *buffer)
 {
 	report ("sound_dummy: sound output disabled\n");
+	buffer = buffer;	/* Prevent annoying warning in MPW */
 	return 0;
 }
 
