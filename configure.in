@@ -145,6 +145,8 @@ linux*)
 	esac
 	;;
 freebsd*)
+	SOUND_DRIVER="freebsd"
+	LIBS="${LIBS} -pthread"
 	;;
 hpux*)
 	AC_CHECK_HEADERS(sys/audio.h)
@@ -188,7 +190,7 @@ esac
 fi
 
 case "${SOUND_DRIVER}" in
-dummy|win32|sdl)
+dummy|win32|sdl|freebsd)
 	;;
 *)
 	AC_CHECK_LIB(pthread, pthread_create,[
