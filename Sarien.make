@@ -14,7 +14,7 @@ Includes        =  ¶
 
 Sym-68K         = -sym off
 
-COptions        = {Includes} {Sym-68K} -model far -typecheck relaxed -d VERSION='"0.7.0"' -d __MPW__ -w 35,7,2
+COptions        = {Includes} {Sym-68K} -model far -typecheck relaxed -d VERSION='"0.8.0"' -d __MPW__ -w 35,7,2
 
 
 ### Source Files ###

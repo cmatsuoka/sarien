@@ -135,34 +135,6 @@ static int agi_v2_deinit ()
 	return ec;
 }
 
-
-#if 0
-static int agi_v2_load_objects (UINT8 *fname)
-{
-	return load_objects (fname);
-}
-
-
-static int agi_v2_load_words (UINT8* fname)
-{
-	return load_words (fname);
-}
-
-
-static int agi_v2_unload_objects ()
-{
-	unload_objects ();
-	return err_OK;
-}
-
-
-static int agi_v2_unload_words ()
-{
-	unload_words ();
-	return err_OK;
-}
-#endif
-
 static int agi_v2_unload_resource (int t, int n)
 {
 	/* _D ("unload resource"); */

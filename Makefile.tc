@@ -254,7 +254,7 @@ sarien.cfg: makefile.tc
 -w-nst
 -nLIB
 -I$(INCLUDEPATH)
--DVERSION="0.7.0"
+-DVERSION="0.8.0"
 -D__interrupt=interrupt
 -D__far=far
 -L$(LIBPATH)
