@@ -1,20 +1,11 @@
-/*
- *  Sarien AGI :: Copyright (C) 1999 Dark Fiber 
- *
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
 #include <stdio.h>
@@ -25,6 +16,7 @@
 #include "gfx.h"
 #include "keyboard.h"	/* remove later */
 #include "view.h"
+#include "objects.h"
 #include "opcodes.h"
 #include "savegame.h"
 #include "iff.h"
@@ -32,6 +24,8 @@
 static int loading_ok;
 
 extern struct agi_view_table view_table[];
+extern struct agi_object *objects;
+extern int num_objects;
 
 
 /* Words are big-endian */
@@ -53,8 +47,8 @@ static void write16 (UINT16 n, FILE *f)
 {
 	UINT8 size[2];
 
-	size[2] = (n & 0xff00) >> 8;
-	size[3] = (n & 0x00ff) >> 0;
+	size[0] = (n & 0xff00) >> 8;
+	size[1] = (n & 0x00ff) >> 0;
 
 	fwrite (size, 1, 2, f);
 }
@@ -95,7 +89,7 @@ UINT16 save_game (char *s, char *d)
 {
 	FILE *f;
 	UINT8 b;
-	UINT32 i, s_agid, s_gcrc, s_form, s_desc;
+	UINT32 i, s_agid, s_gcrc, s_form, s_desc, s_objs;
 	UINT32 s_flag, s_vars, /* s_vtbl, */ s_stri, s_view;
 	UINT32 crc = 0x12345678;	/* FIXME */
 
@@ -109,18 +103,18 @@ UINT16 save_game (char *s, char *d)
 	s_desc = WORD_ALIGN (strlen (d) + 1);
 	s_vars = WORD_ALIGN (MAX_VARS) + 4;
 	s_flag = WORD_ALIGN (MAX_FLAGS) + 4;
+	s_objs = num_objects + 4;	/* 1 byte / object */
 	s_stri = 4;
 	for (i = 0; i < MAX_WORDS1; s_stri += strlen (strings[i++]) + 1);
 	/* s_vtbl = 4; */
 	s_view = 28;
 	s_form = s_agid + s_gcrc + s_desc + s_vars + s_flag + s_stri +
-		/* s_vtbl + */ MAX_VIEWTABLE * (8 + s_view);
+		/* s_vtbl + */ MAX_VIEWTABLE * (8 + s_view) + s_objs;
 
 	iff_newgroup ("FORM", s_form, "IAGI", f);
 
 	/* Game ID */
-	if (s_agid)
-	{
+	if (s_agid) {
 		iff_newchunk ("AGID", s_agid, f);
 		fwrite (gid, 1, strlen (gid) + 1, f);
 		s_agid -= strlen (gid) + 1;
@@ -162,15 +156,21 @@ UINT16 save_game (char *s, char *d)
 	iff_newchunk ("STRI", s_stri, f);
 	write32 (MAX_WORDS1, f);
 	s_stri -= 4;
-	for (i = 0; i < MAX_WORDS1; i++)
-	{
+	for (i = 0; i < MAX_WORDS1; i++) {
 		fwrite (strings[i], 1, strlen (strings[i]) + 1, f);
 		s_stri -= strlen (strings[i]) + 1;
 	}
 	iff_chunk_pad (s_stri, f);
 
-	for (i = 0; i < MAX_VIEWTABLE; i++)
-	{
+	/* Save the objects */
+	iff_newchunk ("OBJS", s_objs, f);
+
+	write32 (num_objects, f);
+	for (i = 0; i < num_objects; i++) {
+		write8 (objects[i].location, f);
+	}
+
+	for (i = 0; i < MAX_VIEWTABLE; i++) {
 		iff_newchunk ("VIEW", s_view, f);
 		write32 (i, f);
 		write8 (view_table[i].step_time, f);
@@ -285,7 +285,7 @@ static void get_flag (int size, UINT8 *buffer)
 
 static void get_vars (int size, UINT8 *buffer)
 {
-	UINT32 i, n;
+	int i, n;
 	UINT8 b;
 
 	_D (("(%d, %p)", size, buffer));
@@ -297,6 +297,19 @@ static void get_vars (int size, UINT8 *buffer)
 	{
 		b = hilo_getbyte (buffer++);
 		setvar (i, b);
+	}
+}
+
+
+static void get_objs (int size, UINT8 *buffer)
+{
+	int i, n;
+
+	n = hilo_getdword (buffer);
+	buffer += 4;
+
+	for (i = 0; i < n; i++) {
+		objects[i].location = hilo_getbyte (buffer++);
 	}
 }
 
@@ -345,6 +358,7 @@ UINT16 load_game (char *s)
 	iff_register ("FLAG", get_flag);
 	iff_register ("VARS", get_vars);
 	iff_register ("STRI", get_stri);
+	iff_register ("OBJS", get_objs);
 	/* iff_register ("VTBL", get_vtbl); */
 	iff_register ("VIEW", get_view);
 
@@ -359,6 +373,9 @@ UINT16 load_game (char *s)
 
 	cmd_draw_pic (getvar (V_cur_room));
 	redraw_sprites ();
+	new_room_num = getvar (V_cur_room);
+	ego_in_new_room = TRUE;
+	exit_all_logics = TRUE;
 
 	return loading_ok ? err_OK : err_BadFileOpen;
 }

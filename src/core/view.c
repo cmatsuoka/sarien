@@ -350,6 +350,17 @@ void draw_obj (int vt)
 {
 	struct agi_view_table *v = &view_table[vt];
 
+	/* DF: CLIPPING (FIXES OP:RECON BUG !! (speach bubbles) */
+
+	if (v->x_pos + v->x_size > _WIDTH)
+		v->x_pos = _WIDTH - v->x_size;
+	//if(v->y_pos + v->y_size > _HEIGHT)
+	//      v->y_pos=_HEIGHT - v->y_size;
+
+	/* this also breaks kq2 intro etc!! hmmmm */
+	//if(v->y_pos + v->y_size > 200)	// _HEIGHT=168, breaks op:recon
+	//      v->y_pos=200- v->y_size;
+
 	/* save bg co-ords */
 	v->bg_x      = v->x_pos;
 	v->bg_y      = (v->y_size > v->y_pos) ? 0 : (v->y_pos - v->y_size);

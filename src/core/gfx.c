@@ -169,6 +169,7 @@ void shake_screen (int n)
 		memcpy (layer1_data, b, 320 * 200);
 		flush_block (0, 0, 319, 199);
 	}
+#undef MAG
 }
 
 

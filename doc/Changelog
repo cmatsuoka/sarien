@@ -17,7 +17,11 @@ Revision History
 	  linuxdoc to DocBook
 	- added Lance Ewing's AGI utilities to the bundle
 
-0.5.2 () -- must merge changes from DF's 0.5.2!
+0.5.2 (20000512) *DEVELOPMENT*
+	- Fixed speach bubbles bug for going outside of screen (draw_obj)
+	- Added more inventory code for object viewing
+	- Added Peter Hawkins' save patches
+	- Added Magnus Kristianses's statusline patches
 
 0.5.1 (20000110) *DEVELOPMENT*
 	- added new id mechanism with external id file.

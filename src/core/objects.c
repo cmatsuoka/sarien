@@ -128,5 +128,3 @@ int show_objects ()
 	return err_OK;
 }
 
-
-

@@ -173,15 +173,28 @@ UINT8 o_status = 0;	/* FIXME */
 void update_status_line (int force)
 {
 	char x[64];
-	static int o_score = 255, o_sound = FALSE, o_status = FALSE;
+	static int o_score = 255, o_max_score = 0, o_sound = FALSE,
+		o_status = FALSE;
 
 	/* If it's already there and we're not forcing, don't write */
-   	if (!force && o_status == status_line && o_score == getvar (V_score) && 
+   	if (!force && o_status == status_line &&
+		o_score == getvar (V_score) && 
+		o_max_score == getvar (V_max_score),
 		o_sound == getflag (F_sound_on))
 		return;
 
 	o_score = getvar (V_score);
+	o_max_score = getvar (V_max_score);
    	o_sound = getflag (F_sound_on);
+
+	/* Jump out here if the status line is invisible and was invisible
+	 * the last time. If the score or sound has changed, there is no
+         * reason to re-erase the status line here. Allow force, though...
+         */
+
+	if (!force && o_status == status_line && !status_line)
+		return;
+
    	o_status = status_line;
 
 	if (line_min_print == 0)

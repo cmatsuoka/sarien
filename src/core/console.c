@@ -408,7 +408,7 @@ void build_console_lines (UINT8 n)
 	for (j = CONSOLE_LINES_ONSCREEN - n; j < CONSOLE_LINES_ONSCREEN; j++) {
 		i = console.first_line + j;
 		print_text_layer (console.line[i], 0, 0, j * 10,
-			strlen (console.line[i]) + 1, 15, 0);
+			strlen (console.line[i]) + 1, CONSOLE_COLOR, 0);
 	}
 
 	y1 = console.y - n * 10;
@@ -539,7 +539,8 @@ void handle_console_keys ()
 			break;
 		console.line[CONSOLE_LINES_BUFFER-1][console.index]=0;
 		*m = CONSOLE_CURSOR_EMPTY;
-		print_text_layer (m, 0, (console.index+1)*8, 190, 2, 15, 0);
+		print_text_layer (m, 0, (console.index+1)*8, 190, 2,
+			CONSOLE_COLOR, 0);
 		flush_block ((console.index+1)*8, y1, (console.index+1)*8+7, y2);
        		console.index--;
        		buffer[console.index] = 0;
@@ -558,7 +559,8 @@ void handle_console_keys ()
 			console.line[CONSOLE_LINES_BUFFER-1]=strdup(l);
 
 			buffer[console.index] = 0;
-			print_text_layer (m, 0, console.index*8, 190, 2, 15, 0);
+			print_text_layer (m, 0, console.index*8, 190, 2,
+				CONSOLE_COLOR, 0);
 			flush_block (console.index*8, y1, console.index*8+7, y2);
 		}
                	break;
@@ -619,7 +621,7 @@ void console_cycle ()
 		if (y1 < 0) y1 = 0;
 		if (y2 < 0) y2 = 0;
 		print_text_layer (cursor, 0,
-			(1 + console.index) * 8, 190, 2, 15, 0);
+			(1 + console.index) * 8, 190, 2, CONSOLE_COLOR, 0);
 		flush_block ((1 + console.index) * 8, y1,
 			(1 + console.index) * 8 + 7, y2);
 	}

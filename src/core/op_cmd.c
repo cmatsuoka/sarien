@@ -1,4 +1,5 @@
-/* *  Sarien AGI :: Copyright (C) 1999 Dark Fiber 
+/*
+ *  Sarien AGI :: Copyright (C) 1999 Dark Fiber 
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -735,7 +736,7 @@ void cmd_stop_input ()
 
 void cmd_set_key (UINT8 ac, UINT8 sc, UINT8 ec)
 {
-	if (sc) {
+	if (ac == 0) {
 		events[ec].event = eSCAN_CODE;
 		events[ec].data = sc;
 		events[ec].occured = FALSE;
@@ -842,14 +843,22 @@ void cmd_status ()
 void cmd_status_line_on ()
 {
 	status_line = TRUE;
-	/*update_status_line (TRUE);*/
+
+	/* MK: I re-inserted (un-commented) the call to update_status_line
+	 * here (and in cmd_status_line_off()), because any AGI script call to
+	 * get.string() (cf. the computer scene in Police Quest) would mean
+	 * that the status line wouldn't be updated before the next interpreter
+	 * cycle. This was also necessary as I previously removed the call to
+	 * update_status_line in cmd_show_pic() :-).
+	 */
+	update_status_line (TRUE);
 }
 
 
 void cmd_status_line_off ()
 {
 	status_line = FALSE;
-	/*update_status_line (TRUE);*/
+	update_status_line (TRUE);
 }
 
 
@@ -1013,6 +1022,8 @@ void cmd_show_obj (UINT8 n)
 	UINT8 *bg;
 	int x, y, w, h, x_, y_, w_, i, j;
 
+	report ("TEST: cmd_show_obj(%i)\n", n);
+
 	loader->load_resource (rVIEW, n);
 	if (! (c = &views[n].loop[0].cel[0]))
 		return;
@@ -1039,6 +1050,7 @@ void cmd_show_obj (UINT8 n)
 	flush_block (x, y, x + w, y + h);
 
 	/* FIXME: should call agi_printf */
+	report("TEST: cmd_show_obj : descr [%s]\n", views[n].descr);
 	message_box (views[n].descr);
 
 	for (i = w - 1; i >= 0; i--)
@@ -1423,7 +1435,9 @@ void cmd_show_pri_screen ()
 	dump_x_screen ();
 	wait_key ();
 	restore_screen ();
-	update_status_line (TRUE);
+	/* MK: Doesn't seem to be necessary.
+	 * update_status_line (TRUE);
+	 */
 }
 
 void cmd_discard_view (UINT8 vw)
@@ -1998,8 +2012,7 @@ void execute_agi_command (UINT8 op, UINT16 lognum, UINT8 *p)
 		cmd_set_key (p[0], p[1], p[2]);
 		break;
 	case 0x7A:				/* add.to.pic */
-		cmd_add_to_pic (p[0], p[1], p[2], p[3],
-			p[4], p[5], p[6]);
+		cmd_add_to_pic (p[0], p[1], p[2], p[3], p[4], p[5], p[6]);
 		break;
 	case 0x7B:				/* add.to.pic.v */
 		cmd_add_to_pic (getvar (p[0]), getvar (p[1]),

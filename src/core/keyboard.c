@@ -214,6 +214,11 @@ void poll_keyboard (void)
 	while (gfx->keypress ()) {
 		xkey = gfx->get_key ();
 
+#ifdef MSDOS
+		if (xkey != 0x5200 && xkey != 0x5300)
+			report ("xkey=%04X\n", xkey);
+#endif
+
 		if (console_keyhandler (xkey))
 			continue;
 
@@ -222,16 +227,38 @@ void poll_keyboard (void)
 		if (console.active && console.input_active)
 			continue;
 
+#ifdef MSDOS
+		report ("key pressed : %04X\n", xkey);
+#endif
+
 		/* For controller() */
 		for (c1 = 0; c1 < MAX_DIRS; c1++) {
+
+			if(events[c1].data && events[c1].data == KEY_SCAN(xkey))
+				report ("xevent SC:%i=%04X %i:%i\n", c1,
+					KEY_SCAN(xkey), eSCAN_CODE,
+					events[c1].event);
+			if(events[c1].data && events[c1].data==KEY_ASCII(xkey))
+	                       	report ("xevent AC:%i=%04X %i:%i\n", c1,
+					KEY_ASCII(xkey), eKEY_PRESS,
+					events[c1].event);
+
 			switch (events[c1].event) {
 			case eSCAN_CODE:
-				if (events[c1].data == KEY_SCAN (key))
+				if (events[c1].data == KEY_SCAN(key) &&
+					KEY_ASCII(key) == 0)
+				{
 					events[c1].occured = TRUE;
+					report("event SC:%i occured\n", c1);
+				}
 				break;
 			case eKEY_PRESS:
-				if (events[c1].data == KEY_ASCII(key) && !KEY_SCAN(key))
+				if (events[c1].data == KEY_ASCII(key) &&
+					KEY_SCAN(key) == 0)
+				{
 					events[c1].occured = TRUE;
+					report ("event AC:%i occured\n", c1);
+				}
 				break;
 			}
 		}
