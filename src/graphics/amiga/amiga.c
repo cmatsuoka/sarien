@@ -15,16 +15,14 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <exec/types.h>
-#include <exec/memory.h>
+#include <sys/types.h>
+#if 0
 #include <intuition/intuition.h>
-#include <graphics/gfxmacros.h>
-#include <graphics/display.h>
-#include <proto/exec.h>
-#include <proto/graphics.h>
-#include <proto/intuition.h>
-#include <hardware/custom.h>
-#include <hardware/cia.h>
+#include <intuition/screens.h>
+#include <clib/exec_protos.h>
+#include <clib/graphics_protos.h>
+#include <clib/intuition_protos.h>
+#endif
 #include "sarien.h"
 #include "graphics.h"
 
@@ -52,19 +50,16 @@ static struct gfx_driver gfx_amiga = {
 	amiga_get_key
 };
 
-static PLANEPTR bp[7];
+typedef void *PLANEPTR;
 
 static struct Window *win;
 static struct Screen *scr;
 static struct RastPort *rp;
-static PLANEPTR raster = 0;
-static struct BitMap bitmap_bm;
+static PLANEPTR raster;
 static UBYTE *vscreen;
 
 extern struct GfxBase *GfxBase;
 extern struct IntuitionBase *IntuitionBase;
-
-static char perm[8] = {0, 1, 2, 3, 4, 5, 6, 7};	// bitplane order
 
 
 
@@ -80,30 +75,19 @@ static int key_queue_end = 0;
 	key_queue_start %= KEY_QUEUE_SIZE; } while (0)
 
 
-static void handle_exposure_event ()
-{
-	/*GR_EVENT_EXPOSURE *event = &nevent.exposure;*/
-}
-
-
-void handle_keyboard_event ()
-{
-	switch (nevent.keystroke.ch) {
-		case 'P':
-			break;
-	}
-}
-
 static void process_events ()
 {
+#if 0
 	struct IntuiMessage *message;
 
 	message = (struct IntuiMessage *)GetMsg (win->UserPort);
 	if (message) {
-		if (message->Class == CLOSEWINDOW) {
-			exit(0);
+		switch (message->Class) {
+		case IDCMP_CLOSEWINDOW:
+			exit (0);
 		}
 	}
+#endif
 }
 
 int init_machine (int argc, char **argv)
@@ -119,6 +103,7 @@ int deinit_machine ()
 
 static void amiga_timer ()
 {
+#if 0
 	struct timeval tv;
 	struct timezone tz;
 	static double msec = 0.0;
@@ -133,6 +118,7 @@ static void amiga_timer ()
 		m = 1000.0 * tv.tv_sec + tv.tv_usec / 1000.0;
 	}
 	msec = m; 
+#endif
 
 	process_events ();
 }
@@ -193,7 +179,6 @@ static int amiga_init_vidmode ()
 	for (i = 0; i < 7; i++) {
 		tempbm.Planes[i] = raster + (i * RASSIZE (GFX_WIDTH + 16,
 			GFX_HEIGHT));
-		bp[i] = rp->BitMap->Planes[i];
 	}
 	InitRastPort(&temprp);
 	temprp.BitMap=&tempbm;
