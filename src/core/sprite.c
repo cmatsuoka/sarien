@@ -26,10 +26,10 @@
 struct sprite {
 	struct list_head list;
 	struct vt_entry *v;		/**< pointer to view table entry */
-	UINT16 x_pos;			/**< x coordinate of the sprite */
-	UINT16 y_pos;			/**< y coordinate of the sprite */
-	UINT16 x_size;			/**< width of the sprite */
-	UINT16 y_size;			/**< height of the sprite */
+	SINT16 x_pos;			/**< x coordinate of the sprite */
+	SINT16 y_pos;			/**< y coordinate of the sprite */
+	SINT16 x_size;			/**< width of the sprite */
+	SINT16 y_size;			/**< height of the sprite */
 	UINT8 *buffer;			/**< buffer to store background data */
 #ifdef USE_HIRES
 	UINT8 *hires;			/**< buffer for hi-res background */
@@ -141,27 +141,45 @@ static int blit_cel (int x, int y, int spr, struct view_cel *c)
 static void objs_savearea (struct sprite *s)
 {
 	int y;
+	SINT16 x_pos = s->x_pos, y_pos = s->y_pos;
+	SINT16 x_size = s->x_size, y_size = s->y_size;
 	UINT8 *p0, *q;
 #ifdef USE_HIRES
 	UINT8 *h0, *k;
 #endif
 
-	if (s->y_pos >= _HEIGHT)
+	if (x_pos + x_size > _WIDTH)
+		x_size = _WIDTH-x_pos;
+
+	if (x_pos < 0) {
+		x_size += x_pos;
+		x_pos = 0;
+	}
+
+	if (y_pos + y_size > _HEIGHT)
+		y_size = _HEIGHT-y_pos;
+
+	if (y_pos < 0) {
+		y_size += y_pos;
+		y_pos = 0;
+	}
+
+	if (x_size <= 0 || y_size <= 0)
 		return;
 
-	p0 = &game.sbuf[s->x_pos + s->y_pos * _WIDTH];
+	p0 = &game.sbuf[x_pos + y_pos * _WIDTH];
 	q = s->buffer;
 #ifdef USE_HIRES
-	h0 = &game.hires[(s->x_pos + s->y_pos * _WIDTH) * 2];
+	h0 = &game.hires[(x_pos + y_pos * _WIDTH) * 2];
 	k = s->hires;
 #endif
-	for (y = 0; y < s->y_size; y++) {
-		memcpy (q, p0, s->x_size);
-		q += s->x_size;
+	for (y = 0; y < y_size; y++) {
+		memcpy (q, p0, x_size);
+		q += x_size;
 		p0 += _WIDTH;
 #ifdef USE_HIRES
-		memcpy (k, h0, s->x_size * 2);
-		k += s->x_size * 2;
+		memcpy (k, h0, x_size * 2);
+		k += x_size * 2;
 		h0 += _WIDTH * 2;
 #endif
 	}
@@ -170,33 +188,51 @@ static void objs_savearea (struct sprite *s)
 static void objs_restorearea (struct sprite *s)
 {
 	int y, offset;
+	SINT16 x_pos = s->x_pos, y_pos = s->y_pos;
+	SINT16 x_size = s->x_size, y_size = s->y_size;
 	UINT8 *p0, *q;
 #ifdef USE_HIRES
 	UINT8 *h0, *k;
 #endif
 
-	if (s->y_pos >= _HEIGHT)
+	if (x_pos + x_size > _WIDTH)
+		x_size = _WIDTH-x_pos;
+
+	if (x_pos < 0) {
+		x_size += x_pos;
+		x_pos = 0;
+	}
+
+	if (y_pos + y_size > _HEIGHT)
+		y_size = _HEIGHT-y_pos;
+
+	if (y_pos < 0) {
+		y_size += y_pos;
+		y_pos = 0;
+	}
+
+	if (x_size <= 0 || y_size <= 0)
 		return;
 
-	p0 = &game.sbuf[s->x_pos + s->y_pos * _WIDTH];
+	p0 = &game.sbuf[x_pos + y_pos * _WIDTH];
 	q = s->buffer;
 #ifdef USE_HIRES
-	h0 = &game.hires[(s->x_pos + s->y_pos * _WIDTH) * 2];
+	h0 = &game.hires[(x_pos + y_pos * _WIDTH) * 2];
 	k = s->hires;
 #endif
 	offset = game.line_min_print * CHAR_LINES;
-	for (y = 0; y < s->y_size; y++) {
-		memcpy (p0, q, s->x_size);
-		put_pixels_a (s->x_pos, s->y_pos + y + offset, s->x_size, p0);
-		q += s->x_size;
+	for (y = 0; y < y_size; y++) {
+		memcpy (p0, q, x_size);
+		put_pixels_a (x_pos, y_pos + y + offset, x_size, p0);
+		q += x_size;
 		p0 += _WIDTH;
 #ifdef USE_HIRES
-		memcpy (h0, k, s->x_size * 2);
+		memcpy (h0, k, x_size * 2);
 		if (opt.hires) {
-			put_pixels_hires (s->x_pos * 2,
-				s->y_pos + y + offset, s->x_size * 2, h0);
+			put_pixels_hires (x_pos * 2,
+				y_pos + y + offset, x_size * 2, h0);
 		}
-		k += s->x_size * 2;
+		k += x_size * 2;
 		h0 += _WIDTH * 2;
 #endif
 	}
