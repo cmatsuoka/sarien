@@ -60,8 +60,9 @@ static UINT8 test_controller (UINT8 cont)
 	if ((r = game.events[cont].occured))
 		setvar (V_key, 0);
 	return r;
-#endif
+#else
 	return game.events[cont].occured;
+#endif
 }
 
 

@@ -31,9 +31,6 @@ struct agi_menu {
 static struct agi_menu *master_menu;
 static struct agi_menu *menu;
 
-//extern struct sarien_console console;
-//extern struct agi_game game;
-
 
 static void draw_horizontal_menu_bar (int cur_menu, int max_menu)
 {
@@ -92,7 +89,7 @@ static void draw_vertical_menu (int h_menu, int cur_men, int max_men)
 			if (len < x)
 				len = x;
 		}
-		men=men->down;
+		men = men->down;
 	}
 
 	if (len > 40)
@@ -138,9 +135,7 @@ void deinit_menus ()
 
 	/* free all down's then all next's */
 
-	/* FR:
-         * FIXME: Fatal error while freeing the memory
-	 */
+#warning FIXME: FR: bad memory deallocation
 #if 0
 	while ((m0 = menu->next)) {
 		while ((m1 = m0->down)) {
@@ -237,12 +232,15 @@ int menu_keyhandler (int key)
 	case KEY_ESCAPE:
 		goto exit_menu;
     	case KEY_ENTER:
+		_D (_D_WARN "KEY_ENTER");
     		men = master_menu->next;
     		for (i = 0; i < h_cur_menu; i++, men = men->next);
     		men = men->down;
-    		for (i = 0; i < v_cur_menu; i++, men=men->down);
+    		for (i = 0; i < v_cur_menu; i++, men = men->down);
     		if (men->enabled) {
+			_D ("event %d registered", men->event);
     			game.events[men->event].occured = TRUE;
+    			game.events[men->event].data = men->event;
 			goto exit_menu;
     		}
     		break;

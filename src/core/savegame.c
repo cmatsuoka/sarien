@@ -489,7 +489,7 @@ int loadgame_dialog ()
 	snprintf (path, MAX_PATH, "%s/" DATADIR "/", home);
 	mkdir (path, 0755);
 	snprintf (path, MAX_PATH, "%s/" DATADIR "/%s/", home, game.id);
-	mkdir (path, 0600);
+	mkdir (path, 0711);
 	
 	redraw_sprites ();
 	release_sprites ();

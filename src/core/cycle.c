@@ -266,8 +266,16 @@ static void normal_motion (int em, int x, int y)
 	 * on a control line, as reported by Nat Budin.
 	 *
 	 * This is not the correct solution: it breaks DDP and KQ1 intros
-	 * but fixes the hooker in LSL1.
+	 * but fixes hooker and honeymoon suite door in LSL1.
+	 *
+	 * "I found that the object would usually go further down and to
+	 * the left than I told AGI to place it. This wasn't completely
+	 * consistent, though.  You might want to email Nick Sonneveld
+	 * about this, because his interpreter seems to place the views
+	 * correctly."
 	 */
+
+	/* Handles the "Budin offset" */
 	while (check_control_lines (em, vt_obj->x_pos, vt_obj->y_pos) == -1) {
 		if (vt_obj->x_pos > 0)
 			vt_obj->x_pos--;
