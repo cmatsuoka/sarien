@@ -1,0 +1,53 @@
+
+
+
+Playability:
+                 |     0.7    |     0.8    |    0.9     |     1.0    |
+ ----------------|------------|------------|------------|------------|
+    Sierra Demos |  Accurate  |  Accurate  |  Accurate  |  Accurate  |
+  Sierra v2/AGDS | Finishable |  Accurate  |  Accurate  |  Accurate  |
+       Sierra v3 |  Playable  | Finishable |  Accurate  |  Accurate  |
+        Homemade |            |  Playable  | Finishable |  Accurate  |
+ ----------------|------------|------------|------------|------------|
+
+Extra features:
+                 |     0.7    |     0.8    |    0.9     |     1.0    |
+ ----------------|------------|------------|------------|------------|
+         Console |   stable   |   stable   |   stable   |   stable   |
+     Hi-res mode |experimental|   stable   |   stable   |   stable   |
+   Mouse support |            |experimental|   stable   |   stable   |
+      IIgs sound |            |            |experimental|   stable   |
+ ----------------|------------|------------|------------|------------|
+
+
+0.7.0:
+
+* Demopacks 100% accurate
+* Sierra v2 games finishable
+* AGDS game finishable
+* Sierra v3 games playable
+* Fix quit/restart crashes
+* Fix hi-res mode problems
+
+0.8.0:
+
+* Sierra v3 games finishable
+* Multi-slot savegames
+* Major homemade games finishable
+* Amiga and Mac ports
+* unk commands implemented
+
+0.9.0:
+
+* IIgs sound emulation
+* Sierra v2 games 100% accurate
+* Complete documentation
+
+1.0:
+
+* All games 100% accurate
+
+2.0:
+
+* Dynamic palette, higher-res mode, etc.
+

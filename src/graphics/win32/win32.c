@@ -408,6 +408,11 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		};
 
 		_D (": key = 0x%02x ('%c')", key, isprint(key) ? key : '?');
+
+		/* Cancel "alt" keybind to toggle.monitor (huh?) */
+		if (key == 0x12)
+			key = 0;
+
 		break;
 	};
 			

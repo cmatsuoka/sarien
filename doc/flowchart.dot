@@ -1,0 +1,82 @@
+digraph agi {
+	subgraph cluster_0 {
+		label = "main loop";
+		color = blue;
+
+		"check motions"		[shape=box];
+		"update viewtable"	[shape=box];
+
+		":main loop"
+			-> "poll keyboard"
+			-> "update ego dir"
+			-> "check motions"
+			-> "run logic"
+			-> "set ego dir"
+			-> "update statusline"
+			-> "reset v4,v5,f5,f6,f12"
+			-> "update viewtable";
+
+		":main loop" [label="update timer"];
+	}
+
+	subgraph cluster_1 {
+		label = "check motions";
+		color = purple;
+
+		"wander"	[shape=box];
+		"follow.ego"	[shape=box];
+		"move.obj"	[shape=box];
+		"changepos"	[shape=box];
+
+		":check motions" -> "motion test";
+
+		"motion test" -> "motion type"		[label="yes"];
+		"motion test" -> "$check motions"	[label="no"];
+
+		"motion type" -> "wander"	[label="wander"];
+		"motion type" -> "follow.ego"	[label="follow.ego"];
+		"motion type" -> "move.obj"	[label="move.obj"];
+
+		"wander" -> "changepos";
+		"follow.ego" -> "changepos";
+		"move.obj" -> "changepos";
+		
+		"changepos" -> "$check motions";
+		
+		"motion test" [label="ANI|UPD|DRA\n&& step_count == 1"];
+
+		":check motions" [label="check motions"];
+		"$check motions" [label="end"];
+	}
+
+	subgraph cluster_2 {
+		label = "changepos";
+		color = "dark green";
+
+		":changepos"
+			-> "check block"
+			-> "update x,y"
+			-> "block changed?";
+
+		"block changed?" -> "reset MOTION"	[label="no"];
+		"block changed?" -> "set MOTION"	[label="yes"];
+
+		"set MOTION"
+			-> "direction = 0"
+			-> "update ego dir\n(if ego)"
+			-> "$changepos";
+		
+		"reset MOTION"
+			-> "$changepos";
+
+		":changepos" [label="changepos"];
+		"$changepos" [label="end"];
+	}
+
+	"initialize flags" -> ":main loop";
+
+	"update viewtable"
+		-> "reset f2,f4"
+		-> ":main loop";
+
+}
