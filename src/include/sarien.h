@@ -159,7 +159,7 @@ extern	void inventory(void);
  *
  * Implementations of this function are in the fileglob directory.
  */
-extern  UINT8*  get_current_directory(void);
+char* get_current_directory (void);
 
 extern	void list_games(void);
 
@@ -318,14 +318,13 @@ enum {
 	CYCLE_REV
 };
 
-typedef struct GAME_ID_LIST
-{
-	struct GAME_ID_LIST *next;
-	UINT32	version;
-	UINT32	crc;
-	UINT8	*gName;
-	UINT8	*switches;
-} GAME_ID_LIST;
+struct game_id_list {
+	struct game_id_list *next;
+	UINT32 version;
+	UINT32 crc;
+	char *gName;
+	char *switches;
+};
 
 
 struct sarien_options {

@@ -41,19 +41,13 @@ extern UINT8 *font, font_english[];
 
 extern struct gfx_driver *gfx;
 
-void interpret_cycle(void);
-void update_objects (void);
-void calc_obj_motion(void);
-void normal_motion  (UINT8 entry, SINT16 x, SINT16 y);
-void adj_pos        (UINT8 entry, UINT8 x, UINT8 y);
-void move_egi       (UINT8 direction);
-
 
 extern struct agi_loader agi_v2;
 extern struct agi_loader agi_v3;
 extern struct agi_loader *loader;
 
 struct sarien_options opt;
+struct game_id_list game_info;
 
 
 static int detect_game (char *gn)
@@ -61,7 +55,7 @@ static int detect_game (char *gn)
 	int ec = err_OK;
 
 	if (gn == NULL)		/* assume current directory */
-		gn = get_current_directory();
+		gn = get_current_directory ();
 
 	if (gname == NULL)
 		gname = strdup ("");
@@ -98,6 +92,7 @@ static int view_pictures ()
 			pic += dir;
 			if (pic < 0)
 				pic = MAX_DIRS - 1;
+
 			if(pic > MAX_DIRS - 1) {
 				pic = 0;
 				if (i == 0) {		/* no pics? */
@@ -109,9 +104,7 @@ static int view_pictures ()
 		}
 		resnum = pic;
 
-		ec = loader->load_resource (rPICTURE, resnum);
-
-		if (ec != err_OK)
+		if ((ec = loader->load_resource (rPICTURE, resnum)) != err_OK)
 			continue;
 
 		sprintf ((char*)x, "Picture:%3li     [drawing]     Show: %3s",
@@ -207,8 +200,7 @@ static int run_game ()
 {
 	int ec = err_OK;
 
-	switch (opt.gamerun)
-	{
+	switch (opt.gamerun) {
 	case gLIST_GAMES:
 	case gCRC:
 		break;
@@ -232,11 +224,11 @@ static int run_game ()
 
 int main(int argc, char *argv[])
 {
-	UINT16	ec;
+	int ec;
 
-/* we must do this before _ANYTHING_ else if using allegro!! */
+	/* we must do this before _ANYTHING_ else if using allegro!! */
 #ifdef HAVE_ALLEGRO
-	allegro_init();
+	allegro_init ();
 #endif
 
 	printf(
@@ -254,88 +246,61 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 
 	clock_enabled = FALSE;
 
-	//exec_name=(UINT8*)strdup(argv[0]);
-	ec = parse_cli (argc, argv);
+	if ((ec = parse_cli (argc, argv)) != err_OK)
+		goto bail_out;
 
-	if (ec == err_OK) {
-		init_machine (argc, argv);
-		screen_mode = GFX_MODE;
-		//clock_count = 0;
-		//clock_ticks = 0;
+	init_machine (argc, argv);
+	screen_mode = GFX_MODE;
+	//clock_count = 0;
+	//clock_ticks = 0;
+
+	loader = NULL;
+	font = (UINT8*)font_english;
+
+	if (opt.gamerun == gLIST_GAMES) {
+		list_games ();
+		goto bail_out;
 	}
 
-	while (ec == err_OK) {
-		loader = NULL;
-		font = (UINT8*)font_english;
+	ec = detect_game (argc > 1 ? argv[optind] : get_current_directory ());
+	if (ec != err_OK) {
+		ec = err_InvalidAGIFile;
+		goto bail_out;
+	}
 
-		if (argc > 1) {
-			if(opt.gamerun != gLIST_GAMES) {
-				ec = detect_game (argv[optind]);
-			} else {
-				list_games ();
-				ec = err_OK;
-				goto bail_out;	/* DF: yuck! goto! argh! xyzzy! frotz! */
-			}
-		} else {
-			if(opt.gamerun != gLIST_GAMES)
-				ec = detect_game (get_current_directory());
+	if (opt.gamerun == gCRC) {
+		/* FIXME: broken! */
+		printf("              Game : %s\n", game_info.gName);
+		printf("               CRC : 0x%06lX\n", game_info.crc);
+		printf("Pre-built Switches : %s\n",
+			game_info.switches[0] == 0 ? "(none)" :
+			game_info.switches);
+		printf("AGI Interpret Vers : %s%03X\n",
+			game_info.version >= 0x3000 ? "3.002." :
+			"2.", (int)game_info.version & 0xFFF);
+		goto bail_out;
+	}
+
+	printf("AGI v%i game detected.\n", loader->version);
+
+	if (opt.gamerun == gRUN_GAME || opt.gamerun == gVIEW_PICTURES) {
+		if (init_video () != err_OK) {
+			ec = err_Unk;
+			goto bail_out;
 		}
+	}
 
-		if(ec != err_OK) {
-			ec = err_InvalidAGIFile;
-			break;
-		}
+	if (opt.gamerun == gRUN_GAME) {
+		report ("Enabling interpreter console\n");
+		console_init ();
+		report ("--- Starting console ---\n\n");
+		init_sound ();
+	}
 
-		switch(opt.gamerun) {
-		case gCRC:
-		case gLIST_GAMES:
-			break;
-		default:
-			printf("AGI v%i game detected.\n", loader->version);
-				break;
-		}
-
-		switch (opt.gamerun) {
-		case gCRC:
-			printf("              Game : %s\n", game_info.gName);
-			printf("               CRC : 0x%06lX\n", game_info.crc);
-			printf("Pre-built Switches : %s\n", game_info.switches[0]==0 ? (char*)"(none)":(char*)game_info.switches);
-			printf("AGI Interpret Vers : %s%03X\n", game_info.version>=0x3000 ? "3.002.":"2.", (int)game_info.version&0xFFF);
-			break;
-
-		case gRUN_GAME:
-			if (init_video () != err_OK) {
-				ec = err_Unk;
-				goto bail_out;
-			}
-			report ("Enabling interpreter console\n");
-			console_init ();
-			report ("--- Starting console ---\n\n");
-			init_sound ();
-			break;
-		case gVIEW_PICTURES:
-			if (init_video () != err_OK) {
-				ec = err_Unk;
-				goto bail_out;
-			}
-			break;
-
-		case gLIST_GAMES:
-		case gSHOW_WORDS:
-		case gSHOW_OBJECTS:
-			break;
-		}
-
-
-		switch (opt.gamerun) {
-			case gLIST_GAMES:
-			case gCRC:
-				/* do not require any init's or things to be run */
-				break;
-
-			default:
+	/* Execute the game */
+	if (opt.gamerun != gCRC && opt.gamerun != gLIST_GAMES) {
     		do {
-    			ec = agi_init();
+    			ec = agi_init ();
 
     			if (ec == err_OK) {
     				/* setup machine specific AGI flags, etc */
@@ -353,65 +318,52 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 
     			/* deinit our resources */
     			agi_deinit();
-    		} while (ec==err_RestartGame);
-
-    		break;
+    		} while (ec == err_RestartGame);
 
     	}
 
-		switch (opt.gamerun) {
-		case gRUN_GAME:
-			deinit_sound ();
-		case gVIEW_PICTURES:
-			deinit_video ();
-		case gSHOW_WORDS:
-		case gSHOW_OBJECTS:
-		case gLIST_GAMES:
-			break;
-		}
-
-		break;
+	if (opt.gamerun == gRUN_GAME) {
+		deinit_sound ();
+		deinit_video ();
+        } else if (opt.gamerun == gVIEW_PICTURES) {
+		deinit_video ();
 	}
 
 bail_out:
-	if (ec != err_OK && ec != err_DoNothing) {
-		printf ("Error %04i: ", ec);
-
-		switch (ec) {
-		case err_BadCLISwitch:
-			printf("Bad CLI switch.\n");
-			break;
-		case err_InvalidAGIFile:
-			printf("Invalid AGI file, or no AGI file in "
-				"current directory.\n");
-			break;
-		case err_BadFileOpen:
-			printf("Unable to open file.\n");
-			break;
-		case err_NotEnoughMemory:
-			printf("Not enough memory.\n");
-			break;
-		case err_BadResource:
-			printf("Error in resource.\n");
-			break;
-		case err_UnknownAGIVersion:
-			printf("Unknown AGI version.\n");
-			break;
-		case err_NoGameList:
-			printf("No game ID List was found!\n");
-			break;
-		}
-		printf("\nUse parameter -h to list the command line options\n");
+	if (ec == err_OK || ec == err_DoNothing) {
+		deinit_machine ();
+		exit (ec);
 	}
 
-#if 0
-	/* segfault in linux */
-	if(gname != NULL)
-		free (gname);
-#endif
+	printf ("Error %04i: ", ec);
+
+	switch (ec) {
+	case err_BadCLISwitch:
+		printf("Bad CLI switch.\n");
+		break;
+	case err_InvalidAGIFile:
+		printf("Invalid or inexistent AGI file.\n");
+		break;
+	case err_BadFileOpen:
+		printf("Unable to open file.\n");
+		break;
+	case err_NotEnoughMemory:
+		printf("Not enough memory.\n");
+		break;
+	case err_BadResource:
+		printf("Error in resource.\n");
+		break;
+	case err_UnknownAGIVersion:
+		printf("Unknown AGI version.\n");
+		break;
+	case err_NoGameList:
+		printf("No game ID List was found!\n");
+		break;
+	}
+	printf("\nUse parameter -h to list the command line options\n");
 
 	deinit_machine ();
 
-	exit (ec);			/* this is for the memory system */
-	return ec;
+	exit (ec);	/* this is for the memory system  (CM: huh?) */
 }
+

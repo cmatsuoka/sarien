@@ -71,8 +71,6 @@ int	agi_init	(void);
 int	agi_deinit	(void);
 char	*agi_printf	(char *, int);
 
-extern	GAME_ID_LIST game_info;
-
 #ifdef __cplusplus
 };
 #endif

@@ -74,7 +74,7 @@ void fixpath (int flag, char *fname)
 }
 
 
-UINT8 *get_current_directory(void)
+char *get_current_directory (void)
 {
     return(".");
 }

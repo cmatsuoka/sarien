@@ -53,7 +53,6 @@ UINT8		clock_enabled;		/* clock is on/off */
 UINT16		message_box_key;	/* message box keypress */
 UINT32		game_flags;		/* game flags!! (important) */
 
-GAME_ID_LIST	game_info;	/* game info! */
 
 volatile UINT32	msg_box_secs2;		/* message box timeout in sec/2 */
 
@@ -70,10 +69,12 @@ int agi_init ()
 {
 	int ec, i;
 
-	gid=NULL;			/* clean out GAME ID */
+	gid = NULL;			/* clean out GAME ID */
 
+#if 0
 	/* clean out game info */
-	memset(&game_info, 0x0, sizeof(GAME_ID_LIST));
+	memset (&game_info, 0, sizeof(struct game_id_list));
+#endif
 
 	/* set the font */
 	font= opt.agds ? font_russian : font_english;
@@ -81,7 +82,7 @@ int agi_init ()
 	/* reset all flags to false and all variables to 0 */
 	for (i = 0; i < MAX_FLAGS; i++)
 		setflag (i, 0);
-	for (i=0; i < MAX_VARS; i++)
+	for (i = 0; i < MAX_VARS; i++)
 		setvar(i, 0);
 
 	/* clear all logics, pictures, views and events */
@@ -143,8 +144,8 @@ int agi_init ()
 
 	/* Load logic 0 into memory, set cache flag for logic 0 */
 	if(ec == err_OK) {
-		ec=loader->load_resource(rLOGIC, 0);
-		dir_logic[0].flags|=RES_CACHED;	/* keep this one cached */
+		ec = loader->load_resource(rLOGIC, 0);
+		dir_logic[0].flags |= RES_CACHED;	/* keep this one cached */
 	}
 
 	/* if cached, enable caching options */
@@ -158,7 +159,7 @@ int agi_init ()
 	}
 
 	/* if forced, load all cacheable objects */
-	if(opt.forceload && ec == err_OK) {
+	if (opt.forceload && ec == err_OK) {
 		for(i = 0; i < MAX_DIRS; i++) {
 			printf ("Force loading cached resource: Logic %4i\r", i);
 			fflush (stdout);
