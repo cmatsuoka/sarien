@@ -117,7 +117,7 @@ static char g_vmu_port[2];
      typedef unsigned int	UINT32;
      typedef signed int		SINT32;
 #  endif
-   //typedef unsigned int 	Err;
+   typedef unsigned int 	Err;
 #endif
 
 #ifdef NATIVE_WIN32
