@@ -639,7 +639,7 @@ cmd(get_num) {
 		int len = strlen (cur_logic->texts[p0 - 1]);
 		print_text (cur_logic->texts[p0 - 1], 0, 0, 23, len,
 			game.color_fg, game.color_bg);
-		get_string (len - 1, 23, 1, MAX_WORDS2);
+		get_string (len - 1, 23, 3, MAX_WORDS2);
 	}
 
 	do {
