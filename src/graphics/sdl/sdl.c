@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <SDL/SDL.h>
+#include "SDL.h"
 #include "sarien.h"
 #include "graphics.h"
 #include "keyboard.h"
@@ -306,18 +306,22 @@ static void process_events ()
 			case SDLK_KP6:
 				key = KEY_RIGHT;
 				break;
+			case SDLK_HOME:
 			case SDLK_KP7:
 				key = KEY_UP_LEFT;
 				break;
 			case SDLK_KP5:
 				key = KEY_STATIONARY;
 				break;
+			case SDLK_PAGEUP:
 			case SDLK_KP9:
 				key = KEY_UP_RIGHT;
 				break;
+			case SDLK_PAGEDOWN:
 			case SDLK_KP3:
 				key = KEY_DOWN_RIGHT;
 				break;
+			case SDLK_END:
 			case SDLK_KP1:
 				key = KEY_DOWN_LEFT;
 				break;

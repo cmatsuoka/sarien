@@ -9,8 +9,7 @@
  */
 
 #include <stdio.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_audio.h>
+#include "SDL.h"
 
 #include "sarien.h"
 #include "sound.h"
