@@ -276,6 +276,7 @@ struct sarien_options {
 	int fullscreen;		/**< use full screen mode if available */
 	int nosound;		/**< disable sound */
 	int egapal;		/**< use PC EGA palette */
+	int cgaemu;		/**< use PC CGA emulation */
 #ifdef MITSHM
 	int mitshm;		/**< use shared memory extension */
 #endif

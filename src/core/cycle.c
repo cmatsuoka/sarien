@@ -383,6 +383,9 @@ int run_game ()
 {
 	int ec = err_OK;
 
+	if (opt.cgaemu)
+		opt.hires = 0;
+
 	/* Execute the game */
     	do {
 		_D(_D_WARN "game loop");

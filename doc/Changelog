@@ -29,6 +29,7 @@ Revision History
 	- input prompt and user input fixes (closes: #518734, #540840,
 	  #540734, #540843, #540736)
 	- fixed object position test in cmd_reposition (closes: #518731)
+	- added CGA palette emulation
 
 0.7.0 (20011122)
 	- added QNX4 native sound driver (untested)

@@ -34,8 +34,7 @@ static void help (int argc, char **argv)
 "  -A --amiga         Forces the game to be seen as an Amiga word padded game.\n"
 "  -C --crc           CRC and identify the game files and stop.\n"
 #if 0
-"  -c --cache-loading Cache loading, static resources remain cached in memory\n"
-"                     but are only loaded as needed.\n"
+"  -c --cga-palette   Use PC CGA video mode emulation\n"
 #endif
 #ifdef OPT_LIST_DICT
 "  -d --list-dictionary\n"
@@ -109,7 +108,7 @@ int parse_cli (int argc, char **argv)
 		{0x0, (UINT8*)""}
 	};
 	int o, optidx = 0;
-#define OPTIONS "AaCDdE:eFgH:hLlmnopr:skS:Vv:x"
+#define OPTIONS "AaCcDdE:eFgH:hLlmnopr:skS:Vv:x"
 	static struct option lopt[] = {
 		{ "version",		0, 0, 'V' },
 		{ "help",		0, 0, 'h' },
@@ -119,6 +118,7 @@ int parse_cli (int argc, char **argv)
 		{ "amiga",		0, 0, 'A'},
 		{ "emulate-version",	1, 0, 'v' },
 		{ "crc",		0, 0, 'C'},
+		{ "cga-palette",	0, 0, 'c'},
 		{ "list-games",		0, 0, 'L'},
 #ifdef OPT_LIST_DICT
 		{ "list-dictionary",	0, 0, 'd' },
@@ -205,6 +205,9 @@ int parse_cli (int argc, char **argv)
 			break;
 		case 'C':
 			opt.gamerun = GAMERUN_CRC;
+			break;
+		case 'c':
+			opt.cgaemu = TRUE;
 			break;
 #ifdef OPT_LIST_DICT
 		case 'd':
