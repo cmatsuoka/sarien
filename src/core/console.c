@@ -582,7 +582,7 @@ static void build_console_layer ()
 
 void report (char *message, ...)
 {
-	char x[512], y[512], z[64], *m, *n;
+	char x[512], y[512], z[64], *msg, *n;
 	va_list	args;
 	int i, s, len;
 
@@ -613,13 +613,13 @@ void report (char *message, ...)
 	strcat (x, y);
 
 	len = 40;
-	m = n = word_wrap_string (x, &len);
+	msg = n = word_wrap_string (x, &len);
 
 	for (s = 1; *n; n++)
 		if (*n == '\n')
 			s++;
 
-	add_console_line (get_token (m, '\n'));
+	add_console_line (get_token (msg, '\n'));
 	for (i = 1; i < s; i++) {
 		first_line++;
 		n = get_token (NULL, '\n');
@@ -639,6 +639,8 @@ void report (char *message, ...)
 		else
 			build_console_lines (1);
 	}
+
+	free (msg);
 
 	do_update ();
 }
