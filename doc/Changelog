@@ -30,10 +30,11 @@ Revision History
 	  #540734, #540843, #540736)
 	- fixed object position test in cmd_reposition (closes: #518731)
 	- added CGA palette emulation
+	- added CGA video card support for PC DOS
 
 0.7.0 (20011122)
 	- added QNX4 native sound driver (untested)
-	- ported to DOS 16-bit using Turbo C++
+	- ported to DOS 16-bit using Turbo C
 	- started MacOS port using MPW (incomplete)
 	- changed palette to use Amiga-ish colors instead of PC EGA
 	- added "crc" command to the interpreter console

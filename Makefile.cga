@@ -196,8 +196,8 @@ path.obj: sarien.cfg src\filesys\msdos\path.c
 dummy.obj: sarien.cfg src\sound\dummy\dummy.c 
 	$(CC) -c src\sound\dummy\dummy.c
 
-pccga.obj: sarien.cfg src\graphics\msdos\pccga.c 
-	$(CC) -c src\graphics\msdos\pccga.c
+pccga.obj: sarien.cfg src\graphics\msdos\pccga.asm
+	$(CC) -c src\graphics\msdos\pccga.asm
 
 #		*Compiler Configuration File*
 #
