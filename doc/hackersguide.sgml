@@ -729,13 +729,10 @@ int console_init ()
 <sect1 id="input-mouse">
 <title>Mouse input</title>
 <para>
-  AGI games (at least in the IBM-PC) were not designed to accept mouse
-  input. All game interaction is done through the keyboard. However, a
-  few functions would clearly benefit from mouse (or other pointing
-  device) input: the menus, dialog boxes and even a ``click to walk''
-  interface could be implemented. Mouse input is currently not supported
-  in Sarien, but it can be eventually be added. It's important not to
-  block this possibility when implementing the keyboard input system.
+  AGI games in the IBM-PC don't have mouse support like its Amiga or
+  Macintosh counterparts. Sarien implements mouse support for menus
+  and for a ``click to walk'' interface modelled after the Amiga version
+  of Sierra's AGI.
 </para>
 </sect1>
 

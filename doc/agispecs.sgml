@@ -19,6 +19,8 @@
 	<!ENTITY p5 "<entry/5/">
 	<!ENTITY p6 "<entry/6/">
 	<!ENTITY p7 "<entry/7/">
+	<!ENTITY p8 "<entry/8/">
+	<!ENTITY px "<entry/x/">
 	<!ENTITY sq1 "Space Quest I">
 	<!ENTITY sq2 "Space Quest II">
 	<!ENTITY pq1 "Police Quest I">
@@ -722,7 +724,7 @@ draw (smoke);
       <row> <entry/4/ <entry/Number of the object, if not ego, that
 			touched the border/ </row>
       <row> <entry/5/ <entry/Code of border touched by the object in
-			<parameter/v4// </row>
+			<varname/v4// </row>
       <row> <entry/6/ <entry/Direction of ego's motion/ </row>
       <row> <entry/7/ <entry/Maximum score/ </row>
       <row> <entry/8/ <entry/Number of free 256-byte pages of memory/ </row>
@@ -778,10 +780,10 @@ draw (smoke);
 </para>
 
 <table id="tab-reserved-flags">
-  <title>Reserved variables</title>
+  <title>Reserved flags</title>
   <tgroup cols="2">
     <thead>
-      <row/ <entry/Variable/ <entry/Description//
+      <row/ <entry/Flag/ <entry/Description//
     </thead>
 
     <tbody>
@@ -803,8 +805,8 @@ draw (smoke);
       <row/ <entry/15/ <entry/Enable non-blocking windows.
          If set, the message window is left on the screen, otherwise
          the message window is closed when <keycap/ENTER/ or <keycap/ESC/
-         are pressed. If <parameter/v21/ is not zero, the window is closed
-         automatically after <parameter/v21/ * 500 milliseconds./
+         are pressed. If <varname/v21/ is not zero, the window is closed
+         automatically after <varname/v21/ * 500 milliseconds./
     </tbody>
   </tgroup>
 </table>
@@ -1096,12 +1098,12 @@ LOADER v3.0 (c) Copyright Sierra On-Line, Inc. 1987 keyOfs
 </para>
 
 <para>
-  If the search is unsuccessful, <parameter/v9/ is assigned the number
+  If the search is unsuccessful, <varname/v9/ is assigned the number
   of the word in the message that failed to match and the processing
   ends. If all the words have been assigned some codes, the interpreter
   removes all zeros from the sequence of codes (thus ignoring all
-  all vocabulary words with zero code), sets <parameter/f2/
-  (user entered input line) to 1 and <parameter/f4/ (<function/said/
+  all vocabulary words with zero code), sets <varname/f2/
+  (user entered input line) to 1 and <varname/f4/ (<function/said/
   command accepted) 0.
 </para>
 
@@ -1112,7 +1114,7 @@ LOADER v3.0 (c) Copyright Sierra On-Line, Inc. 1987 keyOfs
 
 <itemizedlist>
   <listitem><para>
-    If <parameter/f2/ is false or <parameter/f4/ is true, return false.
+    If <varname/f2/ is false or <varname/f4/ is true, return false.
   </para></listitem>
 
   <listitem><para>
@@ -1130,7 +1132,7 @@ LOADER v3.0 (c) Copyright Sierra On-Line, Inc. 1987 keyOfs
 </itemizedlist>
 
 <para>
-   If all elements match, <parameter/f4/ (<function/said/ accepted the
+   If all elements match, <varname/f4/ (<function/said/ accepted the
    user input) is set to true.
 </para>
 
@@ -1463,7 +1465,7 @@ if (v7 > 0 && !f6) { .....
 
 <para>
   Each of these types of arguments is given by the prefix and then a
-  number from 0--255, e.g. <parameter/v5/, <parameter/f6/,
+  number from 0--255, e.g. <varname/v5/, <varname/f6/,
   <parameter/m27/, <parameter/o2/.  The <function/said/ test command
   uses its own special arguments which will be described later.
 </para><para>
@@ -1570,7 +1572,7 @@ goto(Label1);
     <term/<function id="increment"/increment(n)//
     <listitem><para>
       The value of the variable <parameter/n/ is incremented by one,
-      i.e. <parameter/vn/ = <parameter/vn/+1. If the value is already
+      i.e. <varname/vn/ = <varname/vn/+1. If the value is already
       255, it is left unchanged.
     </para></listitem>
   </varlistentry>
@@ -1578,8 +1580,8 @@ goto(Label1);
   <varlistentry>
     <term/<function id="decrement"/decrement(n)//
     <listitem><para>
-      The value of the variable <parameter/vn/ is decremented by one,
-      i.e. <parameter/vn/ = <parameter/vn/-1. If the value is 0, it
+      The value of the variable <varname/vn/ is decremented by one,
+      i.e. <varname/vn/ = <varname/vn/-1. If the value is 0, it
       is left unchanged.
     </para></listitem>
   </varlistentry>
@@ -1587,25 +1589,25 @@ goto(Label1);
   <varlistentry>
     <term/<function id="assignn"/assignn(n,m)//
     <listitem><para>
-      Variable <parameter/vn/ is assigned the value <parameter/m/, i.e.
-      <parameter/vn/ = <parameter/m/.
+      Variable <varname/vn/ is assigned the value <parameter/m/, i.e.
+      <varname/vn/ = <parameter/m/.
     </para></listitem>
   </varlistentry>
 
   <varlistentry>
     <term/<function id="assignv"/assignv(n,m)//
     <listitem><para>
-      Variable <parameter/vn/ is assigned the value of <parameter/vm/,
-      i.e. <parameter/vn/ = <parameter/vm/.
+      Variable <varname/vn/ is assigned the value of <varname/vm/,
+      i.e. <varname/vn/ = <varname/vm/.
     </para></listitem>
   </varlistentry>
 
   <varlistentry>
     <term/<function id="addn"/addn(n,m)/, <function id="addv"/addv(n,m)//
     <listitem><para>
-      The value of variable <parameter/vn/ is incremented by <parameter/m/
-      (<parameter/vm/), i.e. <parameter/vn/ = <parameter/vn/ + <parameter/m/
-      (<parameter/vm/). If the value is greater than 255 the result wraps
+      The value of variable <varname/vn/ is incremented by <parameter/m/
+      (<varname/vm/), i.e. <varname/vn/ = <varname/vn/ + <parameter/m/
+      (<varname/vm/). If the value is greater than 255 the result wraps
       over 0 (so 250 + 10 == 4).
     </para></listitem>
   </varlistentry>
@@ -1613,9 +1615,9 @@ goto(Label1);
   <varlistentry>
     <term/<function id="subn"/subn(n,m)/, <function id="subv"/subv(n,m)//
     <listitem><para>
-      The value of <parameter/vn/ is decremented by <parameter/m/
-      (<parameter/vm/), i.e. <parameter/vn/ = <parameter/vn/ - <parameter/m/
-      (<parameter/vm/). If the value is lesser than 0 the result wraps
+      The value of <varname/vn/ is decremented by <parameter/m/
+      (<varname/vm/), i.e. <varname/vn/ = <varname/vn/ - <parameter/m/
+      (<varname/vm/). If the value is lesser than 0 the result wraps
       (so 1 - 2 == 255).
     </para></listitem>
   </varlistentry>
@@ -1623,59 +1625,59 @@ goto(Label1);
   <varlistentry>
     <term/<function id="lindirectn"/lindirectn(n,m)//
     <listitem><para>
-      Variable <parameter/vi/ where <emphasis/i/ is the value of
-      <parameter/vn/ is assigned a value <parameter/m/, i.e.
-      Var(<parameter/vn/) = <parameter/m/.
+      Variable <varname/vi/ where <emphasis/i/ is the value of
+      <varname/vn/ is assigned a value <parameter/m/, i.e.
+      Var(<varname/vn/) = <parameter/m/.
     </para></listitem>
   </varlistentry>
 
   <varlistentry>
     <term/<function id="lindirectv"/lindirectv(n,m)//
     <listitem><para>
-      Variable <parameter/vi/ where <emphasis/i/ is the value of
-      <parameter/vn/ is assigned the value of <parameter/vm/, i.e.
-      Var(<parameter/vn/) = <parameter/vm/.
+      Variable <varname/vi/ where <emphasis/i/ is the value of
+      <varname/vn/ is assigned the value of <varname/vm/, i.e.
+      Var(<varname/vn/) = <varname/vm/.
     </para></listitem>
   </varlistentry>
 
   <varlistentry>
     <term/<function id="rindirect"/rindirect(n,m)//
     <listitem><para>
-      Variable <parameter/vn/ is assigned the value of <parameter/vi/
-      where <emphasis/i/ is the value of <parameter/vm/, i.e.
-      <parameter/vn/ = Var(<parameter/vm/).
+      Variable <varname/vn/ is assigned the value of <varname/vi/
+      where <emphasis/i/ is the value of <varname/vm/, i.e.
+      <varname/vn/ = Var(<varname/vm/).
     </para></listitem>
   </varlistentry>
 
   <varlistentry>
     <term/<function/muln(n,m)//
     <listitem><para>
-      Variable <parameter/vn/ is multiplied by <parameter/m/, i.e.
-      <parameter/vn/ = <parameter/vn/ * <parameter/m/.
+      Variable <varname/vn/ is multiplied by <parameter/m/, i.e.
+      <varname/vn/ = <varname/vn/ * <parameter/m/.
     </para></listitem>
   </varlistentry>
 
   <varlistentry>
     <term/<function/mulv(n,m)//
     <listitem><para>
-      Variable <parameter/vn/ is multiplied by the value of <parameter/vm/,
-      i.e. <parameter/vn/ = <parameter/vn/ * <parameter/vm/.
+      Variable <varname/vn/ is multiplied by the value of <varname/vm/,
+      i.e. <varname/vn/ = <varname/vn/ * <varname/vm/.
     </para></listitem>
   </varlistentry>
 
   <varlistentry>
     <term/<function/divn(n,m)//
     <listitem><para>
-      Variable <parameter/vn/ is divided by <parameter/m/, i.e.
-      <parameter/vn/ = <parameter/vn/ / <parameter/m/.
+      Variable <varname/vn/ is divided by <parameter/m/, i.e.
+      <varname/vn/ = <varname/vn/ / <parameter/m/.
     </para></listitem>
   </varlistentry>
 
   <varlistentry>
     <term/<function/divv(n,m)//
     <listitem><para>
-      Variable <parameter/vn/ is divided by the value of <parameter/vm/,
-      i.e. <parameter/vn/ = <parameter/vn/ / <parameter/vm/.
+      Variable <varname/vn/ is divided by the value of <varname/vm/,
+      i.e. <varname/vn/ = <varname/vn/ / <varname/vm/.
     </para></listitem>
   </varlistentry>
 
@@ -1699,22 +1701,22 @@ goto(Label1);
   <varlistentry>
     <term/<function id="set"/set(n)//
     <listitem><para>
-       Flag <parameter/fn/ is set.
+       Flag <varname/fn/ is set.
     </para></listitem>
   </varlistentry>
 
   <varlistentry>
     <term/<function id="set.v"/set.v(n)//
     <listitem><para>
-      Flag <parameter/fi/ is set, where <parameter/i/ is the value of
-      <parameter/vn/.
+      Flag <varname/fi/ is set, where <parameter/i/ is the value of
+      <varname/vn/.
     </para></listitem>
   </varlistentry>
 
   <varlistentry>
     <term/<function id="reset"/reset(n)//
     <listitem><para>
-      Flag <parameter/fn/ is reset.
+      Flag <varname/fn/ is reset.
     </para></listitem>
   </varlistentry>
 
@@ -1722,14 +1724,14 @@ goto(Label1);
     <term/<function id="reset.v"/reset.v(n)//
     <listitem><para>
       Flag <literal/fi/ is reset, where <parameter/i/ is the value of
-      <parameter/vn/.
+      <varname/vn/.
     </para></listitem>
   </varlistentry>
 
   <varlistentry>
     <term/<function id="toggle"/toggle(n)//
     <listitem><para>
-      Flag <parameter/fn/ is toggled.
+      Flag <varname/fn/ is toggled.
     </para></listitem>
   </varlistentry>
 
@@ -1737,7 +1739,7 @@ goto(Label1);
     <term/<function id="toggle.v"/toggle.v(n)//
     <listitem><para>
       Flag <literal/fi/ is toggled, where <parameter/i/ is the value of
-      <parameter/vn/.
+      <varname/vn/.
     </para></listitem>
   </varlistentry>
 </variablelist>
@@ -1758,7 +1760,7 @@ goto(Label1);
     <varlistentry>
       <term/<function id="load.logic"/load.logic(n), load.logic.v(n)//
       <listitem><para>
-        Load the logic resource number <parameter/n/ (<parameter/vn/).
+        Load the logic resource number <parameter/n/ (<varname/vn/).
       </para></listitem>
     </varlistentry>
 
@@ -1766,14 +1768,14 @@ goto(Label1);
       <term/<function id="load.pic"/load.pic(n)//
       <listitem><para>
         Load the picture resource number <parameter/i/,
-        where <parameter/i/ is the value of <parameter/vn/.
+        where <parameter/i/ is the value of <varname/vn/.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
       <term/<function id="load.view"/load.view(n), load.view.v(n)//
       <listitem><para>
-        Load the view resource number <parameter/n/ (<parameter/vn/).
+        Load the view resource number <parameter/n/ (<varname/vn/).
       </para></listitem>
     </varlistentry>
 
@@ -1788,14 +1790,14 @@ goto(Label1);
       <term/<function id="discard.pic"/discard.pic(n)//
       <listitem><para>
         Unload the picture resource number <parameter/i/, where
-        <parameter/i/ is the value of <parameter/vn/.
+        <parameter/i/ is the value of <varname/vn/.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
       <term/<function id="discard.view"/discard.view(n), discard.view.v(n)//
       <listitem><para>
-        Unload the view resource number <parameter/n/ (<parameter/vn/).
+        Unload the view resource number <parameter/n/ (<varname/vn/).
       </para></listitem>
     </varlistentry>
   </variablelist>
@@ -1820,15 +1822,15 @@ goto(Label1);
           <listitem/<para/Control over ego is given to the player//
           <listitem/<para/Blocks are removed//
           <listitem/<para/Horizon is set to 36//
-          <listitem/<para/<parameter/v1/ is assigned the value of
-            <parameter/v0/, and <literal/v0/ is assigned <parameter/n/
-            (or the value of <parameter/vn/)//
-          <listitem/<para/<parameter/v4/ is assigned 0//
-          <listitem/<para/<parameter/v5/ is assigned 0//
-          <listitem/<para/<parameter/v16/ is assigned the number of the
+          <listitem/<para/<varname/v1/ is assigned the value of
+            <varname/v0/, and <literal/v0/ is assigned <parameter/n/
+            (or the value of <varname/vn/)//
+          <listitem/<para/<varname/v4/ is assigned 0//
+          <listitem/<para/<varname/v5/ is assigned 0//
+          <listitem/<para/<varname/v16/ is assigned the number of the
             view resource associated with ego//
-          <listitem/<para/Logic resource <parameter/vn/ is loaded//
-          <listitem/<para/Set ego coordinates according to <parameter/v2/:
+          <listitem/<para/Logic resource <varname/vn/ is loaded//
+          <listitem/<para/Set ego coordinates according to <varname/v2/:
             <simplelist>
               <member>if ego touched the bottom edge, put it on the horizon;
               <member>if ego touched the top edge, put it on the bottom edge
@@ -1836,13 +1838,13 @@ goto(Label1);
               <member>if ego touched the right edge, put it at the left and
                 vice versa.
             </simplelist>//
-          <listitem/<para/<parameter/v2/ is assigned 0 (meaning that ego
+          <listitem/<para/<varname/v2/ is assigned 0 (meaning that ego
             has not touched any edges)//
-          <listitem/<para/<parameter/f5/ is set to 1 (meaning in the first
+          <listitem/<para/<varname/f5/ is set to 1 (meaning in the first
             interpreter cycle after the <function/new.room/ command all
             initialization parts of all logics loaded and called from the
             initialization part of the new room's logic will be called.
-            In the subsequent cycle <parameter/f5/ is reset to 0.//
+            In the subsequent cycle <varname/f5/ is reset to 0.//
           <listitem/<para/Clear keyboard input buffer and return to the
             main AGI loop//
         </orderedlist>
@@ -1859,7 +1861,7 @@ goto(Label1);
     <varlistentry>
       <term/<function id="call"/call(n), call.v(n)//
       <listitem><para>
-        The logic resource number <parameter/n/ (or <parameter/vn/)
+        The logic resource number <parameter/n/ (or <varname/vn/)
         is executed as a subroutine. If the logic with the given ID is
         not loaded in memory, it is temporarily loaded and discarded
         after returning from the call. <function/call/ does not change
@@ -1903,230 +1905,150 @@ goto(Label1);
    automatically checking the following conditions:
 
 </para><para>
-   <orderedlist>
+  <orderedlist>
     <listitem><para>
       If an object priority is 0 it cannot cross an unconditional barrier
       (pixels with priority 0).
     </para></listitem>
-
     <listitem><para>
       If an object priority is 15 and a command <function/ignore.block/ has not
       been given to it, it cannot cross a conditional barrier (pixels with
       priority 1) and leave the block set using the
       <function>block</function> command.
     </para></listitem>
-
     <listitem><para>
-      If an object has not been given the <function>ignore.horizon</function>
+      If an object has not been given the <function/ignore.horizon/
       command, it cannot move above the horizon set using the
-      <function>set.horizon</function> command.
+      <function/set.horizon/ command.
     </para></listitem>
-
     <listitem><para>
       An object should follow the conditions set using
-      <function>object.on.water</function>
-      and <function>object.on.land</function>
+      <function/object.on.water/ and <function/object.on.land/
       commands (see below).
     </para></listitem>
-   </orderedlist>
-
-   Object number 0 is called Ego. It is different from others in that the
-   player may move it around using the keyboard.
+  </orderedlist>
 </para>
 
-<sect3><title>Object description commands</title>
 <para>
-   <variablelist>
+  <variablelist>
     <varlistentry>
-      <term/<function id="animate.obj">animate.obj(n)</function>/
+      <term/<function id="animate.obj"/animate.obj(n)//
       <listitem><para>
-       Object number <parameter/n/ is included in the list of object
-       controlled by the interpreter. <emphasis>Objects not included in
-       that list are considered inexistent!</emphasis>
+        Object number <parameter/n/ is included in the list of object
+        controlled by the interpreter. Objects not included in this list
+        are considered inexistent!
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="unanimate.all">unanimate.all()</function>/
+      <term/<function id="unanimate.all"/unanimate.all//
       <listitem><para>
-       All objects are removed from the control list and are considered
-       inexistent.
+        All objects are removed from the control list and are considered
+        inexistent.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="set.view">set.view(n,m), set.view.v(n,m)</function>/
+      <term/<function id="set.view"/set.view(n,m), set.view.v(n,m)//
       <listitem><para>
-       Object <parameter/n/ is associated with a view resource number
-       <parameter/m/ (or pointed to by <parameter/vm/), which may be an
-       image of the object.
+        Object <parameter/n/ is associated with a view resource number
+        <parameter/m/ (or pointed to by <varname/vm/), which may be an
+        image of the object.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term><function id="set.loop">set.loop(n,m), set.loop.v(n,m)</function>
+      <term><function id="set.loop"/set.loop(n,m), set.loop.v(n,m)//
       <listitem><para>
-       Chooses a loop <parameter/m/ (or <parameter/vm/) in the view
-       resource associated with the object <parameter/n/.
+        Choose a loop <parameter/m/ (or <varname/vm/) in the view
+        resource associated with the object <parameter/n/.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="fix.loop">fix.loop(n)</function>/
+      <term/<function id="fix.loop"/fix.loop(n)//
       <listitem><para>
-       Turns off automatic choice of loop number for the object number
-       <parameter/n/.
+        Disable automatic choice of loop number for the object number
+        <parameter/n/.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="release.loop">release.loop(n)</function>/
+      <term/<function id="release.loop"/release.loop(n)//
       <listitem><para>
-       Turns on automatic choice of loop number depending on the direction
-       of motion of the object <parameter/n/.
+        Turn on automatic choice of loop number depending on the direction
+        of motion of the object <parameter/n/, according to
+        <xref linkend="tab-direction">.
       </para><para>
-       <literal>
-                      1
-                8     |     2
-                  \   |   /
-                    \ | /
-              7 ------------- 3      0 - object stands still
-                    / | \
-                  /   |   \
-                6     |     4
-                      5
-       </literal>
+        Objects with 2, 3 or 4 loops have their loops assigned
+        according to the following table ("x" means that the current
+        loop number is retained):
       </para><para>
-       For objects with fewer than 4 but more than 1 loop, automatic
-       choice of the loop is done according to the following table:
-      </para><para>
-
-       <informaltable>
+      <informaltable>
         <tgroup cols="10">
-         <thead>
-          <row>
-           <entry>Direction</entry>
-           <entry>0</entry>
-           <entry>1</entry>
-           <entry>2</entry>
-           <entry>3</entry>
-           <entry>4</entry>
-           <entry>5</entry>
-           <entry>6</entry>
-           <entry>7</entry>
-           <entry>8</entry>
-          </row>
-         </thead>
-         <tbody>
-          <row>
-           <entry>Loop</entry>
-           <entry>x</entry>
-           <entry>x</entry>
-           <entry>0</entry>
-           <entry>0</entry>
-           <entry>0</entry>
-           <entry>x</entry>
-           <entry>1</entry>
-           <entry>1</entry>
-           <entry>1</entry>
-          </row>
-         </tbody>
+          <thead>
+            <row/ <entry/Loops/ &p0; &p1; &p2; &p3; &p4; &p5; &p6; &p7; &p8; /
+          </thead>
+          <tbody>
+            <row/ <entry/2/     &px; &px; &p0; &p0; &p0; &px; &p1; &p1; &p1; / 
+            <row/ <entry/3/     &px; &px; &p0; &p0; &p0; &px; &p1; &p1; &p1; / 
+            <row/ <entry/3/     &px; &p3; &p0; &p0; &p0; &p2; &p1; &p1; &p1; / 
+          </tbody>
         </tgroup>
-       </informaltable>
-
-      </para><para>
-       For objects with more than 4 loops, the following table is used:
-      </para><para>
-
-       <informaltable>
-        <tgroup cols="10">
-         <thead>
-          <row>
-           <entry>Direction</entry>
-           <entry>0</entry>
-           <entry>1</entry>
-           <entry>2</entry>
-           <entry>3</entry>
-           <entry>4</entry>
-           <entry>5</entry>
-           <entry>6</entry>
-           <entry>7</entry>
-           <entry>8</entry>
-          </row>
-         </thead>
-         <tbody>
-          <row>
-           <entry>Loop</entry>
-           <entry>x</entry>
-           <entry>3</entry>
-           <entry>0</entry>
-           <entry>0</entry>
-           <entry>0</entry>
-           <entry>2</entry>
-           <entry>1</entry>
-           <entry>1</entry>
-           <entry>1</entry>
-          </row>
-         </tbody>
-        </tgroup>
-       </informaltable>
-
-      </para><para>
-       <literal/x/ means that the current loop number is retained.
+      </informaltable>
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term><function id="set.cel">set.cel(n,m), set.cel.v(n,m)</function>
-      </term>
+      <term/<function id="set.cel"/set.cel(n,m), set.cel.v(n,m)//
       <listitem><para>
-       Selects a cel <parameter/m/ in the current loop of the object
-       <parameter/n/.
+        Select the cel <parameter/m/ in the current loop of the object
+        <parameter/n/.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="last.cel">last.cel(n,m)</function>/
+      <term/<function id="last.cel"/last.cel(n,m)//
       <listitem><para>
-       The number of the last cel of the current loop of the object
-       <parameter/n/ is stored in <parameter/vm/.
+        The number of the last cel of the current loop of the object
+        <parameter/n/ is stored in <varname/vm/.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="current.cel">current.cel(n,m)</function>/
+      <term/<function id="current.cel"/current.cel(n,m)//
       <listitem><para>
-       The number of the current cel of the object <parameter/n/ is
-       stored in <parameter/vm/.
+        The number of the current cel of the object <parameter/n/ is
+        stored in <varname/vm/.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="current.loop">current.loop(n,m)</function>/
+      <term/<function id="current.loop"/current.loop(n,m)//
       <listitem><para>
-       The number of the current loop of the object <parameter/n/ is
-       stored in <parameter/vm/.
+        The number of the current loop of the object <parameter/n/ is
+        stored in <varname/vm/.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="current.view">current.view(n,m)</function>/
+      <term/<function id="current.view"/current.view(n,m)//
       <listitem><para>
-       The number of the current view resource associated with the
-       object <parameter/n/ is stored in <parameter/vm/.
+        The number of the current view resource associated with the
+        object <parameter/n/ is stored in <varname/vm/.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="set.priority">set.priority(n,m), set.priority.v(n,m)</function>/
+      <term/<function id="set.priority"/set.priority(n,m), set.priority.v(n,m)//
       <listitem><para>
-       Set priority of the view of the object <parameter/n/ to
-       <parameter/m/ (or <parameter/vm/).
+        Set priority of the view of the object <parameter/n/ to
+        <parameter/m/ (or <varname/vm/).
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="release.priority">release.priority(n)</function>/
+      <term/<function id="release.priority"/release.priority(n)//
       <listitem><para>
         Turns on the automatic priority choice for the object <parameter/n/.
         The priority is set depending on the vertical coordinate of the object.
@@ -2137,15 +2059,15 @@ goto(Label1);
     </varlistentry>
 
     <varlistentry>
-      <term><function id="get.priority">get.priority(n,m)</function><term>
+      <term/<function id="get.priority"/get.priority(n,m)//
       <listitem><para>
         The value of the current priority of the object <parameter/n/ is
-        stored in <parameter/vm/.
+        stored in <varname/vm/.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="position">position(n,x,y), position.v(n,x,y)</function>/
+      <term/<function id="position"/position(n,x,y), position.v(n,x,y)//
       <listitem><para>
         Coordinates of the object <parameter/n/, not yet displayed on the
         screen, are set to <parameter/x/ and <parameter/y/ (or <parameter/vx/
@@ -2154,28 +2076,26 @@ goto(Label1);
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="draw">draw(n)</function>/
+      <term/<function id="draw"/draw(n)//
       <listitem><para>
-        Object <parameter/n/ is shown on the screen. The image uses the
-        values of the loop and the cel in the VIEW resource associated with
-        the object <parameter/n/ (see <function>set.view</function>),
-        as well as the priority and coordinates of the object. If a command
-        <function>start.cycling</function>
+        Show object <parameter/n/ on the screen. The image uses the
+        values of the loop and the cel in the view resource associated with
+        the object <parameter/n/ (see <function/set.view/), as well as the
+        priority and coordinates of the object. If <function/start.cycling/
         is also issued, a looped animation for object <parameter/n/ is
-        shown until stopped (for example, with
-        <function>stop.cycling</function>).
+        shown until stopped (for example, with <function/stop.cycling/).
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="erase">erase(n)</function>/
+      <term/<function id="erase"/erase(n)//
       <listitem><para>
         Object <parameter/n/ is erased from the screen.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="get.posn">get.posn(n,x,y)</function>/
+      <term/<function id="get.posn"/get.posn(n,x,y)//
       <listitem><para>
         Coordinates of the object <parameter/n/ are stored in <parameter/vx/
         and <parameter/vy/. Coordinates of the object are coordinates of the
@@ -2183,37 +2103,29 @@ goto(Label1);
         associated with the object.
       </para></listitem>
     </varlistentry>
-   </variablelist>
-</para><para>
+  </variablelist>
 
-   The interpreter automatically plays the animation (a loop in the VIEW
-   resource) associated with the object, starting at the specified cel.
-   The following commands control this process.
-
-</para><para>
-   <variablelist>
+  <variablelist>
     <varlistentry>
-      <term/<function id="start.cycling">start.cycling(n)</function>/
+      <term/<function id="start.cycling"/start.cycling(n)//
       <listitem><para>
-        Enables automatic change of cels in a chosen (using
-        <function>set.loop</function>) loop of
+        Enable cel looping in a chosen (using <function/set.loop/) loop of
         a view resource associated with the object <parameter/n/ (using
         <function>set.view</function>).
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="stop.cycling">stop.cycling(n)</function>/
+      <term/<function id="stop.cycling"/stop.cycling(n)//
       <listitem><para>
         Disables automatic change of cels in a chosen (using
-        <function>set.loop</function>) loop of
-        a view resource associated with the object <parameter/n/ (using
-        <function>set.view</function>).
+        <function/set.loop/) loop of a view resource associated with
+        the object <parameter/n/ (using <function/set.view/).
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="normal.cycle">normal.cycle(n)</function>/
+      <term/<function id="normal.cycle"/normal.cycle(n)//
       <listitem><para>
         Cels of the loop associated with the object <parameter/n/ follow in
         a normal order: 0, 1, 2, ..., <parameter/k/-1, 0, 1, 2, ...
@@ -2221,7 +2133,7 @@ goto(Label1);
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="reverse.cycle">reverse.cycle(n)</function>/
+      <term/<function id="reverse.cycle"/reverse.cycle(n)//
       <listitem><para>
         Cels of the loop associated with the object <parameter/n/ follow
         a reverse order: <parameter/k/-1, <parameter/k/-2, ..., 1, 0,
@@ -2230,41 +2142,39 @@ goto(Label1);
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="end.of.loop">end.of.loop(n,m)</function>/
+      <term/<function id="end.of.loop"/end.of.loop(n,m)//
       <listitem><para>
         Plays the loop associated with the object <parameter/n/ once,
-        from the current cel to the last. When finished, <parameter/fm/
+        from the current cel to the last. When finished, <varname/fm/
         is set.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="reverse.loop">reverse.loop(n,m)</function>/
+      <term/<function id="reverse.loop"/reverse.loop(n,m)//
       <listitem><para>
         Plays the loop associated with the object <parameter/n/ once
         in a reverse order, from the current cel to the first. When
-        finished, <parameter/fm/ is set.
+        finished, <varname/fm/ is set.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="cycle.time">cycle.time(n,m)</function>/
+      <term/<function id="cycle.time"/cycle.time(n,m)//
       <listitem><para>
-        <parameter/vm/ sets the time in interpreter cycles between cel
-        changes for the object <parameter/n/. When <parameter/vm/ = 1
+        <varname/vm/ sets the time in interpreter cycles between cel
+        changes for the object <parameter/n/. When <varname/vm/ = 1
         cels are changed every cycle.
       </para></listitem>
     </varlistentry>
 
-   </variablelist>
+  </variablelist>
 </para>
 
-<sect3><title>Object motion control commands</title>
+<sect3>
+<title>Object motion control commands</title>
 <para>
-   The following commands can be given to the object included in the
-   interpreter control list with <function>animate.obj</function>:
-
-   <variablelist>
+  <variablelist>
 
     <varlistentry>
      <term/<function id="set.horizon">set.horizon(n)</function>/
@@ -2375,7 +2285,7 @@ goto(Label1);
     <varlistentry>
      <term/<function id="step.size">step.size(n,m)</function>/
      <listitem><para>
-       <parameter/vn/ determines the number of pixels the object
+       <varname/vn/ determines the number of pixels the object
        <parameter/n/ moves each step. The actual value in pixels is the
        step size / 4.
      </para></listitem>
@@ -2384,9 +2294,9 @@ goto(Label1);
     <varlistentry>
      <term/<function id="step.time">step.time(n,m)</function>/
      <listitem><para>
-       <parameter/vn/ determines the speed of object <parameter/n/
+       <varname/vn/ determines the speed of object <parameter/n/
        motion: delay in the interpreter cycles between consecutive steps.
-       If <parameter/vm/ is 1, step occurs on every cycle.
+       If <varname/vm/ is 1, step occurs on every cycle.
      </para></listitem>
     </varlistentry>
 
@@ -2431,7 +2341,7 @@ goto(Label1);
     <varlistentry>
      <term/<function id="set.dir">set.dir(n,m)</function>/
      <listitem><para>
-       Object <parameter/n/ is told to move in the direction <parameter/vm/.
+       Object <parameter/n/ is told to move in the direction <varname/vm/.
        <literal>
                       1
                 8     |     2
@@ -2449,7 +2359,7 @@ goto(Label1);
     <varlistentry>
      <term/<function id="get.dir">get.dir(n,m)</function>/
      <listitem><para>
-       Direction of object <parameter/n/ motion is stored in <parameter/vm/.
+       Direction of object <parameter/n/ motion is stored in <varname/vm/.
      </para></listitem>
     </varlistentry>
 
@@ -2569,7 +2479,7 @@ goto(Label1);
     <varlistentry>
      <term/<function id="put">put(n,m), put.v(n,m)</function>/
      <listitem><para>
-       Stores the value <parameter/m/ (or <parameter/vm/) in the room field
+       Stores the value <parameter/m/ (or <varname/vm/) in the room field
        of the object <parameter/n/.
      </para></listitem>
     </varlistentry>
@@ -2577,8 +2487,8 @@ goto(Label1);
     <varlistentry>
      <term/<function id="get.room.v">get.room.v(n,m)</function>/
      <listitem><para>
-       Stores the value of the room field of object <parameter/vn/ in
-       <parameter/vm/.
+       Stores the value of the room field of object <varname/vn/ in
+       <varname/vm/.
      </para></listitem>
     </varlistentry>
 
@@ -2590,11 +2500,11 @@ goto(Label1);
        are listed. If there are no such objects, the word ``nothing'' is
        displayed.
      </para><para>
-       If <parameter/f13/ is set (allow member selection), a highlight
+       If <varname/f13/ is set (allow member selection), a highlight
        appears which allows the player to select an member name.
        When <keycap/ENTER/ is pressed, the selected object number is
-       stored in <parameter/v25/. When <keycap/ESC/ is pressed, 255
-       is stored in <parameter/v25/.
+       stored in <varname/v25/. When <keycap/ESC/ is pressed, 255
+       is stored in <varname/v25/.
      </para></listitem>
     </varlistentry>
 
@@ -2612,7 +2522,7 @@ goto(Label1);
      <term/<function id="draw.pic">draw.pic(n)</function>/
      <listitem><para>
        A picture resource number <parameter/i/, where <parameter/i/
-       is the value of <parameter/vn/, is executed. As the result,
+       is the value of <varname/vn/, is executed. As the result,
        the background picture is created in the internal buffer of
        the interpreter. Before execution, the buffer is cleared,
        i.e. all pixels are set to colour 15 and priority 4.
@@ -2623,7 +2533,7 @@ goto(Label1);
      <term/<function id="overlay.pic">overlay.pic(n)</function>/
      <listitem><para>
        Just like the above, only the internal buffer is not cleared before
-       drawing. Picture(<parameter/vn/) is drawn over the existing picture.
+       drawing. Picture(<varname/vn/) is drawn over the existing picture.
      </para></listitem>
     </varlistentry>
 
@@ -2684,7 +2594,7 @@ show.pic();
      <term/<function id="sound">sound(n,m)</function>/
      <listitem><para>
        Starts playback of the sound resource <parameter/n/. When
-       finished, <parameter/fm/ is set.
+       finished, <varname/fm/ is set.
      </para></listitem>
     </varlistentry>
 
@@ -2719,9 +2629,9 @@ show.pic();
       <term/<function id="print"/print(n), print.v(n)//
       <listitem><para>
         This command opens a text window in the centre of the screen,
-        displaying message number <parameter/n/ (or <parameter/vn/)
+        displaying message number <parameter/n/ (or <varname/vn/)
         of the current logic resource. The output mode is determined by
-        <parameter/f15/ (see <xref linkend="tab-reserved-flags"> for
+        <varname/f15/ (see <xref linkend="tab-reserved-flags"> for
         details). In addition to letters, digits, and other symbols,
         the string may contain the following format specifiers:
       </para>
@@ -2754,7 +2664,7 @@ show.pic();
     <varlistentry>
       <term/<function id="display"/display(r,c,n), display.v(r,c,n)//
       <listitem><para>
-        Print the message number <parameter/n/ (<parameter/vn/) in the
+        Print the message number <parameter/n/ (<varname/vn/) in the
         row <parameter/r/ (<parameter/vr/), starting with the column
         <parameter/c/ (<parameter/vc/). No window is created, so it is
         up to the programmer to erase the output when it is no longer needed.
@@ -2883,7 +2793,7 @@ show.pic();
     <varlistentry>
      <term/<function id="get.num">get.num(n,m)</function>/
      <listitem><para>
-       Enters a number from the keyboard into <parameter/vm/.
+       Enters a number from the keyboard into <varname/vm/.
        Message <parameter/n/ is used as the prompt.
      </para></listitem>
     </varlistentry>
@@ -3037,42 +2947,42 @@ Room &lt;current room&gt; Input line &lt;current input line&gt; ... message ...
     <varlistentry>
      <term/<function id="equaln">equaln(n,m)</function>/
      <listitem><para>
-   TRUE if <parameter/vn/ = <parameter/m/.
+   TRUE if <varname/vn/ = <parameter/m/.
      </para></listitem>
     </varlistentry>
 
     <varlistentry>
      <term/<function id="equalv">equalv(n,m)</function>/
      <listitem><para>
-   true if <parameter/vn/ = <parameter/vm/.
+   true if <varname/vn/ = <varname/vm/.
      </para></listitem>
     </varlistentry>
 
     <varlistentry>
      <term/<function id="lessn">lessn(n,m)</function>/
      <listitem><para>
-   TRUE if <parameter/vn/ &lt; <parameter/m/.
+   TRUE if <varname/vn/ &lt; <parameter/m/.
      </para></listitem>
     </varlistentry>
 
     <varlistentry>
      <term/<function id="lessv">lessv(n,m)</function>/
      <listitem><para>
-   TRUE if <parameter/vn/ &lt; <parameter/vm/.
+   TRUE if <varname/vn/ &lt; <varname/vm/.
      </para></listitem>
     </varlistentry>
 
     <varlistentry>
      <term/<function id="greatern">greatern(n,m)</function>/
      <listitem><para>
-   TRUE if <parameter/vn/ > <parameter/m/.
+   TRUE if <varname/vn/ > <parameter/m/.
      </para></listitem>
     </varlistentry>
 
     <varlistentry>
      <term/<function id="greaterv">greaterv(n,m)</function>/
      <listitem><para>
-   TRUE if <parameter/vn/ > <parameter/vm/.
+   TRUE if <varname/vn/ > <varname/vm/.
      </para></listitem>
     </varlistentry>
 
@@ -3086,7 +2996,7 @@ Room &lt;current room&gt; Input line &lt;current input line&gt; ... message ...
     <varlistentry>
      <term/<function>isset.v(n)</function>/
      <listitem><para>
-       TRUE if Flag(<parameter/vn/) is set.
+       TRUE if Flag(<varname/vn/) is set.
      </para></listitem>
     </varlistentry>
 
@@ -3101,7 +3011,7 @@ Room &lt;current room&gt; Input line &lt;current input line&gt; ... message ...
     <varlistentry>
      <term/<function id="obj.in.room">obj.in.room(n,m)</function>/
      <listitem><para>
-   TRUE if room field of the object <parameter/n/ is <parameter/vm/.
+   TRUE if room field of the object <parameter/n/ is <varname/vm/.
      </para></listitem>
     </varlistentry>
 
@@ -3195,7 +3105,7 @@ Room &lt;current room&gt; Input line &lt;current input line&gt; ... message ...
     <varlistentry>
      <term/<function id="obj.status.v">obj.status.v(n)</function>/
      <listitem><para>
-   Prints a message for the object <parameter/vn/ in the format
+   Prints a message for the object <varname/vn/ in the format
 
 <programlisting>
 Obj &lt;n&gt; x: &lt;pos&gt; y: &lt;pos&gt; pri: &lt;priority&gt; stepsize: &lt;step size&gt;

@@ -24,7 +24,7 @@ flowchart.ps: flowchart.dot
 
 
 specs: flowchart.ps
-	if [ -x /usr/bin/docbook2html ]; then		\
+	@if [ -x /usr/bin/docbook2html ]; then		\
 		[ -d agispecs ] || mkdir agispecs;	\
 		(cd agispecs; docbook2html ../agispecs.sgml) \
 	else						\
