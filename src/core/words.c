@@ -15,8 +15,6 @@
 
 #include "sarien.h"
 #include "agi.h"
-//#include "words.h"
-//#include "keyboard.h"
 #include "console.h"
 
 struct agi_word *words;			/* words in the game */
@@ -30,12 +28,13 @@ int load_words (char *fname)
 	FILE *fp;
 	UINT32 flen;
 	UINT8 *mem, x[128], c;
+	char *path;
 
 	num_words = 0;
 	num_syns = 0;
 	words = NULL;
 
-	fixpath (NO_GAMEDIR, fname);
+	path = fixpath (NO_GAMEDIR, fname);
 	report ("Loading dictionary: %s\n", path);
 
 	if ((fp = fopen(path, "rb")) == NULL)

@@ -27,7 +27,7 @@
 #include "console.h"
 
 
-UINT8		path[1024];		/* holds expanded paths for files */
+//UINT8		path[1024];		/* holds expanded paths for files */
 struct agi_loader *loader;		/* loader */
 
 struct agi_game game;

@@ -47,14 +47,14 @@ struct agi_loader agi_v3 = {
 int agi_v3_detect_game (UINT8 *gn)
 {
 	int ec = err_Unk;
-	char x[256], *xname;
+	char x[MAX_PATH], *xname, *path;
 	int l;
 
 	_D ("(\"%s\")", gn);
 	strncpy (game.dir, gn, 8);
 
 	strcpy (x, "*vol.0");
-	fixpath (GAMEDIR, x);
+	path = fixpath (GAMEDIR, x);
 
 	if (!__file_exists(path)) {
 		xname = __file_name (path);
@@ -118,8 +118,9 @@ int agi_v3_init (void)
 	int i;
 	UINT16 xd[4];
 	FILE *fp;
+	char *path;
 
-	fixpath (GAMEDIR, DIR);
+	path = fixpath (GAMEDIR, DIR);
 
 	if ((fp = fopen(path, "rb")) != NULL) {
 		/* build offset table for v3 directory format */
@@ -215,12 +216,12 @@ int agi_v3_unload_resource (int restype, int resnum)
 
 UINT8* agi_v3_load_vol_res (struct agi_dir *agid)
 {
-	UINT8 x[256], *data = NULL, *comp_buffer;
+	UINT8 x[MAX_PATH], *data = NULL, *comp_buffer, *path;
 	FILE *fp;
 
 	_D ("(%p)", agid);
 	sprintf (x, "vol.%i", agid->volume);
-	fixpath (GAMEDIR, x);
+	path = fixpath (GAMEDIR, x);
 
 	if (agid->offset != _EMPTY && (fp = fopen((char*)path, "rb")) != NULL) {
 		fseek (fp, agid->offset, SEEK_SET);

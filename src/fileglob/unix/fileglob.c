@@ -54,26 +54,29 @@ char* __file_name (char *fname)
 }
 
 
-void fixpath (int flag, char *fname)
+char *fixpath (int flag, char *fname)
 {
-	_D ("(%d, \"%s\")", flag, fname);
+	static char path[MAX_PATH];
+
+	_D ("(flag = %d, fname = \"%s\")", flag, fname);
 
 	strcpy (path, game.dir);
-
 	if(*path && path[strlen((char*)path)-1]!='/')
 		strcat((char*)path, "/");
 		    
-	if(flag==1)
+	if (flag)
 		strcat (path, game.name);
 
-	strcat((char*)path, (char*)fname);
-	if(path[strlen((char*)path)-1]=='.')
-		path[strlen((char*)path)-1]=0;
+	strcat (path, fname);
+	if (path[strlen (path) - 1] == '.')
+		path[strlen (path) - 1] = 0;
+
+	return path;
 }
 
 
-char *get_current_directory (void)
+char *get_current_directory ()
 {
-    return(".");
+	return (".");
 }
 

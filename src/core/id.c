@@ -152,7 +152,7 @@ int v2id_game ()
 	buff = malloc (8192);
 
 	for (crc = y = 0; fn[y][0]; y++) {
-		fixpath (NO_GAMEDIR, fn[y]);
+		char *path = fixpath (NO_GAMEDIR, fn[y]);
 		if ((fp = fopen(path, "rb")) != NULL) {
 			for (len = 1; len > 0; ) {
 				memset (buff, 0, 8192);
@@ -217,12 +217,12 @@ int v3id_game ()
 	UINT32 len, c, crc;
 	UINT8 *buff;
 	FILE *fp;
-	char *fn[] = { "words.tok", "object", "" };
+	char *path, *fn[] = { "words.tok", "object", "" };
 
 	buff = malloc (8192);
 
 	for (crc = 0, y = 0; fn[y][0]!=0x0; y++) {
-		fixpath (NO_GAMEDIR, fn[y]);
+		path = fixpath (NO_GAMEDIR, fn[y]);
 		if ((fp = fopen (path, "rb")) != NULL) {
 			len = 1;
 			while (len > 0) {
@@ -237,7 +237,7 @@ int v3id_game ()
 
 	/* no do the directory file */
 
-	fixpath (GAMEDIR, DIR);
+	path = fixpath (GAMEDIR, DIR);
 
 	if ((fp = fopen(path, "rb")) != NULL) {
 		for (len = 1; len > 0; ) {

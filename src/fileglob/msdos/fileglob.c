@@ -47,9 +47,9 @@ char* __file_name (char *fname)
 
 
 
-void fixpath (int flag, char *fname)
+char *fixpath (int flag, char *fname)
 {
-	/* _D (("(%d, \"%s\")", flag, fname)); */
+	static char path[MAX_PATH];
 	char *p;
 
     	strcpy (path, game.dir);
@@ -74,6 +74,8 @@ void fixpath (int flag, char *fname)
 		    *p='/';
 		p++;
 	}
+
+	return path;
 }
 
 

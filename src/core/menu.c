@@ -34,8 +34,8 @@ static void draw_horizontal_menu_bar (int cur_menu, int max_menu)
 	int cx, cy, z;
 
 	/* draw our empty title bar */
-	for (cy=0; cy < 8; cy++)
-		for (cx=0; cx<GFX_WIDTH; cx++)
+	for (cy = 0; cy < 8; cy++)
+		for (cx = 0; cx < GFX_WIDTH; cx++)
 			put_pixel (cx, cy, MENU_BG);
 
 	/* draw menu titles */
@@ -130,7 +130,8 @@ void deinit_menus ()
 
 	/* free all down's then all next's */
 
-	/* FR: * FIXME: Fatal error while freeing the memory
+	/* FR:
+         * FIXME: Fatal error while freeing the memory
 	 */
 #if 0
 	while ((m0 = menu->next)) {

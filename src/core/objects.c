@@ -29,6 +29,7 @@ int load_objects (char *fname)
 	FILE *fp;
 	UINT32 flen;
 	UINT8 *mem;
+	char *path;
 
 	_D ("(fname = %s)", fname);
 	padsize = game.game_flags & ID_AMIGA ? 4 : 3;
@@ -36,7 +37,7 @@ int load_objects (char *fname)
 	game.num_objects = 0;
 	objects = NULL;
 
-	fixpath (NO_GAMEDIR, fname);
+	path = fixpath (NO_GAMEDIR, fname);
 	report ("Loading objects: %s\n", path);
 
 	if ((fp = fopen(path, "rb")) == NULL)

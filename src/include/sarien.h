@@ -57,6 +57,7 @@ typedef signed long	SINT32;
 #define MAX_WORDS	20
 #define MAX_WORDS1	24
 #define	MAX_WORDS2	40
+#define MAX_PATH	256
 
 #define	_EMPTY		0xfffff
 #define	EGO_OWNED	0xff
@@ -143,7 +144,7 @@ int	deinit_machine	(void);
 int	__file_exists	(char *fname);
 char*	__file_name	(char *fname);
 
-void	fixpath		(int flag, char *fname);
+char*	fixpath		(int flag, char *fname);
 
 
 extern	void inventory(void);

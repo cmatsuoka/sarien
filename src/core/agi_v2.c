@@ -46,22 +46,23 @@ struct agi_loader agi_v2= {
 static int agi_v2_detect_game (UINT8 *gn)
 {
 	int ec = err_Unk;
+	char *path;
 
 	strncpy (game.dir, gn, 8);
 
-	fixpath (NO_GAMEDIR, (UINT8*)LOGDIR);
+	path = fixpath (NO_GAMEDIR, (UINT8*)LOGDIR);
 	if (__file_exists (path))
 		return err_InvalidAGIFile;
 
-	fixpath (NO_GAMEDIR, (UINT8*)PICDIR);
+	path = fixpath (NO_GAMEDIR, (UINT8*)PICDIR);
 	if (__file_exists (path))
 		return err_InvalidAGIFile;
 
-	fixpath (NO_GAMEDIR, (UINT8*)SNDDIR);
+	path = fixpath (NO_GAMEDIR, (UINT8*)SNDDIR);
 	if (__file_exists (path))
 		return err_InvalidAGIFile;
 
-	fixpath (NO_GAMEDIR, (UINT8*)VIEWDIR);
+	path = fixpath (NO_GAMEDIR, (UINT8*)VIEWDIR);
 	if (__file_exists (path))
 		return err_InvalidAGIFile;
 
@@ -78,8 +79,9 @@ static int agi_v2_load_dir (struct agi_dir *agid, char *fname)
 	UINT8 *mem;
 	UINT32 flen;
 	int i;
+	char *path;
 
-	fixpath (NO_GAMEDIR, fname);
+	path = fixpath (NO_GAMEDIR, fname);
 	report ("Loading directory: %s\n", path);
 
 	if ((fp = fopen (path, "rb")) == NULL) {
@@ -204,12 +206,12 @@ static int agi_v2_unload_resource (int restype, int resnum)
 
 UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 {
-	char x[256];
+	char x[MAX_PATH], *path;
 	UINT8 *data = NULL;
 	FILE *fp;
 
 	sprintf (x, "vol.%i", agid->volume);
-	fixpath (NO_GAMEDIR, x);
+	path = fixpath (NO_GAMEDIR, x);
 
 	if (agid->offset != _EMPTY && (fp = fopen ((char*)path, "rb")) != NULL) {
 		fseek (fp, agid->offset, SEEK_SET);

@@ -536,8 +536,9 @@ int load_instruments (char *fname)
 	int j, k;
 	struct sound_instrument ai;
 	int num_wav;
+	char *path;
 
-	fixpath (NO_GAMEDIR, (UINT8*)"sierrastandard");
+	path = fixpath (NO_GAMEDIR, "sierrastandard");
 	report ("Loading samples: %s\n", path);
 
 	if ((fp = fopen ((char*)path, "rb")) == NULL)

@@ -54,9 +54,9 @@ char* __file_name (char *fname)
 }
 
 
-void fixpath (int flag, char *fname)
+char *fixpath (int flag, char *fname)
 {
-	/* _D (("(%d, %s)", flag, fname)); */
+	static char path[MAX_PATH];
 
 	strcpy (path, game.dir);
 
@@ -72,11 +72,13 @@ void fixpath (int flag, char *fname)
 		strcat (path, game.name);
 
 	strcat (path, fname);
+
+	return path;
 }
 
 
 char *get_current_directory ()
 {
-    return ".";
+	return ".";
 }
 
