@@ -230,6 +230,7 @@ void shake_screen (int n)
 		memcpy (sarien_screen + i * GFX_WIDTH,
 			h + i * GFX_WIDTH, GFX_WIDTH);
 	}
+	flush_block (0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
 
 	free (v);
 	free (h);
@@ -674,12 +675,6 @@ void restore_block (int x1, int y1, int x2, int y2, UINT8 *b)
 		p0 += GFX_WIDTH;
 	}
 	flush_block (x1, y1, x2, y2);
-}
-
-
-UINT8 *get_sarien_screen ()
-{
-	return &sarien_screen[0];
 }
 
 /* end: graphics.c */

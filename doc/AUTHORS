@@ -84,6 +84,9 @@
   * RLE encoded sprites
   * New flood fill algorithm
 
+- Benjamin Zale <junior_aepi@users.sourceforge.net>
+  * MacOS X fixes
+
 
 Special thanks to:
 
