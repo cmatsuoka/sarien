@@ -163,7 +163,7 @@ cmd(allow_menu)		{ report ("allow.menu\n"); }
 cmd(show_mouse)		{ report ("show.mouse\n"); }
 cmd(fence_mouse)	{ report ("fence.mouse\n"); }
 cmd(release_key)	{ report ("release.key\n"); }
-cmd(adj_ego_move_to_xy)	{ game.view_table[0].flags |= ADJ_EGO_XY; }
+cmd(adj_ego_move_to_x_y){ game.view_table[0].flags |= ADJ_EGO_XY; }
 
 
 cmd(parse) {
@@ -1006,7 +1006,7 @@ static void (*agi_command[183])(UINT8 *) = {
 	cmd_fence_mouse,
 	cmd_mouse_posn,
 	cmd_release_key,
-	cmd_adj_ego_move_to_xy
+	cmd_adj_ego_move_to_x_y
 };
 
 

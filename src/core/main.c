@@ -98,13 +98,21 @@ int main (int argc, char *argv[])
 
 	game.color_fg = 15;
 	game.color_bg = 0;
+
+	if ((game.sbuf = malloc (_WIDTH * _HEIGHT)) == NULL) {
+		ec = err_NotEnoughMemory;
+		goto bail_out;
+	}
 #ifdef USE_HIRES
-	game.hires = malloc (_WIDTH * _HEIGHT * 2);
+	if ((game.hires = malloc (_WIDTH * _HEIGHT * 2)) == NULL) {
+		ec = err_NotEnoughMemory;
+		goto bail_out_2;
+	};
 #endif
 
 	if (init_video () != err_OK) {
 		ec = err_Unk;
-		goto bail_out;
+		goto bail_out_3;
 	}
 
 #ifdef OPT_PICTURE_VIEWER
@@ -175,10 +183,14 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 
 	deinit_sound ();
 	deinit_video ();
+
+bail_out_3:
 #ifdef USE_HIRES
 	free (game.hires);
 #endif
 
+bail_out_2:
+	free (game.sbuf);
 bail_out:
 	if (ec == err_OK || ec == err_DoNothing) {
 		deinit_machine ();

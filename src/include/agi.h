@@ -183,7 +183,7 @@ struct agi_game {
 	char cursor_char;
 	unsigned int color_fg;
 	unsigned int color_bg;
-	UINT8 sbuf[_WIDTH * _HEIGHT];	/**< 160x168 AGI screen buffer */
+	UINT8 *sbuf;			/**< 160x168 AGI screen buffer */
 #ifdef USE_HIRES
 	UINT8 *hires;			/**< 320x168 hi-res buffer */
 #endif

@@ -27,24 +27,12 @@
 #  define MAX_INT (int)((unsigned)~0 >> 1)
 #endif
 
+static UINT8 *sarien_screen;
+#ifdef USE_CONSOLE
+static UINT8 *console_screen;
+#endif
 
 extern UINT8 cur_font[];
-
-#ifdef __TURBOC__
-
-static far UINT8 sarien_screen[64000];
-#ifdef USE_CONSOLE
-static far UINT8 console_screen[64000];
-#endif
-
-#else
-
-static UINT8 sarien_screen[GFX_WIDTH * GFX_HEIGHT];
-#ifdef USE_CONSOLE
-static UINT8 console_screen[GFX_WIDTH * GFX_HEIGHT];
-#endif
-
-#endif
 
 /**
  * 16 color RGB palette (plus 16 transparent colors).
@@ -73,7 +61,7 @@ UINT8 ega_palette [16 * 3]= {
 /**
  * 16 color amiga-ish palette.
  */
-UINT8 palette [32 * 3]= {
+UINT8 palette[32 * 3]= {
 	0x00, 0x00, 0x00,
 	0x00, 0x00, 0x3f,
 	0x00, 0x2A, 0x00,
@@ -473,6 +461,17 @@ int init_video ()
 
 	init_console ();
 #endif
+
+	if ((sarien_screen = malloc (GFX_WIDTH * GFX_HEIGHT)) == NULL)
+		return err_NotEnoughMemory;
+
+#ifdef USE_CONSOLE
+	if ((console_screen = malloc (GFX_WIDTH * GFX_HEIGHT)) == NULL) {
+		free (sarien_screen);
+		return err_NotEnoughMemory;
+	}
+#endif
+
 	return gfx->init_video_mode ();
 }
 
@@ -484,6 +483,10 @@ int init_video ()
 int deinit_video ()
 {
 	return gfx->deinit_video_mode ();
+	free (sarien_screen);
+#ifdef USE_CONSOLE
+	free (console_screen);
+#endif
 }
 
 /**

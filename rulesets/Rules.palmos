@@ -7,7 +7,7 @@ LIB_DIR		= ${exec_prefix}/lib
 MAN_DIR		= ${prefix}/man/man1
 
 CC		= m68k-palmos-gcc
-CFLAGS		= -DINLINE=inline -DPALMOS -DHAVE_STRING_H=1 -DHAVE_UNIX_STDIO_H=1 -DFILE=void -DSEEK_END=0 -DSEEK_SET=0 -DVERSION='"$(VERSION)"' -I/usr/m68k-palmos-coff/include/PalmOS3.5/ -U_TRACE
+CFLAGS		= -Os -DINLINE=inline -DPALMOS -DHAVE_STRING_H=1 -DHAVE_UNIX_STDIO_H=1 -DFILE=void -DSEEK_END=0 -DSEEK_SET=0 -DVERSION='"$(VERSION)"' -I/usr/m68k-palmos-coff/include/PalmOS3.5/ -U_TRACE
 LD		= m68k-palmos-multilink
 LDFLAGS		= -basename $@ -fid FAGI -stdlib
 LIBS		=  #-lefence
