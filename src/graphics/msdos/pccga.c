@@ -166,13 +166,12 @@ static void pc_put_block (int x1, int y1, int x2, int y2)
 	}
 }
 
-
 static void pc_put_pixels(int x, int y, int w, UINT8 *p)
 {
 	UINT8 *s, mask, val, shift, c;
 
  	for (s = &screen_buffer[80 * y + x / 4]; w; w--, x++, p++) {
-		shift = (x % 4) * 2;
+		shift = (x & 3) * 2;
 
 		/* Sorry, no transparent colors */
 		c = *p > 15 ? 0 : cga_map[*p];
@@ -210,4 +209,5 @@ void __interrupt __far tick_increment (void)
 	clock_ticks++;
 	_chain_intr(prev_08);
 }
+
 
