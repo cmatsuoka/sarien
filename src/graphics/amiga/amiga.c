@@ -128,9 +128,10 @@ static void process_events ()
         key = key & 0x01 ? (key >> 1) + 0x80 : key >> 1;
         /* if (key == 0x45) exit(0); */
 
-	_D ("%02x %02x %c %c", key, keymap[key], key, keymap[key]);
-	if (~key & 0x80)
+	if (~key & 0x80) {
+		_D ("%02x %02x %c %c", key, keymap[key], key, keymap[key]);
 		key_enqueue (keymap[key]);
+	}
 }
 
 int init_machine (int argc, char **argv)

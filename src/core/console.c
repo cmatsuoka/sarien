@@ -471,7 +471,9 @@ int console_init ()
 #endif
 	console_cmd ("flags",  "Dump all AGI flags", ccmd_flags);
 	console_cmd ("help",   "List available commands", ccmd_help);
+#ifdef USE_HIRES
 	console_cmd ("hires",  "Turn hi-res mode on/off", ccmd_hires);
+#endif
 	console_cmd ("logic0", "Turn logic 0 debugging on/off", ccmd_logic0);
 	console_cmd ("load",   "Load AGI game", ccmd_load);
 	console_cmd ("objs",   "List all objects and locations", ccmd_objs);

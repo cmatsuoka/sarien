@@ -524,7 +524,9 @@ static void draw_picture ()
 	UINT8 act;
 	unsigned int i;
 	int drawing;
+#ifdef USE_HIRES
 	int save_foffs;
+#endif
 
  	patCode = 0;
  	patNum = 0;

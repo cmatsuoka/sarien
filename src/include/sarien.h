@@ -91,6 +91,9 @@ extern "C"{
 #  undef USE_COMMAND_LINE
 #endif
 
+#ifdef __AMIGA__
+#  undef USE_HIRES	/* Runs faster with hires disabled */
+#endif
 
 #ifndef USE_PCM_SOUND
 #  undef USE_IIGS_SOUND

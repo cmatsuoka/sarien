@@ -155,7 +155,9 @@ int parse_cli (int argc, char **argv)
 	opt.scale = 2;
 	opt.fixratio = TRUE;
 	opt.gfxhacks = TRUE;
+#ifdef USE_HIRES
 	opt.hires = TRUE;
+#endif
 #ifdef MITSHM
 	opt.mitshm = TRUE;
 #endif
