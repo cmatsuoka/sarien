@@ -816,15 +816,17 @@ int loadgame_dialog ()
 #ifdef DREAMCAST
 	sprintf(path, VMU_PATH, g_vmu_port, game.id, slot);
 #else	
-	sprintf (path, "%s/" DATA_DIR "/%05X.%s/%08d.sav",
+	sprintf(path, "%s/" DATA_DIR "/%05X.%s/%08d.sav",
 		home, game.crc, game.id, slot);
 #endif
 
 	stop_sound();
-	if((rc = load_game (path)) == err_OK)
+	if ((rc = load_game (path)) == err_OK) {
 		message_box ("Game restored.");
-	else
+		game.exit_all_logics = 1;
+	} else {
 		message_box ("Error restoring game.");
+	}
 
 	return rc;
 #endif /* PALMOS */
