@@ -357,9 +357,9 @@ int agi_v3_load_resource (int restype, int resnum)
 		 * cache the view? or must we reload it all the time?
 		 */
 		/* load a raw view from a VOL file into data */
-		if (game.dir_view[resnum].flags & RES_LOADED)
+		if (~game.dir_view[resnum].flags & RES_LOADED)
 			break;
-		
+
 		agi_v3.unload_resource (rVIEW, resnum);
 		if ((data = agi_v3_load_vol_res (&game.dir_view[resnum])) != NULL) {
 			views[resnum].rdata = data;
