@@ -62,8 +62,8 @@ char *fixpath (int flag, char *fname)
 
 	_D ("game.dir = %s", game.dir);
 	strcpy (path, game.dir);
-	if (*path && path[strlen (path) - 1]!='/')
-		strcat((char*)path, "/");
+	if (*path && path[strlen (path) - 1] != '/')
+		strcat (path, "/");
 
 	if (flag)
 		strcat (path, game.name);
@@ -71,6 +71,7 @@ char *fixpath (int flag, char *fname)
 	strcat (path, fname);
 	if (path[strlen (path) - 1] == '.')
 		path[strlen (path) - 1] = 0;
+	_D ("fixed path = %s", path);
 
 	return path;
 }

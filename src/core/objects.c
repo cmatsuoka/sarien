@@ -46,7 +46,6 @@ int load_objects (char *fname)
 	fseek (fp, 0, SEEK_END);
 	flen = ftell (fp);
 	fseek (fp, 0, SEEK_SET);
-	_D ("flen = %d", flen);
 
 	if ((mem = calloc (1, flen + 32)) == NULL) {
 		fclose (fp);

@@ -54,8 +54,8 @@ struct agi_dir {
  */
 struct agi_game {
 	char name[8];		/* lead in id (eg, goldrush GR */
-	char dir[8];		/* game dir (for v3 games, eg GR<dir> */
 	char id[8];		/* game id */	
+	char dir[MAX_PATH];	/* game dir (for v3 games, eg GR<dir> */
 
 	/* game flags and variables */
 	UINT8 flags[MAX_FLAGS];		/* 256 flags (byte is easier to debug! */
@@ -115,7 +115,7 @@ struct agi_loader {
 	int int_version;
 	int (*init)(void);
 	int (*deinit)(void);
-	int (*detect_game)(UINT8 *);
+	int (*detect_game)(char *);
 	int (*load_resource)(int, int);
 	int (*unload_resource)(int, int);
 };

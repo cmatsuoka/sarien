@@ -48,6 +48,7 @@ static int agi_v2_detect_game (char *gn)
 	char *path;
 
 	strncpy (game.dir, gn, 8);
+	_D (_D_WARN "game.dir = %s", game.dir);
 
 	path = fixpath (NO_GAMEDIR, LOGDIR);
 	if (__file_exists (path))
