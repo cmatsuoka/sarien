@@ -133,21 +133,7 @@ static void blit_textbox (char *p, int y, int x, int len)
 	if (yoff < 0)
 		yoff = (GFX_HEIGHT - 2 * CHAR_LINES - h) / 2;
 
-	game.window.active = TRUE;
-	game.window.x1 = xoff;
-	game.window.y1 = yoff;
-	game.window.x2 = xoff + w - 1;
-	game.window.y2 = yoff + h - 1;
-	game.window.buffer = malloc (w * h);
-	
-	_D (_D_WARN "x1=%d, y1=%d, x2=%d, y2=%d", game.window.x1,
-		game.window.y1, game.window.x2, game.window.y2);
-
-	save_block (game.window.x1, game.window.y1, game.window.x2,
-		game.window.y2, game.window.buffer);
-
-	draw_box (game.window.x1, game.window.y1, game.window.x2,
-		game.window.y2, MSG_BOX_COLOUR, MSG_BOX_LINE, 2);
+	draw_window (xoff, yoff, xoff + w - 1, yoff + h - 1);
 
 	print_text2 (2, msg, 0, CHAR_COLS + xoff, CHAR_LINES + yoff, len + 1,
 		MSG_BOX_TEXT, MSG_BOX_COLOUR);
@@ -311,25 +297,48 @@ int message_box (char *s)
  */
 int selection_box (char *m, char **b)
 {
+	erase_both ();
+	blit_textbox (m, -1, -1, -1);
+
+	return selection_buttons (b, NULL, NULL);
+}
+
+
+int selection_buttons (char **b, int *xx, int *yy)
+{
 	int x, y, i, s;
 	int key, active = 0;
 	int rc = -1;
-
-	erase_both ();
-	blit_textbox (m, -1, -1, -1);
+	int bx[20], by[20];
 
 	x = game.window.x1 + 5 * CHAR_COLS / 2;
 	y = game.window.y2 - 5 * CHAR_LINES / 2;
 	s = game.window.x2 - game.window.x1 + 1 - 5 * CHAR_COLS;
 	_D ("s = %d", s);
 
-	/* Get space between buttons */
-	for (i = 0; b[i]; i++) { s -= CHAR_COLS * strlen (b[i]); }
-	if (i > 1) {
-		_D ("s / %d = %d", i - 1, s / (i - 1));
-		s /= (i - 1);
+	if (xx == NULL) {
+		/* Automatically position buttons */
+		for (i = 0; b[i]; i++) {
+			s -= CHAR_COLS * strlen (b[i]);
+		}
+	
+		if (i > 1) {
+			_D ("s / %d = %d", i - 1, s / (i - 1));
+			s /= (i - 1);
+		} else {
+			x += s / 2;
+		}
+	
+		for (i = 0; b[i]; i++) {
+			bx[i] = x;
+			by[i] = y;
+			x += CHAR_COLS * strlen (b[i]) + s;
+		}
 	} else {
-		x += s / 2;
+		for (i = 0; b[i]; i++) {
+			bx[i] = xx[i];
+			by[i] = yy[i];
+		}
 	}
 
 	blit_both ();
@@ -339,11 +348,8 @@ int selection_box (char *m, char **b)
 
 	_D (_D_WARN "waiting...");
 	while (42) {
-		int xx = x;
-		for (i = 0; b[i]; i++) {
-			draw_button (xx, y, b[i], i == active, 0);
-			xx += CHAR_COLS * strlen (b[i]) + s;
-		}
+		for (i = 0; b[i]; i++)
+			draw_button (bx[i], by[i], b[i], i == active, 0);
 
 		poll_timer ();		/* msdos driver -> does nothing */
 		key = do_poll_keyboard ();
@@ -356,16 +362,14 @@ int selection_box (char *m, char **b)
 				rc = -1;
 				goto getout;
 #ifdef USE_MOUSE
-			case BUTTON_LEFT: {
-				int xx = x;
+			case BUTTON_LEFT:
 				for (i = 0; b[i]; i++) {
-					if (test_button (xx, y, b[i])) {
+					if (test_button (bx[i], by[i], b[i])) {
 						rc = active = i;
 						goto press;
 					}
-					xx += CHAR_COLS * strlen (b[i]) + s;
 				}
-				break; }
+				break;
 #endif
 			case 0x09:		/* Tab */
 				_D ("Focus change");
@@ -623,6 +627,20 @@ void flush_lines (int l1, int l2)
 	l2 += CHAR_LINES - 1;
 
 	flush_block (0, l1, GFX_WIDTH - 1, l2);
+}
+
+void draw_window (int x1, int y1, int x2, int y2)
+{
+	game.window.active = TRUE;
+	game.window.x1 = x1;
+	game.window.y1 = y1;
+	game.window.x2 = x2;
+	game.window.y2 = y2;
+	game.window.buffer = malloc ((x2 - x1 + 1) * (y2 - y1 + 1));
+	
+	_D (_D_WARN "x1=%d, y1=%d, x2=%d, y2=%d", x1, y1, x2, y2);
+	save_block (x1, y1, x2, y2, game.window.buffer);
+	draw_box (x1, y1, x2, y2, MSG_BOX_COLOUR, MSG_BOX_LINE, 2);
 }
 
 /* end: text.c */

@@ -238,16 +238,16 @@ int save_game(char* s, char* d)
 		write_string (f, game.strings[i]);
 
 	/* record info about loaded resources */
-	for(i = 0; i < MAX_DIRS; i++) {
+	for (i = 0; i < MAX_DIRS; i++) {
 		write_uint8 (f, game.dir_logic[i].flags);
 		write_sint16 (f, (SINT16)game.logics[i].sIP);
 		write_sint16 (f, (SINT16)game.logics[i].cIP);
 	}
-	for(i=0; i<MAX_DIRS; i++)
+	for (i = 0; i < MAX_DIRS; i++)
 		write_uint8(f, game.dir_pic[i].flags);
-	for(i=0; i<MAX_DIRS; i++)
+	for (i = 0; i < MAX_DIRS; i++)
 		write_uint8(f, game.dir_view[i].flags);
-	for(i=0; i<MAX_DIRS; i++)
+	for (i = 0; i < MAX_DIRS; i++)
 		write_uint8(f, game.dir_sound[i].flags);
 
 	/* game.pictures */
@@ -555,19 +555,31 @@ int savegame_dialog ()
 {
 	char home[MAX_PATH], path[MAX_PATH];
 	char *desc;
-	int slot = 0;
+	int rc, slot = 0;
+	char *buttons[] = { "Save", "Cancel", NULL };
+	int m = 4 * CHAR_COLS;	/* box margin */
 
 	if (get_app_dir (home, MAX_PATH) < 0) {
 		message_box ("Couldn't save game.");
 		return err_BadFileOpen;
 	}
 
-	message_box ("Multi-slot savegames are under development and"
-		"will be available in future versions of Sarien.");
+	draw_window (m, m, GFX_WIDTH - m, GFX_HEIGHT - m);
+	draw_text ("Select a slot to save the game",
+		0, m + CHAR_COLS, m + CHAR_COLS,
+		(GFX_WIDTH - 2 * m) / CHAR_COLS,
+		MSG_BOX_TEXT, MSG_BOX_COLOUR);
+	rc = selection_buttons (buttons, NULL, NULL);
+	erase_both ();
+
+	if (rc > 0) {
+		message_box ("Game NOT saved.");
+		return err_OK;
+	}
+
  	desc = "Save game test";
 
-	/* DATADIR conflicts with ObjIdl.h in win32 SDK,
-		renamed to DATA_DIR */
+	/* DATADIR conflicts with ObjIdl.h in win32 SDK, renamed to DATA_DIR */
 	sprintf (path, "%s/" DATA_DIR "/", home);
 
 	MKDIR (path, 0755);
@@ -617,4 +629,3 @@ int loadgame_dialog ()
 #endif /* PALMOS */
 
 /* end: savegame.c */
-
