@@ -37,6 +37,25 @@ struct sprite {
 #endif
 };
 
+#define POOL_SIZE MAX_VIEWTABLE
+static struct sprite sprite_pool[POOL_SIZE];
+
+static struct sprite *get_from_pool ()
+{
+	int i;
+
+	for (i = 0; i < POOL_SIZE; i++) {
+		if (sprite_pool[i].list.prev == NULL)
+			return &sprite_pool[i];
+	}
+
+	return NULL;
+}
+
+static void return_to_pool (struct sprite *s)
+{
+	s->list.prev = NULL;
+}
 
 /*
  * Blitting one pixel considering the priorities
@@ -302,7 +321,8 @@ static struct sprite *new_sprite (struct vt_entry *v)
 {
 	struct sprite *s;
 
-	s = malloc (sizeof (struct sprite));
+	/* s = malloc (sizeof (struct sprite)); */
+	s = get_from_pool ();
 	if (s == NULL)
 		abort ();
 	s->v = v;	/* link sprite to associated view table entry */
@@ -420,11 +440,11 @@ static void free_list (struct list_head *head)
 		 */
 
 		if (doomed)
-			free(doomed);
+			return_to_pool /*free*/(doomed);
 		doomed = s;
 	}
 	if (doomed)
-		free (doomed);
+		return_to_pool /*free*/ (doomed);
 }
 
 /**

@@ -26,7 +26,7 @@ $(LIB2): $(LIB2)(rand.o)
 
 include ../../Rules
 
-../../bin/sarien: $(MAIN_FILE).o ../../lib/libagi.a
+../../bin/sarien: $(MAIN_FILE).o ../../lib/libagi.a ../../lib/libsarien.a
 	$(LD) $(LDFLAGS) $(MAIN_FILE).o id.o $(XLIBS) $(X11LIBS) $(LIBS)
 
 graph: callgraph.ps
