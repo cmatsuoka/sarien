@@ -88,6 +88,7 @@ int init_machine (int argc, char **argv)
 
 	prev_08 = _dos_getvect (0x08);
 	_dos_setvect (0x08, tick_increment);
+	opt.cgaemu = TRUE;
 
 	return err_OK;
 }
