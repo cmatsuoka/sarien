@@ -98,7 +98,7 @@ static void draw_menu_hilite (int cur_menu)
 
 	m = get_menu (cur_menu);
 	_D ("[%s]", m->text);
-	print_text (m->text, 0, m->col, 0, strlen (m->text), MENU_BG, MENU_FG);
+	print_text (m->text, 0, m->col, 0, 40, MENU_BG, MENU_FG);
 	flush_lines (0, 0);
 }
 
@@ -171,8 +171,11 @@ void add_menu (char *s)
 	m->wincol = h_col - 1;
 	v_index = 0;
 	v_max_menu[m->index] = 0;
-	h_col += strlen (s);
+	h_col += strlen (s) + 1;
 	h_max_menu = m->index;
+
+	while (m->text[strlen(m->text)] == ' ')
+		m->text[strlen(m->text)] = 0;
 
 	list_add_tail (&m->list, &menubar);
 }
