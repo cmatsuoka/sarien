@@ -55,9 +55,12 @@ int main (int argc, char *argv[])
 	game.clock_enabled = FALSE;
 	game.state = STATE_INIT;
 
+	opt.scale = 1;
 #ifndef __MPW__
+#ifdef USE_COMMAND_LINE
 	if ((ec = parse_cli (argc, argv)) != err_OK)
 		goto bail_out;
+#endif
 
 	if (opt.gamerun == GAMERUN_CRC) {
 		agi_detect_game (argc > 1 ? argv[optind] :

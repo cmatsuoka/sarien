@@ -28,6 +28,7 @@
 #  undef OPT_LIST_OBJECTS
 #  undef OPT_PICTURE_VIEWER
 #  undef OPT_LIST_DICT
+#  undef FANCY_BOX
 #endif
 
 /*

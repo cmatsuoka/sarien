@@ -16,6 +16,7 @@ extern "C"{
 #endif
 
 #ifdef DMALLOC
+#  include <stdlib.h>
 #  include <dmalloc.h>
 #endif
 
