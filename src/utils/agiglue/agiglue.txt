@@ -1,0 +1,34 @@
+------------------------------------------------------------------------
+
+                         === ==== =============
+                         AGI GLUE DOCUMENTATION
+                         === ==== =============
+
+                        Floating Hills Software
+
+------------------------------------------------------------------------
+
+WHAT IS AGIGLUE?
+
+AGIGLUE takes a directory full of files containing the resources of an 
+AGI game and glues them back into one monolithic VOL.0 file. 
+
+HOW DO I USE IT?
+
+Extract all the resources of an AGI game into individual files (with 
+the filename the name of the resource and the extension the resource 
+number). Then run AGIGLUE in that directory. AGIGLUE will attempt to 
+open all the files in that directory and glue them all into one big 
+VOL.0 file and the associated directory files. If it is successful, 
+then those files can be used in place of the normal files for an AGI 
+intrepreter. 
+
+BUT HOW DO I EXTRACT ALL THE RESOURCES?
+
+There are a number of utilities available now to do this, most 
+notably, AGI Studio. 
+
+------------------------------------------------------------------------
+
+
+
