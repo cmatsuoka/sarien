@@ -153,6 +153,9 @@ freebsd*)
 	SOUND_DRIVER="freebsd"
 	LIBS="${LIBS} -pthread"
 	;;
+nto*)
+	SOUND_DRIVER="qnx"
+	;;
 hpux*)
 	AC_CHECK_HEADERS(sys/audio.h)
 	if test "${ac_cv_header_sys_audio_h}" = "yes"; then

@@ -1,9 +1,10 @@
+# $Id$
 
 XCFLAGS = -I../include
 OBJS	=
 DFILES	= Makefile
 CFILES	=
-DDIRS	= oss sdl dummy alsa bsd solaris sgi win32 freebsd
+DDIRS	= oss sdl dummy alsa bsd solaris sgi win32 freebsd qnx
 XDFILES =
 LIB	=
 
