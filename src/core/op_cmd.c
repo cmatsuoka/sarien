@@ -394,8 +394,7 @@ cmd(program_control) {
 
 cmd(follow_ego) {
 	vt.motion = MOTION_FOLLOW_EGO;
-	vt.step_size = p1;
-	vt.parm1 = vt.step_size;
+	vt.parm1 = p1 > vt.step_size ? p1 : vt.step_size;
 	vt.parm2 = p2;
 	vt.parm3 = 0xff;
 	setflag (p2, FALSE);
