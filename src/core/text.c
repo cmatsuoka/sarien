@@ -209,3 +209,23 @@ void message_box (char *message, ...)
 	restore_screen ();
 }
 
+
+void print_status (char *message, ...)
+{
+	char x[40];
+	va_list	args;
+
+	_D (("(message, ...)"));
+	va_start (args, message);
+
+#ifdef HAVE_VSNPRINTF
+	vsnprintf (x, 32, message, args);
+#else
+	vsprintf (x, message, args);
+#endif
+
+	va_end (args);
+
+        print_text (x, 0, line_status, 0, 41, STATUS_FG, STATUS_BG);
+	gfx->put_block (0, 0, 319, 8);
+}

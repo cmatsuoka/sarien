@@ -15,7 +15,6 @@
 
 #include "sarien.h"
 #include "agi.h"
-#include "gfx.h"
 #include "view.h"
 #include "text.h"
 
@@ -171,36 +170,29 @@ void new_room_resources ()
 
 UINT8 o_status = 0;	/* FIXME */
 
-/* FIXME: remove lowlevel print_text() call from here! */
-void update_status_line (UINT8 force)
+void update_status_line (int force)
 {
-	char x[64], y[64];
-	static UINT8 o_score = 255, o_sound = FALSE, o_status = FALSE;
+	char x[64];
+	static int o_score = 255, o_sound = FALSE, o_status = FALSE;
 
+	/* If it's already there and we're not forcing, don't write */
    	if (!force && o_status == status_line && o_score == getvar (V_score) && 
 		o_sound == getflag (F_sound_on))
 		return;
 
-	o_score = getvar(V_score);
-   	o_sound = getflag(F_sound_on);
+	o_score = getvar (V_score);
+   	o_sound = getflag (F_sound_on);
    	o_status = status_line;
 
 	if (line_min_print == 0)
 		return;
 
 	if (!status_line) {
-		sprintf(x, "                                        ");
-		print_text (x, 0, line_status, 0, 41,
-			STATUS_FG_CLEAN, STATUS_FG_CLEAN);
+		print_status ("                                        ");
 	} else {
-		sprintf (y, " Score:%i of %03i", o_score, getvar(V_max_score));
-		sprintf (x, "%-17s             Sound:%s ",
-			y, o_sound ? "On " : "Off");
-
-		print_text (x, 0, line_status, 0, 41,
-			STATUS_FG, STATUS_BG);
+		sprintf (x, " Score:%i of %03i", o_score, getvar(V_max_score));
+		print_status ("%-17s             Sound:%s ", x,
+			o_sound ? "On " : "Off");
 	}
-
-	gfx->put_block (0, 0, 319, 8);
 }
 

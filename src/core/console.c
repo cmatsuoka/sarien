@@ -625,3 +625,56 @@ void console_cycle ()
 	}
 }
 
+
+int console_keyhandler (int k)
+{
+	switch (k) {
+	case CONSOLE_ACTIVATE_KEY:
+		if ((console.active = !console.active))
+			build_console_layer ();
+		break;
+	case CONSOLE_SWITCH_KEY:
+		console.count = -1;
+		if (console.y)
+			console.input_active = !console.input_active;
+		break;
+	case CONSOLE_SCROLLUP_KEY:
+		console.count = -1;
+		if (!console.y)
+			break;
+		if (console.first_line > (CONSOLE_LINES_ONSCREEN / 2))
+			console.first_line -= CONSOLE_LINES_ONSCREEN / 2;
+		else
+			console.first_line = 0;
+		build_console_layer ();
+		break;
+	case CONSOLE_SCROLLDN_KEY:
+		console.count = -1;
+		if (!console.y)
+			break;
+		if (console.first_line < (CONSOLE_LINES_BUFFER -
+			CONSOLE_LINES_ONSCREEN - CONSOLE_LINES_ONSCREEN / 2))
+			console.first_line += CONSOLE_LINES_ONSCREEN / 2;
+		else
+			console.first_line = CONSOLE_LINES_BUFFER -
+				CONSOLE_LINES_ONSCREEN;
+		build_console_layer ();
+		break;
+	case CONSOLE_START_KEY:
+		console.count = -1;
+		if (console.y)
+			console.first_line = 0;
+		break;
+	case CONSOLE_END_KEY:
+		console.count = -1;
+		if (console.y)
+			console.first_line = CONSOLE_LINES_BUFFER -
+				CONSOLE_LINES_ONSCREEN;
+		break;
+	default:
+		return FALSE;
+	}
+
+	return TRUE;
+}
+

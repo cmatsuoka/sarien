@@ -16,6 +16,7 @@ extern "C"{
 #endif
 
 void	message_box	(char *, ...);
+void	print_status	(char *, ...);
 void	textbox		(char *, int, int, int);
 void	print_text	(char *, int, int, int, int, int, int);
 void	print_text_layer(char *, int, int, int, int, int, int);

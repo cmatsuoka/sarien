@@ -43,6 +43,7 @@ extern "C" {
 #endif
 
 int	console_init	(void);
+int	console_keyhandler (int);
 void	console_cycle	(void);
 void	console_prompt	(void);
 void	console_lock	(void);

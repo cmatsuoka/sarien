@@ -107,7 +107,7 @@ void print_character (int x, int y, char c, int fg, int bg)
 
 /* Called if ego enters a new room */
 /* FIXME: remove lowlevel print_text call! */
-void print_line_prompt(void)
+void print_line_prompt ()
 {
 	UINT8 k;
 
@@ -223,55 +223,8 @@ void poll_keyboard (void)
 	while (gfx->keypress ()) {
 		xkey = gfx->get_key ();
 
-		/* FIXME: move to console.c */
-		switch (xkey) {
-		case CONSOLE_ACTIVATE_KEY:
-			if ((console.active = !console.active))
-				build_console_layer ();
+		if (console_keyhandler (xkey))
 			continue;
-		case CONSOLE_SWITCH_KEY:
-			console.count = -1;
-			if (console.y) {
-				console.input_active = !console.input_active;
-			}
-			continue;
-		case CONSOLE_SCROLLUP_KEY:
-			console.count = -1;
-			if (!console.y)
-				continue;
-			if (console.first_line > (CONSOLE_LINES_ONSCREEN / 2))
-				console.first_line -=
-					CONSOLE_LINES_ONSCREEN / 2;
-			else
-				console.first_line = 0;
-			build_console_layer ();
-			continue;
-		case CONSOLE_SCROLLDN_KEY:
-			console.count = -1;
-			if (!console.y)
-				continue;
-			if (console.first_line < (CONSOLE_LINES_BUFFER -
-				CONSOLE_LINES_ONSCREEN -
-				CONSOLE_LINES_ONSCREEN / 2))
-				console.first_line +=
-					CONSOLE_LINES_ONSCREEN / 2;
-			else
-				console.first_line = CONSOLE_LINES_BUFFER -
-					CONSOLE_LINES_ONSCREEN;
-			build_console_layer ();
-			continue;
-		case CONSOLE_START_KEY:
-			console.count = -1;
-			if (console.y)
-				console.first_line = 0;
-			continue;
-		case CONSOLE_END_KEY:
-			console.count = -1;
-			if (console.y)
-				console.first_line = CONSOLE_LINES_BUFFER -
-					CONSOLE_LINES_ONSCREEN;
-			continue;
-		}
 
 		key = xkey;
 

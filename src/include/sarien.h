@@ -120,7 +120,7 @@ void	decrypt		(UINT8 *mem, int len);
 void	unload_resources(void);
 void	release_sprites	(void);
 void	new_room_resources(void);
-void	update_status_line(UINT8);
+void	update_status_line(int);
 
 void main_cycle (UINT8);
 
