@@ -15,7 +15,7 @@
 
 int get_app_dir (char *app_dir, unsigned int size)
 {
-	strncpy (app_dir, "agi:", size);
+	strncpy (app_dir, "PROGDIR:", size);
 	return 0;
 }
 
