@@ -28,6 +28,7 @@ Revision History
 	- fixed end.of.loop and reverse.loop handling (closes: #475912)
 	- fixed left screen border detection for KQ4 (closes: #590462)
 	- fixed auto-centering of message box in KQ4 (closes: #590641)
+	- fixed error in fixed-priority sprite ordering (closes: #590910)
 	- extra checks in check_position() now AGI v3 only (closes: #590644)
 	- fixed old position setting in AGI commands position, position.v
 	- added CGA palette emulation
