@@ -759,7 +759,7 @@ void show_pic ()
 {
 	int i, y;
 
-	game.offset = getflag (F_menus_work) ? CHAR_LINES : 0;
+	game.offset = game.status_line ? CHAR_LINES : 0;
 
 #ifdef USE_HIRES
 	if (opt.hires) {
