@@ -10,6 +10,7 @@
 
 /*
  * Savegame support by Vasyl Tsvirkunov <vasyl@pacbell.net>
+ * Multi-slots by Claudio Matsuoka <claudio@helllabs.org>
  */
 
 #ifndef PALMOS
@@ -144,35 +145,35 @@ static SINT16 read_sint16(FILE* f)
 }
 
 
-static void write_string(FILE* f, char* s)
+static void write_string (FILE* f, char* s)
 {
-	write_sint16(f, (SINT16)strlen(s));
+	write_sint16 (f, (SINT16)strlen(s));
 	fwrite(s, 1, strlen(s), f);
 }
 
-static void read_string(FILE* f, char* s)
+static void read_string (FILE* f, char* s)
 {
 	SINT16 size = read_sint16(f);
-	fread(s, 1, size, f);
+	fread (s, 1, size, f);
 	s[size] = (char)0;
 }
 
-static void write_bytes(FILE* f, char* s, SINT16 size)
+static void write_bytes (FILE* f, char* s, SINT16 size)
 {
-	fwrite(s, 1, size, f);
+	fwrite (s, 1, size, f);
 }
 
-static void read_bytes(FILE* f, char* s, SINT16 size)
+static void read_bytes (FILE* f, char* s, SINT16 size)
 {
-	fread(s, 1, size, f);
+	fread (s, 1, size, f);
 }
 
 
-int save_game(char* s, char* d)
+int save_game (char* s, char* d)
 {
 	SINT16 i;
 	struct image_stack_element* ptr = image_stack;
-	FILE* f=fopen(s, "wb");
+	FILE* f = fopen (s, "wb");
 
 	if(!f)
 		return err_BadFileOpen;
@@ -331,7 +332,7 @@ int load_game(char* s)
 	char sig[8];
 	char id[8];
 	char description[256];
-	FILE* f=fopen(s, "rb");
+	FILE *f = fopen(s, "rb");
 
 	if(!f)
 		return err_BadFileOpen;
@@ -554,12 +555,42 @@ int load_game(char* s)
 
 #define NUM_SLOTS 12
 
-static int select_slot ()
+static int select_slot (char *path)
 {
-	int key, active = 0;
+	int i, key, active = 0;
 	int rc = -1;
+	int hm = 2 * CHAR_COLS, vm = 3 * CHAR_LINES;	/* box margins */
+	char desc[NUM_SLOTS][40];
+
+	for (i = 0; i < NUM_SLOTS; i++) {
+		char name[MAX_PATH];
+		FILE *f;
+		char sig[8];
+		sprintf (name, "%s/%08d.sav", path, i);
+		f = fopen (name, "rb");
+		if (f == NULL) {
+			strcpy (desc[i], "(unused slot)");
+		} else {
+			read_bytes (f, sig, 8);
+			if (strncmp (sig, strSig, 8)) {
+				strcpy (desc[i], "(corrupt file)");
+			} else {
+				read_string (f, desc[i]);
+			}
+		}
+	}
 
 	while (42) {
+		char dstr[32];
+		for (i = 0; i < NUM_SLOTS; i++) {
+			sprintf (dstr, "[%-32.32s]", desc[i]);
+			draw_text (dstr,
+				0, hm + CHAR_COLS, vm + (4 + i) * CHAR_LINES,
+				(GFX_WIDTH - 2 * hm) / CHAR_COLS - 1,
+				i == active ? MSG_BOX_COLOUR : MSG_BOX_TEXT,
+				i == active ? MSG_BOX_TEXT : MSG_BOX_COLOUR);
+		}
+
 		poll_timer ();		/* msdos driver -> does nothing */
 		key = do_poll_keyboard ();
 		if (!console_keyhandler (key)) {
@@ -580,7 +611,8 @@ static int select_slot ()
 				break;
 			case KEY_UP:
 				active--;
-				active %= NUM_SLOTS;
+				if (active < 0)
+					active = NUM_SLOTS - 1;
 				break;
 			}
 		}
@@ -600,23 +632,32 @@ int savegame_dialog ()
 {
 	char home[MAX_PATH], path[MAX_PATH];
 	char *desc;
-	char *buttons[] = { "Do as I say!", "Cancel", NULL }; 
+	char *buttons[] = { "Do as I say!", "I regret", NULL }; 
 	int rc, slot = 0;
-	int m = 3 * CHAR_COLS;	/* box margin */
+	int hm = 2 * CHAR_COLS, vm = 3 * CHAR_LINES;	/* box margins */
 
 	if (get_app_dir (home, MAX_PATH) < 0) {
 		message_box ("Couldn't save game.");
 		return err_BadFileOpen;
 	}
+	/* DATADIR conflicts with ObjIdl.h in win32 SDK, renamed to DATA_DIR */
+	sprintf (path, "%s/" DATA_DIR "/", home);
+	MKDIR (path, 0755);
+	sprintf (path, "%s/" DATA_DIR "/%s/", home, game.id);
+	MKDIR (path, 0711);
 
 	erase_both ();
-	draw_window (m, m, GFX_WIDTH - m, GFX_HEIGHT - m);
-	draw_text ("Select a slot in which you wish  to save the game:",
-		0, m + CHAR_COLS, m + CHAR_COLS,
-		(GFX_WIDTH - 2 * m) / CHAR_COLS - 1,
+	draw_window (hm, vm, GFX_WIDTH - hm, GFX_HEIGHT - vm);
+	draw_text ("Select a slot in which you wish to save the game:",
+		0, hm + CHAR_COLS, vm + CHAR_LINES,
+		(GFX_WIDTH - 2 * hm) / CHAR_COLS - 1,
+		MSG_BOX_TEXT, MSG_BOX_COLOUR);
+	draw_text ("Press ENTER to select, ESC cancels",
+		0, hm + CHAR_COLS, vm + 17 * CHAR_LINES,
+		(GFX_WIDTH - 2 * hm) / CHAR_COLS - 1,
 		MSG_BOX_TEXT, MSG_BOX_COLOUR);
 
-	slot = select_slot ();
+	slot = select_slot (path);
 
 	rc = selection_box ("Are you sure you want to save the game "
 		"described as:\n\nbla\n\nin slot 5?\n\n\n", buttons);
@@ -628,18 +669,11 @@ int savegame_dialog ()
 
  	desc = "Save game test";
 
-	/* DATADIR conflicts with ObjIdl.h in win32 SDK, renamed to DATA_DIR */
-	sprintf (path, "%s/" DATA_DIR "/", home);
-
-	MKDIR (path, 0755);
-	sprintf (path, "%s/" DATA_DIR "/%s/", home, game.id);
-	MKDIR (path, 0711);
-
 	sprintf (path, "%s/" DATA_DIR "/%s/%08d.sav",
 		home, game.id, slot);
 	_D (_D_WARN "file is [%s]", path);
 	
-	save_game(path, desc);
+	save_game (path, desc);
 
 	message_box ("Game saved.");
 
