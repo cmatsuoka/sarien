@@ -585,6 +585,9 @@ static int ph_keypress_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 			case Pk_KP_Subtract:
 				key = '-';
 				break;
+			case Pk_Tab:
+				key = 0x0009;
+				break;
 			case Pk_F1:
 				key = 0x3b00;
 				break;

@@ -381,6 +381,9 @@ static void process_events ()
 			case XK_End:
 				key = KEY_END;
 				break;
+			case XK_Tab:
+				key = 0x0009;
+				break;
 			case XK_F1:
 				key = 0x3b00;
 				break;

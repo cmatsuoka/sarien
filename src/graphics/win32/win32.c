@@ -354,6 +354,9 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		case VK_SUBTRACT:
 			key = '-';
 			break;
+		case VK_TAB:
+			key = 0x0009;
+			break;
 		case VK_F1:
 			key = 0x3b00;
 			break;

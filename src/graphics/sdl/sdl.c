@@ -352,6 +352,9 @@ static void process_events ()
 			case SDLK_KP_MINUS:
 				key = '-';
 				break;
+			case SDLK_TAB:
+				key = 0x0009;
+				break;
 			case SDLK_F1:
 				key = 0x3b00;
 				break;

@@ -189,6 +189,9 @@ static void svgalib_key_handler (int scancode, int press)
 	case SCANCODE_INSERT:
 		key_value= 0x52;
 		break;
+	case SCANCODE_TAB:
+		key_value = 0x09;
+		break;
 	case SCANCODE_F1:
 	case SCANCODE_F2:
 	case SCANCODE_F3:
