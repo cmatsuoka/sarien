@@ -713,8 +713,12 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 
 	record_image_stack_call(ADD_VIEW, view, loop, cel, x, y, pri, mar);
 
+	/*
+	 * Was hardcoded to 8, changed to pri_table[y] to fix Gold
+	 * Rush (see bug #587558)
+	 */
 	if (pri == 0)
-		pri = 8;		/* ??!? */
+		pri = game.pri_table[y];
 
 	c = &game.views[view].loop[loop].cel[cel];
 
