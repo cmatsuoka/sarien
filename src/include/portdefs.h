@@ -5,6 +5,11 @@
  * set a different include path to override definitions in sarien.h
  */
 
+
+/*
+ * Features
+ */
+
 #ifdef DREAMCAST
 #  define DC_BASE_PATH		"/cd"
 #  define DC_GFX_PATH		"/cd/gfx"
@@ -28,6 +33,7 @@ static char g_vmu_port[2];
 #else
 #  include <stdlib.h>
 #  include <assert.h>
+   typedef unsigned int Err;
 #endif
 
 #ifdef FAKE_PALMOS
@@ -39,8 +45,16 @@ static char g_vmu_port[2];
 #  undef OPT_LIST_OBJECTS
 #  undef OPT_PICTURE_VIEWER
 #  undef OPT_LIST_DICT
-#  undef FANCY_BOX
 #endif
+
+#ifdef __TURBOC__
+#  undef USE_PCM_SOUND
+#  undef USE_MOUSE
+#endif
+
+/*
+ * Memory allocation
+ */
 
 /*
  * From the Turbo C FAQ:
@@ -53,8 +67,6 @@ static char g_vmu_port[2];
  */
 #ifdef __TURBOC__
 #  include <alloc.h>
-#  undef USE_PCM_SOUND
-#  undef USE_MOUSE
 #endif
 
 /*
@@ -80,9 +92,11 @@ static char g_vmu_port[2];
 #  undef OPT_LIST_DICT
 #endif
 
-#if defined (NATIVE_WIN32)
-#  define INLINE __inline
+#ifdef PALMOS
+#  define malloc(x) MemPtrNew(x)
+#  define free(x)   MemPtrFree(x)
 #endif
+
 
 /* Environment variable containing the path name for the users's
  * private files ($HOME in Unix, %USERPROFILE% in Win32)
@@ -96,36 +110,49 @@ static char g_vmu_port[2];
 #  define DATA_DIR ".sarien"
 #endif
 
-#ifdef PALMOS
-   typedef UInt8	UINT8;
-   typedef UInt16	UINT16;
-   typedef UInt32	UINT32;
-   typedef Int8	SINT8;
-   typedef Int16	SINT16;
-   typedef Int32	SINT32;
-#  define malloc(x) MemPtrNew(x)
-#  define free(x) MemPtrFree(x)
+
+/*
+ * Data types
+ */
+#if defined(PALMOS)
+   typedef UInt8		UINT8;
+   typedef UInt16		UINT16;
+   typedef UInt32		UINT32;
+   typedef Int8			SINT8;
+   typedef Int16		SINT16;
+   typedef Int32		SINT32;
+#elif defined(__MSDOS__)
+   typedef unsigned char	UINT8;
+   typedef signed char		SINT8;
+   typedef unsigned short	UINT16;
+   typedef signed short		SINT16;
+   typedef unsigned long	UINT32;
+   typedef signed long		SINT32;
+#elif defined(__CYGWIN32__)
+   typedef unsigned char	UINT8;
+   typedef signed char		SINT8;
+   typedef unsigned short	UINT16;
+   typedef signed short		SINT16;
+   typedef signed int		SINT32;
 #else
    typedef unsigned char	UINT8;
    typedef signed char		SINT8;
    typedef unsigned short	UINT16;
    typedef signed short		SINT16;
-#  ifdef __MSDOS__
-     typedef unsigned long	UINT32;
-     typedef signed long	SINT32;
-#  else
-     typedef unsigned int	UINT32;
-     typedef signed int		SINT32;
-#  endif
-   typedef unsigned int 	Err;
+   typedef unsigned int		UINT32;
+   typedef signed int		SINT32;
 #endif
 
+
+/*
+ * Version and other definitions
+ */
 #ifdef NATIVE_WIN32
+#  define INLINE __inline
 #  define VERSION __TIMESTAMP__
 #endif
 
 #ifdef NATIVE_MACOSX
 #  define VERSION "MacOS X native experimental version"
 #endif
-
 
