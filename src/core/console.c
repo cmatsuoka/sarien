@@ -758,7 +758,9 @@ int console_keyhandler (int k)
 		return TRUE;
 #endif
 
-	/* this code breaks scrolling up, maybe it shoud only be executed in the default case? */
+	/* this code breaks scrolling up, maybe it shoud only be executed
+	 * in the default case?
+	 */
 	if (k) {
 		/* make sure it's not enter or a scroll key */
 		if ((k != KEY_ENTER) && (k != CONSOLE_SCROLLUP_KEY) && 

@@ -33,9 +33,7 @@ static void help (int argc, char **argv)
 #endif
 "  -A --amiga         Forces the game to be seen as an Amiga word padded game.\n"
 "  -C --crc           CRC and identify the game files and stop.\n"
-#if 0
-"  -c --cga-palette   Use PC CGA video mode emulation\n"
-#endif
+"  -c --cga-palette   Use PC CGA video mode emulation.\n"
 #ifdef OPT_LIST_DICT
 "  -d --list-dictionary\n"
 "                     List dictionary words.\n"
