@@ -292,8 +292,8 @@ void fix_position (int n)
 		count = tries;
 	}
 
-	/* _D (_D_WARN "view table entry #%d position adjusted to (%d,%d)",
-		n, v->x_pos, v->y_pos); */
+	_D (_D_WARN "view table entry #%d position adjusted to (%d,%d)",
+		n, v->x_pos, v->y_pos);
 }
 
 /* end: checks.c */

@@ -11,6 +11,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <ctype.h>
 #include "sarien.h"
 #include "agi.h"
 #include "sprite.h"		/* for commit_both() */
