@@ -19,6 +19,7 @@
 				F5742F7B0140638F01000001,
 				F5742F7D0140638F01000001,
 				F5742F7C0140638F01000001,
+				F5E85D270146350301000001,
 			);
 			isa = PBXGroup;
 			name = Classes;
@@ -339,8 +340,9 @@
 				F5742F810140638F01000001,
 				F5742F820140638F01000001,
 				F5742F830140638F01000001,
-				F5F6248D01411A6201000001,
 				F5607D2A0144005201000001,
+				F5E8FF0F0144257001000001,
+				F5E85D280146350301000001,
 			);
 			isa = PBXSourcesBuildPhase;
 			name = Sources;
@@ -559,7 +561,9 @@
 				F5C2E85001403CD401000001,
 				F5C2E85101403CD401000001,
 				F5C2E85201403CD401000001,
+				F5E8FF0E0144257001000001,
 				F5C2E85301403CD401000001,
+				F5607D290144005201000001,
 				F5C2E85401403CD401000001,
 				F5C2E85501403CD401000001,
 				F5C2E85601403CD401000001,
@@ -569,8 +573,6 @@
 				F5C2E85A01403CD401000001,
 				F5C2E85B01403CD401000001,
 				F5C2E8A701403D1801000001,
-				F5F6248C01411A6201000001,
-				F5607D290144005201000001,
 			);
 			isa = PBXGroup;
 			name = "Sarien Sources";
@@ -1160,6 +1162,29 @@
 			settings = {
 			};
 		};
+		F5E85D270146350301000001 = {
+			isa = PBXFileReference;
+			path = SarienAudio.c;
+			refType = 4;
+		};
+		F5E85D280146350301000001 = {
+			fileRef = F5E85D270146350301000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
+		F5E8FF0E0144257001000001 = {
+			isa = PBXFileReference;
+			name = path.c;
+			path = Sarien/sarien/src/filesys/unix/path.c;
+			refType = 3;
+		};
+		F5E8FF0F0144257001000001 = {
+			fileRef = F5E8FF0E0144257001000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		F5F6248A0141197101000001 = {
 			isa = PBXFileReference;
 			path = main.h;
@@ -1172,18 +1197,6 @@
 				ATTRIBUTES = (
 					Private,
 				);
-			};
-		};
-		F5F6248C01411A6201000001 = {
-			isa = PBXFileReference;
-			name = dummy.c;
-			path = ../src/sound/dummy/dummy.c;
-			refType = 4;
-		};
-		F5F6248D01411A6201000001 = {
-			fileRef = F5F6248C01411A6201000001;
-			isa = PBXBuildFile;
-			settings = {
 			};
 		};
 	};

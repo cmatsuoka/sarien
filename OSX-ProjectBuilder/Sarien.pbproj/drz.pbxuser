@@ -12,26 +12,24 @@
 			PBXWorkspaceConfiguration = {
 				ContentSize = "{1007, 584}";
 				LeftSlideOut = {
-					ActiveTab = 2;
+					ActiveTab = 0;
 					Frame = "{{0, 23}, {1007, 561}}";
 					Split0 = {
-						ActiveTab = 2;
-						Frame = "{{225, 0}, {782, 561}}";
+						Frame = "{{285, 0}, {722, 561}}";
 						Split0 = {
-							Frame = "{{0, 274}, {782, 287}}";
+							Frame = "{{0, 25}, {722, 536}}";
 						};
 						SplitCount = 1;
 						Tab0 = {
 							Debugger = {
-								ActiveTab = 1;
 								Frame = "{{0, 0}, {722, 208}}";
 								Split0 = {
-									Frame = "{{0, 75}, {722, 133}}";
+									Frame = "{{0, 25}, {722, 183}}";
 									Split0 = {
-										Frame = "{{0, 0}, {354, 133}}";
+										Frame = "{{0, 0}, {291, 183}}";
 									};
 									Split1 = {
-										Frame = "{{363, 0}, {359, 133}}";
+										Frame = "{{300, 0}, {422, 183}}";
 									};
 									SplitCount = 2;
 								};
@@ -55,9 +53,9 @@
 							};
 						};
 						Tab2 = {
-							BuildMessageFrame = "{{0, 0}, {784, 104}}";
-							BuildTranscriptFrame = "{{0, 113}, {784, 138}}";
-							Frame = "{{0, 0}, {782, 249}}";
+							BuildMessageFrame = "{{0, 0}, {724, 104}}";
+							BuildTranscriptFrame = "{{0, 113}, {724, 138}}";
+							Frame = "{{0, 0}, {722, 249}}";
 						};
 						Tab3 = {
 							Frame = "{{0, 0}, {722, 295}}";
@@ -135,9 +133,14 @@
 			sepNavWindowFrame = "{{38, 218}, {750, 502}}";
 		};
 	};
-	F5F6248C01411A6201000001 = {
+	F5E85D270146350301000001 = {
 		uiCtxt = {
-			sepNavWindowFrame = "{{15, 239}, {750, 502}}";
+			sepNavWindowFrame = "{{134, 182}, {750, 502}}";
+		};
+	};
+	F5E8FF0E0144257001000001 = {
+		uiCtxt = {
+			sepNavWindowFrame = "{{38, 218}, {750, 502}}";
 		};
 	};
 }
