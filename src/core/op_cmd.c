@@ -106,8 +106,6 @@ cmd(normal_cycle)	{ vt.cycle = CYCLE_NORMAL; vt.flags |= CYCLING; }
 cmd(reverse_cycle)	{ vt.cycle = CYCLE_REVERSE; vt.flags |= CYCLING; }
 cmd(set_dir)		{ vt.direction = _v[p1]; }
 cmd(get_dir)		{ _v[p1] = vt.direction; }
-cmd(reposition_to)	{ vt.x_pos = p1; vt.y_pos = p2; vt.flags |= FLAG10; }
-cmd(reposition_to_v)	{ vt.x_pos=_v[p1]; vt.y_pos=_v[p2]; vt.flags|=FLAG10; }
 cmd(get_room_v)		{ _v[p1] = object_get_location (p0); }
 cmd(put)		{ _D ("p0 = %d", p0); object_set_location (p0, p1); }
 cmd(put_v)		{ object_set_location (_v[p0], _v[p1]); }
@@ -328,6 +326,20 @@ cmd(reposition) {
 	else
 		vt.y_pos += dy;
 
+	fix_position (p0);
+}
+
+cmd(reposition_to) {
+	vt.x_pos = p1;
+	vt.y_pos = p2;
+	vt.flags |= FLAG10;
+	fix_position (p0);
+}
+
+cmd(reposition_to_v) {
+	vt.x_pos = _v[p1];
+	vt.y_pos = _v[p2];
+	vt.flags |= FLAG10;
 	fix_position (p0);
 }
 
