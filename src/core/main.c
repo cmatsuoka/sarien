@@ -65,8 +65,10 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 	game.clock_enabled = FALSE;
 	game.state = STATE_INIT;
 
+#ifndef __MPW__
 	if ((ec = parse_cli (argc, argv)) != err_OK)
 		goto bail_out;
+#endif
 
 	init_machine (argc, argv);
 
@@ -85,6 +87,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 	if (!opt.gfxhacks)
 		report ("Graphics driver hacks disabled (if any)\n");
 
+#ifndef __MPW__
 	_D ("Detect game");
 	if (agi_detect_game (argc > 1 ? argv[optind] :
 		get_current_directory ()) == err_OK)
@@ -93,6 +96,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 	} else if (argc > optind) {
 		report ("Could not open AGI game \"%s\".\n\n", argv[optind]);
 	}
+#endif
 
 	_D ("Init sound");
 	init_sound ();

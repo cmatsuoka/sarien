@@ -50,8 +50,11 @@ SrcFiles        =  ¶
 				  :src:core:silent.c ¶
 				  :src:core:sound.c ¶
 				  :src:sound:dummy:dummy.c ¶
+				  :src:filesys:macos:fileglob.c ¶
+				  :src:filesys:macos:path.c ¶
 				  :src:core:sprite.c ¶
 				  :src:core:text.c ¶
+				  :src:core:words.c ¶
 				  :src:core:view.c
 
 
@@ -85,11 +88,14 @@ ObjFiles-68K    =  ¶
 				  "{ObjDir}rand.c.o" ¶
 				  "{ObjDir}savegame.c.o" ¶
 				  "{ObjDir}macos.c.o" ¶
+				  "{ObjDir}fileglob.c.o" ¶
+				  "{ObjDir}path.c.o" ¶
 				  "{ObjDir}dummy.c.o" ¶
 				  "{ObjDir}silent.c.o" ¶
 				  "{ObjDir}sound.c.o" ¶
 				  "{ObjDir}sprite.c.o" ¶
 				  "{ObjDir}text.c.o" ¶
+				  "{ObjDir}words.c.o" ¶
 				  "{ObjDir}view.c.o"
 
 
@@ -121,7 +127,7 @@ Sarien  ÄÄ  {ObjFiles-68K} {LibFiles-68K} {¥MondoBuild¥}
 		-mf -d ¶
 		-t 'APPL' ¶
 		-c 'FAGI' ¶
-		-model near ¶
+		-model far ¶
 		-state rewrite ¶
 		-compact -pad 0
 	If "{Sym-68K}" =~ /-sym Å[nNuU]Å/
@@ -160,11 +166,14 @@ Sarien  ÄÄ  {ObjFiles-68K} {LibFiles-68K} {¥MondoBuild¥}
 "{ObjDir}rand.c.o"  Ä  :src:core:rand.c
 "{ObjDir}savegame.c.o"  Ä  :src:core:savegame.c
 "{ObjDir}macos.c.o"  Ä  :src:graphics:macos:macos.c
+"{ObjDir}fileglob.c.o"  Ä  :src:filesys:macos:fileglob.c
+"{ObjDir}path.c.o"  Ä  :src:filesys:macos:path.c
 "{ObjDir}silent.c.o"  Ä  :src:core:silent.c
 "{ObjDir}sound.c.o"  Ä  :src:core:sound.c
 "{ObjDir}dummy.c.o"  Ä  :src:sound:dummy:dummy.c
 "{ObjDir}sprite.c.o"  Ä  :src:core:sprite.c
 "{ObjDir}text.c.o"  Ä  :src:core:text.c
+"{ObjDir}words.c.o"  Ä  :src:core:words.c
 "{ObjDir}view.c.o"  Ä  :src:core:view.c
 
 

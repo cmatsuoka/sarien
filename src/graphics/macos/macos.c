@@ -47,8 +47,23 @@ static struct gfx_driver gfx_macos = {
 };
 
 
-static Rect windRect;
+static Rect windRect, dragRect;
 static QDGlobals qd;
+static WindowPtr myWindow, whichWindow;
+static EventRecord myEvent;
+static char theChar;
+
+
+#ifdef __MPW__
+
+char *strdup (char *s)
+{
+	char *r = malloc (strlen (s) + 1);
+	strcpy (r, s);
+	return r;
+}
+
+#endif
 
 
 int init_machine (int argc, char **argv)
@@ -64,9 +79,61 @@ int deinit_machine ()
 }
 
 
+static void process_events ()
+{
+	SystemTask();
+
+	if (WaitNextEvent (everyEvent, &myEvent, 5L, NULL)) {
+		switch (myEvent.what) {
+		case mouseDown:
+			switch (FindWindow(myEvent.where, &whichWindow)) {
+			case inSysWindow:
+				/* desk accessory window: call Desk Manager
+				 * to handle it
+				 */
+				SystemClick (&myEvent, whichWindow);
+				break;
+			case inMenuBar:
+				/* Menu bar: learn which command, then
+				 * execute it.
+				 */
+				DoCommand(MenuSelect(myEvent.where));
+				break;
+			case inDrag:
+				/* title bar: call Window Manager to drag */
+				DragWindow (whichWindow, myEvent.where,
+					&dragRect);
+				break;
+			case inContent:
+				/* body of application window:
+				 * make it active if not
+				 */
+				if (whichWindow != FrontWindow())
+					SelectWindow (whichWindow);
+				break;
+			}
+			break;
+		case updateEvt:		/* Update window. */
+			if ((WindowPtr) myEvent.message == myWindow) {
+				BeginUpdate((WindowPtr) myEvent.message);
+				/* repaint */
+				EndUpdate((WindowPtr) myEvent.message);
+			}
+			break;
+							
+		case keyDown:
+		case autoKey:	/* key pressed once or held down to repeat */
+			if (myWindow == FrontWindow())
+				theChar = (myEvent.message & charCodeMask);
+			break;
+
+		}
+	}
+}
+
+
 static int macos_init_vidmode ()
 {
-	WindowPtr	mainPtr;
 	OSErr		error;
 	SysEnvRec	theWorld;
 	
@@ -85,15 +152,16 @@ static int macos_init_vidmode ()
 
 	windRect = qd.screenBits.bounds;
 	InsetRect (&windRect, 50, 50);
-	mainPtr = NewCWindow(nil, &windRect, "Sarien", true, documentProc, 
+	myWindow = NewCWindow(nil, &windRect, "Sarien", true, documentProc, 
 		(WindowPtr) -1, false, 0);
 		
-	SetPort(mainPtr);	/* set window to current graf port */
+	SetPort (myWindow);	/* set window to current graf port */
 }
 
 
 static int macos_deinit_vidmode ()
 {
+	DisposeWindow (myWindow);
 }
 
 
@@ -131,4 +199,8 @@ static int macos_get_key ()
 {
 }
 
+
+static void macos_timer ()
+{
+}
 

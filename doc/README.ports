@@ -65,9 +65,18 @@ In progress:
 ---------+-------+---------+---------+---------+---------+---------+
  MS-DOS  | DJGPP | allegro | allegro |    no   |   yes   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
+ Linux   |  gcc  |XF86 DGA |OSS,ALSA |    no   |   yes   |   yes   |
+---------+-------+---------+---------+---------+---------+---------+
+
+
+Incomplete, assistance required:
+
+                  Graphics   Sound    Windowed  Fullscreen
+         Compiler  Driver    Driver   Graphics  Graphics    Sound
+---------+-------+---------+---------+---------+---------+---------+
  OS/2    |   ?   |  DIVE   |  DART   |   yes   |    no   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
- Linux   |  gcc  |XF86 DGA |OSS,ALSA |    no   |   yes   |   yes   |
+ MacOS   |  MPW  |  macos  |  macos  |   yes   |    no   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
 
 
