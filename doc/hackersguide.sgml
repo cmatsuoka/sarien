@@ -1,4 +1,4 @@
-<!DOCTYPE Book PUBLIC "-//Davenport//DTD DocBook V3.0//EN" [
+<!DOCTYPE Book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
         <!ENTITY lt "<">
         <!ENTITY gt ">">
         <!ENTITY amp "&">
@@ -291,7 +291,7 @@
       values from resource files, use the support functions
       <function/hilo_getword()/, <function/hilo_getdword()/,
       <function/lohi_getword()/ and <function/lohi_getdword()/. For
-      other situations, the <parameter/WORDS_BIGENDIAN/ macro will be
+      other situations, the <varname role="env"/WORDS_BIGENDIAN/ macro will be
       defined if the host architecture is big-endian.
     </para></listitem>
 
@@ -400,21 +400,22 @@
   
   <variablelist>
     <varlistentry>
-      <term><parameter/_TRACE/</term>
+      <term><varname role="macro"/_TRACE/</term>
       <listitem><para>
         Enable debug messages to be written to the standard output.
         The trace messages are ANSI-colored accoding to message priority
         and show the file name<footnote><para>Tracking specific messages
         is easier with the colored output. If your terminal does not support
-        ANSI colors, change the <parameter/_D_INFO/, <parameter/_D_WARN/
-        and <parameter/_D_CRIT/ in <filename>include/sarien.h</filename>
+        ANSI colors, change the <varname role="macro"/_D_INFO/,
+        <varname role="macro"/_D_WARN/ and <varname role="macro"/_D_CRIT/
+        in <filename>include/sarien.h</filename>
         to appropriate values.</para></footnote>, line number and name of
         the function where the macro <function/_D()/ is inserted. 
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term><parameter/USE_CONSOLE/</term>
+      <term><varname role="macro"/USE_CONSOLE/</term>
       <listitem><para>
         Enable the system console. If not defined, it will reduce memory
         footprint and some code complexity. Recommended for systems with
@@ -423,7 +424,7 @@
     </varlistentry>
 
     <varlistentry>
-      <term><parameter/FAKE_PALMOS/</term>
+      <term><varname role="macro"/FAKE_PALMOS/</term>
       <listitem><para>
         Set the output window geometry to 160x160 pixels and select the
         4x6 font for system messages, to simulate the graphic output of a
@@ -434,7 +435,7 @@
     </varlistentry>
 
     <varlistentry>
-      <term><parameter/DISABLE_COPYPROTECTION/</term>
+      <term><varname role="macro"/DISABLE_COPYPROTECTION/</term>
       <listitem><para>
         Patch some known AGI scripts to bypass annoying or time-consuming
         sequences during the development of the interpreter.
@@ -442,7 +443,7 @@
     </varlistentry>
 
     <varlistentry>
-      <term><parameter/AGDS_SUPPORT/</term>
+      <term><varname role="macro"/AGDS_SUPPORT/</term>
       <listitem><para>
         Add a Cyrillic font and minor changes in the interpreter to
         support Russian AGDS games such as Groza.
@@ -479,9 +480,9 @@
        Don't use Hungarian notation in variable names.
        Use lower case variable names, with underscores to separate words
        if necessary. Avoid excessively long variable names. Try to use
-       canonical variable names for counters (<parameter/i/, <parameter/j/,
-       <parameter/k/), cartesian coordinates (<parameter/x/, <parameter/y/)
-       and temporary storage (<parameter/tmp/).
+       canonical variable names for counters (<varname/i/, <varname/j/,
+       <varname/k/), cartesian coordinates (<varname/x/, <varname/y/)
+       and temporary storage (<varname/tmp/).
     </para></listitem>
     <listitem><para>
        Use uppercase names for macros, except when it mimics a function.
@@ -635,7 +636,7 @@
 
   <figure id="fig-mainloop" float="1">
     <title>Interpreter main loop</title>
-    <graphic fileref="images/hg/main_loop.eps" format="eps"></graphic>
+    <graphic fileref="images/hg/main_loop.eps" format="eps">
   </figure>
 
 <para>
@@ -709,7 +710,7 @@ struct agi_game {
 </para><para>
    Some of the members of <function/struct agi_game/ are redundant and
    should be removed in a near future. (For example, the ``internal flags''
-   might be bitmapped into <parameter/game_flags/).
+   might be bitmapped into <varname/game_flags/).
 </para>
 </sect1>
 
@@ -740,13 +741,14 @@ struct agi_game {
 <title>Keyboard input handling</title>
 <para>
   The keystroke is routed to different subsystems according to the value
-  of <parameter/game.input-mode/, as shown in <xref linkend="fig-keyhandling">.
+  of <varname role="agivar"/game.input-mode/, as shown in
+  <xref linkend="fig-keyhandling">.
   This variable can assume one of the following values, and the possible
   transitions between input modes are depicted in <xref linkend="fig-input">.
 
   <variablelist>
     <varlistentry>
-      <term><parameter/INPUT_NORMAL/</term>
+      <term><varname role="macro"/INPUT_NORMAL/</term>
       <listitem><para>
         In this mode regular keystrokes are routed to the input parser.
         Directional keys are handled to move ego, and special key events
@@ -755,7 +757,7 @@ struct agi_game {
     </varlistentry>
 
     <varlistentry>
-      <term><parameter/INPUT_GETSTRING/</term>
+      <term><varname role="macro"/INPUT_GETSTRING/</term>
       <listitem><para>
         This mode is used when <function/get.string/ is issued, and
         key events are routed to the input string. Directional keys are
@@ -765,7 +767,7 @@ struct agi_game {
     </varlistentry>
 
     <varlistentry>
-      <term><parameter/INPUT_MENU/</term>
+      <term><varname role="macro"/INPUT_MENU/</term>
       <listitem><para>
         In this mode only <keycap>ENTER</keycap>, <keycap>ESC</keycap> and
         directional keys are handled and used for menu navigation. Controller
@@ -774,7 +776,7 @@ struct agi_game {
     </varlistentry>
 
     <varlistentry>
-      <term><parameter/INPUT_NONE/</term>
+      <term><varname role="macro"/INPUT_NONE/</term>
       <listitem><para>
         When mode is set to <parameter/INPUT_NONE/, only controller events
 	are tested.
@@ -784,12 +786,12 @@ struct agi_game {
 
   <figure id="fig-keyhandling" float="1">
     <title>Key event routing</title>
-    <graphic fileref="images/hg/key_handling.eps" format="eps"></graphic>
+    <graphic fileref="images/hg/key_handling.eps" format="eps">
   </figure>
 
   <figure id="fig-input" float="1">
     <title>Interpreter input modes</title>
-    <graphic fileref="images/hg/input_mode.eps" format="eps"></graphic>
+    <graphic fileref="images/hg/input_mode.eps" format="eps">
   </figure>
 
 </para><para>
@@ -815,7 +817,7 @@ struct agi_game {
 
   <figure id="fig-keymenu" float="1">
     <title>Key routing in menu mode</title>
-    <graphic fileref="images/hg/key_menu.eps" format="eps"></graphic>
+    <graphic fileref="images/hg/key_menu.eps" format="eps">
   </figure>
 
   <xref linkend="fig-keymenu"> shows key event routing when the menu
@@ -824,9 +826,9 @@ struct agi_game {
   is active.
 
 </para><para>
-  Key events are stored in the <parameter/V_key/ variable for AGI use.
+  Key events are stored in the <varname/V_key/ variable for AGI use.
   Controller events require ASCII and scan codes and are stored in the
-  special variable <parameter/game.keypress/.
+  special variable <varname/game.keypress/.
   
 </para>
 </sect1>
@@ -891,8 +893,21 @@ struct agi_game {
 
 <sect1 id="gfx-sprite">
 <title>Sprite management</title>
+
+<sect2 id="gfx-reposition">
+<title>Repositioning sprites</title>
 <para>
+
 </para>
+
+  <figure id="fig-reposition" float="1">
+    <title>Sprite reposition algorithm</title>
+    <graphic fileref="images/hg/reposition.eps" format="eps">
+  </figure>
+
+
+</sect2>
+
 </sect1>
 
 </chapter>
