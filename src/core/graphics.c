@@ -386,7 +386,6 @@ void schedule_update (int x1, int y1, int x2, int y2)
  */
 void do_update ()
 {
-	_D ("%d, %d, %d, %d", update.x1, update.y1, update.x2, update.y2);
 	if (update.x1 <= update.x2 && update.y1 <= update.y2) {
 		gfx->put_block (update.x1, update.y1, update.x2, update.y2);
 	}

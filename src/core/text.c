@@ -432,7 +432,7 @@ void write_status ()
 	sprintf (x, " Score:%i of %03i", game.vars[V_score],
 		game.vars[V_max_score]);
 	print_status ("%-17s             Sound:%s ", x,
-		getflag(F_sound_on) ? "On " : "Off");
+		getflag (F_sound_on) ? "on " : "off");
 }
 
 

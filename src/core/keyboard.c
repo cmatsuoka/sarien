@@ -142,7 +142,7 @@ int handle_controller (int key)
 		}
 	}
 
-	if (!KEY_ASCII (key)) {
+	if (game.player_control && !KEY_ASCII (key)) {
 		int d = 0;
 		switch (key) {
 		case KEY_UP:         d = 1; break;

@@ -21,21 +21,20 @@
 
 
 struct agi_menu {
-	struct agi_menu	*next;		/* next along */
-	struct agi_menu	*down;		/* next menu under this */
-	int enabled;				/* enabled or disabled */
-	int event;					/* menu event */
-	char *text;					/* text of menu item */
+	struct agi_menu	*next;		/**< next along */
+	struct agi_menu	*down;		/**< next menu under this */
+	int enabled;			/**< option is enabled or disabled */
+	int event;			/**< menu event */
+	char *text;			/**< text of menu item */
 };
 
-static struct agi_menu *master_menu	= NULL;
-static struct agi_menu *menu		= NULL;
+static struct agi_menu *master_menu = NULL;
+static struct agi_menu *menu = NULL;
 
-/* menu broken due to changes in graphics.c, I'll fix it later */
 
 static void draw_horizontal_menu_bar (int cur_menu, int max_menu)
 {
-	struct agi_menu *men	= NULL;
+	struct agi_menu *men = NULL;
 	int col, z;
 
 	clear_lines (0, 0, MENU_BG);
@@ -83,6 +82,7 @@ static void draw_vertical_menu (int h_menu, int cur_men, int max_men)
 	len = 0;
 	lin = 1;
 	men = down;
+
 	/* scan size of this vertical menu */
 	while (men) {
 		if (men->text) {
@@ -178,7 +178,7 @@ void add_menu (char *message)
 
 void add_menu_item (char *message, int code)
 {
-	struct agi_menu *m1	= NULL;
+	struct agi_menu *m1 = NULL;
 
 	_D (_D_WARN "Adding menu item: %s", message);
 	for (m1 = menu; m1->next; m1 = m1->next);
@@ -203,10 +203,10 @@ void submit_menu ()
 int menu_keyhandler (int key)
 {
 	static int clock_val;
-	static int h_cur_menu		= 0, h_max_menu = 0;
-	static int v_cur_menu		= 0, v_max_menu = 0;
-	static struct agi_menu *men	= NULL;
-	static int menu_active		= FALSE;
+	static int h_cur_menu = 0, h_max_menu = 0;
+	static int v_cur_menu = 0, v_max_menu = 0;
+	static struct agi_menu *men = NULL;
+	static int menu_active = FALSE;
 	int i;
 
 	if (!getflag (F_menus_work)) 
@@ -217,9 +217,11 @@ int menu_keyhandler (int key)
 		game.clock_enabled = FALSE;
 
 		/* calc size of horizontal menu */
+		h_max_menu = 0;
 		for (men = master_menu->next; men; h_max_menu++, men=men->next);
 	
  		/* calc size of vertical menus */
+		v_max_menu = 0;
    		for (i = 0, men = master_menu->next; i < h_cur_menu; i++)
    			men = men->next;
    		for (v_max_menu = 0; men; v_max_menu++, men = men->down);
@@ -261,8 +263,9 @@ int menu_keyhandler (int key)
     	case KEY_RIGHT:
 		_D ("cur=%d, max=%d", h_cur_menu, h_max_menu);
     		if (1 + h_cur_menu >= h_max_menu)
-			break;
-    		h_cur_menu++;
+			h_cur_menu = 0;
+		else
+    			h_cur_menu++;
 
 		show_pic ();
 
@@ -276,8 +279,9 @@ int menu_keyhandler (int key)
     		break;
     	case KEY_LEFT:
     		if (h_cur_menu <= 0)
-			break;
-    		h_cur_menu--;
+			h_cur_menu = h_max_menu - 1;
+		else
+    			h_cur_menu--;
 
 		show_pic ();
 
