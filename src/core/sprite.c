@@ -129,7 +129,7 @@ static void objs_savearea (struct sprite *s)
 
 static void objs_restorearea (struct sprite *s)
 {
-	int y;
+	int y, offset;
 	UINT8 *p0, *q;
 #ifdef USE_HIRES
 	UINT8 *h0, *k;
@@ -144,17 +144,17 @@ static void objs_restorearea (struct sprite *s)
 	h0 = &game.hires[(s->x_pos + s->y_pos * _WIDTH) * 2];
 	k = s->hires;
 #endif
+	offset = game.status_line ? CHAR_LINES : 0;
 	for (y = 0; y < s->y_size; y++) {
 		memcpy (p0, q, s->x_size);
-		put_pixels_a (s->x_pos, s->y_pos + y + game.offset,
-			s->x_size, p0);
+		put_pixels_a (s->x_pos, s->y_pos + y + offset, s->x_size, p0);
 		q += s->x_size;
 		p0 += _WIDTH;
 #ifdef USE_HIRES
 		memcpy (h0, k, s->x_size * 2);
 		if (opt.hires) {
 			put_pixels_hires (s->x_pos * 2,
-				s->y_pos + y + game.offset, s->x_size * 2, h0);
+				s->y_pos + y + offset, s->x_size * 2, h0);
 		}
 		k += s->x_size * 2;
 		h0 += _WIDTH * 2;
@@ -630,7 +630,7 @@ void show_obj (n)
 
 void commit_block (int x1, int y1, int x2, int y2)
 {
-	int i, w;
+	int i, w, offset;
 	UINT8 *q;
 #ifdef USE_HIRES
 	UINT8 *h;
@@ -656,18 +656,19 @@ void commit_block (int x1, int y1, int x2, int y2)
 #ifdef USE_HIRES
 	h = &game.hires[(x1 + _WIDTH * y1) * 2];
 #endif
+	offset = game.status_line ? CHAR_LINES : 0;
 	for (i = y1; i <= y2; i++) {
-		put_pixels_a (x1, i + game.offset, w, q);
+		put_pixels_a (x1, i + offset, w, q);
 		q += _WIDTH;
 #ifdef USE_HIRES
 		if (opt.hires) {
-			put_pixels_hires (x1 * 2, i + game.offset, w * 2, h);
+			put_pixels_hires (x1 * 2, i + offset, w * 2, h);
 		}
 		h += _WIDTH * 2;
 #endif
 	}
 
-	flush_block_a (x1, y1 + game.offset, x2, y2 + game.offset);
+	flush_block_a (x1, y1 + offset, x2, y2 + offset);
 }
 
 /* end: sprite.c */

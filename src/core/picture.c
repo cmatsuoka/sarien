@@ -758,8 +758,7 @@ int unload_picture (int n)
 void show_pic ()
 {
 	int i, y;
-
-	game.offset = game.status_line ? CHAR_LINES : 0;
+	int offset;
 
 #ifdef USE_HIRES
 	if (opt.hires) {
@@ -769,8 +768,9 @@ void show_pic ()
 #endif
 
 	i = 0;
+	offset = game.status_line ? CHAR_LINES : 0;
 	for (y = 0; y < _HEIGHT; y++) {
-		put_pixels_a (0, y + game.offset, _WIDTH, &game.sbuf[i]);
+		put_pixels_a (0, y + offset, _WIDTH, &game.sbuf[i]);
 		i += _WIDTH;
 	}
 

@@ -116,8 +116,6 @@ cmd(parse)		{ dictionary_words (agi_sprintf(game.strings[p0])); }
 cmd(set_text_attribute)	{ game.color_fg = p0; game.color_bg = p1; }
 cmd(shake_screen)	{ shake_screen (p0); }
 cmd(word_to_string)	{ strcpy (game.strings[p0], game.ego_words[p1].word); }
-cmd(status_line_on)	{ game.status_line = TRUE; write_status (); }
-cmd(status_line_off)	{ game.status_line = FALSE; write_status (); }
 cmd(open_dialogue)	{ _D ("p0 = %d", p0); game.has_window = TRUE; }
 cmd(close_dialogue)	{ _D ("p0 = %d", p0); game.has_window = FALSE; }
 cmd(close_window)	{ close_window (); }
@@ -372,6 +370,18 @@ cmd(end_of_loop) {
 	vt.flags |= (DONTUPDATE|UPDATE|CYCLING);
 	vt.cycle = CYCLE_END_OF_LOOP; 
 	vt.parm1 = p1;
+}
+
+cmd(status_line_on) {
+	game.status_line = TRUE;
+	write_status ();
+	show_pic ();
+}
+
+cmd(status_line_off) {
+	game.status_line = FALSE;
+	write_status ();
+	show_pic ();
 }
 
 cmd(block) {
