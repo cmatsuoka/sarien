@@ -123,10 +123,6 @@ cmd(close_dialogue)	{ _D ("p0 = %d", p0); game.has_window = FALSE; }
 cmd(close_window)	{ close_window (); }
 cmd(status_line_on) 	{ game.status_line = TRUE; write_status (); }
 cmd(status_line_off)	{ game.status_line = FALSE; write_status (); }
-cmd(print)		{ print (cur_logic->texts[p0 - 1], 0, 0, 0); }
-cmd(print_f)		{ print (cur_logic->texts[_v[p0] - 1], 0, 0, 0); }
-cmd(print_at)		{ print (cur_logic->texts[p0 - 1], p1, p2, p3); }
-cmd(print_at_v)		{ print (cur_logic->texts[_v[p0] - 1], p1, p2, p3); }
 cmd(show_obj)		{ show_obj (p0); }
 cmd(show_obj_v)		{ show_obj (_v[p0]); }
 cmd(sound)		{ start_sound (p0, p1); }
@@ -737,6 +733,26 @@ cmd(clear_lines) {
 	flush_lines (p0, p1);
 }
 
+cmd(print) {
+	int n = p0 < 1 ? 1 : p0;
+	print (cur_logic->texts[n - 1], 0, 0, 0);
+}
+
+cmd(print_f) {
+	int n = p0 < 1 ? 1 : p0;
+	print (cur_logic->texts[n - 1], 0, 0, 0);
+}
+
+cmd(print_at) {
+	int n = p0 < 1 ? 1 : p0;
+	print (cur_logic->texts[n - 1], p1, p2, p3);
+}
+
+cmd(print_at_v)	{
+	int n = p0 < 1 ? 1 : p0;
+	print (cur_logic->texts[n - 1], p1, p2, p3);
+}
+
 cmd(push_script) {
 #ifdef USE_MOUSE
 	if (opt.agimouse) {
@@ -1042,6 +1058,7 @@ int run_logic (int n)
 
 void execute_agi_command (UINT8 op, UINT8 *p)
 {
+	_D (_D_WARN "%s %d %d %d", logic_names_cmd[op].name, p[0], p[1], p[2]);
 	agi_command[op](p);
 }
 
