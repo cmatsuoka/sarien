@@ -44,7 +44,7 @@
   * Control line fixes
 
 - Jeremy Penner <jeremy@astra.mb.ca>
-  * Photon graphics module
+  * QNX Photon port
 
 - Peter Hawkins <>
   * Savegame fixes
@@ -68,6 +68,9 @@
 
 - Paul Hill <paul@lagernet.clara.co.uk>
   * Amiga port
+
+- Vasyl Tsvirkunov <vasyl@pacbell.net>
+  * PocketPC port
 
 
 Special thanks to:

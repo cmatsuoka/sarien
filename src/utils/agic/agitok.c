@@ -124,9 +124,10 @@ WORD GetTokenIndex(char *sz)
     if (STRCMP(sz, "anyword") == 0)
 	return 1;
 
-    for (token = TokenHead; token != NULL; token = token->next)
+    for (token = TokenHead; token != NULL; token = token->next) {
 	if (STRCMP(token->sz, sz) == 0)
 	    return token->w;
+    }
 
     CompilerFailure(CERR_BAD_TOKEN, sz);
     return 0;

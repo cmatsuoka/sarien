@@ -1,0 +1,29 @@
+Date: Sun, 02 Sep 2001 21:31:14 -0700
+From: Vasyl Tsvirkunov <vasyl@pacbell.net>
+Subject: Re: Sarien Pocket PC port
+
+All files reside in folder eVC3 which should be placed at the top of
+the Sarien directory tree, like VC++6.0. The only C++ compiler for
+PocketPC is eMbedded Visual C 3.0, hence the name of that folder.
+
+This is kind of "first public" version of the port. Source has quite
+some rough edges. Two files are C++ not C because of somebody's stupid
+decision to compile the only avalaible version of fast graphics
+extensions for PocketPC (GAPI) as DLL with C++ name mangling. De-mangling
+it from C code is extremely tedious and unreliable.
+
+Winmain.cpp is a somewhat hacked version of Win32 port file. Wince.cpp
+is heavily modified but still recognizeable win32.cpp from the Win32 port.
+Sound_wince.c is only slightly modified Win32 sound code (I will have to
+communicate with that port author -- usually it is possible to get the
+same code perfectly working on both platforms). Unix implementation is
+used for file operations. A few other files are filling some gaps in
+PocketPC C library -- it is not ANSI-compliant. Some files are actually
+from my other project Pocket Atari (Atari800 port to PocketPC), one of
+the reasons why this port took only a few hours.
+
+There is one thing that I cannot include with this source update.
+eVC3/gapi directory is reserved for GAPI SDK. It is freely downloadable
+from MS site and every PocketPC developer knows about it but I could
+not figure exact redistribution policy on that.
+

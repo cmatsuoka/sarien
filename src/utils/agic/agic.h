@@ -29,10 +29,6 @@
 #define PROGRAM_NAME "AGI Logic Compiler version 1.42\nCopyright 1997, Floating Hills Software.\n\n"
 #define FREE_BANNER "This is free software, and you are welcome to redistribute\nit under certain conditions -- see COPYING for details.\n\n"
 
-#ifndef HAVE_STRICMP
-#define stricmp strcasecmp
-#endif
-
 #define TOK_FILE	"WORDS.TOK"
 #define OBJ_FILE	"OBJECT"
 
@@ -49,7 +45,7 @@ typedef unsigned short WORD;
 typedef unsigned short PTR;
 typedef BYTE BOOL;
 
-#define STRCMP(x,y)		(stricmp((x),(y)))
+#define STRCMP(x,y)		(strcasecmp((x),(y)))
 
 /*** From agigoto.c ***/
 void OutputLabel(char *sz);

@@ -28,6 +28,8 @@ Tested ports:
  Windows |  VC++ |   DIB   |  WinMM  |   yes   |    no   |justin,  |
  Windows |Cygwin |   DIB   |  WinMM  |   yes   |    no   |ryan&more|
 ---------+-------+---------+---------+---------+---------+---------+
+ WinCE   | eVC3  |  WinCE  |  WinCE  |    no   |   yes   |  Vasyl  |
+---------+-------+---------+---------+---------+---------+---------+
  OS/2    |  gcc  |   X11   |  dummy  |   yes   |    no   | Martin  |
 ---------+-------+---------+---------+---------+---------+---------+
  Amiga   |  gcc  |  amiga  |   AHI   |   yes   |   yes   |Paul Hill|
@@ -88,7 +90,5 @@ Planned:
          Compiler  Driver    Driver   Graphics  Graphics    Sound
 ---------+-------+---------+---------+---------+---------+---------+
  PalmOS  |  gcc  |  palm   |  palm   |    no   |   yes   |   yes   |
----------+-------+---------+---------+---------+---------+---------+
- WinCE   |   ?   |    ?    |    ?    |    ?    |    ?    |    ?    |
 ---------+-------+---------+---------+---------+---------+---------+
 

@@ -1,12 +1,1 @@
 
-Status of the Amiga port:
-
-Compiler	: DICE C. Others may work.
-Build status	: Sarien builds and executes.
-Graphics	: Hi and lo-res mode work.
-Sound		: todo
-Keyboard input	: in progress
-Mouse input	: todo
-Windowed gfx	: yes, unoptimized
-Fullscreen gfx	: todo
-

@@ -3,8 +3,9 @@
 XCFLAGS =
 OBJS	=
 DFILES	= Makefile AUTHORS BUGS Changelog COPYING README.agi README.sdl \
-	  README.svgalib README.unix README.win32 README.ports \
-	  TODO sarien.doxygen
+	  README.svgalib README.unix README.win32 README.ports README.macos \
+	  README.turboc README.pocketpc README.djgpp TODO sarien.doxygen \
+	  roadmap.txt
 CFILES	=
 DDIRS	=
 XDFILES =

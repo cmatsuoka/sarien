@@ -9,10 +9,11 @@ CFILES	=
 DDIRS	=
 XDFILES =
 LIB	=
+BIN	= ../../../bin/agic
 
-all: lex.yy.c y.tab.c agic
+all: lex.yy.c y.tab.c $(BIN)
 
-agic: y.tab.o lex.yy.o $(OBJS)
+$(BIN): y.tab.o lex.yy.o $(OBJS)
 	$(LD) $(LDFLAGS) $+
 
 lex.yy.c: agic.lex
