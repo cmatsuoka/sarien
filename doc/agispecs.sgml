@@ -31,16 +31,8 @@
     </Author>
 
     <Author>
-     <firstname>Ian</firstname>
-     <surname>Schmidt</surname>
-     <AuthorBlurb><Para>
-      Ian Schmidt (<email></email>)
-     </Para></AuthorBlurb>
-    </Author>
-
-    <Author>
      <firstname>Anders</firstname>
-     <othername>M.</firstname>
+     <othername>M.</othername>
      <surname>Olsson</surname>
      <AuthorBlurb><Para>
       Anders M. Olsson (<email></email>)
@@ -50,7 +42,9 @@
     <Author>
      <firstname>Alex</firstname>
      <surname>Simkin</surname>
-     <jobtitle>Author of AGDS</jobtitle>
+     <affiliation>
+      <jobtitle>Author of AGDS</jobtitle>
+     </affiliation>
      <AuthorBlurb><Para>
       Alex Simkin is the author of AGDS, a Russian clone of AGI.
      </Para></AuthorBlurb>
@@ -65,20 +59,7 @@
     </Author>
    </authorgroup>
 
-   </authorgroup>
-    <editor>
-     <firstname>Claudio</firstname>
-     <othername>S.</firstname>
-     <surname>Matsuoka</surname>
-     <jobtitle>Sarien developer</jobtitle>
-     <AuthorBlurb><Para>
-      Claudio Matsuoka (<Email>claudio@helllabs.org</Email>) is the
-      current maintainer of this document and the Sarien AGI interpreter.
-     </Para></AuthorBlurb>
-    </editor>
-   </authorgroup>
-
-   </authorgroup>
+   <authorgroup>
     <othercredit>
      <firstname>Vassili</firstname>
      <surname>Bykov</surname>
@@ -87,6 +68,21 @@
       to English.
      </Para></AuthorBlurb>
     </othercredit>
+   </authorgroup>
+
+   <authorgroup>
+    <editor>
+     <firstname>Claudio</firstname>
+     <othername>S.</othername>
+     <surname>Matsuoka</surname>
+     <affiliation>
+      <jobtitle>Sarien developer</jobtitle>
+     </affiliation>
+     <AuthorBlurb><Para>
+      Claudio Matsuoka (<Email>claudio@helllabs.org</Email>) is the
+      current maintainer of this document and the Sarien AGI interpreter.
+     </Para></AuthorBlurb>
+    </editor>
    </authorgroup>
 
    <abstract>
@@ -2301,7 +2297,7 @@ print(room_descr);
 </para><para>
 
    When the compiler encounters the above line, it will replace it with
-   the contents of <function/file.txt/.
+   the contents of <filename/file.txt/.
 
 </para><para>
    It is a good idea to have all the defines that you need for multiple
@@ -2530,6 +2526,7 @@ From the AGDS documentation translated by Vassili Bykov,
     </varlistentry>
    </variablelist>
 </para>
+</sect2>
 
 <sect2><title>Commands to load and unload resources</title>
 <para>
@@ -2641,6 +2638,7 @@ From the AGDS documentation translated by Vassili Bykov,
 
    </variablelist>
 </para>
+</sect2>
 
 <sect2><title>Program control commands</title>
 <para>
@@ -2649,7 +2647,7 @@ From the AGDS documentation translated by Vassili Bykov,
    It is used to change algorithms of the object behaviour, props, etc.
    Automatic change of Ego coordinates imitates moving into a room
    adjacent to the edge of the initial one.<footnote><para>Sounds awkward
-   but that's what it says. (VB)</footnote>
+   but that's what it says. (VB)</para></footnote>
 </para><para>
    The format of the command is:
 
@@ -2667,7 +2665,7 @@ From the AGDS documentation translated by Vassili Bykov,
 
         <orderedlist>
          <listitem><para>
-          <function>stop.update/</function>
+          <function>stop.update</function>
           and <function/unanimate/ are issued to all objects;
          </para></listitem>
      
@@ -2709,7 +2707,7 @@ From the AGDS documentation translated by Vassili Bykov,
      
          <listitem><para>
           Logic(i) resource is loaded where <parameter/i/ is the value of
-          <literal/v0/ !
+          <literal/v0/!
          </para></listitem>
      
          <listitem><para>
@@ -2739,6 +2737,7 @@ From the AGDS documentation translated by Vassili Bykov,
          <listitem><para>
           Clear keyboard input buffer and return to the main AGI loop.
          </para></listitem>
+
         </orderedlist>
 
       </para></listitem>
@@ -2746,6 +2745,7 @@ From the AGDS documentation translated by Vassili Bykov,
 
    </variablelist>
 </para>
+</sect2>
 
 <sect2><title>Subroutine call commands</title>
 <para>
@@ -2759,9 +2759,9 @@ From the AGDS documentation translated by Vassili Bykov,
        subroutine.
        If the logic with the given ID is not loaded in memory, it is
        temporarily loaded and discarded after returning from the call
-       (this takes extra time). <function><ulink url="call"/call/</function>
+       (this takes extra time). <function>call</function>
        does not change any variables or flags.
-      </listitem></para>
+      </para></listitem>
     </varlistentry>
 
     <varlistentry>
@@ -2770,15 +2770,15 @@ From the AGDS documentation translated by Vassili Bykov,
        This command returns control to the interpreter if it is executed in
        Logic(0), or to the command following the call command which called
        the current logic.
-      </listitem></para>
+      </para></listitem>
     </varlistentry>
 
     <varlistentry>
-    <function>jump &lt;label&gt;</function>
+      <term><function>jump &lt;label&gt;</function></term>
       <listitem><para>
        This command unconditionally transfers control to a command starting
        after label <literal/label/ within the same logic.
-      </listitem></para>
+      </para></listitem>
     </varlistentry>
 
     <varlistentry>
@@ -2791,7 +2791,7 @@ From the AGDS documentation translated by Vassili Bykov,
        command sets the entry point at the command following it, while
        <function><ulink url="reset.scan.start"/reset.scan.start/</function>
        returns the entry point to the beginning.
-      </listitem></para>
+      </para></listitem>
     </varlistentry>
    </variablelist>
 </para>
@@ -2812,20 +2812,19 @@ From the AGDS documentation translated by Vassili Bykov,
       If an object priority is 15 and a command <function/ignore.block/ has not
       been given to it, it cannot cross a conditional barrier (pixels with
       priority 1) and leave the block set using the
-      <function><ulink name="block"/block/</function> command.
+      <function>block</function> command.
     </para></listitem>
 
     <listitem><para>
-      If an object has not been given
-      <function><ulink name="ignore.horizon"/ignore.horizon/</function>
-      command, it cannot move above the horizon set using the 
-      <function><ulink name="set.horizon"/set.horizon/</function> command.
+      If an object has not been given the <function>ignore.horizon</function>
+      command, it cannot move above the horizon set using the
+      <function>set.horizon</function> command.
     </para></listitem>
 
     <listitem><para>
       An object should follow the conditions set using
-      <function><ulink name="object.on.water"/object.on.water/</function>
-      and <function><ulink name="object.on.land"/object.on.land/</function>
+      <function>object.on.water</function>
+      and <function>object.on.land</function>
       commands (see below).
     </para></listitem>
    </orderedlist>
@@ -2884,7 +2883,7 @@ From the AGDS documentation translated by Vassili Bykov,
       <listitem><para>
        Turns on automatic choice of loop number depending on the direction
        of motion of the object <parameter/n/.
-      </para></para>
+      </para><para>
        <literal>
                       1
                 8     |     2
@@ -2896,10 +2895,10 @@ From the AGDS documentation translated by Vassili Bykov,
                 6     |     4
                       5
        </literal>
-      </para></para>
+      </para><para>
        For objects with fewer than 4 but more than 1 loop, automatic
        choice of the loop is done according to the following table:
-      </para></para>
+      </para><para>
 
        <informaltable>
         <tgroup cols="10">
@@ -2934,9 +2933,9 @@ From the AGDS documentation translated by Vassili Bykov,
         </tgroup>
        </informaltable>
 
-      </para></para>
+      </para><para>
        For objects with more than 4 loops, the following table is used:
-      </para></para>
+      </para><para>
 
        <informaltable>
         <tgroup cols="10">
@@ -2971,7 +2970,7 @@ From the AGDS documentation translated by Vassili Bykov,
         </tgroup>
        </informaltable>
 
-      </para></para>
+      </para><para>
        <literal/x/ means that the current loop number is retained.
       </para></listitem>
     </varlistentry>
@@ -2994,7 +2993,7 @@ From the AGDS documentation translated by Vassili Bykov,
     </varlistentry>
 
     <varlistentry>
-      <function id="current.cel">current.cel(n,m)</function>
+      <term><function id="current.cel">current.cel(n,m)</function></term>
       <listitem><para>
        The number of the current cel of the object <parameter/n/ is
        stored in <parameter/vm/.
@@ -3058,13 +3057,12 @@ From the AGDS documentation translated by Vassili Bykov,
       <listitem><para>
         Object <parameter/n/ is shown on the screen. The image uses the
         values of the loop and the cel in the VIEW resource associated with
-        the object <parameter/n/ (see
-        <function><ulink name="set.view"/set.view"/</function>), as well as
-        the priority and coordinates of the object. If a command
-        <function><ulink name="start.cycling"/start.cycling/</function>
+        the object <parameter/n/ (see <function>set.view</function>),
+        as well as the priority and coordinates of the object. If a command
+        <function>start.cycling</function>
         is also issued, a looped animation for object <parameter/n/ is
         shown until stopped (for example, with
-        <function><ulink name="stop.cycling"/stop.cycling/</function>).
+        <function>stop.cycling</function>).
       </para></listitem>
     </varlistentry>
 
@@ -3097,9 +3095,9 @@ From the AGDS documentation translated by Vassili Bykov,
       <term><function id="start.cycling">start.cycling(n)</function></term>
       <listitem><para>
         Enables automatic change of cels in a chosen (using
-        <function><ulink name="set.loop"/set.loop/</function>) loop of
+        <function>set.loop</function>) loop of
         a view resource associated with the object <parameter/n/ (using
-        <function><ulink name="set.view"/set.view/</function>).
+        <function>set.view</function>).
       </para></listitem>
     </varlistentry>
 
@@ -3107,9 +3105,9 @@ From the AGDS documentation translated by Vassili Bykov,
       <term><function id="stop.cycling">stop.cycling(n)</function></term>
       <listitem><para>
         Disables automatic change of cels in a chosen (using
-        <function><ulink name="set.loop"/set.loop"/</function>) loop of
+        <function>set.loop</function>) loop of
         a view resource associated with the object <parameter/n/ (using
-        <function><ulink name="set.view"/set.view/</function>).
+        <function>set.view</function>).
       </para></listitem>
     </varlistentry>
 
@@ -3163,91 +3161,177 @@ From the AGDS documentation translated by Vassili Bykov,
 <sect3><title>Object motion control commands</title>
 <para>
    The following commands can be given to the object included in the
-   interpreter control list with <literal><ulink name="animate.obj"/animate.obj/</literal>:
+   interpreter control list with <function>animate.obj</function>:
 
    <variablelist>
-<function id="set.horizon">set.horizon(n)</function>
-   Set the horizon to y = <parameter/n/.
 
-<function id="ignore.horizon">ignore.horizon(n)</function>
-   Object <parameter/n/ moves regardless of the horizon position.
+    <varlistentry>
+     <term><function id="set.horizon">set.horizon(n)</function></term>
+     <listitem><para>
+       Set the horizon y coordinate to <parameter/n/.
+     </para></listitem>
+    </varlistentry>
 
-<function id="observe.horizon">observe.horizon(n)</function>
-   Object <parameter/n/ cannot move above the horizon.
+    <varlistentry>
+     <term><function id="ignore.horizon">ignore.horizon(n)</function></term>
+     <listitem><para>
+       Object <parameter/n/ moves regardless of the horizon position.
+     </para></listitem>
+    </varlistentry>
 
-<function id="block">block(x1,y1,x2,y2)</function>
+    <varlistentry>
+     <term><function id="observe.horizon">observe.horizon(n)</function></term>
+     <listitem><para>
+       Object <parameter/n/ cannot move above the horizon.
+     </para></listitem>
+    </varlistentry>
 
-   Sets a rectangular area (block).
-<programlisting>
-(x1, y1)
-   +----------------+
-   |                |
-   |                |
-   |                |
-   +----------------+
-                 (x2, y2)
-</programlisting>
+    <varlistentry>
+     <term><function id="block">block(x1,y1,x2,y2)</function></term>
+     <listitem><para>
+       Sets a rectangular area (block).
+       <literal>
+      (x1, y1)
+         +----------------+
+         |                |
+         |                |
+         |                |
+         +----------------+
+                       (x2, y2)
+       </literal>
+     </para></listitem>
+    </varlistentry>
 
-<function id="unblock">unblock()</function>
-   Cancels previously set block.
+    <varlistentry>
+     <term><function id="unblock">unblock()</function></term>
+     <listitem><para>
+       Cancels previously set block.
+     </para></listitem>
+    </varlistentry>
 
-<function id="ignore.blocks">ignore.blocks(n)</function>
-   Object <parameter/n/ moves ignoring conditional barriers (pixels with priority 1)
-   and a block set with the <function><ulink name="block"/block/</function> command.
+    <varlistentry>
+     <term><function id="ignore.blocks">ignore.blocks(n)</function></term>
+     <listitem><para>
+       Object <parameter/n/ moves ignoring conditional barriers
+       (pixels with priority 1) and a block set with the
+       <function>block</function> command.
+     </para></listitem>
+    </varlistentry>
 
-<function id="observe.blocks">observe.blocks(n)</function>
-   Object <parameter/n/ may not cross conditional barriers or leave the block.
+    <varlistentry>
+     <term><function id="observe.blocks">observe.blocks(n)</function></term>
+     <listitem><para>
+       Object <parameter/n/ may not cross conditional barriers or
+       leave the block.
+     </para></listitem>
+    </varlistentry>
 
-<function id="ignore.objs">ignore.objs(n)</function>
-   Object <parameter/n/ moves regardless of positions of other objects.
+    <varlistentry>
+     <term><function id="ignore.objs">ignore.objs(n)</function></term>
+     <listitem><para>
+       Object <parameter/n/ moves regardless of positions of other objects.
+     </para></listitem>
+    </varlistentry>
 
-<function id="observe.objs">observe.objs(n)</function>
-   Object <parameter/n/ treats other objects as obstacles.
+    <varlistentry>
+     <term><function id="observe.objs">observe.objs(n)</function></term>
+     <listitem><para>
+       Object <parameter/n/ treats other objects as obstacles.
+     </para></listitem>
+    </varlistentry>
 
-<function id="player.control">player.control()</function>
-   The player is allowed to control Ego (object number 0) using the
-   keyboard or the joystick.
+    <varlistentry>
+     <term><function id="player.control">player.control()</function></term>
+     <listitem><para>
+       The player is allowed to control Ego (object number 0) using the
+       keyboard or the joystick.
+     </para></listitem>
+    </varlistentry>
 
-<function id="program.control">program.control()</function>
-   The player is not allowed to control object 0 (Ego).
+    <varlistentry>
+     <term><function id="program.control">program.control()</function></term>
+     <listitem><para>
+       The player is not allowed to control object 0 (Ego).
+     </para></listitem>
+    </varlistentry>
 
-<function id="stop.motion">stop.motion(n)</function>
-   Motion of object <parameter/n/ is stopped. If <parameter/n/ == 0, <literal><ulink name="program.control"/program.control/</literal> is
-   automatically executed.
+    <varlistentry>
+     <term><function id="stop.motion">stop.motion(n)</function></term>
+     <listitem><para>
+       Motion of object <parameter/n/ is stopped. If <parameter/n/ is 0,
+       <function>program.control</function> is automatically executed.
+     </para></listitem>
+    </varlistentry>
 
-<function id="start.motion">start.motion(n)</function>
-   Motion of object <parameter/n/ is started. If <parameter/n/ == 0 (Ego), <literal><ulink name="player.control/player.control/</literal>
-   automatically executed.
+    <varlistentry>
+     <term><function id="start.motion">start.motion(n)</function></term>
+     <listitem><para>
+       Motion of object <parameter/n/ is started. If <parameter/n/ is 0
+       (Ego), <function>player.control</function> is automatically executed.
+     </para></listitem>
+    </varlistentry>
 
-<function id="step.size">step.size(n,m)</function>
-   <parameter/vn/ determines the number of pixels the object <parameter/n/ moves
-   each step. <parameter>(The actual value in pixels is the step size / 4! --CM)</parameter>
+    <varlistentry>
+     <term><function id="step.size">step.size(n,m)</function></term>
+     <listitem><para>
+       <parameter/vn/ determines the number of pixels the object
+       <parameter/n/ moves each step. The actual value in pixels is the
+       step size / 4.
+     </para></listitem>
+    </varlistentry>
 
-<function id="step.time">step.time(n,m)</function>
-   <parameter/vn/ determines the speed of object <parameter/n/ motion: delay in the
-   interpreter cycles between consecutive steps. If <parameter/vm/ = 1, step
-   occurs on every cycle.
+    <varlistentry>
+     <term><function id="step.time">step.time(n,m)</function></term>
+     <listitem><para>
+       <parameter/vn/ determines the speed of object <parameter/n/
+       motion: delay in the interpreter cycles between consecutive steps.
+       If <parameter/vm/ is 1, step occurs on every cycle.
+     </para></listitem>
+    </varlistentry>
 
-<function id="move.obj">move.obj(n,x,y,s,m), move.obj.v(n,x,y,s,m)</function>
-   Object <parameter/n/ is told to move to the point <parameter/(x,y)/ (or <parameter/vx/, <parameter/vy/) by s
-   pixels every step. When the destination is reached, <literal/f/<parameter/m/ is set to
-   1. If <parameter/n/ == 0 (Ego), <literal><ulink name="#program.control"/program.control/</literal> is executed automatically.
+    <varlistentry>
+     <term><function id="move.obj">move.obj(n,x,y,s,m), move.obj.v(n,x,y,s,m)</function></term>
+     <listitem><para>
+       Object <parameter/n/ is told to move to the point
+       <parameter/(x,y)/ (or <parameter/vx/, <parameter/vy/)
+       by <parameter/s/ pixels every step. When the destination
+       is reached, <literal/f/<parameter/m/ is set to 1.
+       If <parameter/n/ is 0 (Ego), <function>program.control</function>
+       is executed automatically.
+     </para></listitem>
+    </varlistentry>
 
-<function id="follow.ego">follow.ego(n,s,m)</function>
-   Object <parameter/n/ is told to chase object 0 (Ego) by <parameter/s/ pixels every step.
-   When Ego and object coordinates become equal, <literal/f/<parameter/m/ is set to 1.
+    <varlistentry>
+     <term><function id="follow.ego">follow.ego(n,s,m)</function></term>
+     <listitem><para>
+       Object <parameter/n/ is told to chase object 0 (Ego) by
+       <parameter/s/ pixels every step. When Ego and object coordinates
+       become equal, <literal/f/<parameter/m/ is set.
+     </para></listitem>
+    </varlistentry>
 
-<function id="wander">wander(n)</function>
-   Object <parameter/n/ randomly changes the direction of its motion (wanders). If
-   <parameter/n/ == 0 (Ego), <literal><ulink name="#program.control"/program.control/</literal> is issued automatically.
+    <varlistentry>
+     <term><function id="wander">wander(n)</function></term>
+     <listitem><para>
+       Object <parameter/n/ randomly changes the direction of its
+       motion (wanders). If <parameter/n/ is 0 (Ego),
+       <function>program.control</function> is issued automatically.
+     </para></listitem>
+    </varlistentry>
 
-<function id="normal.motion">normal.motion(n)</function>
-   Special object motion mode is canceled. The object continues to move
-   in the direction it was moving in at the time the command was issued.
+    <varlistentry>
+     <term><function id="normal.motion">normal.motion(n)</function></term>
+     <listitem><para>
+       Special object motion mode is canceled. The object continues to move
+       in the direction it was moving in at the time the command was issued.
+     </para></listitem>
+    </varlistentry>
 
-<function id="set.dir">set.dir(n,m)</function>
-   Object <parameter/n/ is told to move in the direction <parameter/vm/.
-   <verb>
+    <varlistentry>
+     <term><function id="set.dir">set.dir(n,m)</function></term>
+     <listitem><para>
+       Object <parameter/n/ is told to move in the direction <parameter/vm/.
+       <literal>
                       1
                 8     |     2
                   \   |   /
@@ -3257,89 +3341,162 @@ From the AGDS documentation translated by Vassili Bykov,
                   /   |   \
                 6     |     4
                       5
-   </verb>
-<function id="get.dir">get.dir(n,m)</function>
-   Direction of object <parameter/n/ motion is stored in <parameter/vm/.
+       </literal>
+     </para></listitem>
+    </varlistentry>
 
-<function id="object.on.water">object.on.water(n)</function>
-   Object <parameter/n/ is allowed to be only in the area where its base line is
-   completely on pixels with priority 3 (water surface).
+    <varlistentry>
+     <term><function id="get.dir">get.dir(n,m)</function></term>
+     <listitem><para>
+       Direction of object <parameter/n/ motion is stored in <parameter/vm/.
+     </para></listitem>
+    </varlistentry>
 
-<function id="object.on.land">object.on.land(n)</function>
-   Object <parameter/n/ is not allowed to touch pixels of water surface (priority 3).
+    <varlistentry>
+     <term><function id="object.on.water">object.on.water(n)</function></term>
+     <listitem><para>
+       Object <parameter/n/ is allowed to be only in the area where its
+       base line is completely on pixels with priority 3 (water surface).
+     </para></listitem>
+    </varlistentry>
 
-<function id="object.on.anything">object.on.anything(n)</function>
-   Motion restrictions previously set on the object <parameter/n/ with commands
-   <literal><ulink name="#object.on.water"/object.on.water/</literal> or <literal/object.on.land/ are cancelled.
+    <varlistentry>
+     <term><function id="object.on.land">object.on.land(n)</function></term>
+     <listitem><para>
+       Object <parameter/n/ is not allowed to touch pixels of water
+       surface (priority 3).
+     </para></listitem>
+    </varlistentry>
 
-<function id="reposition">reposition(n,dx,dy)</function>
-   Object <parameter/n/ jumps from its current location into the location with
-   coordinates (<parameter/x/ + <parameter/vdx/, <parameter/y/ + <parameter/vdy/).
+    <varlistentry>
+     <term><function id="object.on.anything">object.on.anything(n)</function></term>
+     <listitem><para>
+       Motion restrictions previously set on the object <parameter/n/
+       with commands <function>object.on.water</function> or
+       <function/object.on.land/ are cancelled.
+     </para></listitem>
+    </varlistentry>
 
-   <parameter>(Shouldn't there be reposition and reposition.v? --VB)</parameter>
+    <varlistentry>
+     <term><function id="reposition">reposition(n,dx,dy)</function></term>
+     <listitem><para>
+       Object <parameter/n/ jumps from its current location into the
+       location with coordinates (<parameter/x/ + <parameter/vdx/,
+       <parameter/y/ + <parameter/vdy/).
+       <footnote>
+        <para>
+         Shouldn't there be <function/reposition/ and <function/reposition.v/?
+         (VB)
+        </para><para>
+         There should be, but they don't exist. (LE)
+        <para>
+       </footnote>
+     </para></listitem>
+    </varlistentry>
 
-   <parameter>(There should be, but they don't exist. --LE)</parameter>
+    <varlistentry>
+     <term><function id="reposition.to">reposition.to(n,x,y), reposition.to.v(n,x,y)</function></term>
+     <listitem><para>
+       Similar to the preceding command, but the object is moved to the point
+       <parameter/x/, <parameter/y/ (<parameter/vx/,<parameter/vy/).
+     </para></listitem>
+    </varlistentry>
 
-<function id="reposition.to">reposition.to(n,x,y), reposition.to.v(n,x,y)</function>
-   Similar to the preceding command, but the object is moved to the point
-   <parameter/x/, <parameter/y/ (<parameter/vx/,<parameter/vy/).
+    <varlistentry>
+     <term><function id="stop.update">stop.update(n)</function></term>
+     <listitem><para>
+       Object <parameter/n/ is removed from the list of objects updated by the
+       interpreter on each step. The object stays on the screen unchanged.
+     </para></listitem>
+    </varlistentry>
 
-<function id="stop.update">stop.update(n)</function>
-   Object <parameter/n/ is removed from the list of objects updated by the
-   interpreter on each step. The object stays on the screen unchanged.
+    <varlistentry>
+     <term><function id="start.update">start.update(n)</function></term>
+     <listitem><para>
+       Object <parameter/n/ is redrawn on each interpreter step.
+     </para></listitem>
+    </varlistentry>
 
-<function id="start.update">start.update(n)</function>
-   Object <parameter/n/ is redrawn on each interpreter step.
+    <varlistentry>
+     <term><function id="force.update">force.update(n)</function></term>
+     <listitem><para>
+       Object <parameter/n/ is redrawn immediately, without waiting for
+       the end of the interpreter cycle.
+     </para></listitem>
+    </varlistentry>
 
-<function id="force.update">force.update(n)</function>
-   Object <parameter/n/ is redrawn immediately, without waiting for the end of the
-   interpreter cycle.
+    <varlistentry>
+     <term><function id="distance">distance(n,m,d)</function></term>
+     <listitem><para>
+       If both objects <parameter/n/ and <parameter/m/ are on the screen,
+       then <parameter/vd/ = abs(x(n) - x(m)) + abs(y(n) - y(m)),
+       otherwise <parameter/vd/ = 255.
+     </para></listitem>
+    </varlistentry>
 
-<function id="distance">distance(n,m,d)</function>
-   If both objects <parameter/n/ and <parameter/m/ are on the screen, then
-
-   <parameter/vd/ = abs(x(n) - x(m)) + abs(y(n) - y(m)),
-
-   otherwise <parameter/vd/ = 255.
    </variablelist>
 </para>
 
 <sect3><title>Inventory member management commands</title>
 <para>
-   OBJECT resources, stored in a separate file <literal/object/, are most often
-   used to represent inventory members. An member is a structure which
-   consists of a one-byte field called room and a string of text, the
-   member name.
-
+   Object resources, stored in a separate file <filename/object/, are
+   most often used to represent inventory members. An member is a
+   structure which consists of a one-byte field called room and a
+   string of text (the member name).
+</para><para>
    If the room field of an member is 255, the member belongs to the player.
    Otherwise the member is considered to be in the room with the
    corresponding ID number.
 
+</para><para>
    <variablelist>
-<function id="get">get(n), get.v(n)</function>
-   Stores 255 in room field of an object <parameter/n/, which means that
-   the player owns it.
+    <varlistentry>
+     <term><function id="get">get(n), get.v(n)</function></term>
+     <listitem><para>
+       Stores 255 in room field of an object <parameter/n/, which means that
+       the player owns it.
+     </para></listitem>
+    </varlistentry>
 
-<function id="drop">drop(n)</function>
-   Stores 0 in the room field of object <parameter/n/.
+    <varlistentry>
+     <term><function id="drop">drop(n)</function></term>
+     <listitem><para>
+       Stores 0 in the room field of object <parameter/n/.
+     </para></listitem>
+    </varlistentry>
 
-<function id="put">put(n,m), put.v(n,m)</function>
-   Stores the value <parameter/m/ (or <parameter/vm/) in the room field
-   of the object <parameter/n/.
+    <varlistentry>
+     <term><function id="put">put(n,m), put.v(n,m)</function></term>
+     <listitem><para>
+       Stores the value <parameter/m/ (or <parameter/vm/) in the room field
+       of the object <parameter/n/.
+     </para></listitem>
+    </varlistentry>
 
-<function id="get.room.v">get.room.v(n,m)</function>
-   Stores the value of the room field of object <parameter/vn/ in <parameter/vm/.
+    <varlistentry>
+     <term><function id="get.room.v">get.room.v(n,m)</function></term>
+     <listitem><para>
+       Stores the value of the room field of object <parameter/vn/ in
+       <parameter/vm/.
+     </para></listitem>
+    </varlistentry>
 
-<function id="status">status()</function>
-   The screen is switched to text mode; the top line displays ``You are
-   carrying:'', then the names of the object with room field equal to 255
-   are listed. If there are no such objects, the word ``nothing'' is
-   displayed.
+    <varlistentry>
+     <term><function id="status">status()</function></term>
+     <listitem><para>
+       The screen is switched to text mode; the top line displays ``You are
+       carrying:'', then the names of the object with room field equal to 255
+       are listed. If there are no such objects, the word ``nothing'' is
+       displayed.
+     </para><para>
+       If <parameter/f13/ is set (allow member selection), a highlight
+       appears which allows the player to select an member name.
+       When <keycap/ENTER/ is pressed, the selected object number is
+       stored in <parameter/v25/. When <keycap/ESC/ is pressed, 255
+       is stored in <parameter/v25/.
+     </para></listitem>
+    </varlistentry>
 
-   If <literal/f13/ is set (allow member selection), a highlight appears which
-   allows the player to select an member name. When <literal/ENTER/ is pressed, the
-   selected object number is stored in <literal/v25/. When <literal/ESC/ is pressed, 255
-   is stored in <literal/v25/.
    </variablelist>
 </para>
 
@@ -3347,194 +3504,308 @@ From the AGDS documentation translated by Vassili Bykov,
 <para>
    The following commands operate on PICTURE resources,
    prepared using PM editor and loaded in the interpreter memory using
-   <literal><ulink name="#load.pic"/load.pic/</literal>:
+   <function>load.pic</function>:
 
    <variablelist>
-<function id="draw.pic">draw.pic(n)</function>
-   A PICTURE resource number <parameter/i/, where <parameter/i/ is the value of <parameter/vn/ is
-   executed. As the result, the background picture is created in the
-   internal buffer of the interpreter. Before execution, the buffer is
-   cleared, i.e. all pixels are set to colour 15 and priority 4.
+    <varlistentry>
+     <term><function id="draw.pic">draw.pic(n)</function></term>
+     <listitem><para>
+       A picture resource number <parameter/i/, where <parameter/i/
+       is the value of <parameter/vn/, is executed. As the result,
+       the background picture is created in the internal buffer of
+       the interpreter. Before execution, the buffer is cleared,
+       i.e. all pixels are set to colour 15 and priority 4.
+     </para></listitem>
+    </varlistentry>
 
-<function id="overlay.pic">overlay.pic(n)</function>
-   Just like the above, only the internal buffer is not cleared before
-   drawing. Picture(<parameter/vn/) is drawn over the existing picture.
+    <varlistentry>
+     <term><function id="overlay.pic">overlay.pic(n)</function></term>
+     <listitem><para>
+       Just like the above, only the internal buffer is not cleared before
+       drawing. Picture(<parameter/vn/) is drawn over the existing picture.
+     </para></listitem>
+    </varlistentry>
 
-<function id="add.to.pic">add.to.pic(a,b,c,d,e,f,g), add.to.pic.v(a,b,c,d,e,f,g)</function>
+    <varlistentry>
+     <term><function id="add.to.pic">add.to.pic(a,b,c,d,e,f,g), add.to.pic.v(a,b,c,d,e,f,g)</function></term>
+     <listitem><para>
+       The image of a view resource is added to the background as its
+       component. Typically, this is used to add small complicated details
+       which would require too many picture resource commands to draw.
+     </para><para>
+       Parameters are:
+       <simplelist>
+        <member><parameter/a/ (<parameter/va/): number of the view resource;
+        <member><parameter/b/ (<parameter/vb/): loop number;
+        <member><parameter/c/ (<parameter/vc/): cel number;
+        <member><parameter/d/ (<parameter/vd/): x coordinate;
+        <member><parameter/e/ (<parameter/ve/): y coordinate;
+        <member><parameter/f/ (<parameter/vf/): priority;
+        <member><parameter/g/ (<parameter/vg/): margin.
+       </simplelist>
+     </para><para>
+       If margin is 0, 1, 2, or 3, the base of the cel is surrounded with a
+       rectangle of the corresponding priority. If margin > 4, this extra
+       margin is not shown.
+     </para></listitem>
+    </varlistentry>
 
-   A picture of a VIEW resource is added to the background as its
-   component. Typically, this is used to add small complicated details
-   which would require too many PICTURE resource commands to draw.
+    <varlistentry>
+     <term><function id="show.pic">show.pic()</function></term>
+     <listitem><para>
+       Shows internal buffer on the screen.
+     </para><para>
+       <emphasis>ATTENTION!</emphasis>
+       Please use the following sequence of commands when loading picture
+       resources in the interpreter memory:
+     </para><para>
 
-   Parameters are:
-   <simplelist>
-    <member><parameter/a/ (<parameter/va/): number of the VIEW resource;
-    <member><parameter/b/ (<parameter/vb/): loop number;
-    <member><parameter/c/ (<parameter/vc/): cel number;
-    <member><parameter/d/ (<parameter/vd/): x coordinate;
-    <member><parameter/e/ (<parameter/ve/): y coordinate;
-    <member><parameter/f/ (<parameter/vf/): priority;
-    <member><parameter/g/ (<parameter/vg/): margin.
-   </simplelist>
-
-   If margin is 0, 1, 2, or 3, the base of the cel is surrounded with a
-   rectangle of the corresponding priority. If margin > 4, this extra
-   margin is not shown.
-
-<function id="show.pic">show.pic()</function>
-   Shows internal buffer on the screen.
-
-   <emphasis>ATTENTION!</emphasis>
-   Please use the following sequence of commands when loading PICTURE
-   resources in the interpreter memory:
-
-<programlisting>
+       <programlisting>
 load.pic(n);
 draw.pic(n);
 discard.pic(n);
 ...
 show.pic();
-</programlisting>
+       </programlisting>
 
-   Any other order may crash the interpreter without any diagnostic
-   messages.
+     </para><para>
+       Any other order may crash the interpreter without any diagnostic
+       messages.
+     </para></listitem>
+    </varlistentry>
    </variablelist>
 </para>
 
 <sect2><title>Sound resource management commands</title>
 <para>
    <variablelist>
-<function id="sound">sound(n,m)</function>
-   Starts playback of the SOUND resource number n. When finished, <literal/f/<parameter/m/
-   is set to 1.
+    <varlistentry>
+     <term><function id="sound">sound(n,m)</function></term>
+     <listitem><para>
+       Starts playback of the sound resource <parameter/n/. When
+       finished, <parameter/fm/ is set.
+     </para></listitem>
+    </varlistentry>
 
-<function id="stop.sound">stop.sound()</function>
-   Stops the playback.
+    <varlistentry>
+     <term><function id="stop.sound">stop.sound()</function></term>
+     <listitem><para>
+       Stops the playback.
+     </para></listitem>
+    </varlistentry>
    </variablelist>
 </para>
 
 <sect2><title>Text management commands</title>
 <para>
    <variablelist>
-<function id="prevent.input">prevent.input()</function>
-   Prevents the user from entering anything using the keyboard.
+    <varlistentry>
+     <term><function id="prevent.input">prevent.input()</function></term>
+     <listitem><para>
+       Prevents the user from entering anything using the keyboard.
+     </para></listitem>
+    </varlistentry>
 
-<function id="accept.input">accept.input()</function>
-   Allows the user to enter text using the keyboard.
+    <varlistentry>
+     <term><function id="accept.input">accept.input()</function></term>
+     <listitem><para>
+       Allows the user to enter text using the keyboard.
+     </para></listitem>
+    </varlistentry>
 
-<function id="print">print(n), print.v(n)</function>
-   Opens a text window in the centre of the screen, where a message
-   number <parameter/n/ (or <parameter/vn/) from the messages field of the current LOGIC
-   resource is displayed. Output mode is determined by <literal/f15/ (see flag
-   description).
-   The message is a NULL-terminated string of text. In addition to
-   letters, digits, and other symbols, the string may contain:
+    <varlistentry>
+     <term><function id="print">print(n), print.v(n)</function></term>
+     <listitem><para>
+       Opens a text window in the centre of the screen, where a message
+       number <parameter/n/ (or <parameter/vn/) from the messages field
+       of the current logic resource is displayed. Output mode is
+       determined by <parameter/f15/ (see flag description).
+       The message is a NULL-terminated string of text. In addition to
+       letters, digits, and other symbols, the string may contain:
+     </para><para>
 
-   <simplelist>
-    <member>Newline character (0x0A);
-    <member>Format element:
-     <simplelist>
-      <member><literal/%v&lt;decimal number>/: at this place the output will include a
-       decimal value of variable with the given number.
-      <member><literal/%m &lt;number>/: the text of the message with the given number is
-       inserted at this place.
-      <member><literal/%0 &lt;number>/: the name of the member with the given number is
-       inserted at this place.
-      <member><literal/%w &lt;number>/: a vocabulary word with the given number is
-       inserted at this place.
-      <member><literal/%s &lt;number>/: a string variable with the given number is
-       inserted at this place.
-      <member><literal/%g &lt;number>/: a message with this number from message field of
-       Logic(0) is inserted at this place.
-     </simplelist>
-   </simplelist>
+       <simplelist>
+         <member>Newline character (0x0A);
+         <member><literal>%v&lt;decimal number&gt;</literal>:
+          at this place the output will include a decimal value of
+          variable with the given number.
+         <member><literal>%m &lt;number&gt;</literal>:
+          the text of the message with the given number is
+          inserted at this place.
+         <member><literal>%0 &lt;number&gt;</literal>:
+          the name of the member with the given number is
+          inserted at this place.
+         <member><literal>%w &lt;number&gt;</literal>:
+          a vocabulary word with the given number is
+          inserted at this place.
+         <member><literal>%s &lt;number;gt</literal>:
+          a string variable with the given number is inserted at
+          this place.
+         <member><literal>%g &lt;number</literal>:
+          a message with this number from message field of Logic(0)
+          is inserted at this place.
+       </simplelist>
 
-   For <literal/%v/, you can add a vertical line and a number of characters
-   the output should take. In this case leading zeros are not suppressed
-   in the output.
+     </para><para>
+       For <literal/%v/, you can add a vertical line and a number
+       of characters the output should take. In this case leading
+       zeros are not suppressed in the output.
+     </para><para>
+       Example: <literal/%v34|2/
+     </para><para>
+       When you write your messages, remember that the interpreter wraps
+       the text between the lines as needed when the message is displayed.
+     </para></listitem>
+    </varlistentry>
 
-   Example: <literal/%v34|2/
+    <varlistentry>
+     <term><function id="display">display(r,c,n), display.v(r,c,n)</function></term>
+     <listitem><para>
+       Prints a message number <parameter/n/ (<parameter/vn/) in the
+       row <parameter/r/ (<parameter/vr/), starting with the column
+       <parameter/c/ (<parameter/vc/). No window is created, so it is
+       up to the programmer to erase the output when it is no longer needed.
+     </para></listitem>
+    </varlistentry>
 
-   When you write your messages, remember that the interpreter wraps
-   the text between the lines as needed when the message is displayed.
+    <varlistentry>
+     <term>
+      <function id="print.at">print.at(n,x,y,l)</function>,
+      <function id="print.at.v">print.at.v(n,x,y,l)</function>
+     </term>
+     <listitem><para>
+       Analogous to <function>print</function> but the programmer can
+       specify the window location. <parameter/x/, <parameter/y/, and
+       <parameter/l/ are constants specifying coordinates of the
+       top left corner of the window and its width in character cells
+       of a 40x25 screen.
+     </para></listitem>
+    </varlistentry>
 
-<function id="display">display(r,c,n), display.v(r,c,n)</function>
-   Prints a message number <parameter/n/ (<parameter/vn/) in the row <parameter/r/
-   (<parameter/vr/), starting with the column <parameter/c/ (<parameter/vc/).
-   No window is created, so it is up to the programmer to erase the
-   output when it is no longer needed.
+    <varlistentry>
+     <term><function id="version">version()</function></term>
+     <listitem><para>
+       Prints interpreter version in the centre of the screen.
+     </para></listitem>
+    </varlistentry>
 
-<function id="print.at" id="print.at.v">print.at(n,x,y,l), print.at.v(n,x,y,l)</function>
+    <varlistentry>
+     <term><function id="text.screen">text.screen()</function></term>
+     <listitem><para>
+       The screen switches to the text mode 40x25.
+     </para></listitem>
+    </varlistentry>
 
-   Analogous to <literal><ulink name="#print"/print/</literal> but the programmer can specify the window location.
-   <parameter/x/, <parameter/y/, and <parameter/l/ are constants specifying coordinates of the
-   top left corner of the window and its width in character cells of a 40x25
-   screen.
+    <varlistentry>
+     <term><function id="graphics">graphics()</function></term>
+     <listitem><para>
+       The screen returns to the graphics mode. The picture on the screen is
+       restored.
+     </para></listitem>
+    </varlistentry>
 
-<function id="version">version()</function>
-   Prints interpreter version in the centre of the screen.
+    <varlistentry>
+     <term><function id="set.cursor.char">set.cursor.char(n)</function></term>
+     <listitem><para>
+       First byte of the message <parameter/n/ is used as a text mode cursor.
+     </para></listitem>
+    </varlistentry>
 
-<function id="text.screen">text.screen()</function>
-   The screen switches to the text mode 40x25.
+    <varlistentry>
+     <term><function id="set.text.attribute">set.text.attribute(fg,bg)</function></term>
+     <listitem><para>
 
-<function id="graphics">graphics()</function>
-   The screen returns to the graphics mode. The picture on the screen is
-   restored.
+       Sets foreground and background colours for <function>display</function>,
+       <function/get.num/ and <function>get.string</function> commands.
+     </para></listitem>
+    </varlistentry>
 
-<function id="set.cursor.char">set.cursor.char(n)</function>
-   First byte of the message <parameter/n/ is used as a text mode cursor.
+    <varlistentry>
+     <term><function id="clear.lines">clear.lines(n,m,c)</function></term>
+     <listitem><para>
+       Clears text lines from <parameter/n/ to <parameter/m/ using
+       colour <parameter/c/.
+     </para></listitem>
+    </varlistentry>
 
-<function id="set.text.attribute">set.text.attribute(fg,bg)</function>
+    <varlistentry>
+     <term><function id="clear.text.rect">clear.text.rect(x1,y1,x2,y2,c)</function></term>
+     <listitem><para>
+       Clears a rectangular area with top left corner coordinates
+       <parameter/(x1,y1)/ and bottom right coordinates <parameter/(x2,y2)/
+       using colour <parameter/c/.
+     </para></listitem>
+    </varlistentry>
 
-   Sets foreground and background colours for <literal><ulink name="#display"/display/</literal>, <literal/get.num/ and
-   <literal><ulink name="#get.string"/get.string/</literal> commands.
+    <varlistentry>
+     <term><function id="status.line.on">status.line.on()</function></term>
+     <listitem><para>
+       Shows the status line containing the current score and sound status
+       (on/off).
+     </para></listitem>
+    </varlistentry>
 
-<function id="clear.lines">clear.lines(n,m,c)</function>
-
-   Clears text lines from <parameter/n/ to <parameter/m/ using colour <parameter/c/.
-
-<function id="clear.text.rect">clear.text.rect(x1,y1,x2,y2,c)</function>
-
-   Clears a rectangular area with top left corner coordinates <parameter/(x1,y1)/ and
-   bottom right coordinates <parameter/(x2,y2)/ using colour <parameter/c/.
-
-<function id="status.line.on">status.line.on()</function>
-   Shows the status line containing the current score and sound status
-   (on/off).
-
-<function id="status.line.off">status.line.off()</function>
-   Removes the status line.
+    <varlistentry>
+     <term><function id="status.line.off">status.line.off()</function></term>
+     <listitem><para>
+       Removes the status line.
+     </para></listitem>
+    </varlistentry>
    </variablelist>
 </para>
 
 <sect2><title>String management commands</title>
 <para>
    <variablelist>
-<function id="set.string">set.string(n,m)</function>
-   Stores message number <parameter/m/ in the string variable <parameter/n/.
+    <varlistentry>
+     <term><function id="set.string">set.string(n,m)</function></term>
+     <listitem><para>
+       Stores message number <parameter/m/ in the string variable
+       <parameter/n/.
+     </para></listitem>
+    </varlistentry>
 
-<function id="word.to.string">word.to.string(n,m)</function>
-   Word number <parameter/m/ of the user input is stored in <literal/s/<parameter/n/.
+    <varlistentry>
+     <term><function id="word.to.string">word.to.string(n,m)</function></term>
+     <listitem><para>
+       Word number <parameter/m/ of the user input is stored in
+       <literal/s/<parameter/n/.
+     </para></listitem>
+    </varlistentry>
 
-<function id="get.string">get.string(n,m,x,y,l)</function>
+    <varlistentry>
+     <term><function id="get.string">get.string(n,m,x,y,l)</function></term>
+     <listitem><para>
+       User input is stored in <literal/s/<parameter/n/. <parameter/m/
+       is the number of the message used as the prompt. <parameter/x/,
+       <parameter/y/ and <parameter/l/ are input position and maximum
+       string length.
+     </para></listitem>
+    </varlistentry>
 
-   User input is stored in <literal/s/<parameter/n/. <parameter/m/ is the number of the
-   message used as the prompt. <parameter/x/, <parameter/y/ and <parameter/l/ are input
-   position and maximum string length.
+    <varlistentry>
+     <term><function id="parse">parse(n)</function></term>
+     <listitem><para>
+       Parses <literal/s/<parameter/n/ as if it was entered by the player.
+     </para></listitem>
+    </varlistentry>
 
-<function id="parse">parse(n)</function>
-   Parses <literal/s/<parameter/n/ as if it was entered by the player.
-
-<function id="get.num">get.num(n,m)</function>
-   Enters a number from the keyboard into <parameter/vm/. Message <parameter/n/ is
-   used as the prompt.
+    <varlistentry>
+     <term><function id="get.num">get.num(n,m)</function></term>
+     <listitem><para>
+       Enters a number from the keyboard into <parameter/vm/.
+       Message <parameter/n/ is used as the prompt.
+     </para></listitem>
+    </varlistentry>
    </variablelist>
 </para>
 
 <sect2><title>Initialization commands</title>
 <para>
    <variablelist>
-<function id="set.key">set.key(s,c)</function>
+    <varlistentry>
+     <term><function id="set.key">set.key(s,c)</function></term>
+     <listitem><para>
 
    Set interpreter's special key.  <parameter/c/ is the key code (decimal number
    from 0 to 255) and <parameter/s/ (if the key is a regular, or <literal/CTRL/+key pair).
@@ -3547,37 +3818,60 @@ show.pic();
    <parameter>Does ``key code'' mean the key scan code, or the ASCII code of the
    character? Is the IBM-PC scan code valid in other platforms as well?
    -- CM</parameter>
+     </para></listitem>
+    </varlistentry>
 
-<function id="set.game.id">set.game.id(n)</function>
+    <varlistentry>
+     <term><function id="set.game.id">set.game.id(n)</function></term>
+     <listitem><para>
    Message n is scanned by the interpreter and compared with its internal
    identifier. On mismatch, the program exits. For the AGDS interpreter the
-   identifier is ``TQ''. See also section <xref linkend="gameid" name="Game IDs">.
+   identifier is ``TQ''. See also <xref linkend="gameid">.
+     </para></listitem>
+    </varlistentry>
 
-<function id="script.size">script.size(n)</function>
+    <varlistentry>
+     <term><function id="script.size">script.size(n)</function></term>
+     <listitem><para>
 
    Sets the size of script table in bytes. Script table stores codes of
    some interpreter commands. It is needed by the interpreter to
    correctly reload resources when <literal/restore_game/ is executed.
+     </para></listitem>
+    </varlistentry>
 
-<function id="trace.info">trace.info(n,m,l)</function>
+    <varlistentry>
+     <term><function id="trace.info">trace.info(n,m,l)</function></term>
+     <listitem><para>
    Sets the built-in debugger parameters.
    <parameter/n/ is the number of LOGIC resource with command names, and
    <parameter/m/ and <parameter/l/ are the first line and height of the debugger window.
+     </para></listitem>
+    </varlistentry>
 
-<function id="trace.on">trace.on()</function>
+    <varlistentry>
+     <term><function id="trace.on">trace.on()</function></term>
+     <listitem><para>
    Turns on the debugger. In general, the debugger is turned on with
    <literal/SCROLL LOCK/ key when the command name table is loaded even if this
    command does not occur in the program.
+     </para></listitem>
+    </varlistentry>
 
-<function id="log">log(n)</function>
+    <varlistentry>
+     <term><function id="log">log(n)</function></term>
+     <listitem><para>
    This is a debugging command. It writes a log message in the format
+
 <programlisting>
-Room <current room> Input line <current input line> ... message ...
+Room &lt;current room&gt; Input line &lt;current input line&gt; ... message ...
 </programlisting>
    where the message is given by number <parameter/n/. Output is sent to a file.
 
    <parameter>(Are these debugging commands valid only for AGDS, or they work
    in AGI as well? --CM)</parameter>
+     </para></listitem>
+    </varlistentry>
    </variablelist>
 </para>
 
@@ -3590,20 +3884,32 @@ Room <current room> Input line <current input line> ... message ...
    consider these commands.
 
    <variablelist>
-<function id="set.menu">set.menu(n)</function>
+    <varlistentry>
+     <term><function id="set.menu">set.menu(n)</function></term>
+     <listitem><para>
    Message <parameter/n/ is used as the header of the menu elements which follow.
+     </para></listitem>
+    </varlistentry>
 
-<function id="set.menu.member">set.menu.member(n,c)</function>
+    <varlistentry>
+     <term><function id="set.menu.member">set.menu.member(n,c)</function></term>
+     <listitem><para>
 
    Message <literal/n/ is used as a menu element, where <parameter/c/ is this
    element's code (a number between 0 and 255).
+     </para></listitem>
+    </varlistentry>
 
-<function id="submit.menu">submit.menu()</function>
+    <varlistentry>
+     <term><function id="submit.menu">submit.menu()</function></term>
+     <listitem><para>
    Ends menu creation.
 
-<function id="enable.member">enable.member(c), disable.member(c)</function>
+    <varlistentry>
+     <term><function id="enable.member">enable.member(c), disable.member(c)</function></term>
+     <listitem><para>
    Enables or disables a menu member with the code <parameter/c/.
-   <verb>
+   <literal>
                               +-------- heading
                               v
                           +-----------------------------+
@@ -3617,13 +3923,17 @@ Room <current room> Input line <current input line> ... message ...
                           |------------|      using disable.member
                           | Quit       |
                           +------------+
-   </verb>
+   </literal>
 
-<function id="menu.input">menu.input()</function>
+    <varlistentry>
+     <term><function id="menu.input">menu.input()</function></term>
+     <listitem><para>
    If <literal/f14/ is set, a menu system is shown on the screen, allowing the
    user to choose an member. Whether an member with the code c has been
    chosen can be tested using a command <literal/controller(c)/, where <parameter/c/ is
    the code assigned to the menu member.
+     </para></listitem>
+    </varlistentry>
    </variablelist>
 </para>
 
@@ -3634,43 +3944,89 @@ Room <current room> Input line <current input line> ... message ...
    The result of test command can be either TRUE or FALSE.
 
    <variablelist>
-<function id="equaln">equaln(n,m)</function>
+    <varlistentry>
+     <term><function id="equaln">equaln(n,m)</function></term>
+     <listitem><para>
    TRUE if <parameter/vn/ = <parameter/m/.
+     </para></listitem>
+    </varlistentry>
 
-<function id="equalv">equalv(n,m)</function>
+    <varlistentry>
+     <term><function id="equalv">equalv(n,m)</function></term>
+     <listitem><para>
    true if <parameter/vn/ = <parameter/vm/.
+     </para></listitem>
+    </varlistentry>
 
-<function id="lessn">lessn(n,m)</function>
+    <varlistentry>
+     <term><function id="lessn">lessn(n,m)</function></term>
+     <listitem><para>
    TRUE if <parameter/vn/ &lt; <parameter/m/.
+     </para></listitem>
+    </varlistentry>
 
-<function id="lessv">lessv(n,m)</function>
+    <varlistentry>
+     <term><function id="lessv">lessv(n,m)</function></term>
+     <listitem><para>
    TRUE if <parameter/vn/ &lt; <parameter/vm/.
+     </para></listitem>
+    </varlistentry>
 
-<function id="greatern">greatern(n,m)</function>
+    <varlistentry>
+     <term><function id="greatern">greatern(n,m)</function></term>
+     <listitem><para>
    TRUE if <parameter/vn/ > <parameter/m/.
+     </para></listitem>
+    </varlistentry>
 
-<function id="greaterv">greaterv(n,m)</function>
+    <varlistentry>
+     <term><function id="greaterv">greaterv(n,m)</function></term>
+     <listitem><para>
    TRUE if <parameter/vn/ > <parameter/vm/.
+     </para></listitem>
+    </varlistentry>
 
-<function id="isset">isset(n)</function>
+    <varlistentry>
+     <term><function id="isset">isset(n)</function></term>
+     <listitem><para>
    TRUE if <literal/f/<parameter/n/ is set.
+     </para></listitem>
+    </varlistentry>
 
-   <function>isset.v(n)</function>
-   TRUE if Flag(<parameter/vn/) is set.
+    <varlistentry>
+     <term><function>isset.v(n)</function></term>
+     <listitem><para>
+       TRUE if Flag(<parameter/vn/) is set.
+     </para></listitem>
+    </varlistentry>
 
-<function id="has">has(n)</function>
+    <varlistentry>
+     <term><function id="has">has(n)</function></term>
+     <listitem><para>
    TRUE if the room field of member <parameter/n/ is 255, i.e. the member belongs to the
    player.
+     </para></listitem>
+    </varlistentry>
 
-<function id="obj.in.room">obj.in.room(n,m)</function>
+    <varlistentry>
+     <term><function id="obj.in.room">obj.in.room(n,m)</function></term>
+     <listitem><para>
    TRUE if room field of the object <parameter/n/ is <parameter/vm/.
+     </para></listitem>
+    </varlistentry>
 
-<function id="posn">posn(n,x1,y1,x2,y2)</function>
+    <varlistentry>
+     <term><function id="posn">posn(n,x1,y1,x2,y2)</function></term>
+     <listitem><para>
    TRUE if the coordinates of the base point of the cel which is the
    current image of object <parameter/n/ satisfies the equations
    <parameter/x1/ &lt;= <parameter/x/ &lt;= <parameter/x2/ and <parameter/y1/ &lt;= <parameter/y/ &lt;= <parameter/y2/.
+     </para></listitem>
+    </varlistentry>
 
-<function id="obj.in.box">obj.in.box(n,x1,y1,x2,y2)</function>
+    <varlistentry>
+     <term><function id="obj.in.box">obj.in.box(n,x1,y1,x2,y2)</function></term>
+     <listitem><para>
 
    TRUE if the base of the object <parameter/n/ is completely within the rectangle
    specified using its top left <parameter/(x1,y1)/ and bottom right <parameter/(x2,y2)/
@@ -3688,57 +4044,91 @@ Room <current room> Input line <current input line> ... message ...
    <function>center.position(n,x1,y1,x2,y2)</function>
    TRUE of the center of the base line of the object <parameter/n/ is inside the
    rectangle specified as its top left and bottom right corners.
+     </para></listitem>
+    </varlistentry>
 
-   <function>right.position(n,x1,y1,x2,y2)</function>
+    <varlistentry>
+     <term><function>right.position(n,x1,y1,x2,y2)</function></term>
+     <listitem><para>
    TRUE of the right side of the base line of the object <parameter/n/ is inside the
    rectangle specified as its top left and bottom right corners.
 
-<function id="have.key">have.key()</function>
+    <varlistentry>
+     <term><function id="have.key">have.key()</function></term>
+     <listitem><para>
    TRUE if the user has pressed any key on the keyboard. Used to create
    cycles to wait until any key is pressed.
+     </para></listitem>
+    </varlistentry>
 
-<function id="compare.strings">compare.strings(s1,s2)</function>
+    <varlistentry>
+     <term><function id="compare.strings">compare.strings(s1,s2)</function></term>
+     <listitem><para>
    TRUE if <literal/s1/ == <literal/s2/.
 
-<function id="said">said(n,W(i))</function>
+    <varlistentry>
+     <term><function id="said">said(n,W(i))</function></term>
+     <listitem><para>
    where <parameter/i/ = 1, ..., <parameter/n/.
 
-   See section <xref linkend="parsing" name="Player input parsing">.
+   See <xref linkend="parsing">.
+     </para></listitem>
+    </varlistentry>
 
-<function id="controller">controller(n)</function>
+    <varlistentry>
+     <term><function id="controller">controller(n)</function></term>
+     <listitem><para>
    TRUE if the event with code <parameter/n/ has occurred:
    <simplelist>
     <member>a key with the code <parameter/n/ was pressed (set using <literal/set_key/);
     <member>menu member with code <parameter/n/ was selected in command <literal/menu_input/.
    </simplelist>
+     </para></listitem>
+    </varlistentry>
    </variablelist>
 </para>
 
 <sect2><title>Other commands</title>
 <para>
    <variablelist>
-<function id="configure.screen">configure.screen(a,b,c)</function>
+    <varlistentry>
+     <term><function id="configure.screen">configure.screen(a,b,c)</function></term>
+     <listitem><para>
    Sets position of lines on the screen, where <parameter/a/ = 1 (the minimum line
    number for print), <parameter/b/ is the user input line and <parameter/c/ is the status
    line.
 
    <parameter>(Sounds confuse --CM)</parameter>
+     </para></listitem>
+    </varlistentry>
 
-<function id="obj.status.v">obj.status.v(n)</function>
+    <varlistentry>
+     <term><function id="obj.status.v">obj.status.v(n)</function></term>
+     <listitem><para>
    Prints a message for the object <parameter/vn/ in the format
 
 <programlisting>
-Obj <n> x: <pos> y: <pos> pri: <priority> stepsize: <step size>.
+Obj &lt;n&gt; x: &lt;pos&gt; y: &lt;pos&gt; pri: &lt;priority&gt; stepsize: &lt;step size&gt;
 </programlisting>
 
-<function id="show.mem">show.mem()</function>
+    <varlistentry>
+     <term><function id="show.mem">show.mem()</function></term>
+     <listitem><para>
    Displays a report of the interpreter memory status.
+     </para></listitem>
+    </varlistentry>
 
-<function id="show.pri.screen">show.pri.screen()</function>
+    <varlistentry>
+     <term><function id="show.pri.screen">show.pri.screen()</function></term>
+     <listitem><para>
    Shows priorities of the screen pixels. Priority n is shown as color
    number <parameter/n/ (see color setting commands in I.1.2.1.1).
+     </para></listitem>
+    </varlistentry>
 
-<function id="show.obj">show.obj(n)</function>
+    <varlistentry>
+     <term><function id="show.obj">show.obj(n)</function></term>
+     <listitem><para>
    Show cel 0 of loop 0 of the VIEW resource <parameter/n/ in the bottom center of
    the screen. In the center of the screen, a message associated with the
    VIEW resource is printed.
@@ -3750,70 +4140,122 @@ Obj <n> x: <pos> y: <pos> pri: <priority> stepsize: <step size>.
    This is because the VIEW in question isn't meant to be a controlled
    object but instead is simply the picture and textual description of
    the an inventory member. --LE)</parameter>
+     </para></listitem>
+    </varlistentry>
 
-<function id="shake.screen">shake.screen(n)</function>
+    <varlistentry>
+     <term><function id="shake.screen">shake.screen(n)</function></term>
+     <listitem><para>
    The screen shakes <parameter/n/ times.
+     </para></listitem>
+    </varlistentry>
 
-<function id="echo.line">echo.line()</function>
+    <varlistentry>
+     <term><function id="echo.line">echo.line()</function></term>
+     <listitem><para>
    The last line entered by the user is displayed in the input line.
+     </para></listitem>
+    </varlistentry>
 
-<function id="cancel.line">cancel.line()</function>
+    <varlistentry>
+     <term><function id="cancel.line">cancel.line()</function></term>
+     <listitem><para>
    Input line is cleared.
+     </para></listitem>
+    </varlistentry>
 
-<function id="close.window">close.window()</function>
+    <varlistentry>
+     <term><function id="close.window">close.window()</function></term>
+     <listitem><para>
    If there is a text window on the screen, it is removed.
+     </para></listitem>
+    </varlistentry>
 
-<function id="open.dialogue">open.dialogue, close.dialogue()</function>
-   Enables and disables <literal><ulink name="#get.string"/get.string/</literal> and <literal/get.num/ commands if
-   <literal><ulink name="#prevent.input"/prevent.input/</literal> has been issued.
+    <varlistentry>
+     <term><function id="open.dialogue">open.dialogue, close.dialogue()</function></term>
+     <listitem><para>
+   Enables and disables <function>get.string</function> and <literal/get.num/ commands if
+   <function>prevent.input</function> has been issued.
+     </para></listitem>
+    </varlistentry>
 
-<function id="restart.game">restart.game()</function>
+    <varlistentry>
+     <term><function id="restart.game">restart.game()</function></term>
+     <listitem><para>
    Restarts the game from the very beginning.
+     </para></listitem>
+    </varlistentry>
 
-<function id="save.game">save.game, restore.game()</function>
+    <varlistentry>
+     <term><function id="save.game">save.game, restore.game()</function></term>
+     <listitem><para>
    These command save and restore the current state of the game into disk
    files.
+     </para></listitem>
+    </varlistentry>
 
-<function id="pause">pause()</function>
+    <varlistentry>
+     <term><function id="pause">pause()</function></term>
+     <listitem><para>
    Stops the interpreter until any key is pressed.
+     </para></listitem>
+    </varlistentry>
 
-<function id="quit">quit(n)</function>
+    <varlistentry>
+     <term><function id="quit">quit(n)</function></term>
+     <listitem><para>
    Exits the interpreter. If <parameter/n/ = 1, quits immediately.
    If <parameter/n/ = 0, asks ``Press ENTER to quit. Press ESC to continue.''
+     </para></listitem>
+    </varlistentry>
 
-<function id="init.joy">init.joy()</function>
+    <varlistentry>
+     <term><function id="init.joy">init.joy()</function></term>
+     <listitem><para>
    Initialize joystick.
+     </para></listitem>
+    </varlistentry>
 
-<function id="toggle.monitor">toggle.monitor()</function>
+    <varlistentry>
+     <term><function id="toggle.monitor">toggle.monitor()</function></term>
+     <listitem><para>
    Switch RGB monitor into the graphics mode.
+     </para></listitem>
+    </varlistentry>
 
-   <function>upper.left()</function>
+    <varlistentry>
+     <term><function>upper.left()</function></term>
+     <listitem><para>
    Usually the crossing by an object of various areas and lines is
    tracked by the base point (bottom right corner) of its cel. After this
    command, top left corner is used as such a point.
+     </para></listitem>
+    </varlistentry>
    </variablelist>
 </para>
 
 <sect2><title>Other commands</title>
 <para>
-<parameter>Described by <ulink name="mailto:dark_minister@hotmail.com"/Dark Minister/ (Last update: 13 October 1998).</parameter>
-
+   Described by <author><firstname/Dark/ <surname/Minister/</author>,
+   13 October 1998.
+</para>
+<para>
    <variablelist>
-<function id="unknown170">unknown170(n)</function>
+    <varlistentry>
+     <term><function id="unknown170">unknown170(n)</function></term>
+     <listitem><para>
    This command modifies the behavior of the commands
-   <ulink name="#restore.game"/restore.game()/ and
-   <ulink name="#save.game"/save.game()/.
+   <function/restore.game/ and <function/save.game/.
 
    After calling <function/unknown170(n)/,
    where <parameter/n/ is a string number (ie: if <parameter/n/ == 2 then <literal/s2/)
-   <ulink name="restore.game"/restore.game()/ will automatically
+   <function/restore.game()/ will automatically
    (without any prompt) restore a savegame with the name stored in
-   string number <parameter/n/ and <ulink name="save.game/name="save.game()"/
+   string number <parameter/n/ and <function>save.game</function>
    will automatically save a savegame with the name of string number <parameter/n/.
 
    Note: make sure that at least one savegame is present when you call
-   <ulink name="#restore.game"/restore.game()/ or
-   <ulink name="#save.game"/save.game()/ (that is, when saving a
+   <function/restore.game()/ or <function/save.game()/ (that is, when saving a
    game too).
 
    Example:
@@ -3823,22 +4265,30 @@ unknown170(1);
 </programlisting>
    will automatically load the savegame named ``test''.
 
-<function id="unknown173">unknown173(n)</function>
+    <varlistentry>
+     <term><function id="unknown173">unknown173(n)</function></term>
+     <listitem><para>
    This command changes the way that ego is controlled.
    After calling <literal/unknown173()/, Ego will only move when a direction key
    is maintained pressed. If the key is released, ego will stop walking.
-   See also command <ulink name="#unknown181"/unknown181()/.
+   See also command <function/unknown181/.
 
-<function id="unknown177">unknown177(n)</function>
+    <varlistentry>
+     <term><function id="unknown177">unknown177(n)</function></term>
+     <listitem><para>
    This command control the access to the menu. <literal/unknown177(0)/ will
    disable access to the menu, even if flag 14 (<literal/menu_enabled/) is set.
    Calling <literal/unknown177()/ with a value greater than 0 seem to do nothing
    else than enabling access to the menu.
 
-<function id="unknown181">unknown181(n)</function>
+    <varlistentry>
+     <term><function id="unknown181">unknown181(n)</function></term>
+     <listitem><para>
    This command restablishes the default control of Ego.
    It is normally used after a call to
-   <ulink name="#unknown173"/unknown173()/.
+   <function/unknown173/.
+     </para></listitem>
+    </varlistentry>
    </variablelist>
 
    Note: Be aware that commands 175, 176, 178, 179 and 180 of the last
@@ -4149,11 +4599,9 @@ if (isset(3)) {     [ hit.special
 
 <sect1 id="dirfmt"><title>Directory files</title>
 <para>
-<emphasis>
-Written by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/
-(Last updated: 31 August 1997).
-</emphasis>
-
+   Written by <author><firstname/Lance/ <surnameEwing/,
+   31 August 1997.
+</para><para>
    All AGI games have either one directory file, or more commonly, four.
    AGI version 2 games will have the files <literal/logdir/, <literal/picdir/,
    <literal/viewdir/, and <literal/snddir/. Games that use version 3 of the AGI
@@ -4162,13 +4610,13 @@ Written by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/
    file is basically the four version 2 files joined together except that
    it has an 8 byte header giving the position of each directory within
    the single file.
-
+</para><para>
    The directory files give the location of the data types within the VOL
    files. The type of directory determines the type of data. For example,
    the <literal/logdir/ gives the locations of the LOGIC files. For a brief
    introduction to the different data types, see section
    <xref linkend="overview" name="General AGI overview">.
-
+</para><para>
    Note: In this description and elsewhere in documents written by me,
    the AGI data called LOGIC, PICTURE, VIEW, and SOUND data are referred
    to by me as files even though they are part of a single VOL file. I
@@ -4185,23 +4633,23 @@ Written by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/
    is pointing to. Dividing the filesize by three gives the maximum file
    number of that type of data file. Each entry is of the following
    format:
-
+</para><para>
 <programlisting>
     Byte 1           Byte 2           Byte 3
 7 6 5 4 3 2 1 0  7 6 5 4 3 2 1 0  7 6 5 4 3 2 1 0
 V V V V P P P P  P P P P P P P P  P P P P P P P P
 </programlisting>
-
+</para><para>
    where V = VOL number and P = position (offset into VOL file).
-
+</para><para>
    The entry number itself gives the number of the data file that it is
    pointing to. For example, if the following three byte entry is entry
    number 45 in the SOUND directory file,
-
+</para><para>
 <programlisting>
 12 3D FE
 </programlisting>
-
+</para><para>
    then <literal/sound.45/ is located at position 0x23DFE in the <literal/vol.1/ file.
    The first entry number is entry 0.
 
@@ -4215,9 +4663,9 @@ V V V V P P P P  P P P P P P P P  P P P P P P P P
    <literal/picdir/, <literal/viewdir/, and <literal/snddir/ files are concatenated together
    in that order with an eight byte header giving the starting offset of
    each directory.
-
+</para><para>
    Header
-
+</para><para>
 <programlisting>
 Byte 0 1 2 3 4 5 6 7
      L L P P V V S S
@@ -4239,17 +4687,17 @@ Byte 0 1 2 3 4 5 6 7
 
 <sect1 id="volfmt"><title>Format of Vol files (version 2)</title>
 <para>
-<emphasis>
-Written by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/
-(Last updated: 31 August 1997).
-</emphasis>
-
+   Written by <author><firstname/Lance/ <surname/Ewing/</author>,
+   31 August 1997.
+</para><para>
    Vol files are the main data files for AGI games. They contain four
    types of data: LOGIC, PICTURE, VIEW, and SOUND data. A Vol file is a
    collection of a large number of these "resource" files which can be in
    any order. The directory files determine the start of each resource.
+</para><para>
 
    The start of every resource file has a five byte header.
+</para><para>
 
 <programlisting>
 Byte  Meaning
@@ -4260,6 +4708,7 @@ Byte  Meaning
 ----- -----------------------------------------------------------
 </programlisting>
 
+</para><para>
    The data after the header depends on the type of resource file. These
    formats are documented elsewhere.
 </para>
@@ -4267,14 +4716,14 @@ Byte  Meaning
 
 <sect1 id="v3fmt"><title>Version 3 resource storage</title>
 <para>
-<emphasis>
-Written by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/
-(Last updated: 27 January 1997).
-</emphasis>
+   Written by <author><firstname/Lance/ <surname/Ewing/</author>,
+   27 January 1997.
 
+</para><para>
    AGIv3 stores resources in a slightly different way from AGIv2. The
    first significant difference is in the length of the resource header
    which is now seven bytes.
+</para><para>
 
 <programlisting>
 Byte  Meaning
@@ -4286,6 +4735,7 @@ Byte  Meaning
 ----- -----------------------------------------------------------
 </programlisting>
 
+</para><para>
    Instead of one resource size as in AGIv2, there are now two sizes.
    Most of the resources in AGIv3 games are compressed with a form of
    LZW. Some of them are not though. The interpreter determines whether
@@ -4297,6 +4747,7 @@ Byte  Meaning
    compression. This is why the top bit of the third byte in the header
    is used to tell the interpreter that the resource is a PICTURE file,
    otherwise it would think that the resource was compressed with LZW.
+</para><para>
 
    As far as I can tell, none of the PICTUREs are compressed with LZW.
    This may well be possible though. It could also be possible for the
@@ -7216,19 +7667,19 @@ if (said(take, anyword)) {
 Written by <ulink name="mailto:ptrkelly@ozemail.com.au"/Peter Kelly/
 (Last updated: 27 January 1998).
 </emphasis>
-</para></para>
+</para><para>
    Around 1990--91 there was a project in Russia similar to ours. Pretty
    much all of the file formats were figured out and documented, and a
    suite of programs which would allow you create and edit AGI games was
    created. This was called AGDS (Adventure Game Design System).
-</para></para>
+</para><para>
    Of course this was in the days before the internet took off, so no one
    put up a website about it, which is why we assumed we were the first
    ones to do this. But thanks to Igor Nesterov who supplied the package
    and performed the original translation of the documentation, we can
    now benefit from this project. Vassili Bykov has since provided an
    improved translation.
-</para></para>
+</para><para>
    I have recently found out that the author of the package was
    <ulink name="mailto:simkin@argussoft.ru"/Alex Simkin/
    (with help from Serge Lapin). Alex tells me that some of the tools were
@@ -8335,17 +8786,17 @@ A:   ..............
     <listitem><para>
       The interpreter works in a cycle described in The Interpreter Work
       Cycle.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       There are reserved variables and flags.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       Logic 0 is loaded in memory at all times and controls your program
       in general, while all other logics control specific rooms you get
       into as the game unfolds.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       Your program is executed by the interpreter in a loop, so do not
@@ -8360,11 +8811,11 @@ A:   ..............
       completion by returning control to the interpreter until the flag
       signalling completion is set -- unless you after after some special
       effects.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       Remember the effect of <literal/new_room/ and <literal/new_room_v/.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       Interpreter's memory is limited! Do not load many resources
@@ -8380,12 +8831,12 @@ A:   ..............
       careful when you discard resources. For example, discard_view
       command discards all resources loaded after the one being
       discarded.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       Include the error handler in your program (logic 97 in the
       example) and do not forget to check if variable 17 is 0.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       You can accidentally associate an inexistent VIEW resource with an
@@ -8394,37 +8845,37 @@ A:   ..............
       number of loops in the resource with <function/number_of_loops/
       command. Use this command when you set the object cycle number using
       <function/set_loop_v/.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       Large VIEW resources not only take more memory but are also slower
       to display. This may even lead to their distortion (gaps in the
       picture). Keep cels as small as possible, best of all -- only large
       enough to fit the object.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       Don't overload the program with controlled objects, especially if
       they are large. The more objects there are, the slower they draw.
       The interpreter can control at most 15 objects at any time.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       About the built-in debugger. If its table <filename/log.dbg/ is
       loaded in memory, the debugger can be turned on using the
       <keycap/Scroll Lock/ key. It can help you trace the program logic.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       The logic called with <function/call/ command is loaded temporarily
       and removed after the call. If it is called often, this wastes time.
       Load often called logics explicitly using <function/load_logic/
       command.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       All variables and flags are accessible from any logic.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       Before you change rooms clear all variables and flags you work
@@ -8432,7 +8883,7 @@ A:   ..............
       fixed group of variables and flags and use it as work variables
       everywhere. Cleanup procedure can then be a subroutine called
       before entering any new room.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       There is no tool in the package (maybe you can create such
@@ -8441,13 +8892,13 @@ A:   ..............
       other and arrange objects in the best way. This should be done by
       trial and error, adjusting the program and interacting with the
       artist.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       The interpreter cannot process images (VIEW resources): it is
       impossible to resize them, rotate, etc. All that should be painted
       by the artist.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       The parser works only with Roman letters and is biased towards
@@ -8458,19 +8909,19 @@ A:   ..............
       use them.<footnote>I should say this is overly pessimistic as I saw
       myself KQ3 hacked by someone to be in Russian: it printed all
       messages in Russian and understood Russian commands! (VB)</footnote>
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       Messages in Russian are printed fine, except you should use a
-      capital Roman A instead of a capital Cyrillic A.<footnote>(The
+      capital Roman A instead of a capital Cyrillic A.<footnote>The
       shape of the letter ``A'' is the same in Cyrillic but it is
       represented with a different byte value. (VB)</footnote>
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       Distribute resources over volumes so that their size is about the
       same. This will speed up the access.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       No explanations are worth as much as you own experience and
@@ -8480,7 +8931,7 @@ A:   ..............
       <filename/ts.exe/ from Norton Utilities for that.<footnote>This is
       what is actually called ``grepping the source'' and <literal/grep(1)/
       is tool to use. (VB)</footnote>
-    </para><listitem>
+    </para></listitem>
    </itemizedlist>
 </para>
 
@@ -8490,16 +8941,16 @@ A:   ..............
    <itemizedlist>
     <listitem><para>
       You should be able to use an IBM PC.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       Your tools are PV and VIM utilities. Their manuals are detailed
       enough.
-    </para><listitem>
+    </para></listitem>
 
     <listitem><para>
       PM is used to create backdrops, VIM to create animations.
-    </para><listitem>
+    </para></listitem>
    </itemizedlist>
 </para>
 <para>
@@ -8530,7 +8981,7 @@ A:   ..............
       have to prettify an otherwise good picture.<footnote>Interpreters on
       Apple II did not have an internal buffer because of the lack of
       RAM and did draw PICTURE resources directly on the screen, so
-      the process was visible. (VB))</footnote> But you might be
+      the process was visible. (VB)</footnote> But you might be
       interested on how Sierra artists drew their pictures, so extract
       some of the PICTURE resources from the games and trace them using PM.
     </para></listitem>
@@ -8726,7 +9177,7 @@ A:   ..............
     <varlistentry>
      <term/MEKA/
      <listitem><para>
-       <application>MEKA<application> stands for ``Möller, Ewing and
+       <application>MEKA</application> stands for ``Möller, Ewing and
        Kelly Adventure'' and has been developed by AGI hackers
        Joakim Möller, Lance Ewing and Peter Kelly using DJGPP and
        the Allegro library to run under MS-DOS. It has support for both v2
@@ -8765,7 +9216,7 @@ A:   ..............
       <term/LAGII/
       <listitem><para>
         Developed by XoXus, the
-        <application>Linux AGI Interpreter<application>, or
+        <application>Linux AGI Interpreter</application>, or
         <application>LAGII</application> (1999),
         runs in the Linux console using SVGAlib. Currently it supports
         v2 games. Fully expanded, LAGII stands for ``Linux Adventure
