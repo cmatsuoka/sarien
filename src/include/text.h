@@ -27,6 +27,7 @@ int	print		(char *, int, int, int);
 char	*word_wrap_string (char *, int *);
 char	*agi_sprintf	(char *);
 void	write_status	(void);
+void	write_prompt	(void);
 void	clear_lines	(int, int, int);
 void	flush_lines	(int, int);
 

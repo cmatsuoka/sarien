@@ -570,6 +570,7 @@ cmd(graphics) {
 		clear_screen (0);
 		show_pic ();
  		write_status ();
+		write_prompt ();
 	}
 }
 

@@ -23,6 +23,7 @@
 struct mouse mouse;
 #endif
  
+
 /**
  * Set up new room.
  * This function is called when ego enters a new room.
@@ -33,7 +34,7 @@ void new_room (int n)
 	struct vt_entry *v;
 	int i;
 
-	_D (_D_WARN "room %d", n);
+	_D (_D_WARN "*** room %d ***", n);
 	stop_sound ();
 
 	i = 0;
@@ -82,9 +83,8 @@ void new_room (int n)
 
 	game.exit_all_logics = TRUE;
 
-	/* clear kb buffer */
-	/* write status */
-	/* function 0x38d5 */
+	write_status ();
+	write_prompt ();
 }
 
 static void reset_controllers ()
@@ -139,43 +139,6 @@ static void interpret_cycle ()
 		do_update ();
 	}
 }
-
-/**
- * Print user input prompt.
- */
-static void print_prompt ()
-{
-	int l, fg, bg;
-
-	if (!game.input_enabled || game.input_mode != INPUT_NORMAL)
-		return;
-
-	l = game.line_user_input;
-	fg = game.color_fg;
-	bg = game.color_bg;
-
-	_D (_D_WARN "prompt = '%s'", agi_sprintf (game.strings[0]));
-	print_text (game.strings[0], 0, 0, l, 1, fg, bg);
-	print_text (game.input_buffer, 0, 1, l, game.cursor_pos + 1, fg, bg);
-	print_character (game.cursor_pos + 1, l, game.cursor_char, fg, bg);
-
-	flush_lines (l, l);
-	do_update ();
-}
-
-/**
- * Erase user input prompt.
- */
-static void erase_prompt ()
-{
-	int l = game.line_user_input;
-
-	_D (_D_WARN "erase line %d", l);
-	clear_lines (l, l, game.color_bg);
-	flush_lines (l, l);
-	do_update ();
-}
-
 
 /**
  * Update AGI interpreter timer.
@@ -377,11 +340,11 @@ static int play_game ()
 		    (1 + clock_count) % getvar (V_time_delay) == 0)
 		{
 			if (!game.has_prompt && game.input_mode == INPUT_NORMAL) {
-				print_prompt ();
+				write_prompt ();
 				game.has_prompt = 1;
 			} else
 			if (game.has_prompt && game.input_mode == INPUT_NONE) {
-				erase_prompt ();
+				write_prompt ();
 				game.has_prompt = 0;
 			}
 
