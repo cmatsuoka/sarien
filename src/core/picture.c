@@ -264,6 +264,9 @@ static INLINE int is_ok_fill_here (int x, int y)
 	unsigned int i;
 	UINT8 p;
 
+	if (x < 0 || x >= _WIDTH || y < 0 || y >= _HEIGHT)
+		return FALSE;
+ 
 	if (!scr_on && !pri_on)
 		return FALSE;
 
@@ -284,12 +287,10 @@ static INLINE int is_ok_fill_here (int x, int y)
 **************************************************************************/
 static void agiFill (int x, int y)
 {
-	UINT16 c;
-
 	_PUSH (x + 320 * y);
 
 	while (42) {
-		c = _POP();
+		int c = _POP();
 
 		/* Exit if stack is empty */
 		if (c == 0xffff)
@@ -299,18 +300,10 @@ static void agiFill (int x, int y)
 		y = c / 320;
 		if (is_ok_fill_here (x, y)) {
 			put_virt_pixel (x, y);
-			if (x > 0 && is_ok_fill_here (x - 1, y)) {
-				_PUSH (c - 1);
-    			}
-			if (x < _WIDTH - 1 && is_ok_fill_here (x + 1, y)) {
-				_PUSH (c + 1);
- 			}
-			if (y < _HEIGHT - 1 && is_ok_fill_here (x, y + 1)) {
-				_PUSH (c + 320);
-    			}
-			if (y > 0 && is_ok_fill_here (x, y - 1)) {
-				_PUSH (c - 320);
-    			}
+			if (is_ok_fill_here (x - 1, y)) _PUSH (c - 1);
+			if (is_ok_fill_here (x + 1, y)) _PUSH (c + 1);
+			if (is_ok_fill_here (x, y + 1)) _PUSH (c + 320);
+			if (is_ok_fill_here (x, y - 1)) _PUSH (c - 320);
 		}
 	}
 

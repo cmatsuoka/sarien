@@ -90,7 +90,7 @@ static void pool_release (void *s)
 
 
 /*
- * Blitting one pixel considering the priorities
+ * Blit one pixel considering the priorities
  */
 
 static void blit_pixel (UINT8 *p, UINT8 col, int spr, int width, int *hidden)
@@ -110,6 +110,7 @@ static void blit_pixel (UINT8 *p, UINT8 col, int spr, int width, int *hidden)
 	} else {
 		epr = pr;
 	}
+
 	if (spr >= epr) {
 		/* Keep control line information visible,
 		 * but put our priority over water (0x30)
@@ -127,10 +128,10 @@ static void blit_pixel (UINT8 *p, UINT8 col, int spr, int width, int *hidden)
 
 #ifdef USE_HIRES
 
+#define X_FACT 2		/* Horizontal hires factor */
+
 static int blit_hires_cel (int x, int y, int spr, struct view_cel *c)
 {
-	/* Horizontal hires factor */
-	#define X_FACT 2
 	UINT8 *q = NULL;
 	UINT8 *h0, *h;
 	int i, j, t, m, col;
@@ -140,16 +141,16 @@ static int blit_hires_cel (int x, int y, int spr, struct view_cel *c)
 	t = c->transparency;
 	m = c->mirror;
 	spr <<= 4;
-	h0 = &game.hires[(x + y * _WIDTH + m*(c->width-1)) * X_FACT];
+	h0 = &game.hires[(x + y * _WIDTH + m * (c->width - 1)) * X_FACT];
 
 	for (i = 0; i < c->height; i++) {
 		h = h0;
-		while (*q){
-			col = (*q & 0xF0)>>4;
-			for (j = *q & 0x0F; j; j--, h+=X_FACT*(1-2*m)){
+		while (*q) {
+			col = (*q & 0xf0) >> 4;
+			for (j = *q & 0x0f; j; j--, h += X_FACT * (1 - 2 * m)) {
 				if (col != t) {
 					blit_pixel (h, col, spr, _WIDTH * X_FACT, &hidden);
-					blit_pixel (h+1, col, spr, _WIDTH * X_FACT, &hidden);
+					blit_pixel (h + 1, col, spr, _WIDTH * X_FACT, &hidden);
 				}
 			}
 			q++;
@@ -183,13 +184,13 @@ static int blit_cel (int x, int y, int spr, struct view_cel *c)
 	t = c->transparency;
 	m = c->mirror;
 	spr <<= 4;
-	p0 = &game.sbuf[x + y * _WIDTH + m*(c->width-1)];
+	p0 = &game.sbuf[x + y * _WIDTH + m * (c->width - 1)];
 
 	for (i = 0; i < c->height; i++) {
 		p = p0;
 		while (*q){
-			col = (*q & 0xF0)>>4;
-			for (j = *q & 0x0F; j; j--, p+=1-2*m){
+			col = (*q & 0xf0) >> 4;
+			for (j = *q & 0x0f; j; j--, p += 1 - 2 * m) {
 				if (col != t)
 					blit_pixel (p, col, spr, _WIDTH, &hidden);
 			}
