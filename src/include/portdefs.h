@@ -141,11 +141,14 @@ static char g_vmu_port[2];
    typedef signed short		SINT16;
    typedef unsigned long	UINT32;
    typedef signed long		SINT32;
-#elif defined(__CYGWIN32__)
+#elif defined(WIN32)
    typedef unsigned char	UINT8;
    typedef signed char		SINT8;
    typedef unsigned short	UINT16;
    typedef signed short		SINT16;
+#  ifndef _BASETSD_H
+     typedef unsigned int	UINT32;
+#  endif
    typedef signed int		SINT32;
 #else
    typedef unsigned char	UINT8;
