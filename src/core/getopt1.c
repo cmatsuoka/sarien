@@ -1,4 +1,4 @@
-#ifndef PALMOS
+#if !defined PALMOS && !defined WIN32
 
 /* getopt_long and getopt_long_only entry points for GNU getopt.
    Copyright (C) 1987,88,89,90,91,92,93,94,96,97 Free Software Foundation, Inc.
@@ -190,4 +190,4 @@ main (argc, argv)
 
 #endif /* TEST */
 
-#endif /* !PALMOS */
+#endif /* !PALMOS && !WIN32 */
