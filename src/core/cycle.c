@@ -210,12 +210,10 @@ int main_cycle ()
 	update_timer ();
 
 	if (game.ver == 0) {
-		message_box ("Warning: this game has not been correctly "
-			"detected by the interpreter and may be incorrectly "
-			"executed. Please check if the configuration file "
-			"is correctly installed. If this game is not listed "
-			"in the configuration file please contact the "
-			"authors.");
+		message_box ("Sarien didn't recognize this game and may "
+			"execute it with an incorrect interpreter version. "
+			"Please check the configuration file; if this game "
+			"is not listed, please contact the authors.");
 		game.ver = -1;
 	}
 

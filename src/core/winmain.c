@@ -229,6 +229,8 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 		agi_detect_game (get_current_directory ()) == err_OK)
 	{
 		game.state = STATE_LOADED;
+	} else {
+		game.ver = -1;	/* Don't display the conf file warning */
 	}
 
 	_D ("Init sound");
@@ -238,6 +240,7 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 	if (game.state < STATE_LOADED) {
        		console_prompt ();
 		do { main_cycle (); } while (game.state < STATE_RUNNING);
+		game.ver = 0;	/* Display the conf file warning */
 	}
 
 	/* Execute the game */

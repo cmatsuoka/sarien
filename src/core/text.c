@@ -194,6 +194,7 @@ void print_text (char *msg, int f, int x, int y, int len, int fg, int bg)
 	x *= CHAR_COLS;
 	y *= CHAR_LINES;
 
+	_D (_D_WARN "%s, %d, %d, %d, %d, %d, %d", msg, f, x, y, len, fg, bg);
 	print_text2 (0, agi_sprintf (msg), f, x, y, len, fg, bg);
 }
 
@@ -228,7 +229,7 @@ char* word_wrap_string (char *mesg, int *len)
 	maxc = 0;
 
 	while (42) {
-		_D ("[%s], %d", msg, maxc);
+		/* _D ("[%s], %d", msg, maxc); */
 		if (strchr (v, ' ') == NULL && strlen (v) > l) {
 			_D (_D_CRIT "Word too long in message");
 			l = strlen (v);
@@ -448,7 +449,8 @@ void print_status (char *message, ...)
 
 	va_end (args);
 
-        print_text (x, 0, game.line_status, 0, 40, STATUS_FG, STATUS_BG);
+	_D (_D_WARN "fg=%d, bg=%d", STATUS_FG, STATUS_BG);
+        print_text (x, 0, 0, game.line_status, 40, STATUS_FG, STATUS_BG);
 }
 
 /**
@@ -557,7 +559,7 @@ void write_status ()
 	}
 #endif
 
-	if (/*game.line_min_print == 0 ||*/ !game.status_line) {
+	if (!game.status_line) {
 		clear_lines (0, 0, 0);
 		flush_lines (0, 0);
 		return;

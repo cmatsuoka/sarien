@@ -123,8 +123,13 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 		get_current_directory ()) == err_OK)
 	{
 		game.state = STATE_LOADED;
-	} else if (argc > optind) {
-		report ("Could not open AGI game \"%s\".\n\n", argv[optind]);
+		_D (_D_WARN "game loaded");
+	} else {
+		if (argc > optind) {
+			report ("Could not open AGI game \"%s\".\n\n",
+				argv[optind]);
+		}
+		game.ver = -1;	/* Don't display the conf file warning */
 	}
 #endif
 
@@ -135,6 +140,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 	if (game.state < STATE_LOADED) {
        		console_prompt ();
 		do { main_cycle (); } while (game.state < STATE_RUNNING);
+		game.ver = 0;	/* Enable conf file warning */
 	}
 
 	/* Execute the game */
