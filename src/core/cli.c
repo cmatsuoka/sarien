@@ -171,7 +171,7 @@ int parse_cli (int argc, char **argv)
 	while ((o = getopt_long (argc, argv, OPTIONS, lopt, &optidx)) != -1) {
 		switch (o) {
 		case 'V':
-			printf ("Compiled on " __DATE__ "; " __TIME__ "\n");
+			printf ("Version : " VERSION " Compiled on " __DATE__ "; " __TIME__ "\n");
 			printf ("Disable Copyprotection is ");
 #ifdef DISABLE_COPYPROTECTION
 			printf ("enabled\n");

@@ -19,7 +19,7 @@
 #include "keyboard.h"		/* for clean_input() */
 
 UINT8 *words;			/* words in the game */
-
+UINT32 words_flen;		/* length of word memory */
 
 char *strndup (char* src, int n) {
 
@@ -46,6 +46,7 @@ int load_words (char *fname)
 
 	fseek (fp, 0, SEEK_END);
 	flen = ftell (fp);
+	words_flen = flen;
 	fseek (fp, 0, SEEK_SET);
 
 	if ((mem = (UINT8*)calloc(1, flen+32)) == NULL) {
@@ -192,33 +193,65 @@ void dictionary_words (char *msg)
 #ifdef OPT_LIST_DICT
 int show_words ()
 {
-	/* This does not work anymore since the word list is not expanded as before.
-	   A similar function can easily be written based on the old decode_words(...).
-	unsigned int i, uid, sid;
-	int lid;
+/*
+	decode *words into words!
+*/
 
-	uid = sid = 0;
-	lid = 0xffff;
+	int	sc, wc, woff, wid;
+	unsigned char x[128];
+	unsigned char c;
+	int	num_words;
+	int num_syns;
 
-	printf("  ID   Word\n");
-	for (i = 0; i < num_words; i++) {
-		if (lid == words[i].id) {
-			sid++;
-		} else {
-			lid = words[i].id;
-			uid++;
+	num_words=0;
+	num_syns=0;
+
+	/* scan for first entry with words */
+	for (wc = woff = 0; woff == 0 && woff < words_flen; wc += 2)
+		woff = hilo_getword(words+wc);
+
+	/* AGDS cludge for bad word file :( */
+	if(woff > words_flen)
+		return err_OK;
+
+	/* count all the words in the list */
+	for(sc=0, wc=0; woff<words_flen; )
+	{
+		c = hilo_getbyte (words+woff);
+		woff++;
+
+		if(c > 0x80)
+		{
+			wc++;
+			wid = hilo_getword (words+woff);
+			woff += 2;
+			if(wid > sc && wid != 9999)
+				sc = wid;
 		}
-		printf ("%4i - %s\n", words[i].id, words[i].word);
+	}
+	num_words = wc;
+	num_syns = sc;
+
+	/* scan for frist words entry */
+	for(wc=0, woff=0; woff==0; wc+=2)
+		woff=hilo_getword(words+wc);
+
+	/* build word list */
+	for(wc=0; wc<num_words; wc++)
+	{
+		c=hilo_getbyte(words+woff); woff++;
+		wid=c;
+		while(c<0x80)
+		{
+			c=hilo_getbyte(words+woff); woff++;
+			x[wid]=((c^0x7F)&0x7F); wid++;
+		}
+		x[wid]=0x0;
+
+		printf("id=%-4i %s\n", hilo_getword(words+woff), x);
+		woff+=2;
 	}
 
-	printf ("\n%i words in dictionary\n", num_words);
-	printf ("%5i unique words\n", uid);
-	printf ("%5i synonyms\n", sid);
-	printf (
-"\nThis is dodgy, only synonyms are id'd if they follow each other\n"
-"e.g. in Space Quest I, knife, army knife, xenon army knife are all synonyms\n"
-"but are not treated as such as they do not alphabetically follow each other.\n");
-*/
 	return err_OK;
 }
 #endif

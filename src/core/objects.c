@@ -140,7 +140,7 @@ int show_objects ()
 
 	printf(" ID   Objects\n");
 	for (i = 0; i < game.num_objects; i++)
-		printf ("%3i - %s\n", (objects+i)->location, (objects+i)->name);
+		printf ("%3i) %3i - %s\n", 1+i, (objects+i)->location, (objects+i)->name);
 
 	printf ("\n%i objects\n", game.num_objects);
 

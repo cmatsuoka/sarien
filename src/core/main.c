@@ -73,6 +73,25 @@ int main (int argc, char *argv[])
 		list_games ();
 		exit (0);
 	}
+#ifdef OPT_LIST_OBJECTS
+	if (opt.gamerun == GAMERUN_OBJECTS) {
+		agi_detect_game(argc > 1 ? argv[optind] : get_current_directory());
+		agi_init();
+		show_objects();
+
+		/* errgh!! ugly goto */
+		goto bail_out;
+	}
+#endif
+#ifdef OPT_LIST_DICT
+	if (opt.gamerun == GAMERUN_WORDS){
+	    agi_detect_game(argc > 1 ? argv[optind] : get_current_directory());
+	    agi_init();
+	    show_words();
+
+	    goto bail_out;
+	}
+#endif
 #endif
 
 	init_machine (argc, argv);
@@ -96,7 +115,7 @@ int main (int argc, char *argv[])
 		{
 			agi_init ();
 			view_pictures ();
-		} 
+		}
 
 		goto bail_out;
 	}
