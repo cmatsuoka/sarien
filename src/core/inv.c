@@ -164,7 +164,7 @@ void inventory ()
 	print_text (YOUHAVE_MSG, 0, YOUHAVE_X, YOUHAVE_Y, 40,
 		STATUS_FG, STATUS_BG);
 
-	/* FIXME: doesnt check if objects overflow off screen... */
+	/* FIXME: doesn't check if objects overflow off screen... */
 
 	intobj = malloc (4 + game.num_objects);
 	memset(intobj, 0, (4 + game.num_objects));

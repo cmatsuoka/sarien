@@ -42,7 +42,7 @@ dust:
 # 'mark' marks the last RCS revision with the package version number
 # 'whatsout' lists the locked files
 # 'diff' creates a diff file
-# 'rpm' generates a RPM package
+# 'rpm' generates an RPM package
 
 dist:
 	rm -Rf $(DIST) $(DIST).tar.gz

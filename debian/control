@@ -9,7 +9,7 @@ Package: sarien
 Architecture: any
 Depends: ${shlibs:Depends}
 Description: An interpreter for AGI resources
- The old Sierra games is made with the AGI engine. Sarien 
+ The old Sierra games are made with the AGI engine. Sarien 
  is a free interpreter for AGI resources.
  .
  Games written in AGI includes:
