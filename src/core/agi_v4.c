@@ -8,12 +8,12 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#if defined PALMOS
-
 #include <stdio.h>
 #include <string.h>
 #include "sarien.h"
 #include "agi.h"
+
+#if defined PALMOS
 
 static int agi_v4_init (void);
 static int agi_v4_deinit (void);

@@ -10,7 +10,7 @@ AC_INIT(src/core/agi.c)
 AC_CONFIG_AUX_DIR(./scripts)
 AC_CANONICAL_HOST
 
-if test "${target}" = NONE; then
+if test "x${target}" = "x"; then
 	target=${host}
 	target_cpu=${host_cpu}
 	target_vendor=${host_vendor}
@@ -48,7 +48,7 @@ AC_ARG_WITH(win32,  [  --with-win32            use Win32 console/sound drivers])
 AC_ARG_WITH(amiga,  [  --with-amiga            use Amiga console/sound drivers])
 
 if test "${GCC-no}" = yes; then
-	CFLAGS="${CFLAGS} -Wall"
+	CFLAGS="${CFLAGS} -Wall -ansi -pedantic-errors"
 fi
 
 MAIN_FILE="main"
@@ -136,7 +136,7 @@ dnl		AC_CHECK_HEADERS(X11/extensions/xf86dga.h \
 dnl			X11/extensions/xf86vmode.h)
 
 		if test "${ac_cv_header_X11_extensions_XShm_h}" = "yes"; then
-			CFLAGS="${CFLAGS} -DMITSHM"
+			CFLAGS="${CFLAGS} -DMITSHM -D_XOPEN_SOURCE -DBSD_SOURCE"
 			X_LIBS="${X_LIBS} -lXext -lX11"
 		else
 			X_LIBS="${X_LIBS} -lX11"

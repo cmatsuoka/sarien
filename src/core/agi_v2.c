@@ -210,8 +210,8 @@ static UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 			return NULL;
 		}
 		fread (&x, 1, 5, fp);
-		if ((sig = hilo_getword (x)) == 0x1234) {
-			agid->len = lohi_getword (x + 3);
+		if ((sig = hilo_getword ((UINT8*)x)) == 0x1234) {
+			agid->len = lohi_getword ((UINT8*)x + 3);
 			data = calloc (1, agid->len + 32);
 			if (data != NULL) {
 				fread (data, 1, agid->len, fp);

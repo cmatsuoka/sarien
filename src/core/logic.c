@@ -19,7 +19,7 @@ int decode_logic (int n)
 {
 	int ec = err_OK;
 	int mstart, mend, mc;
-	char *m0;
+	UINT8 *m0;
 
 	/* decrypt messages at end of logic + build message list */
 
@@ -59,7 +59,8 @@ int decode_logic (int n)
 		/* move list of strings into list to make real pointers */
 		for(mc = 0; mc < game.logics[n].num_texts; mc++) {
 			mend = lohi_getword(m0+mc*2);
-			game.logics[n].texts[mc] = mend ? m0 + mend - 2 : "";
+			game.logics[n].texts[mc] = mend ?
+				(char *)m0 + mend - 2 : "";
 		}
 		/* set loaded flag now its all completly loaded */
 		game.dir_logic[n].flags |= RES_LOADED;

@@ -22,7 +22,7 @@
 #include "menu.h"
 #include "text.h"	/* remove later */
 
-UINT8  last_sentence[40];
+char  last_sentence[40];
 
 #ifdef USE_CONSOLE
 extern struct sarien_console console;

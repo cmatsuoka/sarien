@@ -20,9 +20,9 @@
 #include "text.h"
 
 
-static void print_text2 (int l, unsigned char *msg, int foff, int xoff, int yoff, int len, int fg, int bg)
+static void print_text2 (int l, char *msg, int foff, int xoff, int yoff, int len, int fg, int bg)
 {
-	unsigned char *m;
+	char *m;
 	int x1, y1;
 	int maxx, minx, ofoff;
 	int update;
@@ -179,7 +179,7 @@ static void erase_textbox ()
  * Public functions
  */
 
-void draw_text (unsigned char *msg, int f, int x, int y, int len, int fg, int bg)
+void draw_text (char *msg, int f, int x, int y, int len, int fg, int bg)
 {
 	print_text2 (0, agi_sprintf (msg), f, x, y, len, fg, bg);
 }
@@ -187,7 +187,7 @@ void draw_text (unsigned char *msg, int f, int x, int y, int len, int fg, int bg
 /**
  * Print text in the Sarien screen.
  */
-void print_text (unsigned char *msg, int f, int x, int y, int len, int fg, int bg)
+void print_text (char *msg, int f, int x, int y, int len, int fg, int bg)
 {
 	f *= CHAR_COLS;
 	x *= CHAR_COLS;

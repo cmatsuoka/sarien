@@ -167,7 +167,7 @@ int find_word (char *word)
 
 void dictionary_words (char *msg)
 {
-	static UINT8 bad_word[256];	/* FIXME: dynamic allocation? */
+	static char bad_word[256];	/* FIXME: dynamic allocation? */
 	char *p	= NULL;
 	char *q = NULL;
 	int wc1;

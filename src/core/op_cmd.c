@@ -713,7 +713,7 @@ cmd(toggle_monitor)
 
 cmd(echo_line) {
 	strcpy (game.input_buffer, game.echo_buffer);
-	game.cursor_pos = strlen (game.input_buffer);
+	game.cursor_pos = strlen ((char*)game.input_buffer);
 	game.has_prompt = 0;
 }
 

@@ -15,10 +15,9 @@
 extern "C"{
 #endif
 
-
 struct agi_logicnames {
 #ifdef USE_CONSOLE /* ifndef NO_DEBUG */
-	UINT8	*name;
+	char	*name;
 #endif
 	UINT16	num_args;
 	UINT16	arg_mask;

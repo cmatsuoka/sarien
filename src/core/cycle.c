@@ -134,8 +134,9 @@ static void print_line_prompt ()
 		_D (_D_WARN "prompt = '%s'", agi_sprintf (game.strings[0]));
 		print_text (game.strings[0], 0, 0, game.line_user_input, 1,
 			game.color_fg, game.color_bg);
-		print_text (game.input_buffer, 0, 1, game.line_user_input,
-			game.cursor_pos + 1, game.color_fg, game.color_bg);
+		print_text ((char *)game.input_buffer, 0, 1,
+			game.line_user_input, game.cursor_pos + 1,
+			game.color_fg, game.color_bg);
 		print_character (game.cursor_pos + 1, game.line_user_input,
 			game.cursor_char, game.color_fg, game.color_bg);
 		do_update ();	/* synchronous */

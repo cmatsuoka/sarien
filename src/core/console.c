@@ -51,7 +51,7 @@ struct console_command {
 	struct console_command *next;
 	char *cmd;
 	char *dsc;
-	void (*handler)();
+	void (*handler)(void);
 };
 
 struct sarien_console console;
@@ -185,16 +185,20 @@ static void ccmd_help ()
 	}
 
 	report ("Unknown command or no help available\n");
+
+	return;
 }
 
 static void ccmd_ver ()
 {
 	report (VERSION "\n");
+	return;
 }
 
 static void ccmd_crc ()
 {
 	report ("0x%05x\n", game.crc);
+	return;
 }
 
 static void ccmd_load ()
@@ -216,6 +220,7 @@ static void ccmd_load ()
 	}
 	
 	report ("AGI game load failed.\n");
+	return;
 }
 
 #if 0
@@ -249,6 +254,7 @@ static void ccmd_hires ()
 	erase_both ();	
 	show_pic ();
 	blit_both ();
+	return;
 }
 
 #endif
@@ -262,6 +268,7 @@ static void ccmd_agiver ()
 	min = ver & 0xfff;
 
 	report (maj == 2 ? "%x.%03x\n" : "%x.002.%03x\n", maj, min);
+	return;
 }
 
 static void ccmd_flags ()
@@ -280,6 +287,7 @@ static void ccmd_flags ()
 		}
 		report ("\n");
 	}
+	return;
 }
 
 static void ccmd_vars ()
@@ -292,6 +300,7 @@ static void ccmd_vars ()
 		}
 		report ("\n");
 	}
+	return;
 }
 
 #if 0
@@ -332,6 +341,7 @@ static void ccmd_objs ()
 		report ("%3d]%-24s(%3d)\n", i, object_name (i),
 			object_get_location (i));
 	}
+	return;
 }
 
 static void ccmd_opcode ()
@@ -342,6 +352,7 @@ static void ccmd_opcode ()
 	}
 
 	debug.opcodes = !strcmp (_p1, "on");
+	return;
 }
 
 static void ccmd_logic0 ()
@@ -352,6 +363,7 @@ static void ccmd_logic0 ()
 	}
 
 	debug.logic0 = !strcmp (_p1, "on");
+	return;
 }
 
 static void ccmd_step ()
@@ -364,25 +376,28 @@ static void ccmd_step ()
 	}
 
 	debug.steps = strtoul (_p1, NULL, 0);
+	return;
 }
 
 static void ccmd_debug ()
 {
 	debug.enabled = 1;
 	debug.steps = 0;
+	return;
 }
 
 static void ccmd_cont ()
 {
 	debug.enabled = 0;
 	debug.steps = 0;
+	return;
 }
 
 
 /*
  * Register console commands
  */
-static void console_cmd (char *cmd, char *dsc, void (*handler))
+static void console_cmd (char *cmd, char *dsc, void (*handler)(void))
 {
 	struct console_command *c, *d;
 

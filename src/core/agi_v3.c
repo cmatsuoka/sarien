@@ -211,7 +211,8 @@ int agi_v3_unload_resource (int t, int n)
 
 UINT8* agi_v3_load_vol_res (struct agi_dir *agid)
 {
-	UINT8 x[MAX_PATH], *data = NULL, *comp_buffer, *path;
+	char x[MAX_PATH], *path;
+	UINT8 *data = NULL, *comp_buffer;
 	FILE *fp;
 
 	_D ("(%p)", agid);
@@ -222,7 +223,7 @@ UINT8* agi_v3_load_vol_res (struct agi_dir *agid)
 		fseek (fp, agid->offset, SEEK_SET);
 		fread (&x, 1, 7, fp);
 
-		if (hilo_getword(x) != 0x1234) {
+		if (hilo_getword((UINT8 *)x) != 0x1234) {
 #if 0
 			/* FIXME */
 			deinit_video_mode();
@@ -231,8 +232,8 @@ UINT8* agi_v3_load_vol_res (struct agi_dir *agid)
 			exit(0);
 		}
 
-		agid->len = lohi_getword (x + 3);	/* uncompressed size */
-		agid->clen = lohi_getword (x + 5);	/* compressed len */
+		agid->len = lohi_getword((UINT8 *)x + 3);/* uncompressed size */
+		agid->clen = lohi_getword((UINT8 *)x + 5);/* compressed len */
 
 		comp_buffer = calloc (1, agid->clen + 32);
 		fread (comp_buffer, 1, agid->clen, fp);

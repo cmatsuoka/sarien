@@ -203,7 +203,15 @@ int save_game (char *s, char *d)
 	return err_OK;
 }
 
-#define read_num(x) hilo_getdword ((UINT8 *)((UINT32*)(x))++)
+static UINT32 read_num(UINT8 *x)
+{
+	UINT32 a;
+
+	a = hilo_getdword (x);
+	x += 4;
+
+	return a;
+}
 
 static void get_apic (UINT32 size, UINT8 *b)
 {

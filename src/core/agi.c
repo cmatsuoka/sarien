@@ -239,5 +239,5 @@ int agi_load_resource (int r, int n)
 int agi_unload_resource (int r, int n)
 {
 	return loader->unload_resource (r, n);
-};
+}
 

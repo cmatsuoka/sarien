@@ -144,12 +144,12 @@ _putpixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) { \
 	} \
 }
 
-_putpixels_scale1 (8);
-_putpixels_scale1 (16);
-_putpixels_scale1 (32);
-_putpixels_scale2 (8);
-_putpixels_scale2 (16);
-_putpixels_scale2 (32);
+_putpixels_scale1(8)
+_putpixels_scale1(16)
+_putpixels_scale1(32)
+_putpixels_scale2(8)
+_putpixels_scale2(16)
+_putpixels_scale2(32)
 
 /* ===================================================================== */
 
@@ -186,12 +186,12 @@ _putpixels_fixratio_##d##bits_scale2 (int x, int y, int w, UINT8 *p0) { \
 	} \
 }
 
-_putpixels_fixratio_scale1 (8);
-_putpixels_fixratio_scale1 (16);
-_putpixels_fixratio_scale1 (32);
-_putpixels_fixratio_scale2 (8);
-_putpixels_fixratio_scale2 (16);
-_putpixels_fixratio_scale2 (32);
+_putpixels_fixratio_scale1(8)
+_putpixels_fixratio_scale1(16)
+_putpixels_fixratio_scale1(32)
+_putpixels_fixratio_scale2(8)
+_putpixels_fixratio_scale2(16)
+_putpixels_fixratio_scale2(32)
 
 /* ===================================================================== */
 
