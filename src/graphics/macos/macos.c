@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999-2002 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2003 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -484,7 +484,7 @@ static void process_events ()
 					process_menu (MenuKey (c));
 					break;
 				}
-				report ("%02x %02x\n", c, event.message);
+				report ("%02x %02x %02x\n", c, k, event.message);
 
 				/* These key codes were obtained using the
 				 * BasiliskII emulator. I'm assuming that
@@ -501,6 +501,42 @@ static void process_events ()
 					break;
 				case 0x10:	/* Function keys */
 					switch (k) {
+					case 0x7a00:	/* F1 */
+						key = 0x3b00;
+						break;
+					case 0x7800:	/* F2 */
+						key = 0x3c00;
+						break;
+					case 0x6300:	/* F3 */
+						key = 0x3d00;
+						break;
+					case 0x7600:	/* F4 */
+						key = 0x3e00;
+						break;
+					case 0x6000:	/* F5 */
+						key = 0x3f00;
+						break;
+					case 0x6100:	/* F6 */
+						key = 0x4000;
+						break;
+					case 0x6200:	/* F7 */
+						key = 0x4100;
+						break;
+					case 0x6400:	/* F8 */
+						key = 0x4200;
+						break;
+					case 0x6500:	/* F9 */
+						key = 0x4300;
+						break;
+					case 0x6d00:	/* F10 */
+						key = 0x4400;
+						break;
+					case 0x6700:	/* F11 */
+						key = KEY_STATUSLN;
+						break;
+					case 0x6f00:	/* F12 */
+						key = KEY_PRIORITY;
+						break;
 					}
 					break;
 				case 0x1c:

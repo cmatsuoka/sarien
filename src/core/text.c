@@ -128,7 +128,8 @@ static void blit_textbox (char *p, int y, int x, int len)
 	m = msg = word_wrap_string (agi_sprintf (p), &len);
 
 	for (lin = 1; *m; m++) {
-		if (*m == '\n')
+		/* Test \r for MacOS 8 */
+		if (*m == '\n' || *m == '\r')
 			lin++;
 	}
 
@@ -174,6 +175,7 @@ static void erase_textbox ()
 
 	do_update ();
 }
+
 
 /*
  * Public functions
@@ -225,12 +227,14 @@ char* word_wrap_string (char *str, int *len)
 	maxc = 0;
 
 	while (42) {
-		/* _D ("[%s], %d", msg, maxc); */
+		_D ("[%s], %d", msg, maxc);
 		if (strchr (v, ' ') == NULL && strlen (v) > l) {
 			_D (_D_CRIT "Word too long in message");
 			l = strlen (v);
 		}
-		while ((c = strcspn (v, "\n")) <= l) {
+		/* Must include \r for MacOS 8 */
+		while ((c = strcspn (v, "\n\r")) <= l) {
+			_D ("c = %d, maxc = %d", c, maxc);
 			if (c > maxc)
 				maxc = c;
 			if ((v += c + 1) >= e)
@@ -255,7 +259,7 @@ char* word_wrap_string (char *str, int *len)
 		 * --Vasyl
 		 */
 		if (*v != ' ')
-			for (; *v != ' ' && *v != '\n'; v--, c--);
+			for (; *v != ' ' && *v != '\n' && *v != '\r'; v--, c--);
 		if (c > maxc)
 			maxc = c;
 		*v++ = '\n';
