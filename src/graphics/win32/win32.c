@@ -85,7 +85,6 @@ static int	win32_keypress		(void);
 static int	win32_get_key		(void);
 static void	win32_new_timer		(void);
 
-static void	gui_put_block		(int, int, int, int);
 static int	set_palette		(UINT8 *, int, int);
 
 
@@ -294,6 +293,9 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		case VK_SHIFT:
 			key = 0;
 			break;
+		case VK_CONTROL:
+			key = 0;
+			break;
 		case VK_UP:
 			key = KEY_UP;
 			break;
@@ -375,14 +377,9 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		case 0xbf:
 			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '?' : '/';
 			break;
-#ifdef USE_CONSOLE
 		case 192:
-			key = CONSOLE_ACTIVATE_KEY;
+			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '~' : '`';
 			break;
-		case 193:
-			key = CONSOLE_SWITCH_KEY;
-			break;
-#endif
 		default:
 			if (!isalpha (key))
 				break;
