@@ -199,7 +199,9 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 	opt.scale = 2;
 	opt.fixratio = TRUE;
 	opt.gfxhacks = TRUE;
+#ifdef USE_HIRES
 	opt.hires = TRUE;
+#endif
 	opt.soundemu = SOUND_EMU_NONE;
 
 	for (c = GetCommandLine(); *c && *c != 0x20; c++);
@@ -250,7 +252,9 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 
 	deinit_sound ();
 	deinit_video ();
+#ifdef USE_HIRES
 	free (game.hires);
+#endif
 
 bail_out:
 	deinit_machine ();
