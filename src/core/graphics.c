@@ -67,9 +67,6 @@ UINT8 palette[32 * 3]= {
 	0x3F, 0x3F, 0x3F
 };
 
-UINT8		txt_char;		/* input character */
-
-
 
 static struct update_block update = {
 	MAX_INT, MAX_INT, 0, 0

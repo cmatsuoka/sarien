@@ -39,7 +39,6 @@ struct gfx_driver {
 };
 
 extern	UINT8		palette[];
-extern	UINT8		txt_char;
 
 
 /* Transparent layer */

@@ -89,71 +89,6 @@ static void print_text2 (int l, char *msg, int foff, int xoff, int yoff,
 	}
 }
 
-
-/*
- * Public functions
- */
-
-/**
- * Print text in the Sarien screen.
- */
-void print_text (char *msg, int f, int x, int y, int len, int fg, int bg)
-{
-	f *= CHAR_COLS;
-	x *= CHAR_COLS;
-	y *= CHAR_LINES;
-
-	print_text2 (0, agi_sprintf (msg, 0), f, x, y, len, fg, bg);
-}
-
-
-/**
- * Print text in the Sarien console.
- */
-void print_text_console (char *msg, int x, int y, int len, int fg, int bg)
-{
-	x *= CHAR_COLS;
-	y *= 10;
-
-	print_text2 (1, msg, 0, x, y, len, fg, bg);
-}
-
-
-/* CM: Ok, this is my attempt to make a good line wrapping algorithm.
- *     Sierra like, that is.
- */
-char* word_wrap_string (char *mesg, int *len)
-{
-	char *msg, *v, *e;
-	int maxc, c, l = *len;
-
-	v = msg = strdup ((char*)mesg);
-	e = msg + strlen ((char*)msg);
-	maxc = 0;
-
-	while (42) {
-		while ((c = strcspn (v, "\n")) <= l) {
-			if (c > maxc)
-				maxc = c;
-			if ((v += c + 1) >= e)
-				goto end;
-		}
-		c = l;
-		if ((v += l) >= e)
-			break;
-		if (*v != ' ')
-			for (; *v != ' '; v--, c--);
-		if (c > maxc)
-			maxc = c;
-		*v++ = '\n';
-	}
-end:
-	*len = maxc;
-	return msg;
-}
-
-
-
 /* len is in characters, not pixels!!
  */
 static void blit_textbox (char *p, int y, int x, int len)
@@ -237,8 +172,68 @@ static void erase_textbox ()
 	do_update ();
 }
 
+/*
+ * Public functions
+ */
+
 /**
- *
+ * Print text in the Sarien screen.
+ */
+void print_text (char *msg, int f, int x, int y, int len, int fg, int bg)
+{
+	f *= CHAR_COLS;
+	x *= CHAR_COLS;
+	y *= CHAR_LINES;
+
+	print_text2 (0, agi_sprintf (msg, 0), f, x, y, len, fg, bg);
+}
+
+/**
+ * Print text in the Sarien console.
+ */
+void print_text_console (char *msg, int x, int y, int len, int fg, int bg)
+{
+	x *= CHAR_COLS;
+	y *= 10;
+
+	print_text2 (1, msg, 0, x, y, len, fg, bg);
+}
+
+/**
+ * Wrap text line to the specified width. 
+ */
+char* word_wrap_string (char *mesg, int *len)
+{
+	char *msg, *v, *e;
+	int maxc, c, l = *len;
+
+	v = msg = strdup ((char*)mesg);
+	e = msg + strlen ((char*)msg);
+	maxc = 0;
+
+	while (42) {
+		while ((c = strcspn (v, "\n")) <= l) {
+			if (c > maxc)
+				maxc = c;
+			if ((v += c + 1) >= e)
+				goto end;
+		}
+		c = l;
+		if ((v += l) >= e)
+			break;
+		if (*v != ' ')
+			for (; *v != ' '; v--, c--);
+		if (c > maxc)
+			maxc = c;
+		*v++ = '\n';
+	}
+end:
+	*len = maxc;
+	return msg;
+}
+
+/**
+ * Remove existing window, if any.
  */
 void close_window ()
 {
@@ -313,8 +308,6 @@ int print (char *p, int lin, int col, int len)
 	return 0;
 }
 
-
-
 void print_status (char *message, ...)
 {
 	char x[42];
@@ -332,9 +325,8 @@ void print_status (char *message, ...)
 
         print_text (x, 0, game.line_status, 0, 40,
 		STATUS_FG, STATUS_BG);
-	flush_lines (game.line_status, game.line_status);
+	//flush_lines (game.line_status, game.line_status);
 }
-
 
 /**
  * Formats AGI string.

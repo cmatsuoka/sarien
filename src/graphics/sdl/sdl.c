@@ -54,7 +54,7 @@ static int key_queue_end = 0;
 static int	init_vidmode	(void);
 static int	deinit_vidmode	(void);
 static void	sdl_put_block	(int, int, int, int);
-static void	sdl_put_pixels	(int, int, int, Uint8 *);
+static void	_putpixels	(int, int, int, Uint8 *);
 static void	sdl_timer	(void);
 static Uint32	timer_function	(Uint32);
 int		sdl_is_keypress	(void);
@@ -70,7 +70,7 @@ static struct gfx_driver gfx_sdl = {
 	init_vidmode,
 	deinit_vidmode,
 	sdl_put_block,
-	sdl_put_pixels,
+	_putpixels,
 	sdl_timer,
 	sdl_is_keypress,
 	sdl_get_keypress
@@ -83,8 +83,8 @@ extern struct gfx_driver *gfx;
 
 /* Some optimized put_pixel routines for the most common cases */
 
-#define _put_pixels_scale1(d) static void INLINE			\
-_put_pixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) {		\
+#define _putpixels_scale1(d) static void INLINE			\
+_putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) {		\
 	Uint##d## *s;							\
 	if (w == 0) return;						\
 	s = (Uint##d## *)screen->pixels + x + y * screen->w;		\
@@ -96,8 +96,8 @@ _put_pixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) {		\
 	if (SDL_MUSTLOCK (screen)) SDL_UnlockSurface (screen);		\
 }
 
-#define _put_pixels_scale2(d) static void INLINE			\
-_put_pixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) {		\
+#define _putpixels_scale2(d) static void INLINE			\
+_putpixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) {		\
 	Uint##d## *s, *t;						\
 	if (w == 0) return;						\
 	x <<= 1; y <<= 1;						\
@@ -114,12 +114,12 @@ _put_pixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) {		\
 	if (SDL_MUSTLOCK (screen)) SDL_UnlockSurface (screen);		\
 }
 
-_put_pixels_scale1(8);
-_put_pixels_scale1(16);
-_put_pixels_scale1(32);
-_put_pixels_scale2(8);
-_put_pixels_scale2(16);
-_put_pixels_scale2(32);
+_putpixels_scale1(8);
+_putpixels_scale1(16);
+_putpixels_scale1(32);
+_putpixels_scale2(8);
+_putpixels_scale2(16);
+_putpixels_scale2(32);
 
 
 /* ====================================================================*/
@@ -160,7 +160,7 @@ static void inline _put_pixel (int x, int y, int c)
 	}
 }
 
-static void sdl_put_pixels (int x, int y, int w, Uint8 *p)
+static void _putpixels (int x, int y, int w, Uint8 *p)
 {
 	register int c;
 	register int i, j;
@@ -407,16 +407,16 @@ static int init_vidmode ()
 	if (opt.gfxhacks) switch (scale) {
 	case 1:
 		switch (screen->format->BytesPerPixel) {
-		case 1: gfx_sdl.put_pixels = _put_pixels_8bits_scale1; break;
-		case 2: gfx_sdl.put_pixels = _put_pixels_16bits_scale1; break;
-		case 4: gfx_sdl.put_pixels = _put_pixels_32bits_scale1; break;
+		case 1: gfx_sdl.put_pixels = _putpixels_8bits_scale1; break;
+		case 2: gfx_sdl.put_pixels = _putpixels_16bits_scale1; break;
+		case 4: gfx_sdl.put_pixels = _putpixels_32bits_scale1; break;
 		}
 		break;
 	case 2:
 		switch (screen->format->BytesPerPixel) {
-		case 1: gfx_sdl.put_pixels = _put_pixels_8bits_scale2; break;
-		case 2: gfx_sdl.put_pixels = _put_pixels_16bits_scale2; break;
-		case 4: gfx_sdl.put_pixels = _put_pixels_32bits_scale2; break;
+		case 1: gfx_sdl.put_pixels = _putpixels_8bits_scale2; break;
+		case 2: gfx_sdl.put_pixels = _putpixels_16bits_scale2; break;
+		case 4: gfx_sdl.put_pixels = _putpixels_32bits_scale2; break;
 		}
 		break;
 	}

@@ -258,6 +258,7 @@ int menu_keyhandler (int key)
     		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
     		break;
     	case KEY_RIGHT:
+		_D ("cur=%d, max=%d", h_cur_menu, h_max_menu);
     		if (1 + h_cur_menu >= h_max_menu)
 			break;
     		h_cur_menu++;

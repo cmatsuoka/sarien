@@ -618,9 +618,9 @@ cmd(get_num) {
 
 cmd(set_cursor_char) {
 	if (cur_logic->texts != NULL && (p0 - 1) <= cur_logic->num_texts) {
-		txt_char = *cur_logic->texts[p0 - 1];
+		game.cursor_char = *cur_logic->texts[p0 - 1];
 	} else {
-		txt_char = '_';
+		game.cursor_char = '_';
 	}
 }
 

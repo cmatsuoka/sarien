@@ -156,8 +156,9 @@ struct agi_game {
 	struct agi_block window;
 	int has_window;
 
-	/* graphics */
+	/* graphics & text*/
 	int gfx_mode;
+	int cursor_char;
 	int color_fg;
 	int color_bg;
 	UINT8 sbuf[_WIDTH * _HEIGHT];		/**< 160x168 AGI screen buffer */

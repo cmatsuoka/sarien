@@ -191,9 +191,9 @@ void handle_getstring (int key)
 		if (!pos)
 			break;
 
-		/* Echo */
-		print_character (stringdata.x + (pos + 1),
-			stringdata.y, txt_char, game.color_bg, game.color_bg );
+		/* Print cursor */
+		print_character (stringdata.x + (pos + 1), stringdata.y,
+			game.cursor_char, game.color_bg, game.color_bg );
 
 		pos--;
 		buffer[pos] = 0;
@@ -220,15 +220,19 @@ void handle_keys (int key)
 {
 	UINT8 *p=NULL;
 	int c = 0;
-	static UINT8  old_input_mode = INPUT_NONE;
 	static UINT8  new_line = 1;
 	static UINT8  formated_entry[256];
 	static UINT16 pos = 0;
+	static int has_prompt = 0;
 
 	setvar (V_word_not_found, 0);
 
-	if (!KEY_ASCII(key))
+	if (!KEY_ASCII(key)) {
+		if (!has_prompt)
+			print_line_prompt ();	
+		has_prompt = 1;
 		return;
+	}
 
 	_D ("handling key: %02x", key);
  	
@@ -258,6 +262,7 @@ void handle_keys (int key)
 
 		/* Clear to start a new line*/
 		new_line = 1;
+		has_prompt = 0;
 		buffer[pos = 0] = 0;
 
 		break;
@@ -269,8 +274,9 @@ void handle_keys (int key)
 		/* Ignore backspace at start of line */
 		if (pos == 0) break;
 
+		/* Print cursor */
 		print_character (pos + 1, game.line_user_input,
-			txt_char, game.color_bg, game.color_bg);
+			game.cursor_char, game.color_bg, game.color_bg);
 
 		buffer[--pos] = 0;
 		break;
@@ -286,33 +292,26 @@ void handle_keys (int key)
 		buffer[pos++] = key;
 		buffer[pos] = 0;
 
+		/* echo */
 		print_character (pos, game.line_user_input,
 			buffer[pos - 1], game.color_fg,
 			game.color_bg);
 		break;
 	}
 
-	if (old_input_mode != game.input_mode) {
-		old_input_mode = game.input_mode;
+	if (new_line) {
+		int l = game.line_user_input;
+
+		new_line = 0;
+		_D (_D_WARN "clear lines");
+	   	clear_lines (l, l + 1, game.color_bg);
+		flush_lines (l, l + 1);
 		print_line_prompt();
-	} else {
-		if (new_line) {
-			int l = game.line_user_input;
-
-			new_line = 0;
-	   		clear_lines (l, l + 1, game.color_bg);
-			flush_lines (l, l + 1);
-
-	   		print_text (agi_sprintf (game.strings[0], 0), 0, 0,
-				l * CHAR_LINES, 40, game.color_fg,
-				game.color_bg);
-		}
-
-		/* Print txt_char */
-		print_character (pos + 1,
-			game.line_user_input, txt_char,
-			game.color_fg, game.color_bg );
 	}
+
+	/* Print cursor */
+	print_character (pos + 1, game.line_user_input, game.cursor_char,
+		game.color_fg, game.color_bg );
 }
 
 
@@ -335,16 +334,17 @@ int wait_key ()
 
 
 /**
- * Print command prompt
+ * Print user input prompt.
  */
 void print_line_prompt ()
 {
+	_D (_D_WARN "input mode = %d", game.input_mode);
 	if (game.input_mode == INPUT_NORMAL) {
+		_D (_D_WARN "prompt = '%s'", agi_sprintf (game.strings[0],0));
 		print_text (agi_sprintf (game.strings[0], 0), 0, 0,
     			game.line_user_input, 40,
 			game.color_fg, game.color_bg);
-		flush_lines (game.line_user_input, game.line_user_input);
-		/** ^ remove? **/
+		do_update ();	/* synchronous */
 	}
 }
 
