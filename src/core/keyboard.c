@@ -216,11 +216,6 @@ void poll_keyboard (void)
 	while (gfx->keypress ()) {
 		xkey = gfx->get_key ();
 
-#ifdef _M_MSDOS
-		if (xkey != 0x5200 && xkey != 0x5300)
-			report ("xkey=%04X\n", xkey);
-#endif
-
 		if (console_keyhandler (xkey))
 			continue;
 
@@ -228,10 +223,6 @@ void poll_keyboard (void)
 
 		if (console.active && console.input_active)
 			continue;
-
-#ifdef _M_MSDOS
-		report ("key pressed : %04X\n", xkey);
-#endif
 
 		/* For controller() */
 		for (c1 = 0; c1 < MAX_DIRS; c1++) {

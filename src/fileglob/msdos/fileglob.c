@@ -29,7 +29,7 @@ char* __file_name (char *fname)
 	struct find_t fdata;
 	short l;
 
-	_D (("(\"%s\")", fname));
+	_D ("(\"%s\")", fname);
 	fdata.name[0] = 0;
 	rc = _dos_findfirst((char*)fname, _A_NORMAL, &fdata);
 	while (rc == 0) {
