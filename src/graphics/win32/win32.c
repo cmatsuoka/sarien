@@ -456,7 +456,6 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		}
 
 		_D (": key = 0x%02x ('%c')", key, isprint(key) ? key : '?');
-		report ("key = 0x%02x ('%c')\n", key, isprint(key) ? key : '?');
 
 		break;
 	};
