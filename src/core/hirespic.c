@@ -23,6 +23,17 @@ static void put_hires_pixel (int x, int y)
 	if (scr_on) *p = scr_colour | (*p & 0xf0);
 }
 
+static void fix_pixel_bothsides (int x, int y)
+{
+	UINT8 *p;
+
+	p = &game.hires[y * (_WIDTH * 2) + x];
+	if ((*(p - 2) & 0x0f) == scr_colour)
+		put_hires_pixel (x - 1, y);
+	if ((*(p + 2) & 0x0f) == scr_colour)
+		put_hires_pixel (x + 1, y);
+}
+
 
 /**************************************************************************
 ** drawline
@@ -54,7 +65,7 @@ static void draw_hires_line (int x1, int y1, int x2, int y2)
 
 		for ( ; y1 <= y2; y1++) {
 			put_hires_pixel (x1, y1);
-			put_hires_pixel (x1 + 1, y1);
+			fix_pixel_bothsides (x1, y1);	
 		}
 
 		return;
@@ -69,8 +80,13 @@ static void draw_hires_line (int x1, int y1, int x2, int y2)
 			x2 = x;
 		}
 
-   		for( ; x1 <= x2; x1++)
+		fix_pixel_bothsides (x1, y1);	
+
+   		for( ; x1 < x2; x1++)
 			put_hires_pixel (x1, y1);
+
+		put_hires_pixel (x1, y1);
+		fix_pixel_bothsides (x1, y1);	
 
 		return;
 	}
@@ -105,6 +121,7 @@ static void draw_hires_line (int x1, int y1, int x2, int y2)
 	}
 
 	put_hires_pixel (x, y);
+	fix_pixel_bothsides (x, y);	
 
 	do {
 		errorY += deltaY;
@@ -120,11 +137,12 @@ static void draw_hires_line (int x1, int y1, int x2, int y2)
 		}
 
 		put_hires_pixel (x, y);
-		//put_hires_pixel (x + 1, y);
+		fix_pixel_bothsides (x, y);	
 		i--;
 	} while (i > 0);
 
 	put_hires_pixel (x, y);
+	fix_pixel_bothsides (x, y);	
 }
 
 /**************************************************************************
@@ -203,12 +221,8 @@ static INLINE int hires_fill_here (int x, int y)
 	if (!scr_on && !pri_on)
 		return FALSE;
 
-	if (scr_on && scr_colour == 0x0f)
-		return FALSE;
-	if (pri_on && pri_colour == 0x04)
-		return FALSE;
-
 	p = game.hires[y * (_WIDTH * 2) + x * 2];
+
 	if (scr_on && (p & 0x0f) != 0x0f)
 		return FALSE;
 	if (pri_on && (p >> 4) != 0x04)
