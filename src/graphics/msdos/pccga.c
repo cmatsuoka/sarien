@@ -54,7 +54,7 @@ static int	pc_keypress		(void);
 
 #define TICK_SECONDS 18
 
-static struct gfx_driver GFX_ibm = {
+static struct gfx_driver GFX_pcvga = {
 	pc_init_vidmode,
 	pc_deinit_vidmode,
 	pc_put_block,
@@ -75,7 +75,7 @@ static void pc_timer ()
 
 int init_machine (int argc, char **argv)
 {
-	gfx = &GFX_ibm;
+	gfx = &GFX_pcvga;
 
 	screen_buffer = malloc (GFX_WIDTH * GFX_HEIGHT);
 

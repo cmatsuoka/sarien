@@ -2,7 +2,7 @@
 
 XCFLAGS	= -I../../include
 OBJS	=
-DFILES	= Makefile Makefile.wat ibm.c ibm.h djgpp.c djgpp.h Makefile.dj
+DFILES	= Makefile Makefile.wat pcvga.c pccga.c djgpp.c djgpp.h Makefile.dj
 CFILES	=
 DDIRS	=
 XDFILES	=

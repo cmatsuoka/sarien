@@ -4,7 +4,7 @@
 
 !include $(HOME)\rules.wat
 
-OBJS = ibm.$(O)
+OBJS = pcvga.$(O)
 
 all: start driver.lib
 

@@ -29,7 +29,7 @@ OBJS	= agi.obj agi_v2.obj agi_v3.obj checks.obj cli.obj console.obj \
 	  menu.obj motion.obj objects.obj op_cmd.obj op_dbg.obj op_test.obj \
 	  patches.obj picture.obj rand.obj savegame.obj silent.obj sound.obj \
 	  sprite.obj text.obj view.obj words.obj tcglob.obj dummy.obj \
-	  path.obj ibm.obj picview.obj
+	  path.obj pcvga.obj picview.obj
 
 #		*Explicit Rules*
 sarien: sarien.cfg $(OBJS)
@@ -71,7 +71,7 @@ lib\words.obj
 lib\tcglob.obj
 lib\path.obj
 lib\dummy.obj
-lib\ibm.obj
+lib\pcvga.obj
 lib\picview.obj
 |
    copy lib\agi.exe bin\sarien.exe
@@ -196,8 +196,8 @@ path.obj: sarien.cfg src\filesys\msdos\path.c
 dummy.obj: sarien.cfg src\sound\dummy\dummy.c 
 	$(CC) -c src\sound\dummy\dummy.c
 
-ibm.obj: sarien.cfg src\graphics\msdos\ibm.c 
-	$(CC) -c src\graphics\msdos\ibm.c
+pcvga.obj: sarien.cfg src\graphics\msdos\pcvga.c 
+	$(CC) -c src\graphics\msdos\pcvga.c
 
 #		*Compiler Configuration File*
 #
