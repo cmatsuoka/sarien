@@ -457,7 +457,7 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 {
 	struct view_cel	*c = NULL;
 	int x1, y1, x2, y2;
-	UINT8 *p;
+	UINT8 *p1, *p2;
 
 	_D ("v=%d, l=%d, c=%d, x=%d, y=%d, p=%d, m=%d",
 		view, loop, cel, x, y, pri, mar); 
@@ -490,12 +490,22 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 		/* add rectangle around object, don't clobber control
 		 * info in priority data
 		 */
-		for (y = y2 - 14; y <= y2; y++) {
-			for (x = x1; x <= x2; x++) {
-				p = &game.sbuf[x + y * _WIDTH];
-				if ((*p >> 4) >= 4)
-					*p = (mar << 4) | (*p & 0x0f);
-			}
+		p1 = &game.sbuf[x1 + (y2 - 10) * _WIDTH];
+		p2 = &game.sbuf[x2 + (y2 - 10) * _WIDTH];
+		for (y = y2 - 10; y <= y2; y++) {
+			if ((*p1 >> 4) >= 4) *p1 = (mar << 4) | (*p1 & 0x0f);
+			if ((*p2 >> 4) >= 4) *p2 = (mar << 4) | (*p2 & 0x0f);
+			p1 += _WIDTH;
+			p2 += _WIDTH;
+		}
+
+		p1 = &game.sbuf[x1 + (y2 - 10) * _WIDTH];
+		p2 = &game.sbuf[x1 + y2 * _WIDTH];
+		for (x = x1; x <= x2; x++) {
+			if ((*p1 >> 4) >= 4) *p1 = (mar << 4) | (*p1 & 0x0f);
+			if ((*p2 >> 4) >= 4) *p2 = (mar << 4) | (*p2 & 0x0f);
+			p1++;
+			p2++;
 		}
 	}
 
