@@ -646,8 +646,14 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 	x2 = x + c->width - 1;
 	y2 = y;
 
-	if (x1 < 0) x1 = 0;
-	if (y1 < 0) y1 = 0;
+	if (x1 < 0) {
+		x2 -= x1;
+		x1 = 0;
+	}
+	if (y1 < 0) {
+		y2 -= y1;
+		y1 = 0;
+	}
 	if (x2 >= _WIDTH) x2 = _WIDTH - 1;
 	if (y2 >= _HEIGHT) y2 = _HEIGHT - 1;
 
@@ -677,6 +683,7 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 			p2 += _WIDTH;
 		}
 
+		_D (_D_WARN "pri box: %d %d %d %d (%d)", x1, y3, x2, y2, mar);
 		p1 = &game.sbuf[x1 + y3 * _WIDTH];
 		p2 = &game.sbuf[x1 + y2 * _WIDTH];
 		for (x = x1; x <= x2; x++) {
@@ -689,6 +696,7 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 
 	blit_both ();
 
+	_D (_D_WARN "commit_block (%d, %d, %d, %d)", x1, y1, x2, y2);
 	commit_block (x1, y1, x2, y2);
 }
 
