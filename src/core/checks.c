@@ -97,11 +97,13 @@ static int check_priority (struct vt_entry *v)
 	}
 
 	trigger = 0;
-	water = 1;
+	water = 0;
 	pass = 1;
 
 	if (v->priority == 0x0f)
 		goto _check_ego;
+
+	water = 1;
 
 	p0 = &game.sbuf[v->x_pos + v->y_pos * _WIDTH];
 

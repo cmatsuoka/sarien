@@ -24,7 +24,7 @@ The following compilers/environments can be used to build sarien:
 	MIPSpro		IRIX
 	DJGPP		MS-DOS (uses Allegro)
 	Watcom C	MS-DOS
-	Turbo C++ 3.0	MS-DOS
+	Turbo C++ 3.0	MS-DOS (real mode)
 
 
 To build in UNIX platforms, run './configure; make'. ./configure --help
