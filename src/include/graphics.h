@@ -42,7 +42,7 @@ struct gfx_driver {
 	int	(*get_key)(void);
 };
 
-extern	UINT8		palette[];
+extern UINT8 palette[];
 
 
 /* Transparent layer */

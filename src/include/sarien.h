@@ -51,6 +51,24 @@ extern "C"{
 #  undef AGDS_SUPPORT
 #endif
 
+/*
+ * From hall_j@sat.mot.com (Joseph Hall)
+ * Date: Mon, 6 Jun 1994 18:48:45 GMT
+ *
+ * (...)
+ * MPW's malloc(), on the other hand, was busted around 3.0 or 3.1.
+ * Do some malloc-ing and some free-ing and eventually it would crash.
+ * I don't know whether that was ever fixed, though I reported it.
+ * I suggest that you use NewPtr() on the Mac to obtain memory, then
+ * manage it with a memory allocator of your own.
+ */
+#ifdef __MPW__
+#  include <AppleEvents.h>
+#  define malloc(x)	((void *)NewPtr (x))
+#  define calloc(x,s)	((void *)NewPtrClear ((x) * (s)))
+#  define free(x)	DisposePtr ((Ptr)(x))
+#endif
+
 #include "console.h"
 
 #ifdef DMALLOC
