@@ -14,7 +14,7 @@
 #include "sarien.h"
 #include "graphics.h"
 #include "keyboard.h"
-#include "main.h"
+#include "cocoa.h"
 
 @implementation SarienView
 

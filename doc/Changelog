@@ -37,6 +37,7 @@ Revision History
 	- fixed assignment of block bottom-right y coordinate (closes: #608126)
 	- fixed geometry of win32 window (closes: #606452, #604435)
 	- enabling menu options on restart (closes: #607643)
+	- integrated MacOS X port to the main buildsystem
 	- added CGA palette emulation
 	- added CGA video card support for PC DOS
 	- added icon and menu resources to the win32 port

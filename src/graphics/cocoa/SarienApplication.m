@@ -13,7 +13,7 @@
 #import "SarienApplication.h"
 
 #include <unistd.h>
-#include "main.h"
+#include "cocoa.h"
 
 @implementation SarienApplication
 

@@ -21,7 +21,7 @@
 
 #include "sarien.h"
 #include "graphics.h"
-#include "main.h"
+#include "cocoa.h"
 
 unsigned int sarienPalette[32];
 SarienView*  sarienView;
