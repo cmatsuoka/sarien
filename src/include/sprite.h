@@ -11,6 +11,10 @@
 #ifndef __AGI_SPRITE_H
 #define __AGI_SPRITE_H
 
+#ifdef __cplusplus
+extern "C"{
+#endif
+
 int	init_sprites		(void);
 void	deinit_sprites		(void);
 void	erase_upd_sprites	(void);
@@ -25,5 +29,9 @@ void	commit_both		(void);
 void	add_to_pic		(int, int, int, int, int, int, int);
 void	show_obj		(int);
 void	commit_block		(int, int, int, int);
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif /* __AGI_SPRITE_H */
