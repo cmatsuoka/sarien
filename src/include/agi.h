@@ -196,9 +196,6 @@ struct agi_game {
 	unsigned int num_objects;
 
 	struct agi_event ev_keyp[MAX_DIRS];	/**< keyboard keypress events */
-#if 0
-	struct agi_event ev_scan[MAX_DIRS];	/**< keyboard scan events */
-#endif
 	char strings[MAX_STRINGS + 1][MAX_STRINGLEN];	/**< strings */
 
 	/* directory entries for resources */
@@ -217,6 +214,8 @@ struct agi_game {
 	struct vt_entry view_table[MAX_VIEWTABLE];
 
 	SINT32 ver;				/**< detected game version */
+
+	int simple_save;			/**< select simple savegames */
 };
 
 /**

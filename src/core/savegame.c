@@ -226,7 +226,8 @@ int save_game (char* s, char* d)
 	for (i = 0; i < MAX_VARS; i++)
 		write_uint8 (f, game.vars[i]);
 
-	write_sint16 (f, (SINT16)game.horizon);
+	write_uint8 (f, (SINT8)game.simple_save);
+	write_uint8 (f, (SINT8)game.horizon);
 	write_sint16 (f, (SINT16)game.line_status);
 	write_sint16 (f, (SINT16)game.line_user_input);
 	write_sint16 (f, (SINT16)game.line_min_print);
@@ -402,7 +403,8 @@ int load_game(char* s)
 	for (i = 0; i < MAX_VARS; i++)
 		game.vars[i] = read_uint8(f);
 
-	game.horizon = read_sint16(f);
+	game.simple_save = read_uint8(f);
+	game.horizon = read_uint8(f);
 	game.line_status = read_sint16(f);
 	game.line_user_input = read_sint16(f);
 	game.line_min_print = read_sint16(f);
@@ -680,6 +682,44 @@ getout:
 #endif
 }
 
+int savegame_simple ()
+{
+	char home[MAX_PATH], path[MAX_PATH];
+
+#ifdef DREAMCAST
+	uint8 addr, port, unit;
+
+	addr = maple_first_vmu();
+	if(addr) {
+		maple_create_port(addr, &port, &unit);
+		sprintf(g_vmu_port, "%c%d", port + 'a', unit);
+	} else {
+		message_box("No VMU found.");
+		return err_OK;
+	}
+
+	sprintf(path, VMU_PATH, g_vmu_port, game.id, slot);
+	fs_unlink(path);
+#else
+	if (get_app_dir (home, MAX_PATH) < 0) {
+		message_box ("Couldn't save game.");
+		return err_BadFileOpen;
+	}
+
+	sprintf (path, "%s/" DATA_DIR "/", home);
+	MKDIR (path, 0755);
+	sprintf (path, "%s/" DATA_DIR "/%05X.%s/", home, game.crc, game.id);
+	MKDIR (path, 0711);
+	sprintf (path, "%s/" DATA_DIR "/%05X.%s/%08d.sav",
+		home, game.crc, game.id, 0);
+#endif
+
+	save_game (path, "Default savegame");
+
+	return err_OK;
+}
+
+
 int savegame_dialog ()
 {
 #ifndef PALMOS /* FIXME */
@@ -773,6 +813,46 @@ int savegame_dialog ()
 #endif /* PALMOS */
 
 	return err_OK;
+}
+
+
+int loadgame_simple ()
+{
+	char home[MAX_PATH], path[MAX_PATH];
+	int rc = 0;
+
+#ifdef DREAMCAST
+	uint8 addr, port, unit;
+
+	addr = maple_first_vmu();
+	if (addr) {
+		maple_create_port (addr, &port, &unit);
+		sprintf (g_vmu_port, "%c%d", port + 'a', unit);
+	} else {
+		message_box("No VMU found.");
+		return err_OK;
+	}
+
+	sprintf(path, VMU_PATH, g_vmu_port, game.id, slot);
+#else	
+	if (get_app_dir (home, MAX_PATH) < 0) {
+		message_box ("Error loading game.");
+		return err_BadFileOpen;
+	}
+
+	sprintf(path, "%s/" DATA_DIR "/%05X.%s/%08d.sav",
+		home, game.crc, game.id, 0);
+#endif
+
+	stop_sound();
+	if ((rc = load_game (path)) == err_OK) {
+		message_box ("Game restored.");
+		game.exit_all_logics = 1;
+	} else {
+		message_box ("Error restoring game.");
+	}
+
+	return rc;
 }
 
 

@@ -17,9 +17,9 @@ extern "C"{
 
 int savegame_dialog (void);
 int loadgame_dialog (void);
+int savegame_simple (void);
+int loadgame_simple (void);
 
-int save_game (char *, char *);
-int load_game (char *);
 
 /* Image stack support */
 #define ADD_PIC 1

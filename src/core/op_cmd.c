@@ -130,8 +130,10 @@ cmd(disable_item)	{ menu_set_item (p0, FALSE); }
 cmd(submit_menu)	{ menu_submit (); }
 cmd(set_scan_start)	{ cur_logic->sIP = cur_logic->cIP; }
 cmd(reset_scan_start)	{ cur_logic->sIP = 2; }
-cmd(save_game)		{ savegame_dialog (); }
-cmd(load_game)		{ loadgame_dialog (); }
+cmd(save_game)		{ game.simple_save ?
+				savegame_simple() : savegame_dialog(); }
+cmd(load_game)		{ game.simple_save ?
+				loadgame_simple() : loadgame_dialog(); }
 cmd(init_disk)		{ /* do nothing */ }
 cmd(log)		{ /* do nothing */ }
 cmd(trace_on)		{ /* do nothing */ }
@@ -151,7 +153,7 @@ cmd(obj_status_f)	{ report ("obj.status.f\n"); }
  * unk_177: Disable menus completely -- j5
  * unk_181: Deactivate keypressed control (default control of ego)
  */
-cmd(set_simple)		{ report ("set.simple\n"); }
+cmd(set_simple)		{ game.simple_save = TRUE; }
 cmd(pop_script)		{ report ("pop.script\n"); }
 cmd(hold_key)		{ report ("hold.key\n"); }
 cmd(discard_sound)	{ report ("discard.sound\n"); }
