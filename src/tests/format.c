@@ -7,20 +7,17 @@ static int c (char *name, char *test, char *expected)
 	int match;
 
 	snprintf (result, MAX_LEN, "%s", agi_sprintf (test));
-	printf ("[%s] %s => %s", name, test, result);
+	test_report ("[%s] %s => %s", name, test, result);
 	if (!(match = !strcmp (result, expected))) {
-		printf (" [Expected: %s]", expected);
+		test_report (" [Expected: %s]", expected);
 	}
 
 	return match;
 }
 
 
-void test_format ()
+TEST_SUITE(test_format)
 {
-	test_name ("AGI string formatting tests");
-	test_enable ();
-
 	setvar (2,2);
 	setvar (42,42);
 	setvar (142,142);
@@ -37,7 +34,7 @@ void test_format ()
 		test_say ("look at this test");
 		strcpy (game.strings[1], "a 100% %01 string test");
 	} else {
-		test_disable ("needs template game");
+		test_disable (suite, "needs template game");
 	}
 
 	setvar (13,13);
