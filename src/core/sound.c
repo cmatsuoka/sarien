@@ -11,6 +11,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef __TURBOC__
+#include <dos.h>		/* For sound(), nosound() */
+#endif
+
 #include "sarien.h"
 #include "agi.h"
 
@@ -230,7 +234,6 @@ void decode_sound (int resnum)
 }
 
 
-
 void start_sound (int resnum, int flag)
 {
 	int i;
@@ -392,6 +395,11 @@ void deinit_sound (void)
 static void stop_note (int i)
 {
 	chn[i].vol = 0;
+
+#ifdef __TURBOC__
+	if (i == 0)
+		nosound ();
+#endif
 }
 
 
@@ -406,6 +414,11 @@ static void play_note (int i, int freq, int vol)
 	chn[i].phase = 0;
 	chn[i].vol = vol; 
 	chn[i].env = 0x10000;
+
+#ifdef __TURBOC__
+	if (i == 0)
+		sound (freq);
+#endif
 }
 
 
@@ -493,8 +506,7 @@ void play_agi_sound ()
 			chn[i].timer = ((int)chn[i].ptr->dur_hi << 8) |
 				chn[i].ptr->dur_lo;
 
-			if (chn[i].timer == 0xffff)
-			{
+			if (chn[i].timer == 0xffff) {
 				chn[i].end = 1;
 				chn[i].vol = 0;
 			}
