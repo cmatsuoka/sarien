@@ -25,7 +25,7 @@ int __file_exists (char *fname)
 
 char* __file_name (char *fname)
 {
-	UINT rc;
+	int rc;
 	struct find_t fdata;
 	short l;
 

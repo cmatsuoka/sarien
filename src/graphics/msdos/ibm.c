@@ -21,6 +21,10 @@
 #define __outp(a, b)	outp(a, b)
 #define move_memory(a, b, c) memmove((char*)a, (char*)b, (UINT32)c)
 
+extern struct gfx_driver *gfx;
+extern struct sarien_options opt;
+
+
 
 UINT8	*screen_buffer;
 
@@ -37,7 +41,7 @@ static int	IBM_keypress		(void);
 
 #define TICK_SECONDS 18
 
-statiic struct gfx_driver GFX_ibm = {
+static struct gfx_driver GFX_ibm = {
 	IBM_init_vidmode,
 	IBM_deinit_vidmode,
 	IBM_blit_block,
