@@ -15,8 +15,8 @@
 #include <stdarg.h>
 
 #include "sarien.h"
-#include "gfx.h"
-#include "keyboard.h"
+#include "gfx_base.h"
+//#include "keyboard.h"
 #include "console.h"
 
 extern struct sarien_options opt;
@@ -186,6 +186,10 @@ int init_video ()
 	/* Console */
 	for (i = 0; i < CONSOLE_LINES_BUFFER; i++)
 		console.line[i] = strdup ("\n");
+
+	screen_mode = GFX_MODE;
+	txt_fg = 0xF;
+        txt_bg = 0x0;
 
 	return gfx->init_video_mode ();
 }

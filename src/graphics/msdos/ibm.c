@@ -1,20 +1,11 @@
-/*
- *  Sarien AGI :: Copyright (C) 1999 Dark Fiber 
- *
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
 #include <stdio.h>
@@ -25,7 +16,7 @@
 #include <i86.h>
 
 #include "sarien.h"
-#include "gfx.h"
+#include "gfx_base.h"
 
 #define __outp(a, b)	outp(a, b)
 #define move_memory(a, b, c) memmove((char*)a, (char*)b, (UINT32)c)
@@ -35,18 +26,18 @@ UINT8	*screen_buffer;
 
 void	(__interrupt __far *prev_08)	(void);
 void	__interrupt __far new_timer	(void);
-int	IBM_init_vidmode		(void);
-int	IBM_deinit_vidmode		(void);
-void	IBM_blit_block			(int, int, int, int);
-void	IBM_put_pixel			(int, int, int);
-void	IBM_dummy			(void);
-int	IBM_get_key			(void);
-int	IBM_keypress			(void);
+static int	IBM_init_vidmode	(void);
+static int	IBM_deinit_vidmode	(void);
+static void	IBM_blit_block		(int, int, int, int);
+static void	IBM_put_pixel		(int, int, int);
+static void	IBM_dummy		(void);
+static int	IBM_get_key		(void);
+static int	IBM_keypress		(void);
 
 
 #define TICK_SECONDS 18
 
-struct gfx_driver GFX_ibm = {
+statiic struct gfx_driver GFX_ibm = {
 	IBM_init_vidmode,
 	IBM_deinit_vidmode,
 	IBM_blit_block,
@@ -56,7 +47,7 @@ struct gfx_driver GFX_ibm = {
 	IBM_get_key
 };
 
-void IBM_dummy(void)
+static void IBM_dummy ()
 {
 	/* dummy */
 	static UINT32 cticks = (SINT32)-1;
@@ -91,7 +82,7 @@ int deinit_machine ()
 	return err_OK;
 }
 
-int IBM_init_vidmode ()
+static int IBM_init_vidmode ()
 {
 	union REGS r;
 	int i;
@@ -110,7 +101,7 @@ int IBM_init_vidmode ()
 }
 
 
-int IBM_deinit_vidmode ()
+static int IBM_deinit_vidmode ()
 {
 	union REGS r;
 
@@ -125,7 +116,7 @@ int IBM_deinit_vidmode ()
 
 
 /* blit a block onto the screen */
-void IBM_blit_block(UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
+static void IBM_blit_block(UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
 {
 //	for( ; y1<y2; y1++)
 //		move_memory(0xA0000, screen_buffer+(y1*GFX_WIDTH)+x1, x2-x1);
@@ -146,20 +137,20 @@ void IBM_blit_block(UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
 			screen_buffer + 320 * (y1 + i) + x1, x2 - x1 + 1);
 }
 
-void IBM_put_pixel(UINT16 x, UINT16 y, UINT16 c)
+static void IBM_put_pixel(UINT16 x, UINT16 y, UINT16 c)
 {
 //	*(screen_buffer+(y*GFX_WIDTH)+x)=c;
 	screen_buffer[y * 320 + x] = (c & 0xFF);
 }
 
 
-int IBM_keypress ()
+static int IBM_keypress ()
 {
 	return !!kbhit();
 }
 
 
-int IBM_get_key ()
+static int IBM_get_key ()
 {
 	union REGS r;
 	UINT16 key;

@@ -8,8 +8,8 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#ifndef __AGI_GFX_H
-#define __AGI_GFX_H
+#ifndef __AGI_GFX_BASE_H
+#define __AGI_GFX_BASE_H
 
 #ifdef __cplusplus
 extern "C"{
@@ -39,11 +39,8 @@ extern	UINT8		txt_char;
 extern UINT8	layer1_data[];
 extern UINT8	layer2_data[];
 
-void	get_bitmap	(UINT8 *, UINT8 *, int, int, int, int);
 void	draw_box	(int, int, int, int, int, int, int, int);
 void 	put_text_character(int, int, int, int, int, int);
-void	agi_put_bitmap	(UINT8 *, int, int, int, int, int, int);
-void	agi_put_sprite	(UINT8 *, int, int, int, int, int, int);
 void	do_blit		(void);
 int	init_video	(void);
 int	deinit_video	(void);
@@ -58,11 +55,6 @@ void	clear_buffer	(void);
 void	put_pixel	(int, int, int);	/* driver wrapper */
 void	flush_block	(int, int, int, int);
 void	build_console_layer (void);
-
-void	erase_sprites	(void);
-void	release_sprites	(void);
-void	draw_sprites	(void);
-void	redraw_sprites	(void);
 
 void	print_character	(int, int, char, int, int);
 

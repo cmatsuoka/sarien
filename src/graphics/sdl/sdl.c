@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -30,7 +30,7 @@
 #endif
 
 #include "sarien.h"
-#include "gfx.h"
+#include "gfx_base.h"
 #include "keyboard.h"
 
 extern struct sarien_options opt;

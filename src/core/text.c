@@ -18,7 +18,7 @@
 #include "agi.h"
 #include "logic.h"
 #include "objects.h"
-#include "gfx.h"
+#include "gfx_base.h"
 #include "text.h"
 #include "words.h"
 

@@ -14,7 +14,7 @@
 
 #include "sarien.h"
 #include "agi.h"
-#include "gfx.h"
+#include "gfx_agi.h"
 #include "picture.h"
 
 #define next_byte data[foffs++]
@@ -54,7 +54,7 @@ UINT8	pic_clear_flag = TRUE;
 extern UINT8 old_prio;		/* Used in add_to_pic() */
 
 extern struct sarien_options opt;
-extern struct gfx_driver *gfx;
+//extern struct gfx_driver *gfx;
 
 
 void dump_screen (int resnum)
@@ -842,8 +842,7 @@ void draw_picture ()
 
 		/* FIXME: ugh */
 		if (opt.showscreendraw && opt.showkeypress) {
-			act = gfx->get_key() & 0xFF;
-			/*if (act == 0) getchar ();*/
+			act = get_key() & 0xFF;
 			if(act == 'c')
 				opt.showkeypress = 3;
 			if(act == 'q' || act == 'Q')
@@ -868,23 +867,6 @@ void put_block_buffer (UINT8 *buff, int x1, int y1, int x2, int y2)
 	}
 }
 
-
-void reset_graphics(void)
-{
-	screen_mode = GFX_MODE;
-
-	txt_fg = 0x0F;
-	txt_bg = 0x00;
-
-	memset (screen2, 0, _WIDTH * _HEIGHT);
-	memset (screen_data, 0, _WIDTH * _HEIGHT);
-	memset (priority_data, 0, _WIDTH * _HEIGHT);
-	memset (control_data, 0, _WIDTH * _HEIGHT);
-	memset (xdata_data, 0, _WIDTH * _HEIGHT);
-
-	memset (layer1_data, 0, 320 * 200);
-	memset (layer2_data, 0, 320 * 200);
-}
 
 
 /* load a pic and decode it into the correct slot */

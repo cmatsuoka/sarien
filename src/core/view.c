@@ -13,7 +13,7 @@
 #include <string.h>
 #include "sarien.h"
 #include "agi.h"
-#include "gfx.h"
+#include "gfx_agi.h"
 #include "view.h"
 #include "picture.h"
 #include "console.h"

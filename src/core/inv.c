@@ -14,7 +14,7 @@
 
 #include "sarien.h"
 #include "agi.h"
-#include "gfx.h"
+#include "gfx_base.h"
 #include "objects.h"
 #include "keyboard.h"
 #include "text.h"
@@ -97,7 +97,8 @@ void inventory ()
 			STATUS_FG, STATUS_BG);
  
 	/* dump to screen. */
-	gfx->put_block (0, 0, 320, 200);
+	put_screen ();
+	//gfx->put_block (0, 0, 320, 200);
 
 	/*
 	 * test flag(13)

@@ -15,9 +15,9 @@
 #include <time.h>
 #include "sarien.h"
 #include "agi.h"
+#include "gfx_base.h"
 #include "words.h"
 #include "objects.h"
-#include "gfx.h"
 #include "picture.h"
 #include "sound.h"
 #include "console.h"
@@ -38,9 +38,6 @@ extern struct sarien_console console;
 extern int optind;
 extern UINT8 o_status;
 extern UINT8 *font, font_english[];
-
-extern struct gfx_driver *gfx;
-
 
 extern struct agi_loader agi_v2;
 extern struct agi_loader agi_v3;
@@ -144,7 +141,7 @@ update_statusline:
 		put_screen ();
 
 		while (42) {
-    			switch (tolower (gfx->get_key() & 0xFF))
+    			switch (tolower (get_key() & 0xFF))
     			{
     			case 'q':
 				goto end_view;

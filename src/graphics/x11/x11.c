@@ -28,7 +28,7 @@ static XShmSegmentInfo shminfo;
 #endif
 
 #include "sarien.h"
-#include "gfx.h"
+#include "gfx_base.h"
 #include "keyboard.h"
 
 extern struct sarien_options opt;

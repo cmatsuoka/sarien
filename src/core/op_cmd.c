@@ -59,7 +59,8 @@
 #include "sarien.h"
 #include "agi.h"
 #include "rand.h"
-#include "gfx.h"
+#include "gfx_agi.h"
+#include "gfx_base.h"		/* FIXME: hmm.. */
 #include "keyboard.h"
 #include "opcodes.h"
 #include "objects.h"
@@ -773,8 +774,6 @@ void cmd_clear_lines (UINT8 sl, UINT8 el, UINT8 c)
 {
 	UINT16	x, y, z;
 
-	_D (("(%d, %d, %d)", sl, el, c));
-
 	/* do we need to adjust for +8 on topline?
 	   inc for endline so it mateches the correct num
 	   ie, from 22 to 24 is 3 lines, not 2 lines.
@@ -788,9 +787,6 @@ void cmd_clear_lines (UINT8 sl, UINT8 el, UINT8 c)
 	for (y=sl*8; y<z; y++)
 		for (x=0; x<GFX_WIDTH; x++)
 			put_pixel (x, y, c);
-
-	_D ((": blit (%d, %d, %d, %d)", 0, sl * 8,
-		GFX_WIDTH - 1, z - 1));
 
 	gfx->put_block (0, sl * 8, GFX_WIDTH - 1, sl * 8 + z - 1);
 }
@@ -1390,6 +1386,7 @@ void cmd_load_game ()
 		message_box ((UINT8*)"Gamed loaded.");
 	else
 		message_box ((UINT8*)"Error loading game.");
+	redraw_sprites ();
 }
 
 

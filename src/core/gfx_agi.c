@@ -16,31 +16,17 @@
 
 #include "sarien.h"
 #include "agi.h"
-#include "gfx.h"
+#include "gfx_base.h"
+#include "gfx_agi.h"
 #include "keyboard.h"
 #include "view.h"
 #include "picture.h"
 #include "console.h"
 
 extern struct sarien_options opt;
-
-#if 0
-struct gfx_driver *gfx;			/* graphics driver */
-UINT8		screen_mode;		/* 0=gfx mode, 1=text mode */
-UINT8		txt_fg;			/* fg colour */
-UINT8		txt_bg;			/* bg colour */
-UINT8		txt_char;		/* input character */
-
-
-/* for the blitter routine */
-static int x_min = 320, x_max = 0, y_min = 200, y_max = 0;
-
-/* Ugly kludge for nonblocking windows */
-static int k_x1, k_y1, k_x2, k_y2;
-#endif
-
 extern struct sarien_console console;
 extern struct agi_view_table view_table[];
+extern struct gfx_driver *gfx;
 
 int greatest_kludge_of_all_time = 0;
 
@@ -282,3 +268,39 @@ void redraw_sprites ()
 }
 
 
+int init_video_mode ()
+{
+	return init_video ();
+}
+
+
+int deinit_video_mode ()
+{
+	return deinit_video ();
+}
+
+
+
+void reset_graphics(void)
+{
+	screen_mode = GFX_MODE;
+
+	txt_fg = 0x0F;
+	txt_bg = 0x00;
+
+	memset (screen2, 0, _WIDTH * _HEIGHT);
+	memset (screen_data, 0, _WIDTH * _HEIGHT);
+	memset (priority_data, 0, _WIDTH * _HEIGHT);
+	memset (control_data, 0, _WIDTH * _HEIGHT);
+	memset (xdata_data, 0, _WIDTH * _HEIGHT);
+
+	memset (layer1_data, 0, 320 * 200);
+	memset (layer2_data, 0, 320 * 200);
+}
+
+
+/* This is strange. Should this be here? */
+int get_key ()
+{
+	return gfx->get_key ();
+}

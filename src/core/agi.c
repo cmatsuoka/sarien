@@ -16,7 +16,7 @@
 
 #include "sarien.h"
 #include "agi.h"
-#include "gfx.h"
+#include "gfx_agi.h"
 #include "keyboard.h"
 #include "rand.h"
 #include "objects.h"
@@ -103,10 +103,10 @@ int agi_init ()
 	if (game.game_flags & ID_AGDS)
 		printf ("AGDS mode enabled\n");
 
-	screen_mode=GFX_MODE;
+	//screen_mode=GFX_MODE;
 	/*allow_kyb_input=__FALSE;*/
-	txt_fg=0xF;
-	txt_bg=0x0;
+	//txt_fg=0xF;
+	//txt_bg=0x0;
 
 	ec = loader->init ();		/* load vol files, etc */
 

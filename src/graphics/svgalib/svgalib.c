@@ -26,7 +26,7 @@
 #include <vgakeyboard.h>
 
 #include "sarien.h"
-#include "gfx.h"
+#include "gfx_base.h"
 #include "keyboard.h"
 
 static UINT8 *video_buffer;

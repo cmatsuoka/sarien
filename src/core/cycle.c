@@ -13,7 +13,8 @@
 #include "sarien.h"
 #include "agi.h"
 #include "rand.h"
-#include "gfx.h"
+#include "gfx_agi.h"
+#include "gfx_base.h"		/* FIXME: check this */
 #include "keyboard.h"
 #include "picture.h"
 #include "view.h"

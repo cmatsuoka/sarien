@@ -15,7 +15,7 @@
 
 #include "sarien.h"
 #include "agi.h"
-#include "gfx.h"
+#include "gfx_base.h"
 #include "keyboard.h"
 #include "view.h"
 #include "menu.h"

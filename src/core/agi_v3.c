@@ -20,7 +20,7 @@
 #include "view.h"
 #include "logic.h"
 #include "sound.h"
-#include "gfx.h"
+#include "gfx_agi.h"
 #include "console.h"
 
 static int agi_v3_init (void);
@@ -33,7 +33,6 @@ extern struct agi_picture pictures[];
 extern struct agi_logic logics[];
 extern struct agi_view views[];
 extern struct agi_sound sounds[];
-extern struct gfx_driver *gfx;
 
 struct agi_loader agi_v3 = {
 	3,
@@ -228,7 +227,7 @@ UINT8* agi_v3_load_vol_res (struct agi_dir *agid)
 
 		if (hilo_getword(x) != 0x1234) {
 			/* FIXME */
-			gfx->deinit_video_mode();
+			deinit_video_mode();
 			printf("ACK! BAD RESOURCE!!!\n");
 			exit(0);
 		}

@@ -16,7 +16,7 @@
 
 #include "sarien.h"
 #include "agi.h"
-#include "gfx.h"
+#include "gfx_agi.h"
 #include "opcodes.h"
 #include "view.h"
 #include "logic.h"
