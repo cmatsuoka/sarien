@@ -20,6 +20,9 @@
 volatile UINT32 clock_ticks;
 volatile UINT32 clock_count;
 
+UINT8 *cur_font;
+UINT8 *font_english;
+
 struct sarien_options opt;
 struct game_id_list game_info;
 struct agi_game game;
@@ -43,7 +46,10 @@ BOOL CheckForGame(char *szDir)
 	ZeroMemory(&ffd, sizeof(WIN32_FIND_DATA));
 
 	hFind = FindFirstFile(szDirLocal, &ffd);
-	
+
+	if (hFind == INVALID_HANDLE_VALUE)
+		return FALSE;
+
 	do
 	{
 		sprintf(szFullPath, "%s\\%s", szDir, ffd.cFileName);
