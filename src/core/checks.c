@@ -89,6 +89,7 @@ static int check_priority (struct vt_entry *v)
 	UINT8 *p0;
 
 	if (~v->flags & FIXED_PRIORITY) {
+		/* Priority bands */
 		v->priority = v->y_pos < 48 ? 4 :
 			v->y_pos / 12 + 1;
 	}

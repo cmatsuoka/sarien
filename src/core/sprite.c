@@ -144,7 +144,7 @@ static int test_not_updating (struct vt_entry *v)
 /* convert sprite priority to y value */
 static INLINE int prio_to_y (int p)
 {
-	return (p - 4) * 12 + 48;
+	return (p - 5) * 12 + 48;
 }
 
 /* create and initialize a new sprite structure to be added in
@@ -194,8 +194,8 @@ build_list (struct list_head *head, int (*test)(struct vt_entry *))
 	for_each_vt_entry(v) {
 		if (test (v)) {
 			entry[i] = v;
-			y_val[i] = v->flags & UPDATE ?
-				prio_to_y (v->priority) : v->y_pos;
+			y_val[i] = v->flags & UPDATE ? v->y_pos :
+				prio_to_y (v->priority);
 			i++;
 		}
 	}

@@ -720,11 +720,12 @@ static void x11_put_block (int x1, int y1, int x2, int y2)
 	if (opt.mitshm) {
 		if (opt.fixratio) {
 			XShmPutImage (display, window, gc, ximage, x1,
-				ASPECT_RATIO(y1), x1, ASPECT_RATIO(y1), x2 -
-				x1 + scale - 1, ASPECT_RATIO(y2 - y1 + 1), 0);
+				ASPECT_RATIO(y1), x1, ASPECT_RATIO(y1),
+				x2 - x1 + 1, ASPECT_RATIO(y2 + 1) -
+				ASPECT_RATIO (y1), 0);
 		} else {
 			XShmPutImage (display, window, gc, ximage, x1, y1,
-				x1, y1, x2 - x1 + scale - 1, y2 - y1 + 1, 0);
+				x1, y1, x2 - x1 + 1, y2 - y1 + 1, 0);
 		}
 	}
 	else
@@ -733,10 +734,11 @@ static void x11_put_block (int x1, int y1, int x2, int y2)
 		if (opt.fixratio) {
 			XPutImage (display, window, gc, ximage, x1,
 				ASPECT_RATIO(y1), x1, ASPECT_RATIO(y1),
-				x2 - x1 + scale - 1, ASPECT_RATIO(y2 - y1 + 1));
+				x2 - x1 + 1, ASPECT_RATIO(y2 + 1) -
+				ASPECT_RATIO (y1));
 		} else {
 			XPutImage (display, window, gc, ximage, x1, y1,
-				x1, y1, x2 - x1 + scale - 1, y2 - y1 + 1);
+				x1, y1, x2 - x1 + 1, y2 - y1 + 1);
 		}
 	}
 	
