@@ -135,6 +135,7 @@ char *fixpath (int flag, char *fname)
 
 char *get_current_directory ()
 {
-	return (".");
+	return ("");
 }
+
 

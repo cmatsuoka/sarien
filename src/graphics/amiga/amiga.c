@@ -144,7 +144,8 @@ static int amiga_init_vidmode ()
 	if (GfxBase == NULL)
 		return -1;
 
-	vscreen = (UBYTE *)AllocMem (81920, MEMF_PUBLIC | MEMF_CLEAR);
+	vscreen = (UBYTE *)AllocMem (GFX_WIDTH + GFX_HEIGHT,
+		MEMF_PUBLIC | MEMF_CLEAR);
 
 	win = OpenWindowTags (NULL,
 		WA_Title, "Sarien" ##VERSION,
@@ -173,18 +174,18 @@ static int amiga_init_vidmode ()
 			TAG_DONE);
 	}
 
-	InitBitMap (&tempbm, 7, GFX_WIDTH + 16, GFX_HEIGHT);
+	InitBitMap (&tempbm, 7, GFX_WIDTH, GFX_HEIGHT);
 
-	raster = (PLANEPTR)AllocRaster (GFX_WIDTH + 16, 7 * GFX_HEIGHT);
+	raster = (PLANEPTR)AllocRaster (GFX_WIDTH, 7 * GFX_HEIGHT);
 	if (raster == NULL)
 		return -1;
 
 	for (i = 0; i < 7; i++) {
-		tempbm.Planes[i] = raster + (i * RASSIZE (GFX_WIDTH + 16,
-			GFX_HEIGHT));
+		tempbm.Planes[i] = raster +
+			(i * RASSIZE (GFX_WIDTH, GFX_HEIGHT));
 	}
-	InitRastPort(&temprp);
-	temprp.BitMap=&tempbm;
+	InitRastPort (&temprp);
+	temprp.BitMap = &tempbm;
 
 	return 0;
 }
@@ -193,8 +194,8 @@ static int amiga_deinit_vidmode ()
 {
 	CloseWindow (win);
 	CloseScreen (scr);
-	FreeRaster (raster, GFX_WIDTH + 16, 7 * GFX_HEIGHT);
-	FreeMem (vscreen, 81920);
+	FreeRaster (raster, GFX_WIDTH, 7 * GFX_HEIGHT);
+	FreeMem (vscreen, GFX_WIDTH * GFX_HEIGHT);
 	CloseLibrary ((struct Library *)GfxBase);
 	CloseLibrary ((struct Library *)IntuitionBase);
 
@@ -215,13 +216,15 @@ static void amiga_put_block (int x1, int y1, int x2, int y2)
 	h = y2 - y1 + 1;
 	w = x2 - x1 + 1;
 
-	WritePixelArray8 (rp, x1, y1, x2, y2, vscreen, &temprp);
+	WritePixelArray8 (rp, win->BorderLeft + x1, win->BorderTop + y1,
+		w, h, vscreen, &temprp);
 }
 
 
-static void amiga_put_pixels(int x, int y, int w, UINT8 *p)
+static void amiga_put_pixels (int x, int y, int w, UINT8 *p)
 {
-	/* while (w--) { scrdev.DrawPixel (mempsd, x, y++, *p++); } */
+	UINT8 *v = vscreen + y * GFX_WIDTH + x;
+	while (w--) { *v++ = *p++; }
 }
 
 
@@ -244,23 +247,3 @@ static int amiga_get_key ()
 	return k;
 }
 
-#if 0
-
-
-/*****************************************************************************/
-
-/* The Event code. */
-void tv_event (void)
-{
-	read_keyboard();
-}
-
-/*****************************************************************************/
-
-void moudrv_read(void)
-{
-}
-
-/*****************************************************************************/
-
-#endif
