@@ -58,10 +58,11 @@ static int	ph_keypress	(void);
 static int	ph_get_key	(void);
 static void	ph_new_timer	(void);
 
-void		photon_thread	(void *);
+void *		photon_thread	(void *);
 static void	ph_raw_draw_cb	(PtWidget_t *, PhTile_t *);
 static int	ph_keypress_cb	(PtWidget_t *, void *, PtCallbackInfo_t *);
 static int	ph_cause_damage	(void *, int, void *, size_t);
+static int	ph_mouse_cb	(PtWidget_t *widget, void *data, PtCallbackInfo_t *cb);
 
 
 static pthread_t ph_tid;
@@ -109,7 +110,7 @@ static int init_vidmode (void)
 
 	fprintf (stderr, "ph: Photon support by jeremy@astra.mb.ca\n");
 
-	opt.fullscreen = FALSE;		// We can implement later.
+	opt.fullscreen = FALSE;		/* We can implement later. */
 
 	for (i = 0; i < 32; i ++) {
 		ph_pal[i] = (palette[i * 3] << 18) + 
@@ -121,7 +122,8 @@ static int init_vidmode (void)
 
 	pthread_create (&ph_tid, NULL, photon_thread, (void*)getpid());
 
-	pthread_barrier_wait (&barrier); // Wait for thread to create a channel to send to
+	pthread_barrier_wait (&barrier); /* Wait for thread to create a
+                                            channel to send to */
 	
 	ph_coid = ConnectAttach (0, 0, ph_chid, _NTO_SIDE_CHANNEL, 0);
 	return err_OK;
@@ -211,7 +213,7 @@ static int ph_keypress ()
 {
 	int retcode;
 
-	pthread_sleepon_lock(); // Watch those threads!  This ain't atomic.
+	pthread_sleepon_lock(); /* Watch those threads!  This ain't atomic. */
 	retcode = key_queue_start != key_queue_end ? TRUE : FALSE;
 	pthread_sleepon_unlock();
 
@@ -254,15 +256,19 @@ static void ph_new_timer ()
 
 }
 
-// PHOTON THREAD //
+/* PHOTON THREAD */
 
-void photon_thread (void *pidarg)
+void *photon_thread (void *pidarg)
 {
 	PtArg_t args[4];
 	PtWidget_t *window;
 	PhDim_t dim;
 	PhArea_t area;
-	PtRawCallback_t keycb[] = {{ Ph_EV_KEY , ph_keypress_cb, NULL }};
+	PtRawCallback_t keycb[] = {{ Ph_EV_KEY , ph_keypress_cb, NULL },
+                                   { Ph_EV_BUT_PRESS, ph_mouse_cb, NULL },
+                                   { Ph_EV_BUT_RELEASE, ph_mouse_cb, NULL },
+                                   { Ph_EV_PTR_MOTION_NOBUTTON, ph_mouse_cb, NULL },
+                                   { Ph_EV_PTR_MOTION_BUTTON, ph_mouse_cb, NULL }};
 	int recpid = (int)pidarg;
 
 	dim.w = GFX_WIDTH * scale;
@@ -298,16 +304,17 @@ void photon_thread (void *pidarg)
 
 	PtSetArg(&args[0], Pt_ARG_AREA, &area, 0);
 	PtSetArg(&args[1], Pt_ARG_RAW_DRAW_F, ph_raw_draw_cb, 0);
-	PtSetArg(&args[2], Pt_CB_RAW, keycb, 0);
-	PtSetArg(&args[3], Pt_ARG_FLAGS, Pt_TRUE, Pt_GETS_FOCUS);
-	rawwidget = PtCreateWidget (PtRaw, window, 4, args);
+	PtSetArg(&args[2], Pt_ARG_FLAGS, Pt_TRUE, Pt_GETS_FOCUS);
+	rawwidget = PtCreateWidget (PtRaw, window, 3, args);
 
-	pthread_barrier_wait (&barrier); // sync with original thread
+	PtAddEventHandlers (rawwidget, keycb, 5);
+
+	pthread_barrier_wait (&barrier); /* sync with original thread */
 
 	PtRealizeWidget(window);
 	PtMainLoop();
 
-	return;
+	return (0);
 }
 
 
@@ -374,22 +381,18 @@ static int ph_keypress_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 				key = 0;
 				break;
 			case Pk_Up:
-//			case Pk_KP_Up:
 			case Pk_KP_8:
 				key = KEY_UP;
 				break;
 			case Pk_Left:
-//			case Pk_KP_Left:
 			case Pk_KP_4:
 				key = KEY_LEFT;
 				break;
 			case Pk_Down:
-//			case Pk_KP_Down:
 			case Pk_KP_2:
 				key = KEY_DOWN;
 				break;
 			case Pk_Right:
-//			case Pk_KP_Right:
 			case Pk_KP_6:
 				key = KEY_RIGHT;
 				break;
@@ -460,6 +463,9 @@ static int ph_keypress_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 			case Pk_Escape:
 				key = 0x1b;
 				break;
+			case Pk_BackSpace:
+				key = KEY_BACKSPACE;
+				break;
 			default:
 				if (!isalpha (key))
 					break;
@@ -500,7 +506,32 @@ static int ph_keypress_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 
 	return (Pt_CONSUME);
 }
-	
+
+static int ph_mouse_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
+{
+	PhPointerEvent_t *mouse_event;
+
+	mouse_event = PhGetData(cb->event);
+
+	if (cb->event->type == Ph_EV_BUT_PRESS)
+	{
+		mouse.button = TRUE;
+		key_enqueue ((mouse_event->buttons == Ph_BUTTON_SELECT) 
+						? BUTTON_LEFT : BUTTON_RIGHT);
+	}
+        /* If all buttons released */
+	if (cb->event->type == Ph_EV_BUT_RELEASE)
+		mouse.button = FALSE;
+
+	mouse.x = PhGetRects(cb->event)->ul.x / opt.scale;
+	mouse.y = PhGetRects(cb->event)->ul.y / opt.scale;
+#if 0
+	/* FIXME: Photon driver doesn't support this flag yet */
+        if (opt.fixratio)
+		mouse.y = mouse.y * 5 / 6;
+#endif
+        return (Pt_CONSUME);
+}	
 static int ph_cause_damage (void *data, int rcvid, void *message, size_t mbsize)
 {
 	PhRect_t *rect;
