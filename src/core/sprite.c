@@ -43,7 +43,11 @@ struct sprite {
  */
 #undef ALLOC_DEBUG
 
-#define POOL_SIZE 32000
+#ifdef USE_HIRES
+#  define POOL_SIZE 32000
+#else
+#  define POOL_SIZE 16000
+#endif
 static UINT8 sprite_pool[POOL_SIZE];
 static UINT8 *pool_top = (UINT8 *)sprite_pool;
 
@@ -59,11 +63,6 @@ static void *pool_alloc (int size)
 	x = pool_top;
 	pool_top += size;
 
-	if (pool_top >= (UINT8 *)sprite_pool + POOL_SIZE) {
-		pool_top = x;
-		return NULL;
-	}
-	
 #ifdef ALLOC_DEBUG
 	if ((int)(pool_top - (UINT8 *)sprite_pool) > max_alloc)
 		max_alloc = (int)(pool_top - (UINT8 *)sprite_pool);
@@ -72,6 +71,13 @@ static void *pool_alloc (int size)
 		size, (x - (UINT8 *)sprite_pool),
 		(int)(pool_top - (UINT8 *)sprite_pool), max_alloc);
 #endif
+
+	if (pool_top >= (UINT8 *)sprite_pool + POOL_SIZE) {
+		_D (_D_CRIT "not enough memory");
+		pool_top = x;
+		return NULL;
+	}
+	
 	return x;
 }
 
@@ -382,8 +388,8 @@ static struct sprite *new_sprite (struct vt_entry *v)
 	struct sprite *s;
 
 	s = (struct sprite *)pool_alloc (sizeof (struct sprite));
-	if (s == NULL)
-		abort ();
+	assert (s != NULL);
+
 	s->v = v;	/* link sprite to associated view table entry */
 	s->x_pos = v->x_pos;
 	s->y_pos = v->y_pos - v->y_size + 1;

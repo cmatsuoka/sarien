@@ -81,6 +81,8 @@
 - Thomas Akesson <tapilot@home.se>
   * Word parser bug fixes
   * New find_word algorithm
+  * RLE encoded sprites
+  * New flood fill algorithm
 
 
 Special thanks to:

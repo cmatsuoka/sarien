@@ -423,7 +423,7 @@ int load_game(char* s)
 	{
 		if(read_uint8(f) & RES_LOADED)
 			agi_load_resource(rLOGIC, i);
-		else if(!(game.dir_logic[i].flags & RES_CACHED))
+		else
 			agi_unload_resource(rLOGIC, i);
 		game.logics[i].sIP = read_sint16(f);
 		game.logics[i].cIP = read_sint16(f);
@@ -432,21 +432,21 @@ int load_game(char* s)
 	{
 		if(read_uint8(f) & RES_LOADED)
 			agi_load_resource(rPICTURE, i);
-		else if(!(game.dir_pic[i].flags & RES_CACHED))
+		else
 			agi_unload_resource(rPICTURE, i);
 	}
 	for(i=0; i<MAX_DIRS; i++)
 	{
 		if(read_uint8(f) & RES_LOADED)
 			agi_load_resource(rVIEW, i);
-		else if(!(game.dir_view[i].flags & RES_CACHED))
+		else
 			agi_unload_resource(rVIEW, i);
 	}
 	for(i=0; i<MAX_DIRS; i++)
 	{
 		if(read_uint8(f) & RES_LOADED)
 			agi_load_resource(rSOUND, i);
-		else if(!(game.dir_sound[i].flags & RES_CACHED))
+		else
 			agi_unload_resource(rSOUND, i);
 	}
 

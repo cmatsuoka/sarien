@@ -515,7 +515,7 @@ char *agi_sprintf (char *s)
 			case 'm': {
 				int n = game.lognum, m = atoi(s) - 1;
 				if (game.logics[n].num_texts > m)
-					strcat(p,game.logics[n].texts[m]);
+					strcat(p, game.logics[n].texts[m]);
 				break;
 				}
 			}

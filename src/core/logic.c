@@ -14,7 +14,12 @@
 #include "agi.h"
 
 
-/* decodes messages into message list from raw logic files */
+/**
+ * Decode logic resource
+ * This function decodes messages from the specified raw logic resource
+ * into a message list.
+ * @param n  The number of the logic resource to decode.
+ */
 int decode_logic (int n)
 {
 	int ec = err_OK;
@@ -77,8 +82,18 @@ int decode_logic (int n)
 }
 
 
+/**
+ * Unload logic resource
+ * This function unloads the specified logic resource, freeing any
+ * memory chunks allocated for this resource.
+ * @param n  The number of the logic resource to unload
+ */
 void unload_logic (int n)
 {
+	/* Keep logic 0 in memory */
+	if (!n)
+		return;
+
 	if (game.dir_logic[n].flags & RES_LOADED) {
 		free (game.logics[n].data);
 		if (game.logics[n].num_texts)
@@ -91,4 +106,6 @@ void unload_logic (int n)
 	game.logics[n].sIP = 2;
 	game.logics[n].cIP = 2;
 }
+
+/* end: logic.c */
 

@@ -219,7 +219,6 @@ enum {
 
 enum {
 	RES_LOADED = 1,
-	RES_CACHED = 2,
 	RES_COMPRESSED = 0x40
 };
 
@@ -260,8 +259,6 @@ struct mouse {
  * Command-line options.
  */
 struct sarien_options {
-	int forceload;		/**< force loading of all resources */
-	int cache;		/**< cache loaded resources */
 #define GAMERUN_RUNGAME 0
 #define GAMERUN_PICVIEW 1
 #define GAMERUN_WORDS	2

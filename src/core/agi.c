@@ -113,64 +113,26 @@ int agi_init ()
 	/* FIXME: load IIgs instruments and samples */
 	/* load_instruments("kq.sys16"); */
 
-	/* Load logic 0 into memory, set cache flag for logic 0 */
-	if (ec == err_OK) {
+	/* Load logic 0 into memory */
+	if (ec == err_OK)
 		ec = loader->load_resource (rLOGIC, 0);
-		game.dir_logic[0].flags |= RES_CACHED;	/* keep this one cached */
-	}
-
-#if 0
-	/* if cached, enable caching options */
-	if (opt.cache) {
-		for (i = 0; i < MAX_DIRS; i++) {
-			game.dir_logic[i].flags |= RES_CACHED;
-			game.dir_pic[i].flags |= RES_CACHED;
-			game.dir_view[i].flags |= RES_CACHED;
-			game.dir_sound[i].flags |= RES_CACHED;
-		}
-	}
-
-	/* if forced, load all cacheable objects */
-	if (opt.forceload && ec == err_OK) {
-		for(i = 0; i < MAX_DIRS; i++) {
-			loader->load_resource (rLOGIC, i);
-			loader->load_resource (rPICTURE, i);
-			loader->load_resource (rVIEW, i);
-		}
-		printf("\n");
-	}
-#endif
 
 	return ec;
 }
 
-static void unload_all_resources ()
-{
-	int i;
-
-	for(i = 0; i < MAX_DIRS; i++) {
-		game.dir_view[i].flags &= ~RES_CACHED;
-		game.dir_pic[i].flags &= ~RES_CACHED;
-		game.dir_logic[i].flags &= ~RES_CACHED;
-		game.dir_sound[i].flags &= ~RES_CACHED;
-	}
-
-	agi_unload_resources ();
-}
 
 /*
  * Public functions
  */
 
-
 void agi_unload_resources ()
 {
 	int i;
 
-	for(i = 0; i < MAX_DIRS; i++) {
+	for (i = 0; i < MAX_DIRS; i++) {
+		loader->unload_resource (rLOGIC, i);
 		loader->unload_resource (rVIEW, i);
 		loader->unload_resource (rPICTURE, i);
-		loader->unload_resource (rLOGIC, i);
 		loader->unload_resource (rSOUND, i);
 	}
 }
@@ -181,7 +143,7 @@ int agi_deinit ()
 
 	clean_input ();			/* remove all words from memory */
 	deinit_menus ();		/* unload the menus */
-	unload_all_resources ();	/* unload resources in memory */
+	agi_unload_resources ();	/* unload resources in memory */
 	ec = loader->deinit ();
 	unload_objects();
 	unload_words();
@@ -190,7 +152,6 @@ int agi_deinit ()
 
 	return ec;
 }
-
 
 int agi_detect_game (char *gn)
 {

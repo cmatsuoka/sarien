@@ -46,11 +46,6 @@ static void help (int argc, char **argv)
 "                     Emulate the sound of Sierra AGI running in different\n"
 "                     computers. Valid emulations are pc, mac and amiga\n"
 #endif
-#if 0
-"  -l -force-loading  Force loading of all volume information at start of\n"
-"                     game which will give you faster play, this also implies\n"
-"                     the caching.\n"
-#endif
 "  -L --list-games    List all the games in the ID file\n"
 "  -F --full-screen   Run in full-screen mode if allowed by the graphics device\n"
 "  -g --no-gfx-optimizations\n"
@@ -122,10 +117,6 @@ int parse_cli (int argc, char **argv)
 #endif
 		{ "amiga",		0, 0, 'A'},
 		{ "emulate-version",	1, 0, 'v' },
-#if 0
-		{ "force-loading",	0, 0, 'l' },
-		{ "cache-loading",	0, 0, 'c' },
-#endif
 		{ "crc",		0, 0, 'C'},
 		{ "list-games",		0, 0, 'L'},
 #ifdef OPT_LIST_DICT
@@ -216,9 +207,6 @@ int parse_cli (int argc, char **argv)
 		case 'C':
 			opt.gamerun = GAMERUN_CRC;
 			break;
-		case 'c':
-			opt.cache = TRUE;
-			break;
 #ifdef OPT_LIST_DICT
 		case 'd':
 			opt.gamerun = GAMERUN_WORDS;
@@ -239,10 +227,6 @@ int parse_cli (int argc, char **argv)
 			break;
 		case 'F':
 			opt.fullscreen = TRUE;
-			break;
-		case 'f':
-			opt.forceload = TRUE;
-			opt.cache = TRUE;
 			break;
 		case 'L':
 			opt.gamerun = GAMERUN_GAMES;
