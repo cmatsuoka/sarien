@@ -35,6 +35,7 @@ Revision History
 	- added experimental support to noise channel
 	- implemented picture offset according to status line
 	- implemented invisible ego signaling
+	- fixed command get.num
 
 0.6.2 (20010826)
 	- fixed cmd_clear_rect() to prevent crash with the IIgs demo

@@ -188,7 +188,7 @@ extern "C"{
 #define MAX_VIEWTABLE	64
 #define MAX_WORDS	20
 #define MAX_WORDS1	24
-#define	MAX_WORDS2	40
+#define	MAX_WORDS2	41	/* Last string is used by get.num */
 #ifndef MAX_PATH
 #define MAX_PATH	260
 #endif

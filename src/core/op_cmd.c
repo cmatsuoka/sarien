@@ -627,7 +627,8 @@ cmd(get_string) {
 		get_string (p3 + len - 1, p2, p4, p0);
 
 		/* SGEO : display input char */
-		print_character ((p3 + len ), p2, game.cursor_char, game.color_fg, game.color_bg);
+		print_character ((p3 + len ), p2, game.cursor_char,
+			game.color_fg, game.color_bg);
 	}
 
 	do {
@@ -637,16 +638,24 @@ cmd(get_string) {
 
 
 cmd(get_num) {
-	game.input_mode = INPUT_GETSTRING;
+	_D ("%d %d", p0, p1);
+	new_input_mode (INPUT_GETSTRING);
 
-	if (cur_logic->texts != NULL && (p0 - 1) <= cur_logic->num_texts) {
-		char *prompt = agi_sprintf (cur_logic->texts[p0 - 1]);
-		print_text (prompt, 0, 0, 23 * CHAR_LINES, strlen (prompt) + 1,
+	if (cur_logic->texts != NULL && cur_logic->num_texts >= (p0 - 1)) {
+		int len = strlen (cur_logic->texts[p0 - 1]);
+		print_text (cur_logic->texts[p0 - 1], 0, 0, 23, len,
 			game.color_fg, game.color_bg);
-		get_string (strlen (prompt) + 1, 23 * CHAR_LINES, (strlen (prompt) - 1) * CHAR_COLS,
-			p1);
-		_v[p1] = atoi (prompt);
+		get_string (len - 1, 23, 1, MAX_WORDS2);
 	}
+
+	do {
+		main_cycle ();
+	} while (game.input_mode == INPUT_GETSTRING);
+
+	_v[p1] = atoi (game.strings[MAX_WORDS2]);
+	_D (_D_WARN "[%s] -> %d", game.strings[MAX_WORDS2], _v[p1]);
+	clear_lines (23, 23, game.color_bg);
+	flush_lines (23, 23);
 }
 
 cmd(set_cursor_char)
