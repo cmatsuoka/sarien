@@ -8,6 +8,9 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
+
+#ifndef PALMOS
+
 #include <stdio.h>
 #include <string.h>
 #ifndef __MPW__
@@ -458,4 +461,7 @@ int loadgame_dialog ()
 	return rc;
 }
 
+#endif /* PALMOS */
+
 /* end: savegame.c */
+

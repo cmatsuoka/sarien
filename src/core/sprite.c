@@ -316,8 +316,10 @@ static void commit_sprites (struct list_head *head)
 		s->v->flags &= ~DIDNT_MOVE;
 	}
 
+#ifdef USE_CONSOLE
 	if (debug.statusline)
 		write_status ();
+#endif
 }
 
 /**
