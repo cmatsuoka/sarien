@@ -2,6 +2,7 @@
 
 #include <Memory.h>
 #include <string.h>
+#include <stdio.h>
 
 char *strdup (char *s)
 {
@@ -16,11 +17,13 @@ void *my_malloc (int n)
 	int i = MaxBlock ();
 	void *x;
 
-	if (n >= i)
+	if (n >= i) {
+		printf ("Error: malloc = %d, maxblock = %d\n", n, i);
 		exit (-1);
+	}
 
 	if ((x = (void *)NewPtr(n)) == NULL) {
-		_D (D_CRIT "Error: %d\n", MemError());
+		printf ("Error: %d\n", MemError());
 		exit (-1);
 	}
 
@@ -33,11 +36,13 @@ void *my_calloc (int n, int s)
 	int i = MaxBlock ();
 	void *x;
 
-	if (n * s >= i)
+	if (n * s >= i) {
+		printf ("Error: calloc = %d,%d, maxblock = %d\n", n, s, i);
 		exit (-1);
+	}
 
 	if ((x = (void *)NewPtrClear(n * s)) == NULL) {
-		_D (D_CRIT "Error: %d\n", MemError());
+		printf ("Error: %d\n", MemError());
 		exit (-1);
 	}
 	

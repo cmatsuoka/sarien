@@ -559,6 +559,7 @@ int console_init ()
 	debug.priority = 0;
 
 	has_console = 1;
+	clear_screen (0);
 
 	return err_OK;
 }
