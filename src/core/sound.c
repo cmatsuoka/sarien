@@ -21,11 +21,14 @@
 
 #define SOUND_PLAYING   0x01
 #define WAVEFORM_SIZE   64
+#define ENV_ATTACK	10000		/**< envelope attack rate */
 #define ENV_DECAY       1000		/**< envelope decay rate */
 #define ENV_SUSTAIN     100		/**< envelope sustain level */
-#define NUM_CHANNELS    16		/**< number of sound channels */
+#define ENV_RELEASE	7500		/**< envelope release rate */
+#define NUM_CHANNELS    7		/**< number of sound channels */
 
 #define USE_INTERPOLATION
+#define USE_CHORUS
 
 /**
  * AGI sound note structure.
@@ -55,6 +58,11 @@ struct channel_info {
 #define AGI_SOUND_LOOP		0x0001
 #define AGI_SOUND_ENVELOPE	0x0002
 	UINT32 flags;
+#define AGI_SOUND_ENV_ATTACK	3
+#define AGI_SOUND_ENV_DECAY	2
+#define AGI_SOUND_ENV_SUSTAIN	1
+#define AGI_SOUND_ENV_RELEASE	0
+	UINT32 adsr;
 	SINT32 timer;
 	UINT32 end;
 	UINT32 freq;
@@ -302,8 +310,10 @@ void start_sound (int resnum, int flag)
 		/* Initialize channel info */
 		for (i = 0; i < NUM_CHANNELS; i++) {
 			chn[i].flags = AGI_SOUND_LOOP;
-			if (env)
+			if (env) {
 				chn[i].flags |= AGI_SOUND_ENVELOPE;
+				chn[i].adsr = AGI_SOUND_ENV_ATTACK;
+			}
 #ifdef USE_PCM_SOUND
 			chn[i].ins = waveform;
 			chn[i].size = WAVEFORM_SIZE;
@@ -341,10 +351,8 @@ void stop_sound ()
 	int i;
 
 	endflag = -1;
-	for (i = 0; i < NUM_CHANNELS; i++) {
-		chn[i].vol = 0;
-		chn[i].end = 0;
-	}
+	for (i = 0; i < NUM_CHANNELS; i++)
+		stop_note (i);
 
 	if (playing_sound != -1) {
 		game.sounds[playing_sound].flags &= ~SOUND_PLAYING;
@@ -423,7 +431,13 @@ void deinit_sound (void)
 
 static void stop_note (int i)
 {
-	chn[i].vol = 0;
+	chn[i].adsr = AGI_SOUND_ENV_RELEASE;
+
+#ifdef USE_CHORUS
+	/* Stop chorus ;) */
+	if (opt.soundemu == SOUND_EMU_NONE && i < 3)
+		stop_note (i + 4);
+#endif
 
 #ifdef __TURBOC__
 	if (i == 0)
@@ -446,6 +460,17 @@ static void play_note (int i, int freq, int vol)
 	chn[i].freq = freq;
 	chn[i].vol = vol; 
 	chn[i].env = 0x10000;
+	chn[i].adsr = AGI_SOUND_ENV_ATTACK;
+
+#ifdef USE_CHORUS
+	/* Add chorus ;) */
+	if (opt.soundemu == SOUND_EMU_NONE && i < 3) {
+		int newfreq = 1.0 / ((1.0 / freq) * 1000 / 1001);
+		if (freq == newfreq)
+			newfreq++;
+		play_note (i + 4, newfreq, vol * 2 / 3);
+	}
+#endif
 
 #ifdef __TURBOC__
 	if (i == 0)
@@ -546,6 +571,13 @@ void play_agi_sound ()
 			if (chn[i].timer == 0xffff) {
 				chn[i].end = 1;
 				chn[i].vol = 0;
+				chn[i].env = 0;
+#ifdef USE_CHORUS
+				if (opt.soundemu == SOUND_EMU_NONE && i < 3) {
+					chn[i + 4].vol = 0;
+					chn[i + 4].env = 0;
+				}
+#endif
 			}
 			chn[i].ptr++;
 		}
@@ -561,11 +593,11 @@ void play_sound ()
 		return;
 
 #ifdef USE_IIGS_SOUND
-	if (type == AGI_SOUND_MIDI)
-		play_midi_sound ();
-	else if (type == AGI_SOUND_SAMPLE)
+	if (type == AGI_SOUND_MIDI) {
+		/* play_midi_sound (); */
+	} else if (type == AGI_SOUND_SAMPLE) {
 		play_sample_sound ();
-	else
+	} else
 #endif
 		play_agi_sound ();
 
@@ -593,57 +625,71 @@ UINT32 mix_sound (void)
 
 	memset (snd_buffer, 0, BUFFER_SIZE << 1);
 
-	for (c = 0; c < 3; c++) {
+	for (c = 0; c < NUM_CHANNELS; c++) {
 		if (!chn[c].vol)
 			continue;
 
-		src = chn[c].ins;
-
-		p = chn[c].phase;
 		m = chn[c].flags & AGI_SOUND_ENVELOPE ?
 			chn[c].vol * chn[c].env >> 16 :
 			chn[c].vol;
-
-		for (i = 0; i < BUFFER_SIZE; i++) {
-			b = src[p >> 8];
+	
+		if (c != 3) {
+			src = chn[c].ins;
+	
+			p = chn[c].phase;
+			for (i = 0; i < BUFFER_SIZE; i++) {
+				b = src[p >> 8];
 #ifdef USE_INTERPOLATION
-			b += ((src[((p >> 8) + 1) % chn[c].size] -
-				src[p >> 8]) * (p & 0xff)) >> 8;
+				b += ((src[((p >> 8) + 1) % chn[c].size] -
+					src[p >> 8]) * (p & 0xff)) >> 8;
 #endif
-			snd_buffer[i] += (b * m) >> 3;
-
-			p += (UINT32)11860 * 4 / chn[c].freq;
-
-			/* FIXME */
-			if (chn[c].flags & AGI_SOUND_LOOP) {
-				p %= chn[c].size << 8;
-			} else {
-				if (p >= chn[c].size << 8) {
-					p = chn[c].vol = 0;
-					chn[c].end = 1;
-					break;
+				snd_buffer[i] += (b * m) >> 4;
+	
+				p += (UINT32)11860 * 4 / chn[c].freq;
+	
+				/* FIXME */
+				if (chn[c].flags & AGI_SOUND_LOOP) {
+					p %= chn[c].size << 8;
+				} else {
+					if (p >= chn[c].size << 8) {
+						p = chn[c].vol = 0;
+						chn[c].end = 1;
+						break;
+					}
 				}
+	
 			}
-
-		}
-		chn[c].phase = p;
-		if (chn[c].env > chn[c].vol * ENV_SUSTAIN)
-			chn[c].env -= ENV_DECAY;
-	}
-
-	if (chn[3].vol) {
-		c = 3;
-		m = chn[c].flags & AGI_SOUND_ENVELOPE ?
-			chn[c].vol * chn[c].env >> 16 :
-			chn[c].vol;
-
-		for (i = 0; i < BUFFER_SIZE; i++) {
-			b = rnd(256) - 128;
-			snd_buffer[i] += (b * m) >> 3;
+			chn[c].phase = p;
+		} else {
+			/* Add white noise */
+			for (i = 0; i < BUFFER_SIZE; i++) {
+				b = rnd(256) - 128;
+				snd_buffer[i] += (b * m) >> 4;
+			}
 		}
 
-		if (chn[c].env > chn[c].vol * ENV_SUSTAIN)
-			chn[c].env -= ENV_DECAY;
+		switch (chn[c].adsr) {
+		case AGI_SOUND_ENV_ATTACK:
+			/* not implemented */
+			chn[c].adsr = AGI_SOUND_ENV_DECAY;
+			break;
+		case AGI_SOUND_ENV_DECAY:
+			if (chn[c].env > chn[c].vol * ENV_SUSTAIN + ENV_DECAY) {
+				chn[c].env -= ENV_DECAY;
+			} else {
+				chn[c].env = chn[c].vol * ENV_SUSTAIN;
+				chn[c].adsr = AGI_SOUND_ENV_SUSTAIN;
+			}
+			break;
+		case AGI_SOUND_ENV_SUSTAIN:
+			break;
+		case AGI_SOUND_ENV_RELEASE:
+			if (chn[c].env >= ENV_RELEASE) {
+				chn[c].env -= ENV_RELEASE;
+			} else {
+				chn[c].env = 0;
+			}
+		}
 	}
 
 	return BUFFER_SIZE;

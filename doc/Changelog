@@ -33,7 +33,7 @@ Revision History
 	- merged Paul Hill's Amiga port
 	- merged Vasyl Tsvirkunov's PocketPC port
 	- added experimental support to noise channel
-	- implemented picture offset according to status line
+	- implemented picture offset according to configure.screen
 	- implemented invisible ego signaling
 	- fixed command get.num
 
