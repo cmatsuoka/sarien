@@ -82,9 +82,6 @@ static void fix_pixel_left (int x, int y)
 	if (!scr_on)
 		return;
 
-	if (x == 0 && y == 0)
-		return;
-
 	p = &game.hires[y * (_WIDTH * 2) + x * 2 + 1];
 	if ((*p & 0x0f) == 0x0f)
 		put_virt_pixel (2 * x + 1, y, 2);
@@ -125,7 +122,7 @@ static void hires_fill_scanline (int x, int y)
 		return;
 
 	/* Scan for left border */
-	for (c = x - 1; hires_fill_here (c, y); c--);
+	for (c = x - 1; c > 0 && hires_fill_here (c, y); c--);
 	fix_pixel_left (c, y);
 	
 	newspan_up = newspan_down = 1;
