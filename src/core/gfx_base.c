@@ -53,6 +53,18 @@ UINT8		txt_char;		/* input character */
 static int x_min = GFX_WIDTH, x_max = 0, y_min = GFX_HEIGHT, y_max = 0;
  
 
+/* This works in the 320x200 visible screen, but receiving AGI 160x168
+ * coordinates
+ */
+void put_pixel_buffer (int x, int y, int c)
+{
+#ifndef PALMOS
+	x <<= 1;
+	put_pixel (x + 1, y, c);
+#endif
+	put_pixel (x, y, c);
+}
+
 
 /* driver wrapper */
 /* put_pixel2 is console-aware and handles transparency

@@ -15,7 +15,6 @@
 extern "C"{
 #endif
 
-void	put_pixel_buffer(int, int, int);
 void	get_bitmap	(UINT8 *, UINT8 *, int, int, int, int);
 void	agi_put_bitmap	(UINT8 *, int, int, int, int, int, int);
 void	agi_put_sprite	(UINT8 *, int, int, int, int, int, int);

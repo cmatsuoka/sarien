@@ -177,7 +177,7 @@ static UINT8 get_pri_pixel (UINT16 x, UINT16 y)
 }
 
 
-static void put_virt_pixel(UINT16 x, UINT16 y)
+static void put_virt_pixel (UINT16 x, UINT16 y)
 {
 	if (x >= _WIDTH || y >= _HEIGHT)
 		return;
@@ -431,21 +431,21 @@ static void agiFill (int x, int y)
 		_POP(&c);
 
 		/* Exit if stack is empty */
-		if ((c.x == 0xFFFF) || (c.y == 0xFFFF))
+		if (c.x == 0xFFFF || c.y == 0xFFFF)
 			break;
 
-		if (is_ok_fill_here (c.x,c.y)) {
+		if (is_ok_fill_here (c.x, c.y)) {
 			put_virt_pixel (c.x, c.y);
-			if (c.x > 0 && is_ok_fill_here (c.x-1, c.y)) {
+			if (c.x > 0 && is_ok_fill_here (c.x - 1, c.y)) {
 				c.x--; _PUSH (&c); c.x++;
     			}
-			if (c.x < _WIDTH - 1 && is_ok_fill_here (c.x+1, c.y)) {
+			if (c.x < _WIDTH - 1 && is_ok_fill_here (c.x + 1, c.y)) {
 				c.x++; _PUSH (&c); c.x--;
  			}
-			if (c.y < _HEIGHT - 1 && is_ok_fill_here (c.x, c.y+1)) {
+			if (c.y < _HEIGHT - 1 && is_ok_fill_here (c.x, c.y + 1)) {
 				c.y++; _PUSH (&c); c.y--;
     			}
-			if (c.y > 0 && is_ok_fill_here (c.x, c.y-1)) {
+			if (c.y > 0 && is_ok_fill_here (c.x, c.y - 1)) {
 				c.y--; _PUSH (&c); c.y++;
     			}
 		}
@@ -470,7 +470,7 @@ static void x_corner ()
 
 	x1 = next_byte;
 	y1 = next_byte;
-   	put_virt_pixel (x1,y1);
+   	put_virt_pixel (x1, y1);
 
 	while (42) {
 		x2=next_byte;

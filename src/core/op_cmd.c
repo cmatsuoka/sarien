@@ -913,13 +913,13 @@ void cmd_print_at (UINT8 logic, UINT8 msg, SINT8 y, SINT8 x, SINT8 len)
 		window_nonblocking = 1;
 		release_sprites ();
 	} else {
-		if (getvar (V_window_reset)>0) {
+		if (getvar (V_window_reset) > 0) {
 			_D (_D_WARN "f15==0, v21==%d => timed", getvar (21));
 			setvar (V_key, 0);
-			msg_box_secs2=getvar (V_window_reset);
+			msg_box_secs2 = getvar (V_window_reset);
+			_D (_D_WARN "msg_box_secs2 = %ld", msg_box_secs2);
 
-			while (getvar (V_window_reset))
-			{
+			while (getvar (V_window_reset)) {
 				/* FR: The call to main cycle fills the
 				 * keyboard internal buffer!
 				 */
@@ -927,6 +927,7 @@ void cmd_print_at (UINT8 logic, UINT8 msg, SINT8 y, SINT8 x, SINT8 len)
 				main_cycle (FALSE);
 
 				if (key) {
+					_D (_D_WARN "key");
 					setvar (V_key, key = 0);
 					setvar (V_window_reset, 0);
 					break;

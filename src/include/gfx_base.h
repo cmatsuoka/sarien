@@ -44,6 +44,7 @@ extern	UINT8		txt_char;
 extern UINT8	layer1_data[];
 extern UINT8	layer2_data[];
 
+void    put_pixel_buffer(int, int, int);
 void	draw_box	(int, int, int, int, int, int, int, int);
 void 	put_text_character(int, int, int, int, int, int);
 void	do_blit		(void);

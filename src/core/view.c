@@ -395,8 +395,10 @@ void draw_obj (int vt)
 	cel_width = VT_WIDTH(view_table[vt]);
 	cel_height = VT_HEIGHT(view_table[vt]);
 
-	/* DF: CLIPPING (FIXES OP:RECON BUG !! (speach bubbles) */
 #if 0
+	/* DF: CLIPPING (FIXES OP:RECON BUG !! (speach bubbles) */
+
+	/* Breaks sprites moving off screen */
 	if (v->x_pos + cel_width > _WIDTH)
 		v->x_pos = _WIDTH - cel_width;
 

@@ -30,20 +30,6 @@ extern struct agi_view_table view_table[];
 int greatest_kludge_of_all_time = 0;
 
 
-/* This works in the 320x200 visible screen, but receiving AGI 160x168
- * coordinates
- */
-void put_pixel_buffer (int x, int y, int c)
-{
-	if (game.line_min_print > 0)
-		y += 8;
-	x <<= 1;
-	put_pixel (x, y, c);
-	put_pixel (x + 1, y, c);
-}
-
-
-
 /* Works in the 160x168 AGI buffer */
 void get_bitmap (UINT8 *dst, UINT8 *src, int x1, int y1, int w, int h)
 {
@@ -121,7 +107,10 @@ void agi_put_bitmap (UINT8 *src, int x1, int y1, int w, int h, int trans, int pr
 				screen_data[yy+xx] = c;
 			}
 				/* Should be in the if, but it breaks SQ2 */
-				put_pixel_buffer (xx, y + y1, c);
+			        if (game.line_min_print > 0)
+					put_pixel_buffer (xx, y + y1 + 8, c);
+				else
+					put_pixel_buffer (xx, y + y1, c);
 			screen2[yy+xx] = c;
 		}
 	}
@@ -303,8 +292,13 @@ void put_block_buffer (UINT8 *buff)
 	int x, x1 = 0, y1 = 0, x2 = _WIDTH, y2 = _HEIGHT;
 
 	for ( ; y1 < y2; y1++) {
-		for(x = x1; x < x2; x++)
-			put_pixel_buffer (x, y1, *(buff + (y1 * 160) + x));
+		for(x = x1; x < x2; x++) {
+			if (game.line_min_print > 0) {
+				put_pixel_buffer (x, y1 + 8, *(buff + (y1 * 160) + x));
+			} else {
+				put_pixel_buffer (x, y1, *(buff + (y1 * 160) + x));
+			}
+		}
 	}
 }
 
