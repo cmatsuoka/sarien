@@ -189,6 +189,8 @@ int v2id_game ()
 	}
 	free (buff);
 
+	game.crc = crc;
+	report ("Computed CRC: 0x%05x\n", crc);
 	ver = match_version (crc);
 	agi_set_release (ver);
 	return setup_v2_game(ver, crc);
@@ -243,6 +245,8 @@ int v3id_game ()
 
 	free (buff);
 
+	game.crc = crc;
+	report ("Computed CRC: 0x%05x\n", crc);
 	ver = match_version (crc);
 	agi_set_release (ver);
 
@@ -251,6 +255,9 @@ int v3id_game ()
 	
 	return ec;
 }
+
+
+#ifdef PALMOS
 
 int v4id_game (UINT32 crc)
 {
@@ -270,6 +277,8 @@ int v4id_game (UINT32 crc)
 
 	return ec;
 }
+
+#endif
 
 /**
  *

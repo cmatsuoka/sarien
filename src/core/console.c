@@ -191,6 +191,11 @@ static void ccmd_ver ()
 	report (VERSION "\n");
 }
 
+static void ccmd_crc ()
+{
+	report ("0x%05x\n", game.crc);
+}
+
 static void ccmd_load ()
 {
 	stop_sound ();
@@ -438,6 +443,7 @@ int console_init ()
 	console_cmd ("agiver", "Show emulated Sierra AGI version", ccmd_agiver);
 	console_cmd ("cont",   "Resume interpreter execution", ccmd_cont);
 	console_cmd ("debug",  "Stop interpreter execution", ccmd_debug); 
+	console_cmd ("crc",    "Show AGI game CRC", ccmd_crc); 
 #if 0
 	console_cmd ("exec",   "Execute loaded AGI game", ccmd_exec);
 #endif

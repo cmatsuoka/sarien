@@ -201,19 +201,21 @@ cmd(call_v) {
 }
 
 cmd(draw_pic) {
-	_D (_D_WARN "--- draw pic %d ---", _v[p0]);
+	_D (_D_WARN "=== draw pic %d ===", _v[p0]);
 	erase_both ();
 	decode_picture (_v[p0], TRUE);
 	blit_both ();
 	game.picture_shown = 0;
+	_D (_D_WARN "--- end of draw pic %d ---", _v[p0]);
 }
 
 cmd(show_pic) {
-	_D (_D_WARN "--- show pic ---");
+	_D (_D_WARN "=== show pic ===");
 	setflag (F_output_mode, FALSE);
 	cmd_close_window (NULL);
 	show_pic ();
 	game.picture_shown = 1;
+	_D (_D_WARN "--- end of show pic ---");
 }
 
 cmd(load_pic) {
@@ -232,8 +234,8 @@ cmd(overlay_pic) {
 	erase_both ();
 	decode_picture (_v[p0], FALSE);
 	blit_both ();
-	checkmove_both ();
 	game.picture_shown = 0;
+	checkmove_both ();
 }
 
 cmd(show_pri_screen) {

@@ -23,7 +23,7 @@ int decode_logic (int n)
 
 	/* decrypt messages at end of logic + build message list */
 
-	report ("decoding logic #%d\n", n);
+	/* report ("decoding logic #%d\n", n); */
 	m0 = game.logics[n].data;
 
 	mstart = lohi_getword (m0) + 2;

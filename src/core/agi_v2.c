@@ -208,7 +208,6 @@ static UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 			if (data != NULL) {
 				fread (data, 1, agid->len, fp);
 			} else {
-				message_box ("Oops.");
 				abort ();
 			}
 		} else {
@@ -249,7 +248,7 @@ int agi_v2_load_resource (int t, int n)
 	switch (t) {
 	case rLOGIC:
 		if (~game.dir_logic[n].flags & RES_LOADED) {
-			report ("load logic #%d\n", n);
+			/*report ("load logic #%d\n", n);*/
 			_D (_D_WARN "loading logic resource %d", n);
 			agi_v2.unload_resource (rLOGIC, n);
 			/* load raw resource into data */

@@ -637,7 +637,7 @@ int load_instruments (char *fname)
 	char *path;
 
 	path = fixpath (NO_GAMEDIR, "sierrast");
-	report ("Loading samples: %s\n", path);
+	/* report ("Loading samples: %s\n", path); */
 
 	if ((fp = fopen (path, "rb")) == NULL)
 		return err_BadFileOpen;

@@ -61,11 +61,15 @@ static UINT8 test_controller (UINT8 cont)
 static UINT8 test_posn (UINT8 n, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 {
 	struct vt_entry *v = &game.view_table[n];
+	UINT8 r;
 
-	return v->x_pos >= x1 &&
-		v->y_pos >= y1 &&
-		v->x_pos <= x2 &&
-		v->y_pos <= y2;
+	r = v->x_pos >= x1 && v->y_pos >= y1 &&
+		v->x_pos <= x2 && v->y_pos <= y2;
+
+	/* _D ("(%d,%d) in (%d,%d,%d,%d): %s", v->x_pos, v->y_pos,
+		x1, y1, x2, y2, r ? "TRUE" : "FALSE"); */
+
+	return r;
 }
 
 

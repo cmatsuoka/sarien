@@ -127,6 +127,7 @@ struct agi_game {
 	char name[8];		/**< lead in id (e.g. `GR' for goldrush) */
 	char id[8];		/**< game id */	
 	char dir[MAX_PATH];	/**< game dir */
+	UINT32 crc;		/**< game CRC */
 
 	/* game flags and variables */
 	UINT8 flags[MAX_FLAGS];	/**< 256 1-bit flags */

@@ -72,6 +72,7 @@ static void blit_cel (int x, int y, int spr, struct view_cel *c)
 				*p = (pr < 0x30 ? pr : spr) | *q;
 			}
 		}
+	if (game.picture_shown)
 		put_pixels_a (x, y + i, c->width, p0);
 		p0 += _WIDTH;
 	}
@@ -307,7 +308,7 @@ static void erase_sprites (struct list_head *head)
  */
 static void blit_sprites (struct list_head *head)
 {
-	struct list_head *h	= NULL;
+	struct list_head *h = NULL;
 
 	list_for_each (h, head, next) {
 		struct sprite *s = list_entry (h, struct sprite, list);

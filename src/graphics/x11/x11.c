@@ -126,7 +126,7 @@ static INLINE void putpixel_8 (XImage *img, int idx, int p)
 _putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
 	if (w == 0) return; \
 	x += y * GFX_WIDTH; \
-	while (w--) { putpixel_##d## (ximage, x++, rgb_palette[*p++]); } \
+	while (w--) { putpixel_##d (ximage, x++, rgb_palette[*p++]); } \
 }
 
 #define _putpixels_scale2(d) static void \
@@ -137,19 +137,19 @@ _putpixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) { \
 	y = x + (GFX_WIDTH << 1); \
 	while (w--) { \
 		c = rgb_palette[*p++]; \
-		putpixel_##d## (ximage, x++, c); \
-		putpixel_##d## (ximage, x++, c); \
-		putpixel_##d## (ximage, y++, c); \
-		putpixel_##d## (ximage, y++, c); \
+		putpixel_##d (ximage, x++, c); \
+		putpixel_##d (ximage, x++, c); \
+		putpixel_##d (ximage, y++, c); \
+		putpixel_##d (ximage, y++, c); \
 	} \
 }
 
-_putpixels_scale1(8);
-_putpixels_scale1(16);
-_putpixels_scale1(32);
-_putpixels_scale2(8);
-_putpixels_scale2(16);
-_putpixels_scale2(32);
+_putpixels_scale1 (8);
+_putpixels_scale1 (16);
+_putpixels_scale1 (32);
+_putpixels_scale2 (8);
+_putpixels_scale2 (16);
+_putpixels_scale2 (32);
 
 /* ===================================================================== */
 
@@ -174,15 +174,15 @@ _putpixels_fixratio_##d##bits_scale2 (int x, int y, int w, UINT8 *p0) { \
 	z = x + (GFX_WIDTH << 2); \
 	for (p = p0; w--; ) { \
 		c = rgb_palette[*p++]; \
-		putpixel_##d## (ximage, x++, c); \
-		putpixel_##d## (ximage, x++, c); \
-		putpixel_##d## (ximage, y++, c); \
-		putpixel_##d## (ximage, y++, c); \
+		putpixel_##d (ximage, x++, c); \
+		putpixel_##d (ximage, x++, c); \
+		putpixel_##d (ximage, y++, c); \
+		putpixel_##d (ximage, y++, c); \
 	} \
 	for (p = p0; extra--; ) { \
 		c = rgb_palette[*p++]; \
-		putpixel_##d## (ximage, z++, c); \
-		putpixel_##d## (ximage, z++, c); \
+		putpixel_##d (ximage, z++, c); \
+		putpixel_##d (ximage, z++, c); \
 	} \
 }
 
@@ -639,9 +639,9 @@ static int init_vidmode ()
 	/* Handle optimization and aspect ratio correction */
 
 #define handle_case(d,s) case d: \
-	gfx_x11.put_pixels = _putpixels_##d##bits_scale##s##; break;
+	gfx_x11.put_pixels = _putpixels_##d##bits_scale##s; break;
 #define handle_fixratio_case(d,s) case d: \
-	gfx_x11.put_pixels = _putpixels_fixratio_##d##bits_scale##s##; break;
+	gfx_x11.put_pixels = _putpixels_fixratio_##d##bits_scale##s; break;
 
 	if (opt.fixratio) {
 		gfx_x11.put_pixels = _putpixels_fixratio;
