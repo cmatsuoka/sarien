@@ -8,10 +8,11 @@
 #ifdef DREAMCAST
 #define DC_BASE_PATH	"/cd"
 #define DC_GFX_PATH		"/cd/gfx"
-#undef USE_COMMAND_LINE
+#define VMU_PATH		"/vmu/%s/SDC-%s-%d"
 #define UNKNOWN_GAME	"Unknown"
+#undef USE_COMMAND_LINE
 char g_gamename[255];
-//char g_vmu_port[2];
+static char g_vmu_port[2];
 #endif
 
 #ifdef PALMOS

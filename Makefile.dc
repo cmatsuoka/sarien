@@ -18,7 +18,7 @@ rm-elf:
 	-rm -f romdisk_boot.o
 
 DATAOBJS = romdisk_boot.o
-DEFS = -DNDEBUG -DDREAMCAST -DVERSION='"$(VERSION)"' #-D_TRACE
+DEFS = -DNDEBUG -DDREAMCAST -DVERSION='"$(VERSION)"' -USE_HIRES #-D_TRACE
 
 MAKEFILE = Makefile.dc
 
