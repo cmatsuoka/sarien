@@ -25,7 +25,7 @@
 /* TODO: add support for variable sampling rate in the output device
  */
 
-/* private data types (no need to be in the public header */
+/* private data types (no need to be in the public header) */
 struct sound_envelope {
 	UINT8 bp;
 	UINT8 inc_hi;

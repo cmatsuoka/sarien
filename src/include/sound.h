@@ -86,5 +86,6 @@ int	load_instruments	(char *fname);
 };
 #endif
 
-#endif
+#endif /* __AGI_SOUND_H */
+
 

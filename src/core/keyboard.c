@@ -162,7 +162,7 @@ void move_ego (UINT8 direction)
 	_D ("(%d)", direction);
 	_D (_D_WARN "last_ego_dir = %d", last_ego_dir);
 
-	if ((view_table[EGO_VIEW_TABLE].flags & MOTION) != 0) {
+	if (view_table[EGO_VIEW_TABLE].flags & MOTION) {
 		if (last_ego_dir != direction) {
 			last_ego_dir = direction;
 			view_table[EGO_VIEW_TABLE].direction = last_ego_dir;
@@ -171,7 +171,7 @@ void move_ego (UINT8 direction)
 			 * Set the loop (in ego view table) corresponding to
 			 * this direction
 			 */
-			calc_direction( EGO_VIEW_TABLE );
+			calc_direction (EGO_VIEW_TABLE);
 		} else {
 			/* stop ego from moving in same direction */
 			last_ego_dir = 0;

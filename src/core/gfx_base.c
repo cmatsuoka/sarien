@@ -19,8 +19,10 @@
 #include "console.h"
 
 extern struct sarien_options opt;
+extern struct sarien_console console;
 extern UINT8 *font;
 
+/* exported to the console drivers */
 UINT8 palette[32 * 3]= {
 	0x00, 0x00, 0x00,
 	0x00, 0x00, 0x2A,
@@ -51,7 +53,6 @@ UINT8		txt_char;		/* input character */
 static int x_min = 320, x_max = 0, y_min = 200, y_max = 0;
  
 
-extern struct sarien_console console;
 
 /* driver wrapper */
 /* put_pixel2 is console-aware and handles transparency
@@ -219,7 +220,6 @@ void set_block (int x1, int y1, int x2, int y2)
 	if (y2 > y_max)
 		y_max = y2;
 }
-
 
 
 void put_text_character (int l, int x, int y, int c, int fg, int bg)

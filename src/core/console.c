@@ -66,52 +66,6 @@ void console_lock ()
 }
 
 
-static void ccmd_help ()
-{
-	struct console_command *d;
-
-	if (!_p1) {
-		report ("Command Description\n");
-		report ("------- --------------------------------\n");
-		for (d = ccmd_head; d; d = d->next)
-			report ("%-8s%s\n", d->cmd, d->dsc);
-		return;
-	}
-
-	for (d = ccmd_head; d; d = d->next) {
-		if (!strcmp (d->cmd, _p1) && d->handler) { 
-			report ("%s\n", d->dsc);
-			return;
-		}
-	}
-
-	report ("Unknown command or no help available\n");
-}
-
-
-static void ccmd_ver ()
-{
-	report (VERSION "\n");
-}
-
-
-static void ccmd_agiver ()
-{
-	switch (loader->int_version >> 12) {
-	case 2:
-		report ("%x.%03x\n",
-			(int)(loader->int_version>>12)&0xF,
-			(int)(loader->int_version)&0xFFF);
-		break;
-	case 3:
-		report ("%x.002.%03x\n",
-			(int)(loader->int_version>>12)&0xF,
-			(int)(loader->int_version)&0xFFF);
-		break;
-	}
-}
-
-
 static UINT8 console_parse (char *b)
 {
 	struct console_command *d;
@@ -122,6 +76,7 @@ static UINT8 console_parse (char *b)
 	if (!*b)
 		return 0;
 
+	/* get or set flag/var values */
 	if ((b[0] == 'f' || b[0] == 'v') && isdigit (b[1])) {
 		char *e;
 		int f = strtoul (&b[1], &e, 10);
@@ -153,6 +108,7 @@ static UINT8 console_parse (char *b)
 		}
 	}
 
+	/* tokenize the input line */
 	if (strchr (b, ' '))
 		strcpy (_p, strchr (b, ' ') + 1);
 	_p0 = strtok (b, " ");
@@ -162,6 +118,7 @@ static UINT8 console_parse (char *b)
 	_p4 = strtok (NULL, " ");
 	_p5 = strtok (NULL, " ");
 
+	/* set number of parameters. ugh, must rewrite this later */
 	_pn = 5;
 	if (!_p5) _pn = 4;
 	if (!_p4) _pn = 3;
@@ -197,6 +154,55 @@ static UINT8 console_parse (char *b)
 	}
 
 	return -1;
+}
+
+
+/*
+ * Console commands
+ */
+static void ccmd_help ()
+{
+	struct console_command *d;
+
+	if (!_p1) {
+		report ("Command Description\n");
+		report ("------- --------------------------------\n");
+		for (d = ccmd_head; d; d = d->next)
+			report ("%-8s%s\n", d->cmd, d->dsc);
+		return;
+	}
+
+	for (d = ccmd_head; d; d = d->next) {
+		if (!strcmp (d->cmd, _p1) && d->handler) { 
+			report ("%s\n", d->dsc);
+			return;
+		}
+	}
+
+	report ("Unknown command or no help available\n");
+}
+
+
+static void ccmd_ver ()
+{
+	report (VERSION "\n");
+}
+
+
+static void ccmd_agiver ()
+{
+	switch (loader->int_version >> 12) {
+	case 2:
+		report ("%x.%03x\n",
+			(int)(loader->int_version >> 12) & 0xf,
+			(int)(loader->int_version) & 0xfff);
+		break;
+	case 3:
+		report ("%x.002.%03x\n",
+			(int)(loader->int_version >> 12) & 0xf,
+			(int)(loader->int_version) & 0xfff);
+		break;
+	}
 }
 
 
@@ -320,6 +326,9 @@ static void ccmd_cont ()
 }
 
 
+/*
+ * Register console commands
+ */
 static void console_cmd (char *cmd, char *dsc, void (*handler))
 {
 	struct console_command *c, *d;
@@ -375,7 +384,7 @@ int console_init ()
 /* Console reporting */
 
 /* A slightly modified strtok() for report() */
-char *get_token (char *s, char d)
+static char *get_token (char *s, char d)
 {
 	static char *x;
 	char *n, *m;
@@ -397,7 +406,7 @@ char *get_token (char *s, char d)
 }
 
 
-void build_console_lines (UINT8 n)
+static void build_console_lines (int n)
 {
 	int i, j, y1;
 
