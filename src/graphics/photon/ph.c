@@ -33,7 +33,6 @@
 
 typedef struct
 {
-	PhImage_t *img;
 	PhImage_t *behind_img;
 	PhPoint_t pos;
 
@@ -86,6 +85,8 @@ static int	ph_cause_damage	(void *, int, void *, size_t);
 static int	ph_mouse_cb	(PtWidget_t *widget, void *data, PtCallbackInfo_t *cb);
 static int	ph_close_cb	(PtWidget_t *widget, void *data, PtCallbackInfo_t *cb);
 static void	ph_setup_mouse_image (void);
+static void	ph_show_mouse_image (void);
+static void	ph_hide_mouse_image (void);
 
 static pthread_t ph_tid;
 static PhImage_t *phimage;
@@ -331,7 +332,7 @@ static void ph_update_mouse(void)
 
 void *photon_thread (void *pidarg)
 {
-	PtArg_t args[6];
+	PtArg_t args[8];
 	PtWidget_t *window;
 	PhRect_t rect;
 	PhDim_t dim;
@@ -356,7 +357,7 @@ void *photon_thread (void *pidarg)
 	dim.h = GFX_HEIGHT * scale;
 
 	PtSetArg(&args[0], Pt_ARG_WINDOW_TITLE, "Sarien for Photon", 0);
-	PtSetArg(&args[1], Pt_ARG_WINDOW_RENDER_FLAGS, Pt_FALSE, Ph_WM_RENDER_RESIZE);
+	PtSetArg(&args[1], Pt_ARG_WINDOW_RENDER_FLAGS, Pt_FALSE, Ph_WM_RENDER_RESIZE | Ph_WM_RENDER_MAX);
 	PtSetArg(&args[2], Pt_ARG_DIM, &dim, sizeof (dim));
 	PtSetArg(&args[3], Pt_ARG_WINDOW_MANAGED_FLAGS, Pt_FALSE, Ph_WM_CLOSE);
 	PtSetArg(&args[4], Pt_ARG_WINDOW_NOTIFY_FLAGS, Pt_TRUE, Ph_WM_CLOSE);
@@ -422,9 +423,6 @@ void *photon_thread (void *pidarg)
 	{
 		ph_setup_mouse_image();
 
-		/* Move cursor offscreen */
-		PhMoveCursorAbs (PhInputGroup(NULL), dim.w + 1, dim.h + 1);
-
 		olddc = PhDCGetCurrent();
 		PdGetDevices(&rid, 1);
 		PdSetTargetDevice (olddc, rid);
@@ -462,7 +460,6 @@ void *photon_thread (void *pidarg)
 		dc = PdCreateDirectContext();
 		PdDirectStart(dc);
 	}
-
 	pthread_barrier_wait (&barrier); /* sync with original thread */
 
 	PtRealizeWidget(window);
@@ -476,15 +473,33 @@ static void ph_draw_image (PhRect_t *area)
 	PgSetPalette( ph_pal, 0, 0, 32, Pg_PALSET_SOFT, 0);
 
 	pthread_mutex_lock (&mut_image);
+	pthread_mutex_lock (&mut_mouse);
 
 	if (!phimage)
 		return;
-	
+
+	if (opt.fullscreen)
+	{
+		if (area->ul.x > ph_mouse.pos.x)
+			area->ul.x = ph_mouse.pos.x;
+		if (area->ul.y > ph_mouse.pos.y)
+			area->ul.y = ph_mouse.pos.y;
+		if (area->lr.x < ph_mouse.pos.x + PH_MOUSE_CURSOR_W)
+			area->lr.x = ph_mouse.pos.x + PH_MOUSE_CURSOR_W;
+		if (area->lr.y < ph_mouse.pos.y + PH_MOUSE_CURSOR_H)
+			area->lr.y = ph_mouse.pos.y + PH_MOUSE_CURSOR_H;
+	}
+
+	ph_show_mouse_image();
+
 	PgDrawPhImageRectmx (&(area->ul), phimage, area, 0);
-	
-	pthread_mutex_unlock (&mut_image);
 
         PgFlush();
+
+	ph_hide_mouse_image();
+
+	pthread_mutex_unlock (&mut_mouse);
+	pthread_mutex_unlock (&mut_image);
 }
 
 static void ph_raw_draw_cb (PtWidget_t *widget, PhTile_t *damage)
@@ -521,8 +536,12 @@ static int ph_keypress_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 	key_event = PhGetData(cb->event);
 	if (key_event->key_flags & Pk_KF_Key_Down)
 	{	
-//		switch (key = key_event->key_cap) 
-		switch (key = key_event->key_sym) 
+		if (key_control || key_alt)
+			key = key_event->key_cap;
+		else
+			key = key_event->key_sym;
+
+		switch (key) 
 		{
 			case Pk_Shift_L:
 			case Pk_Shift_R:
@@ -586,6 +605,7 @@ static int ph_keypress_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 				key = '-';
 				break;
 			case Pk_Tab:
+			case Pk_KP_Tab:
 				key = 0x0009;
 				break;
 			case Pk_F1:
@@ -644,6 +664,7 @@ static int ph_keypress_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 				break;
 		}
 	} else {
+		key = 0;
 		switch (key_event->key_cap) {
 			case Pk_Control_L:
 				key_control &= ~1;
@@ -677,6 +698,7 @@ static int ph_keypress_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 static int ph_mouse_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 {
 	PhPointerEvent_t *mouse_event;
+	PhRect_t area;
 
 	mouse_event = PhGetData(cb->event);
 
@@ -701,19 +723,27 @@ static int ph_mouse_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 	ph_mouse.sarien_mouse.x = PhGetRects(cb->event)->ul.x / opt.scale;
 	ph_mouse.sarien_mouse.y = PhGetRects(cb->event)->ul.y / opt.scale;
 
-	if (opt.fullscreen)
-	{
-		// XXX: Actually buffer it.
-		ph_mouse.pos = PhGetRects(cb->event)->ul;
-		PgDrawPhImage (&(ph_mouse.pos), ph_mouse.img, Ph_USE_TRANSPARENCY);
-	}
 #if 0
 	/* FIXME: Photon driver doesn't support this flag yet */
         if (opt.fixratio)
 		ph_mouse.sarien_mouse.y = ph_mouse.sarien_mouse.y * 5 / 6;
 #endif
 
-	pthread_mutex_unlock (&mut_mouse);
+	if (opt.fullscreen)
+	{
+		// Include old mouse position when updating screen.
+		area.ul = ph_mouse.pos;
+		area.lr.x = ph_mouse.pos.x + PH_MOUSE_CURSOR_W;
+		area.lr.y = ph_mouse.pos.y + PH_MOUSE_CURSOR_H;
+		ph_mouse.pos = PhGetRects(cb->event)->ul;
+		pthread_mutex_unlock (&mut_mouse);
+
+		ph_draw_image(&area);
+	}
+	else
+	{
+		pthread_mutex_unlock (&mut_mouse);
+	}
 
         return (Pt_CONSUME);
 }	
@@ -745,23 +775,60 @@ static int ph_cause_damage (void *data, int rcvid, void *message, size_t mbsize)
 static void ph_setup_mouse_image(void)
 {
 	PhDim_t imgsize = { PH_MOUSE_CURSOR_W, PH_MOUSE_CURSOR_H };
-	PhPoint_t pos = { 0, 0 };
-	int i, j;
-
-	ph_mouse.img = PhCreateImage (NULL, imgsize.w, imgsize.h,
-		Pg_IMAGE_PALETTE_BYTE, ph_pal, 32, 1);
 
 	ph_mouse.behind_img = PhCreateImage (NULL, imgsize.w, imgsize.h,
 		Pg_IMAGE_PALETTE_BYTE, ph_pal, 32, 1);
+}
 
+void ph_show_mouse_image(void)
+{
+	static PmMemoryContext_t *behindmc = NULL;
+	int i, j, apos;
 
-	/* Copy the image from phmouse.h into the mouse image in a
-	   completely device-independant manner */
+	PhDim_t imgsize = { PH_MOUSE_CURSOR_W, PH_MOUSE_CURSOR_H };
+	PhPoint_t pos = { 0, 0 };
+	PhRect_t area;
+
+	if (!opt.fullscreen)
+		return;
+
+	if (behindmc == NULL)
+		behindmc = PmMemCreateMC(ph_mouse.behind_img, &imgsize, &pos);
+
+	area.ul = ph_mouse.pos;
+	area.lr.x = ph_mouse.pos.x + PH_MOUSE_CURSOR_W;
+	area.lr.y = ph_mouse.pos.y + PH_MOUSE_CURSOR_H;
+
+	PmMemStart (behindmc);
+	PgDrawPhImageRectmx (&pos, phimage, &area, 0);
+	PmMemFlush (behindmc, ph_mouse.behind_img);
+	PmMemStop (behindmc);	
 
 	for (i = 0; i < PH_MOUSE_CURSOR_W; i ++)
+	{
 		for (j = 0; j < PH_MOUSE_CURSOR_H; j ++)
-			PiSetPixel (ph_mouse.img, i, j,
-				ph_cursor_img_data[i + (j * PH_MOUSE_CURSOR_W)]);
+		{
+			apos = i + (j * PH_MOUSE_CURSOR_W);
+			if (ph_cursor_img_data[apos] != PH_MOUSE_TRANS_COL)
+				PiSetPixel (phimage, i + ph_mouse.pos.x, 
+					j + ph_mouse.pos.y, ph_cursor_img_data[apos]);
+		}
+	}
+}
 
-	PhMakeTransBitmap (ph_mouse.img, PH_MOUSE_TRANS_COL | Pg_INDEX_COLOR);
+void ph_hide_mouse_image (void)
+{
+	static PmMemoryContext_t *imgmc = NULL;
+	PhPoint_t pos = { 0, 0 };
+
+	if (!opt.fullscreen)
+		return;
+
+	if (imgmc == NULL)
+		imgmc = PmMemCreateMC (phimage, &(phimage->size), &pos);
+
+	PmMemStart (imgmc);
+	PgDrawPhImage (&(ph_mouse.pos), ph_mouse.behind_img, 0);
+	PmMemFlush (imgmc, phimage);
+	PmMemStop (imgmc);
 }
