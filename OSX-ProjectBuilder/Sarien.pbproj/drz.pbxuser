@@ -86,6 +86,8 @@
 				};
 			};
 		};
+		wantsIndex = 1;
+		wantsSCM = -1;
 	};
 	29B97326FDCFA39411CA2CEA = {
 		activeExec = 0;
@@ -110,6 +112,8 @@
 		environmentEntries = (
 		);
 		isa = PBXExecutable;
+		shlibInfoDictList = (
+		);
 		sourceDirectories = (
 		);
 	};
@@ -129,16 +133,6 @@
 		};
 	};
 	F5C2E8A701403D1801000001 = {
-		uiCtxt = {
-			sepNavWindowFrame = "{{38, 218}, {750, 502}}";
-		};
-	};
-	F5E85D270146350301000001 = {
-		uiCtxt = {
-			sepNavWindowFrame = "{{134, 182}, {750, 502}}";
-		};
-	};
-	F5E8FF0E0144257001000001 = {
 		uiCtxt = {
 			sepNavWindowFrame = "{{38, 218}, {750, 502}}";
 		};

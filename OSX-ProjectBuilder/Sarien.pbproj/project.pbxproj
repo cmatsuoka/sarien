@@ -475,8 +475,8 @@
 		F562A78701C54C0E010DC54F = {
 			isa = PBXFileReference;
 			name = sound_macos.c;
-			path = /Users/jpenner/Code/sarien/src/sound/macos/sound_macos.c;
-			refType = 0;
+			path = ../src/sound/macos/sound_macos.c;
+			refType = 4;
 		};
 		F562A78801C54C0E010DC54F = {
 			fileRef = F562A78701C54C0E010DC54F;
