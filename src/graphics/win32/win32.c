@@ -443,8 +443,6 @@ static int init_vidmode ()
 {
 	int i;
 
-	opt.fixratio = 0;
-
 #if 0
 	/* FIXME: place this in an "About" box or something... */
 	fprintf (stderr,
@@ -603,7 +601,7 @@ static void win32_put_block (int x1, int y1, int x2, int y2)
 
 	if (opt.fixratio) {
 		p->y1 = ASPECT_RATIO(p->y1);
-		p->y2 = ASPECT_RATIO(p->y2 + 1) - 1;
+		p->y2 = ASPECT_RATIO(p->y2 + 1);
 	}
 
 	PostMessage (hwndMain, WM_PUT_BLOCK, 0, (LPARAM)p);
