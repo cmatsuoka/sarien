@@ -226,6 +226,7 @@
       Show or hide the priority screen. 
     </para></listitem>
   </listentry>
+</variablelist>
 
 <para>
   Other keys are set by the game being executed. Traditionally
@@ -239,6 +240,79 @@
 <title/CONSOLE COMMANDS/
 <para>
 </para>
+
+<variablelist>
+  <listentry>
+    <term/<command/agiver//
+    <listitem><para>
+      Show the AGI version we're emulating. AGI versions are listed in
+      <filename>/etc/sarien.conf</filename> or set using the <parameter/-v/
+      command line argument
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<command/cont//
+    <listitem><para>
+      Resume interpreter execution after a debugging session.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<command/crc//
+    <listitem><para>
+      Show the CRC of the currently loaded AGI game. CRCs are used in
+      <filename>/etc/sarien.conf</filename> to identify games and set the
+      correct AGI version.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<command/debug//
+    <listitem><para>
+      Enter debug mode. AGI script execution will stop, and scripts
+      can be single-stepped using the <command/step/ command.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<command/flags//
+    <listitem><para>
+      Show the value of all AGI flags.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<command/help//
+    <listitem><para>
+      Show a summary of the available console commands.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<command/hires on|off//
+    <listitem><para>
+      Switch hi-res mode on/off. Pictures usually look better in hi-res
+      mode, but some undesired artifacting may appear. Use this command
+      to disable hi-res mode if you notice too much artifacting, or if
+      you want traditional Sierra AGI resolution. Hi-res mode affects
+      picture resources only.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<command/logic0 on|off//
+    <listitem><para>
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<command/load//
+    <listitem><para>
+    </para></listitem>
+  </listentry>
+</variablelist>
+
 </refsect1>
 
 <refsect1>

@@ -294,6 +294,8 @@ static void ccmd_vars ()
 	}
 }
 
+#if 0
+
 static void ccmd_say ()
 {
 	setflag (F_entered_cli, TRUE);
@@ -319,6 +321,8 @@ static void ccmd_inv ()
 	if (j % 2)
 		report ("\n");
 }
+
+#endif
 
 static void ccmd_objs ()
 {
@@ -468,12 +472,14 @@ int console_init ()
 	console_cmd ("flags",  "Dump all AGI flags", ccmd_flags);
 	console_cmd ("help",   "List available commands", ccmd_help);
 	console_cmd ("hires",  "Turn hi-res mode on/off", ccmd_hires);
-	console_cmd ("inv",    "List current inventory", ccmd_inv);
 	console_cmd ("logic0", "Turn logic 0 debugging on/off", ccmd_logic0);
 	console_cmd ("load",   "Load AGI game", ccmd_load);
 	console_cmd ("objs",   "List all objects and locations", ccmd_objs);
 	console_cmd ("opcode", "Turn opcodes on/off in debug", ccmd_opcode);
+#if 0
+	console_cmd ("inv",    "List current inventory", ccmd_inv);
 	console_cmd ("say",    "Pass argument to the AGI parser", ccmd_say);
+#endif
 	console_cmd ("step",   "Execute the next AGI instruction", ccmd_step);
 	console_cmd ("vars",   "Dump all AGI variables", ccmd_vars);
 	console_cmd ("ver",    "Show interpreter version", ccmd_ver);
