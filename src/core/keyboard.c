@@ -212,7 +212,11 @@ void handle_getstring (int key)
 		break;
 	case KEY_ESCAPE:
 		_D ("KEY_ESCAPE");
-		new_input_mode (INPUT_MENU);
+		game.has_prompt = 0;
+		buf[pos = 0] = 0;
+		strcpy (game.strings[stringdata.str], buf);
+		new_input_mode (INPUT_NORMAL);
+		/* new_input_mode (INPUT_MENU); */
 		break;
 	case KEY_BACKSPACE: /*0x08:*/
 		if (!pos)

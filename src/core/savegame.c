@@ -722,6 +722,7 @@ int savegame_dialog ()
 	if (slot < 0)	/* ESC pressed */
 		return err_OK;
 
+	/* Get savegame description */
 	draw_window (hm, vm + 5 * CHAR_LINES, GFX_WIDTH - hm,
 		GFX_HEIGHT - vm - 9 * CHAR_LINES);
 	draw_text ("Enter a description for this game:",
