@@ -265,12 +265,24 @@ int main_cycle ()
 
 	if (!console_keyhandler (key)) {
 		if (kascii) setvar (V_key, kascii);
+process_key:
 		switch (game.input_mode) {
 		case INPUT_NORMAL:
 			if (!handle_controller (key)) {
 				if (key == 0 || !game.input_enabled)
 					break;
 				handle_keys (key);
+
+				/* if ESC pressed, activate menu before
+				 * accept.input from the interpreter cycle
+				 * sets the input mode to normal again
+				 * (closes: #540856)
+				 */
+				if (key == KEY_ESCAPE) {
+					key = 0;
+					goto process_key;
+				}
+
 				/* commented out to close bug #438872
 				 * if (key) game.keypress = key;
 				 */
