@@ -418,14 +418,14 @@ void cmd_reverse_loop (UINT8 entry, UINT8 p1)
 {
 	_D ("(%d, %d)", entry, p1);
 	vt.parm1 = p1;
-	vt.cycle_status = CYCLE_REV_LOOP;
+	vt.cycle = CYCLE_REV_LOOP;
 	vt.flags |= UPDATE | CYCLING;
 }
 
 
 void cmd_reverse_cycle (UINT8 entry)
 {
-	vt.cycle_status = CYCLE_REV;
+	vt.cycle = CYCLE_REV;
 	vt.flags |= UPDATE | CYCLING;
 }
 
@@ -434,7 +434,7 @@ void cmd_end_of_loop (UINT8 entry, UINT8 p1)
 {
 	_D ("(%d, %d)", entry, p1);
 	vt.parm1 = p1;
-	vt.cycle_status = CYCLE_END_OF_LOOP; 
+	vt.cycle = CYCLE_END_OF_LOOP; 
 	vt.flags |= UPDATE | CYCLING;
 }
 
@@ -602,7 +602,7 @@ void cmd_move_obj (UINT8 entry, UINT8 x, UINT8 y, UINT8 step, UINT8 flag)
 	setflag (flag, FALSE);		/* Needed for KQ2 demo!! */
 
 	vt.flags |= MOTION;
-	vt.cycle_status = CYCLE_NORMAL;
+	vt.cycle = CYCLE_NORMAL;
 
 	/* FR: Guess the direction of the movement (should call adj_direction)
 	 * CM: Ok, calling adj_direction
@@ -1063,7 +1063,7 @@ void cmd_start_cycling (UINT8 entry)
 
 void cmd_normal_cycling (UINT8 entry)
 {
-	vt.cycle_status = CYCLE_NORMAL;
+	vt.cycle = CYCLE_NORMAL;
 }
 
 
@@ -1161,7 +1161,7 @@ void cmd_animate_obj (UINT8 entry)
 
 	/* from meka, unknown */
 	vt.motion = MOTION_NORMAL;
-	vt.cycle_status = CYCLE_NORMAL;
+	vt.cycle = CYCLE_NORMAL;
 
 	if (entry !=EGO_VIEW_TABLE)
 		vt.direction = 0;

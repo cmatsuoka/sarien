@@ -244,7 +244,7 @@ int save_game (char *s, char *d)
 		write8 (view_table[i].cycle_time_count, f);
 		write8 (view_table[i].direction, f);
 		write8 (view_table[i].motion, f);
-		write8 (view_table[i].cycle_status, f);
+		write8 (view_table[i].cycle, f);
 		write8 (view_table[i].priority, f);
 		write16 (view_table[i].flags, f);
 		write8 (view_table[i].parm1, f);
@@ -283,7 +283,7 @@ static void get_view (int size, UINT8 *buffer)
 	view_table[i].cycle_time_count = hilo_getbyte (buffer++);
 	view_table[i].direction = hilo_getbyte (buffer++);
 	view_table[i].motion = hilo_getbyte (buffer++);
-	view_table[i].cycle_status = hilo_getbyte (buffer++);
+	view_table[i].cycle = hilo_getbyte (buffer++);
 	view_table[i].priority = hilo_getbyte (buffer++);
 	view_table[i].flags = hilo_getword(buffer); buffer+=2;
 	view_table[i].parm1 = hilo_getbyte (buffer++);

@@ -37,38 +37,43 @@ struct agi_view {
 };
 
 struct agi_view_table {
-	UINT8		entry;
-	UINT8		x_pos;
-	UINT8		y_pos;
-
-	UINT8		*bg_scr;
-	UINT8		*bg_pri;
-	UINT16		bg_x;
-	UINT16		bg_y;
-	UINT16		bg_x_size;
-	UINT16		bg_y_size;
-
-	UINT8		direction;
-	UINT8		motion;
-	UINT8		priority;
-
 	UINT8		step_time;
-	UINT8		step_size;
 	UINT8		step_time_count;
+	UINT8		entry;
 
-	UINT8		cycle_time;
-	UINT8		cycle_status;
-	UINT8		cycle_time_count;
-
-#define VT_VIEW(x)   views[(x).current_view]  
-#define VT_LOOP(x)   VT_VIEW(x).loop[(x).current_loop]
-#define VT_CEL(x)    VT_LOOP(x).cel[(x).current_cel]
-#define VT_WIDTH(x)  VT_CEL(x).width
-#define VT_HEIGHT(x) VT_CEL(x).height
+	SINT16		x_pos;
+	SINT16		y_pos;
 
 	UINT8		current_view;
 	UINT8		current_loop;
 	UINT8		current_cel;
+
+#define VT_VIEW(x)	views[(x).current_view]  
+#define VT_LOOP(x)	VT_VIEW(x).loop[(x).current_loop]
+#define VT_CEL(x)	VT_LOOP(x).cel[(x).current_cel]
+
+	SINT16		x_pos2;
+	SINT16		y_pos2;
+#define VT_WIDTH(x)	VT_CEL(x).width
+#define VT_HEIGHT(x)	VT_CEL(x).height
+
+	UINT8		step_size;
+	UINT8		cycle_time;
+	UINT8		cycle_time_count;
+	UINT8		direction;
+
+#define MOTION_NORMAL		0
+#define MOTION_WANDER		1
+#define	MOTION_FOLLOW_EGO	2
+#define	MOTION_MOVE_OBJ		3
+	UINT8		motion;
+
+#define	CYCLE_NORMAL		0
+#define CYCLE_END_OF_LOOP	1
+#define	CYCLE_REV_LOOP 		2
+#define	CYCLE_REV		3
+	UINT8		cycle;
+	UINT8		priority;
 
 #define DRAWN		0x0001
 #define IGNORE_BLOCKS	0x0002
@@ -88,6 +93,20 @@ struct agi_view_table {
 	UINT8		parm2;
 	UINT8		parm3;
 	UINT8		parm4;
+
+	/* extras */
+	UINT8		*bg_scr;
+	UINT8		*bg_pri;
+	UINT16		bg_x;
+	UINT16		bg_y;
+	UINT16		bg_x_size;
+	UINT16		bg_y_size;
+
+#if 0
+	UINT8		step_time_count;
+	UINT8		cycle_time_count;
+#endif
+
 };
 
 #if 0

@@ -349,20 +349,6 @@ enum {
 	BX_SAVE = 0x10
 };
 
-enum {
-	MOTION_NORMAL = 1,
-	MOTION_WANDER,
-	MOTION_FOLLOW_EGO,
-	MOTION_MOVE_OBJ
-};
-
-enum {
-	CYCLE_NORMAL = 1,
-	CYCLE_END_OF_LOOP,
-	CYCLE_REV_LOOP, 
-	CYCLE_REV
-};
-
 struct game_id_list {
 	struct game_id_list *next;
 	UINT32 version;

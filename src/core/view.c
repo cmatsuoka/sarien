@@ -89,7 +89,7 @@ void init_view_table ()
 		view_table[i].step_size = 1;
 		view_table[i].cycle_time = 1;
 		view_table[i].cycle_time_count = 1;
-		view_table[i].cycle_status = CYCLE_NORMAL;
+		view_table[i].cycle = CYCLE_NORMAL;
 	}
 }
 
@@ -112,7 +112,7 @@ void reset_view (int n)
 	view_table[n].step_size = 1;
 	view_table[n].cycle_time = 1;
 	view_table[n].cycle_time_count = 1;
-	view_table[n].cycle_status = CYCLE_NORMAL;
+	view_table[n].cycle = CYCLE_NORMAL;
 }
 
 
@@ -175,7 +175,7 @@ void add_view_table (int entry, int vw)
 		view_table[entry].bg_scr = NULL;
 		view_table[entry].bg_pri = NULL;
 		view_table[entry].motion = MOTION_NORMAL;
-		view_table[entry].cycle_status = CYCLE_NORMAL;
+		view_table[entry].cycle = CYCLE_NORMAL;
 
 		/* Loop numbers should be retained, this checks if a loop number
 		 * is sane for the given view
@@ -281,9 +281,9 @@ void set_loop (int entry, int loop)
 	}
 
 	/* FR:
-	 * cycle_status should be set to CYCLE_NORMAL (fixes taxi in larry 1)
+	 * cycle should be set to CYCLE_NORMAL (fixes taxi in larry 1)
 	 */
-	view_table[entry].cycle_status = CYCLE_NORMAL;
+	view_table[entry].cycle = CYCLE_NORMAL;
 }
 
 

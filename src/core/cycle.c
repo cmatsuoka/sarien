@@ -56,7 +56,7 @@ static void update_objects ()
 			cel = vt_obj->current_cel;
 			num_cels = VT_LOOP(view_table[i]).num_cels;
 
-			switch (vt_obj->cycle_status) {
+			switch (vt_obj->cycle) {
 			case CYCLE_NORMAL:
 				if(++cel >= num_cels) 
 					cel = 0;
@@ -210,7 +210,7 @@ static int check_priority (struct agi_view_table *v)
 		water = 0;
 
 		if (x == 1) {		/* conditional blue */
-			if (~v->flags & IGNORE_BLOCKS)
+			if (v->flags & IGNORE_BLOCKS)
 				continue;
 
 			_D (_D_WARN "Blocks observed!");
