@@ -10,7 +10,7 @@
 #include <string.h>
 
 #include "sarien.h"
-#include "PalmDB.h"
+#include "palmdb.h"
 
 
 #ifdef PALMOS
