@@ -53,7 +53,7 @@ EXE_SUFFIX	= @EXE_SUFFIX@
 dummy:
 
 clean distclean::
-	rm -f *.o errlist depend $(BIN) $(CFILES)
+	rm -f *.o *.obj errlist depend $(BIN) $(CFILES)
 ifdef DDIRS
 	@for i in $(DDIRS) $(XDDIRS); do \
 		(cd $$i; [ -f $(MAKEFILE) ] && $(MAKE) $@) \

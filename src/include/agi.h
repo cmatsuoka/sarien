@@ -255,6 +255,7 @@ void	dictionary_words(char *);
 /* objects */
 int	show_objects	(void);
 int	load_objects	(char *fname);
+int	alloc_objects	(int);
 void	unload_objects	(void);
 char*	object_name	(unsigned int);
 int	object_get_location (unsigned int);

@@ -25,7 +25,7 @@ TEST_MODULE(test_inventory)
 {
 	UINT8 p[10];
 
-	game.num_objects = 5;
+	alloc_objects (game.num_objects = 5);
 
 	sprintf (p, "%c", 1);
 	TEST ("get", c(0x5c, 1, EGO_OWNED, p));

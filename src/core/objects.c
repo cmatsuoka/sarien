@@ -19,7 +19,16 @@ extern int decode_objects(UINT8* mem, UINT32 flen);
 
 static struct agi_object *objects;		/* objects in the game */
 
-int decode_objects(UINT8* mem, UINT32 flen)
+
+int alloc_objects (int n)
+{
+	if ((objects = calloc (n, sizeof(struct agi_object))) == NULL)
+    		return err_NotEnoughMemory;
+
+	return err_OK;
+}
+
+int decode_objects (UINT8* mem, UINT32 flen)
 {
 #ifndef PALMOS
 	unsigned int i, so, padsize;
@@ -55,9 +64,8 @@ int decode_objects(UINT8* mem, UINT32 flen)
 	game.num_objects = lohi_getword(mem) / padsize;
 	_D ("num_objects = %d", game.num_objects);
 
-    	if ((objects = calloc (game.num_objects, sizeof(struct agi_object))) == NULL) {
+	if (alloc_objects (game.num_objects) != err_OK)
     		return err_NotEnoughMemory;
-	}
 
     	/* build the object list */
     	for (i = 0, so = padsize; i < game.num_objects; i++, so += padsize) {
