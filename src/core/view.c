@@ -270,8 +270,6 @@ void set_cel (int entry, int c)
 	}
 
 	view_table[entry].current_cel = c;
-	//view_table[entry].x_size = VT_CEL(view_table[entry]).width;
-	//view_table[entry].y_size = VT_CEL(view_table[entry]).height;
 }
 
 
@@ -283,20 +281,7 @@ void set_loop (int entry, int loop)
 	if (view_table[entry].current_loop != loop || getflag(F_new_room_exec))
 	{
 		view_table[entry].current_loop = loop;
-
-		/* FR:
-		 * Adjust for the cell in the loop
-		 * FIXME: overkill
-		 */
-		if (view_table[entry].current_cel < VT_LOOP(view_table[entry]).num_cels) {
-			set_cel (entry, view_table[entry].current_cel);
-		} else {
-			report ("Oops. Attempt to set cel %d (max %d)\n",
-				view_table[entry].current_cel,
-				views[view_table[entry].current_view].loop[view_table[entry].current_loop].num_cels);
-
-			set_cel (entry, 0);    /* What should I do? */
-		}
+		set_cel (entry, view_table[entry].current_cel);
 	}
 
 	/* FR:
@@ -313,22 +298,19 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int priority, int ma
 	struct view_cel	*c;
 	int x1, y1;
 
-	_D (("(%d, %d, %d, %d, %d, %d, %d)",
-		view, loop, cel, x, y, priority, margin));
-
 	if (priority == 0)
 		priority = old_prio;
 
 	old_prio = priority;
 
 	if ((c = &views[view].loop[loop].cel[cel])) {
-		if((SINT16)(y-c->height)>0)
-			y-=c->height;
+		if (y - c->height > 0)
+			y -= c->height;
 		else
-			y=0;
+			y = 0;
 
-		agi_put_bitmap/*_save*/ (c->data, x, y, c->width,
-			c->height, c->transparency & 0xF, priority);
+		agi_put_bitmap (c->data, x, y, c->width, c->height,
+			c->transparency & 0xF, priority);
 
 		/* If margin is 0, 1, 2, or 3, the base of the cel is
 		 * surrounded with a rectangle of the corresponding priority.
@@ -336,7 +318,7 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int priority, int ma
 		 */
 		if (margin < 4) {
 			/* add rectangle around object */
-			for(y1 = y; y1 < c->height; y1++)
+			for (y1 = y; y1 < c->height; y1++)
 				for (x1 = x; x1 < c->width; x1++)
 					priority_data[y1*_WIDTH+x1] = margin;
 		}
@@ -440,9 +422,8 @@ void draw_obj (int vt)
 	 * (v->y_pos - cel_height) < 0 and agi_put_bimap receive
 	 * only unsigned values!
 	 * 
-	 * This work-around only create more bugs!
+	 * This work-around only creates more bugs!
 	 */
-
 	agi_put_bitmap (VT_CEL(view_table[vt]).data,
 		v->x_pos,
 		cel_height > v->y_pos ? 0 : v->y_pos - cel_height,

@@ -40,11 +40,9 @@ extern UINT8	layer1_data[];
 extern UINT8	layer2_data[];
 
 void	get_bitmap	(UINT8 *, UINT8 *, int, int, int, int);
-void	put_bitmap	(UINT8 *, UINT8 *, int, int, int, int, int, int);
 void	draw_box	(int, int, int, int, int, int, int);
 void 	put_text_character(int, int, int, int, int, int);
 void	agi_put_bitmap	(UINT8 *, int, int, int, int, int, int);
-void	agi_put_bitmap_save(UINT8 *, int, int, int, int, int, int);
 void	agi_put_sprite	(UINT8 *, int, int, int, int, int, int);
 void	do_blit		(void);
 int	init_video	(void);

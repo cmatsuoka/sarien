@@ -809,13 +809,13 @@ void cmd_clear_lines (UINT8 sl, UINT8 el, UINT8 c)
 
 void cmd_txt ()
 {
-    if (screen_mode!=TXT_MODE)
+	if (screen_mode != TXT_MODE)
 		save_screen ();
 
-    screen_mode=TXT_MODE;
+	screen_mode = TXT_MODE;
 
-    if (txt_bg==7)
-    	txt_bg=15;
+	if (txt_bg == 7)
+		txt_bg = 15;
 
 	clear_buffer ();
 	put_screen ();
@@ -824,10 +824,10 @@ void cmd_txt ()
 
 void cmd_gfx ()
 {
-	if (screen_mode==TXT_MODE)
+	if (screen_mode == TXT_MODE)
 		restore_screen ();
 
-	screen_mode=GFX_MODE;
+	screen_mode = GFX_MODE;
 	put_screen ();
  	update_status_line (TRUE);
 }

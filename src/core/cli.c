@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -143,20 +143,13 @@ int parse_cli (int argc, char **argv)
 		switch (o) {
 		case 'V':
 			printf ("Compiled on " __DATE__ "; " __TIME__ "\n");
-/*
-#ifdef TRADITIONAL_SIERRA
-			printf ("Traditional Sierra colouring defined\n");
-#else
-			printf ("Alternate colouring defined\n");
-#endif
-*/
 			printf ("Disable Copyprotection is ");
 #ifdef DISABLE_COPYPROTECTION
 			printf ("enabled\n");
 #else
 			printf ("disabled\n");
 #endif
-			printf("AGDS games and Russian/Cryllic font is ");
+			printf("AGDS games and Russian/Cyrillic font is ");
 #ifdef AGDS_SUPPORT
 			printf("supported\n");
 #else
@@ -203,7 +196,7 @@ int parse_cli (int argc, char **argv)
 			break;
 		case 'v':
 			for (xc = 0; xc != 0xfff0 && cmp_versions[xc].vers; xc++) {
-				if (!strcmp ((char*)optarg, (char*)cmp_versions[xc].string)) {
+				if (!strcmp ((char*)optarg, cmp_versions[xc].string)) {
 					opt.emuversion = cmp_versions[xc].vers;
 					xc = 0xfff0 - 1;
 				}

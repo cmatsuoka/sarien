@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -64,6 +64,9 @@ int greatest_kludge_of_all_time = 0;
 
 
 /* driver wrapper */
+/* put_pixel2 is console-aware and handles transparency
+ * works on the 320x200 screen
+ */
 static void INLINE put_pixel2 (int x, int y, int c)
 {
 	int k;
@@ -82,6 +85,10 @@ static void INLINE put_pixel2 (int x, int y, int c)
 }
 
 
+/* put_pixel stores information in the screen buffer and calls put_pixel2
+ * for actual screen drawing (put_pixel2 handles transparency)
+ * works on the 320x200 screen
+ */
 void put_pixel (int x, int y, int c)
 {
 	layer1_data[y * 320 + x] = c;
@@ -89,6 +96,9 @@ void put_pixel (int x, int y, int c)
 }
 
 
+/* flush block is used to put a block "behind" the console
+ * works on the 320x200 screen
+ */
 void flush_block (int x1, int y1, int x2, int y2)
 {
 	int x, y;
@@ -108,12 +118,7 @@ void clear_buffer ()
 }
 
 
-void put_screen ()
-{
-	gfx->put_block (0, 0, 319, 199);
-}
-
-
+/* save_screen and restore_screen work on the 320x200 visible screen */
 static UINT8 back_buffer[320 * 200];
 
 void save_screen ()
@@ -150,6 +155,7 @@ void restore_screen_area ()	/* Yuck! */
 
 
 /* Based on LAGII 0.1.5 by XoXus */
+/* Works on the 320x200 visible screen */
 void shake_screen (int n)
 {
 #define MAG 3
@@ -173,6 +179,9 @@ void shake_screen (int n)
 }
 
 
+/* This works in the 320x200 visible screen, but receiving AGI 160x168
+ * coordinates
+ */
 void put_pixel_buffer (int x, int y, int c)
 {
 	if (game.line_min_print > 0)
@@ -208,7 +217,7 @@ int deinit_video ()
 }
 
 
-void set_block (int x1, int y1, int x2, int y2)
+static void set_block (int x1, int y1, int x2, int y2)
 {
 	if (x1 < x_min)
 		x_min = x1;
@@ -261,9 +270,9 @@ void draw_box (int x1, int y1, int x2, int y2, int colour1, int colour2, int f)
 	k_x1 = x1; k_y1 = y1;	/* Yuck! Someone fix this */
 	k_x2 = x2; k_y2 = y2;
 
-	for (y=y1; y<y2; y++)
-		for(x=x1; x<x2; x++)
-			put_pixel(x, y, colour1);
+	for (y = y1; y < y2; y++)
+		for (x = x1; x < x2; x++)
+			put_pixel (x, y, colour1);
 
 	if (f & LINES) {
 		/* draw lines */
@@ -285,6 +294,7 @@ void draw_box (int x1, int y1, int x2, int y2, int colour1, int colour2, int f)
 }
 
 
+/* Works in the 160x168 AGI buffer */
 void get_bitmap (UINT8 *dst, UINT8 *src, int x1, int y1, int w, int h)
 {
 	int y, x;
@@ -298,7 +308,9 @@ void get_bitmap (UINT8 *dst, UINT8 *src, int x1, int y1, int w, int h)
 }
 
 
-void put_bitmap (UINT8 *dst, UINT8 *src, int x1, int y1, int w, int h, int trans, int prio)
+/* Works in the 160x168 AGI buffer, priority only */
+static void put_bitmap (UINT8 *dst, UINT8 *src, int x1, int y1,
+	int w, int h, int trans, int prio)
 {
 	int x, y, xx, yy;
 	int c;
@@ -308,17 +320,17 @@ void put_bitmap (UINT8 *dst, UINT8 *src, int x1, int y1, int w, int h, int trans
 
 	for (y1++, y = 0; y < h; y++) {
 		for (yy = (y1 + y) * _WIDTH, x=0; x<w; x++) {
-			if ((c=src[x + y*w]) == trans)
+			if ((c=src[x + y * w]) == trans)
 				continue;
 
 			xx = x1 + x;
 			if (y + y1 >= _HEIGHT || xx >= _WIDTH)
 				continue;
 
-			if(prio < dst[yy + xx])
+			if (prio < dst[yy + xx])
 				continue;
 
-			dst[yy + xx]=c;
+			dst[yy + xx] = c;
 		}
 	}
 
@@ -327,13 +339,11 @@ void put_bitmap (UINT8 *dst, UINT8 *src, int x1, int y1, int w, int h, int trans
 }
 
 
+/* Works in the 160x168 AGI buffer, priority and visible */
 void agi_put_bitmap (UINT8 *src, int x1, int y1, int w, int h, int trans, int prio)
 {
 	int x, y, xx, yy;
 	int c;
-
-	/* _D (("(%p, %d, %d, %d, %d, %d, %d)",
-		src, x1, y1, w, h, trans, prio)); */
 
 	if (prio < 4)
 		prio = 4;
@@ -344,16 +354,16 @@ void agi_put_bitmap (UINT8 *src, int x1, int y1, int w, int h, int trans, int pr
 		return;
 	}
 
-	for(y1++, y = 0; y < h; y++) {
+	for (y1++, y = 0; y < h; y++) {
 		for (yy = (y1 + y) * _WIDTH, x = 0; x < w; x++) {
 			if ((c = src[x + y * w]) == trans)
 				continue;
 
 			xx = x1 + x;
-			if(y + y1 >= _HEIGHT || xx >= _WIDTH)
+			if (y + y1 >= _HEIGHT || xx >= _WIDTH)
 				continue;
 
-			if(prio < priority_data[yy + xx])
+			if (prio < priority_data[yy + xx])
 				continue;
 
 			priority_data[yy+xx] = prio;
@@ -372,12 +382,11 @@ void agi_put_bitmap (UINT8 *src, int x1, int y1, int w, int h, int trans, int pr
 
 void do_blit ()
 {
-	/* _D (("()")); */
 	if (x_min < x_max && y_min < y_max) {
-		/* _D ((": %d %d %d %d", x_min, y_min, x_max, y_max)); */
 		gfx->put_block (x_min << 1, y_min, (x_max << 1) + 1, y_max);
 	}
 	
+	/* reset block variables */
 	x_min = 320;
 	x_max = 0;
 	y_min = 200;
@@ -529,5 +538,12 @@ void print_character (int x, int y, char c, int fg, int bg)
 		/* CM: the extra pixel in y is for the underline cursor */
 		gfx->put_block (x, y, x + 7, y + 8); 
 	}
+}
+
+
+/* put_screen is a lower level function, not console-aware */
+void put_screen ()
+{
+	gfx->put_block (0, 0, 319, 199);
 }
 

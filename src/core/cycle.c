@@ -477,7 +477,7 @@ static void update_timer ()
 }
 
 
-void main_cycle (UINT8 accept_key)
+void main_cycle (int accept_key)
 {
 	static UINT32 msg_box_ticks = 0;
 
@@ -505,8 +505,8 @@ void main_cycle (UINT8 accept_key)
 
 int run_game2 ()
 {
-	UINT16	ec=err_OK;
-	UINT32	x, y, z=12345678;
+	int ec = err_OK;
+	UINT32 x, y, z = 12345678;
 
 	stop_sound ();
 
@@ -548,7 +548,7 @@ int run_game2 ()
 
 		do_blit ();
 
-		if (game.quit_prog_now == 0xFF) {
+		if (game.quit_prog_now == 0xff) {
 			ec = err_RestartGame;
 			break;
 		}

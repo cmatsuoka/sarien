@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -113,27 +113,20 @@ static UINT32 match_version (UINT32 crc)
 
 int v2id_game ()
 {
-	UINT8 *fn[] = {
-		(UINT8*)"viewdir",
-		(UINT8*)"logdir",
-		(UINT8*)"picdir",
-		(UINT8*)"snddir",
-		(UINT8*)"words.tok",
-		(UINT8*)"object",
-		(UINT8*)""
-	};
-	UINT16	ec=err_OK, y;
-	UINT32	len, c, crc;
-	UINT8	*buff;
-	FILE	*fp;
+	int ec = err_OK, y;
+	UINT32 len, c, crc;
+	UINT8 *buff;
+	FILE *fp;
+	char *fn[] = { "viewdir", "logdir", "picdir", "snddir",
+		"words.tok", "object", "" };
 
-	buff=(UINT8*)malloc(8192);
+	buff = malloc (8192);
 
 	for (crc = y = 0; fn[y][0]; y++) {
-		fixpath(NO_GAMEDIR, fn[y]);
-		if ((fp = fopen((char*)path, "rb")) != NULL) {
+		fixpath (NO_GAMEDIR, fn[y]);
+		if ((fp = fopen(path, "rb")) != NULL) {
 			for (len = 1; len > 0; ) {
-				memset (buff, 0x0, 8192);
+				memset (buff, 0, 8192);
 				len = fread (buff, 1, 8000, fp);
 				for (c = 0; c < len; c++)
 					crc += *(buff + c);
@@ -191,21 +184,17 @@ int v2id_game ()
 
 int v3id_game ()
 {
-	UINT8 *fn[] = {
-		(UINT8*)"words.tok",
-		(UINT8*)"object",
-		(UINT8*)""
-	};
-	UINT16	ec=err_OK, y;
-	UINT32	len, c, crc;
-	UINT8	*buff;
-	FILE	*fp;
+	int ec = err_OK, y;
+	UINT32 len, c, crc;
+	UINT8 *buff;
+	FILE *fp;
+	char *fn[] = { "words.tok", "object", "" };
 
 	buff = malloc (8192);
 
-	for (crc = 0, y=0; fn[y][0]!=0x0; y++) {
+	for (crc = 0, y = 0; fn[y][0]!=0x0; y++) {
 		fixpath (NO_GAMEDIR, fn[y]);
-		if ((fp=fopen((char*)path, "rb")) != NULL) {
+		if ((fp = fopen (path, "rb")) != NULL) {
 			len = 1;
 			while (len > 0) {
 				memset (buff, 0, 8192);
@@ -219,9 +208,9 @@ int v3id_game ()
 
 	/* no do the directory file */
 
-	fixpath (GAMEDIR, (UINT8*)DIR);
+	fixpath (GAMEDIR, DIR);
 
-	if ((fp=fopen((char*)path, "rb")) != NULL) {
+	if ((fp = fopen(path, "rb")) != NULL) {
 		for (len = 1; len > 0; ) {
 			memset (buff, 0, 8192);
 			len = fread (buff, 1, 8000, fp);

@@ -122,7 +122,7 @@ void	release_sprites	(void);
 void	new_room_resources(void);
 void	update_status_line(int);
 
-void main_cycle (UINT8);
+void main_cycle (int);
 
 #ifdef __cplusplus
 };
