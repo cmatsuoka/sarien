@@ -1,168 +1,635 @@
-/*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+/* Sarien - A Sierra AGI resource interpreter engine
  *  
- *  $Id$
- *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; see docs/COPYING for further details.
- */
-
-/*
- * Based on the Amiga graphics output for v2600 Atari 2600 emulator,
- * version 2.2 (September 4, 1997) written by Matthew Stroup
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; see docs/COPYING for further details.
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <clib/exec_protos.h>
-#include <clib/graphics_protos.h>
-#include <clib/intuition_protos.h>
-#include <intuition/intuition.h>
-#include <intuition/screens.h>
-#include <graphics/view.h>
-#include <exec/memory.h>
-#include <hardware/cia.h>
+#include <sys/time.h>
+
+#include <proto/intuition.h>
+#include <proto/graphics.h>
+#include <proto/exec.h>
+#include <proto/dos.h>
+#include <proto/gadtools.h>
+#include <graphics/gfxbase.h>
+#include "amiga_keys.h"
+
 #include "sarien.h"
 #include "graphics.h"
 #include "keyboard.h"
-
-#define NUMCOLS 32
-#define CIAAPRA 0xBFE001
-#define CIAA	0xBFE001
+#define DEPTH 6
 
 
-extern struct gfx_driver *gfx;
 extern struct sarien_options opt;
+extern struct gfx_driver *gfx;
 
+static struct Screen *screen;
+struct Window *window;
+static UBYTE *ximage;
 
-static int	amiga_init_vidmode	(void);
-static int	amiga_deinit_vidmode	(void);
-static void	amiga_put_block		(int, int, int, int);
-static void	amiga_put_pixels	(int, int, int, UINT8 *);
-static void	amiga_timer		(void);
-static int	amiga_get_key		(void);
-static int	amiga_keypress		(void);
+static struct RastPort video_temprp;
+static struct BitMap video_tmp_bm = { 0, 0, 0, 0, 0, {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL} };
+APTR VisualInfo = NULL;
 
+static int scale = 1;
+static int key_control = 0;
+static int key_alt = 0;
+static unsigned int rgb_palette[32];
 
-static struct gfx_driver gfx_amiga = {
-	amiga_init_vidmode,
-	amiga_deinit_vidmode,
-	amiga_put_block,
-	amiga_put_pixels,
-	amiga_timer,
-	amiga_keypress,
-	amiga_get_key
-};
-
-static struct Window *win;
-static struct RastPort *rp;
-static UBYTE *vscreen;
-static UBYTE colors[NUMCOLS];
-static struct CIA *ciamou = (struct CIA *)CIAAPRA;
-static struct CIA *cia = (struct CIA *)CIAA;
-
-static struct Screen *scr;
-static struct BitMap bitmap_bm;
-static PLANEPTR raster;
-static char perm[8] = { 0, 1, 2, 3, 4, 5, 6, 7 };	/**< bitplane order */
-
-extern struct GfxBase *GfxBase;
-extern struct IntuitionBase *IntuitionBase;
-
-
-#if 0
-void __asm c2p8_init (
-	register __a0 UBYTE *chunky,	// pointer to chunky data
-	register __a1 UBYTE *chunky_cmp,// pointer to chunky comparison buffer
-	register __a2 PLANEPTR *planes,	// pointer to planes
-	register __d0 ULONG signals1,	// 1 << sigbit1
-	register __d1 ULONG signals2,	// 1 << sigbit2
-	register __d2 ULONG pixels,	// WIDTH * HEIGHT
-	register __d3 ULONG offset,	// byte offset into plane
-	register __d4 UBYTE *buff2,	// Chip buffer (size = width*height)
-	register __d5 UBYTE *buff3,	// Chip buffer (size = width*height)
-	register __a3 struct GfxBase *GfxBase);
-#endif
-
+static int __argc;
+static char **__argv;
 
 
 #define KEY_QUEUE_SIZE 16
-
 static int key_queue[KEY_QUEUE_SIZE];
 static int key_queue_start = 0;
 static int key_queue_end = 0;
-
 #define key_enqueue(k) do { key_queue[key_queue_end++] = (k); \
 	key_queue_end %= KEY_QUEUE_SIZE; } while (0)
 #define key_dequeue(k) do { (k) = key_queue[key_queue_start++]; \
 	key_queue_start %= KEY_QUEUE_SIZE; } while (0)
 
-static int keymap[128] = {
-	'`', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 0, 0, 0, 0, 0, 0,
-	'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', 0, 0, 0, 0, 0, 0,
-	0, 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0, 0, 0, 0, 0,
-	' ',		/* 0x40 */
-	0, 0,
-	KEY_ENTER,	/* 0x43 */
-	KEY_ENTER,	/* 0x44 */
-	KEY_ESCAPE,	/* 0x45 */
-	0, 0, 0, 0, 0, 0,
-	KEY_UP,		/* 0x4c */
-	KEY_DOWN,	/* 0x4d */
-	KEY_RIGHT,	/* 0x4e */
-	KEY_LEFT,	/* 0x4f */
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+static int Amiga_init_vidmode (void);
+static int Amiga_deinit_vidmode (void);
+static UINT16 set_palette (UINT8 *, UINT16, UINT16);
+static void Amiga_blit_block (int, int, int, int);
+static void Amiga_put_pixel (int x, int y, int w, UINT8 *p);
+//static void Amiga_put_pixel (int, int, int);
+static int Amiga_keypress (void);
+static int Amiga_get_key (void);
+static void Amiga_new_timer (void);
+
+
+/* From timer.c */
+int opentimer();
+void closetimer();
+
+static void die_die_die()
+{
+	gfx->deinit_video_mode ();
+	deinit_sound();
+	deinit_machine();
+	exit(0);
+}
+
+
+static struct gfx_driver GFX_amiga = {
+	Amiga_init_vidmode,
+	Amiga_deinit_vidmode,
+	Amiga_blit_block,
+	Amiga_put_pixel,
+	Amiga_new_timer,
+	Amiga_keypress,
+	Amiga_get_key
 };
+
+void __chkabort(void){}
+
 
 static void process_events ()
 {
-	struct IntuiMessage *message;
-	UINT8 key;
+	UWORD Code;
+	UWORD Qualifier;
+	ULONG Class;
+	struct IntuiMessage *imsg;
+	int goingup;
+	int key = 0;
 
-	if (!opt.fullscreen) {
-		message = (struct IntuiMessage *)GetMsg (win->UserPort);
-		if (message) {
-			switch (message->Class) {
+	while ((imsg = (struct IntuiMessage *) GT_GetIMsg(window->UserPort)))
+	{
+		Class = imsg->Class;
+		Code = imsg->Code;
+		Qualifier = imsg->Qualifier;
+
+		/* Get the message that's waiting for us */
+		GT_ReplyIMsg(imsg);
+
+		switch (Class)
+		{
+			case IDCMP_MOUSEBUTTONS:
+				switch (Code)
+				{
+					case IECODE_RBUTTON:
+					case IECODE_LBUTTON:
+						key = Code == IECODE_LBUTTON ? BUTTON_LEFT : BUTTON_RIGHT;
+						mouse.button = TRUE;
+						mouse.x = (imsg->MouseX - window->BorderLeft) / opt.scale;
+						mouse.y = (imsg->MouseY - window->BorderTop) / opt.scale;
+						break;
+					case IECODE_LBUTTON | IECODE_UP_PREFIX:
+					case IECODE_RBUTTON | IECODE_UP_PREFIX:
+						mouse.button = FALSE;
+						break;
+				}
+				break;
+
 			case IDCMP_CLOSEWINDOW:
-				amiga_deinit_vidmode ();
-				exit (0);
-			}
-		}
+				die_die_die();
+				break;
+
+			case IDCMP_VANILLAKEY:
+//				printf("IDCMP_VANILLAKEY %d %X  [%d,%d]\n",Code,Qualifier,Code & 0x07f,goingup);
+				if ((Code == 13) && (Qualifier == 0x8010))
+				{
+					// [alt + enter] = switch between fullscreen and window mode
+					Amiga_deinit_vidmode();
+					if (opt.fullscreen) opt.fullscreen = FALSE; else opt.fullscreen = TRUE;
+					Amiga_init_vidmode();
+					// re-draw the screen
+printf("..................................................\n");
+					Amiga_blit_block(0,0, GFX_WIDTH,GFX_HEIGHT);
+printf("..................................................\n");
+				} else {
+					key = Code;
+				}
+				break;
+
+			case IDCMP_RAWKEY:
+				goingup = Code & 0x080;
+				Code = (Code & 0x07F);
+
+				if(!goingup)
+				{
+					switch (Code)
+					{
+						/* Key press */
+						case XK_Up:
+//						case XK_KP_Up:
+							key = KEY_UP;
+							break;
+
+						case XK_Left:
+//						case XK_KP_Left:
+							key = KEY_LEFT;
+							break;
+
+						case XK_Down:
+//						case XK_KP_Down:
+							key = KEY_DOWN;
+							break;
+
+						case XK_Right:
+//						case XK_KP_Right:
+							key = KEY_RIGHT;
+							break;
 	
-		mouse.x = win->MouseX;
-		mouse.y = win->MouseY;
-		mouse.button = !(ciamou->ciapra & 0x0040);
-	}
+						case XK_F1:
+							key = 0x3b00;
+							break;
+						case XK_F2:
+							key = 0x3c00;
+							break;
+						case XK_F3:
+							key = 0x3d00;
+							break;
+						case XK_F4:
+							key = 0x3e00;
+							break;
+						case XK_F5:
+							key = 0x3f00;
+							break;
+						case XK_F6:
+							key = 0x4000;
+							break;
+						case XK_F7:
+							key = 0x4100;
+							break;
+						case XK_F8:
+							key = 0x4200;
+							break;
+						case XK_F9:
+							key = 0x4300;
+							break;
+						case XK_F10:
+							key = 0x4400;
+							break;
+						case XK_Return:
+							key = 0x0d;
+							break;
+						case XK_Escape:
+							key = 0x1b;
+							break;
 
-        key = cia->ciasdr ^ 0xFF;
-        key = key & 0x01 ? (key >> 1) + 0x80 : key >> 1;
-        /* if (key == 0x45) exit(0); */
+						case XK_Control_L:
+							key_control |= 1;
+							key = 0;
+							break;
+//						case XK_Control_R:
+//							key_control |= 2;
+//							key = 0;
+//							break;
+						case XK_Shift_L:
+						case XK_Shift_R:
+							key = 0;
+							break;
+						case XK_Alt_L:
+							key_alt |= 1;
+							key = 0;
+							break;
+						case XK_Alt_R:
+							key_alt |= 2;
+							key = 0;
+							break;
+#if 0
+						/* Amiga numpad doesn't return rawkeys... */
+						/* We'll have to make up with joystick support */
+						case XK_KP_Home:
+							key = KEY_UP_LEFT;
+							break;
+						case XK_KP_Page_Up:
+							key = KEY_UP_RIGHT;
+							break;
+						case XK_KP_Page_Down:
+							key = KEY_DOWN_RIGHT;
+							break;
+						case XK_KP_End:
+							key = KEY_DOWN_LEFT;
+							break;
+						case XK_KP_Enter:
+							key = KEY_ENTER;
+							break;
+						case XK_KP_Add:
+							key = '+';
+							break;
+						case XK_KP_Subtract:
+							key = '-';
+							break;
+#endif
 
-	if (~key & 0x80) {
-		_D ("%02x %02x %c %c", key, keymap[key], key, keymap[key]);
-		key_enqueue (keymap[key]);
+#ifdef USE_CONSOLE
+//		case XK_Help:
+//			key = CONSOLE_ACTIVATE_KEY;
+//			break;
+//		case XK_Help:
+//			key = CONSOLE_SWITCH_KEY;
+//			break;
+#endif
+					}
+				} else
+				{
+					/* Key Release */
+					switch (Code)
+					{
+						case XK_Control_L:
+							key_control &= ~1;
+							break;
+//						case XK_Control_R:
+//							key_control &= ~2;
+//							break;
+						case XK_Alt_L:
+							key_alt &= ~1;
+							break;
+						case XK_Alt_R:
+							key_alt &= ~2;
+							break;
+						default:
+							key = 0;
+					}
+				}
+
+				break;
+		}
+		if (key)
+			key_enqueue (key);
 	}
 }
+
 
 int init_machine (int argc, char **argv)
 {
-	gfx = &gfx_amiga;
+	gfx = &GFX_amiga;
+
+	/* Open the Amiga's timer.device */
+	opentimer();			/* !!! check result! */
+
+	__argc = argc;
+	__argv = argv;
+	scale = opt.scale;
+
+	/* ximage will be used to hold the chunky gfx data */
+	ximage = (UBYTE *) malloc ((GFX_WIDTH * scale) * (GFX_HEIGHT * scale));
+	if (!ximage) return err_Unk;
+
 	return err_OK;
 }
 
-int deinit_machine ()
+
+int deinit_machine(void)
 {
+	if (ximage) free (ximage);
+	ximage = NULL;
+	closetimer();
 	return err_OK;
 }
 
-static void amiga_timer ()
+
+static UINT16 set_palette (UINT8 *pal, UINT16 scol, UINT16 numcols)
 {
-#if 0
+	ULONG r,g,b;
+	int i;
+
+	for (i = scol; i < scol + numcols; i++)
+	{
+		r = pal[i * 3] << 26;
+		g = pal[i * 3 + 1] << 26;
+		b = pal[i * 3 + 2] << 26;
+
+		if (opt.fullscreen)
+		{
+			rgb_palette[i] = i;
+			SetRGB4(&screen->ViewPort, i, pal[i * 3] >> 2, pal[i * 3 + 1] >> 2, pal[i * 3 + 2] >> 2);		// 0-15
+		}
+		else
+		{
+			if (GfxBase->LibNode.lib_Version >= 39)
+				rgb_palette[i] = ObtainBestPenA(screen->ViewPort.ColorMap, r, g, b, NULL);
+		}
+	}
+
+	return err_OK;
+}
+
+
+static int Amiga_init_vidmode (void)
+{
+	char *PubScreen=NULL;
+	int i;
+
+	if (opt.fullscreen)
+	{
+		ULONG AmigaModeID=-1;	/* Amiga screen ID    */
+		/* Running full screen */
+		AmigaModeID = BestModeID(	BIDTAG_DesiredWidth, GFX_WIDTH * scale,
+											BIDTAG_DesiredHeight, GFX_HEIGHT * scale,
+											BIDTAG_NominalWidth, GFX_WIDTH * scale,
+											BIDTAG_NominalHeight, GFX_HEIGHT * scale,
+											BIDTAG_Depth, DEPTH,
+											TAG_END);
+		if (AmigaModeID==INVALID_ID) AmigaModeID=0;
+
+		screen = OpenScreenTags(NULL,
+										SA_Left,			0,
+										SA_Top,			0,
+										SA_Width,		GFX_WIDTH * scale,
+										SA_Height,		GFX_HEIGHT * scale,
+										SA_Depth,		DEPTH,
+										SA_Title,		(ULONG) "Amiga Sarien v" VERSION,
+										SA_DisplayID,	AmigaModeID,
+										TAG_DONE);
+		if (screen)
+		{
+			window = OpenWindowTags(NULL,
+											WA_Width,			GFX_WIDTH * scale,
+											WA_Height,			GFX_HEIGHT * scale,
+											WA_CloseGadget,	FALSE,
+											WA_DepthGadget,	FALSE,
+											WA_DragBar,			FALSE,
+											WA_SizeGadget,		FALSE,
+											WA_Activate,		TRUE,
+											WA_Borderless,		TRUE,
+											WA_IDCMP,			IDCMP_CLOSEWINDOW | IDCMP_RAWKEY | IDCMP_VANILLAKEY | IDCMP_MOUSEBUTTONS | WFLG_RMBTRAP,
+											WA_Activate,		TRUE,
+											WA_CustomScreen,	(ULONG) screen,
+											TAG_END);
+		}
+	}
+	else
+	{
+		/* Running in a window */
+		screen = LockPubScreen(PubScreen);
+
+		if (screen)
+		{
+			window = OpenWindowTags(NULL,
+											WA_InnerWidth,		GFX_WIDTH * scale,
+											WA_InnerHeight,	GFX_HEIGHT * scale,
+											WA_Title,			(ULONG) "Amiga Sarien v" TITLE " " VERSION,
+											WA_CloseGadget,	TRUE,
+											WA_DepthGadget,	TRUE,
+											WA_DragBar,			TRUE,
+											WA_SizeGadget,		FALSE,
+											WA_Activate,		TRUE,
+											WA_RMBTrap,			TRUE,
+											WA_PubScreenName,	(ULONG) PubScreen,
+											WA_IDCMP,			IDCMP_CLOSEWINDOW | IDCMP_RAWKEY  | IDCMP_VANILLAKEY | IDCMP_MOUSEBUTTONS,
+											TAG_END);
+		}
+	}
+
+	if (!screen)
+	{
+		fprintf(stderr, "Error opening/locking screen\n");
+		return err_Unk;
+	}
+
+	if (!window)
+	{
+		fprintf(stderr, "Error opening window\n");
+		if (screen)
+		{
+			if (opt.fullscreen) CloseScreen(screen); else UnlockPubScreen(NULL,screen);
+			screen = NULL;
+		}
+		return err_Unk;
+	}
+
+	/* Setup the temporary rastport required for kickstarts < 3.1 */
+	if (GfxBase->LibNode.lib_Version < 39)
+	{
+		int depth;
+		InitBitMap (&video_tmp_bm, 1, (GFX_WIDTH * scale), 1);
+
+		for (depth = 0; depth < DEPTH; depth++)
+		{
+			if ((video_tmp_bm.Planes[depth] = (PLANEPTR)AllocRaster (GFX_WIDTH * scale, 1)) == NULL)
+			{
+				fprintf(stderr,"AllocRaster failed");
+				return 0;
+			}
+		}
+
+		video_temprp = *window->RPort;
+		video_temprp.Layer = NULL;
+		video_temprp.BitMap = &video_tmp_bm;
+	}
+
+//	clear_buffer();
+
+	for (i=0;i<16;i++)
+	{
+		rgb_palette[i] = -1;
+	}
+
+	set_palette (palette, 0, 32);
+
+	return err_OK;
+}
+
+static int Amiga_deinit_vidmode (void)
+{
+	fprintf (stderr, "amiga: deiniting video mode\n");
+
+	/* Free the temporary rastport required for kickstarts < 3.1 */
+	if (GfxBase->LibNode.lib_Version < 39)
+	{
+		int depth;
+		for (depth = 0; depth < DEPTH; depth++)
+		{
+			if (video_tmp_bm.Planes[depth] != NULL)
+			{
+				FreeRaster (video_tmp_bm.Planes[depth], (GFX_WIDTH * scale), 1);
+				video_tmp_bm.Planes[depth] = NULL;
+			}
+		}
+	}
+
+	if (opt.fullscreen)
+	{
+		/* release allocated colour pens */
+		if (screen)
+		{
+			int i;
+			for (i=0;i<16;i++)
+			{
+				if (rgb_palette[i] >= 0) ReleasePen(screen->ViewPort.ColorMap, rgb_palette[i]);
+				rgb_palette[i] = -1;
+			}
+		}
+	}
+
+	if (window)
+	{
+		if (VisualInfo) FreeVisualInfo(VisualInfo);
+		CloseWindow(window);
+		window = NULL;
+	}
+
+	if (screen)
+	{
+		if (opt.fullscreen) CloseScreen(screen); else UnlockPubScreen(NULL,screen);
+		screen = NULL;
+	}
+
+	return err_OK;
+}
+
+
+/* put a block onto the screen */
+static void Amiga_blit_block(int x1, int y1, int x2, int y2)
+{
+	if (x1 >= GFX_WIDTH)
+		x1 = GFX_WIDTH - 1;
+	if (y1 >= GFX_HEIGHT)
+		y1 = GFX_HEIGHT - 1;
+	if (x2 >= GFX_WIDTH)
+		x2 = GFX_WIDTH - 1;
+	if (y2 >= GFX_HEIGHT)
+		y2 = GFX_HEIGHT - 1;
+
+	if (scale > 1) {
+		x1 *= scale;
+		y1 *= scale;
+		x2 *= scale;
+		y2 *= scale;
+	}
+
+	if (GfxBase->LibNode.lib_Version >= 39)
+	{
+		/* Kickstart 3.1+ */
+		static UBYTE *image;
+
+		if (scale == 1) {
+			image = ximage + (x1 + (y1 * GFX_WIDTH));
+		} else if (scale == 2) {
+			image = ximage + (x1 + (y1 * (GFX_WIDTH << 1)));
+		} else {
+			image = ximage + (x1 + (y1 * (GFX_WIDTH * scale)));
+		}
+		WriteChunkyPixels(window->RPort,
+								x1 + window->BorderLeft,
+								y1 + window->BorderTop,
+								x2 + window->BorderLeft,
+								y2 + window->BorderTop,
+								(UBYTE *) image,
+								GFX_WIDTH * scale);
+
+	}
+	else
+	{
+		/* Kickstart 2.0 -> 3.0 */
+		/* I don't bother to support these any more :-) */
+	}
+}
+
+
+/* put pixel routine */
+static void Amiga_put_pixel (int x, int y, int w, UINT8 *p)
+{
+	int cp, z;
+	register int i, j;
+
+	switch (scale) {
+	case 1:
+		while (w--) {
+			ximage[x + (y * GFX_WIDTH)] = rgb_palette[*p++];
+			x++;
+		}
+		break;
+	case 2:
+		x <<= 1;
+		y <<= 1;
+		z = y + 1;
+		while (w--) {
+			cp = rgb_palette[*p++];
+			ximage[(x  ) + (y * (GFX_WIDTH << 1))] = cp;
+			ximage[(x++) + (z * (GFX_WIDTH << 1))] = cp;
+			ximage[(x  ) + (y * (GFX_WIDTH << 1))] = cp;
+			ximage[(x++) + (z * (GFX_WIDTH << 1))] = cp;
+		}
+		break;
+	default:
+
+		x *= scale;
+		y *= scale;
+		while (w--) {
+			cp = rgb_palette[*p++];
+			for (i = 0; i < scale; i++) {
+				for (j = 0; j < scale; j++)
+					ximage[x + i + ((y + j) * (GFX_WIDTH << scale))] = cp;
+			}
+			x += scale;
+		}
+		break;
+	}
+}
+
+
+static int Amiga_keypress (void)
+{
+	process_events ();
+	return key_queue_start != key_queue_end;
+}
+
+
+static int Amiga_get_key (void)
+{
+	int k;
+
+	while (key_queue_start == key_queue_end)	/* block */
+		Amiga_new_timer ();
+
+	key_dequeue(k);
+
+	return k;
+}
+
+
+static void Amiga_new_timer ()
+{
 	struct timeval tv;
 	struct timezone tz;
 	static double msec = 0.0;
@@ -171,167 +638,12 @@ static void amiga_timer ()
 	gettimeofday (&tv, &tz);
 	m = 1000.0 * tv.tv_sec + tv.tv_usec / 1000.0;
 
-	while (m - msec < 42) {
-		usleep (5000);
+	while (m - msec < 42)
+	{
 		gettimeofday (&tv, &tz);
 		m = 1000.0 * tv.tv_sec + tv.tv_usec / 1000.0;
 	}
 	msec = m; 
-#endif
 
 	process_events ();
 }
-
-
-static int amiga_init_vidmode ()
-{
-	int i;
-
-	/* Make sure necessary ROM libraries are open */
-
-	IntuitionBase = (struct IntuitionBase *)
-		OpenLibrary ("intuition.library", 36L);
-	if (IntuitionBase == NULL)
-		return -1;
-
-	GfxBase = (struct GfxBase *) OpenLibrary ("graphics.library", 36L);
-	if (GfxBase == NULL)
-		return -1;
-
-	vscreen = (UBYTE *)AllocMem (GFX_WIDTH * GFX_HEIGHT,
-		MEMF_PUBLIC | MEMF_CLEAR);
-
-	if (opt.fullscreen) {
-		_D ("Fullscreen");
-		InitBitMap (&bitmap_bm, 8, GFX_WIDTH, GFX_HEIGHT);
-		raster = (PLANEPTR)AllocRaster (GFX_WIDTH, 8 * GFX_HEIGHT);
-		if (raster == NULL) {
-			fprintf (stderr, "can't alloc raster\n");
-			return -1;
-		}
-		for (i = 0; i < 8; i++) {
-			bitmap_bm.Planes[i] = raster +
-				perm[i] * RASSIZE (GFX_WIDTH, GFX_HEIGHT);
-		}
-
-		scr = OpenScreenTags (NULL,
-			SA_Title, "Sarien " ##VERSION,
-			SA_ShowTitle, FALSE,
-			SA_Depth, 7,
-			SA_Width, GFX_WIDTH,
-			SA_Height, GFX_HEIGHT,
-			SA_Quiet, TRUE,
-			SA_Type, PUBLICSCREEN,
-			SA_BitMap, &bitmap_bm,
-			TAG_DONE);
-		if (scr == NULL) {
-			fprintf (stderr, "can't open screen\n");
-			return -1;
-		}
-
-		rp = &(scr->RastPort);
-		SetRast (rp, 0);	/* clear screen memory */
-		WaitBlit();		/* wait until it's finished */
-
-		for (i = 0; i < NUMCOLS; i++) {
-			SetRGB32 (&(scr->ViewPort), i,
-				(UINT32)palette[i * 3 + 0] << 26,
-				(UINT32)palette[i * 3 + 1] << 26,
-				(UINT32)palette[i * 3 + 2] << 26);
-			colors[i] = i;
-		}
-	} else {
-		win = OpenWindowTags (NULL,
-			WA_Title, "Sarien " ##VERSION,
-			WA_AutoAdjust, TRUE,
-			WA_InnerWidth, GFX_WIDTH, 
-			WA_InnerHeight, GFX_HEIGHT,
-			WA_DragBar, TRUE,
-			WA_CloseGadget, TRUE,
-			WA_DepthGadget,TRUE,
-			WA_SimpleRefresh, TRUE,
-			WA_IDCMP, IDCMP_CLOSEWINDOW,
-			TAG_DONE);
-		if (win == NULL) {
-			fprintf (stderr, "can't open window\n");
-			return -1;
-		}
-	
-		rp = win->RPort;
-
-		for (i = 0; i < NUMCOLS; i++) {
-			colors[i] = ObtainBestPen (
-				win->WScreen->ViewPort.ColorMap,
-				(UINT32)palette[i * 3 + 0] << 26,
-				(UINT32)palette[i * 3 + 1] << 26,
-				(UINT32)palette[i * 3 + 2] << 26,
-				OBP_Precision,PRECISION_EXACT,
-				TAG_DONE);
-		}
-	}
-
-	/* clear screen */
-	memset (vscreen, colors[0], GFX_WIDTH * GFX_HEIGHT);
-
-	return 0;
-}
-
-static int amiga_deinit_vidmode ()
-{
-	if (opt.fullscreen) {
-		CloseScreen (scr);
-	} else {
-		CloseWindow (win);
-	}
-	FreeMem (vscreen, GFX_WIDTH * GFX_HEIGHT);
-	CloseLibrary ((struct Library *)GfxBase);
-	CloseLibrary ((struct Library *)IntuitionBase);
-
-	return 0;
-}
-
-
-/* blit a block onto the screen */
-static void amiga_put_block (int x1, int y1, int x2, int y2)
-{
-	if (x1 >= GFX_WIDTH)  x1 = GFX_WIDTH  - 1;
-	if (y1 >= GFX_HEIGHT) y1 = GFX_HEIGHT - 1;
-	if (x2 >= GFX_WIDTH)  x2 = GFX_WIDTH  - 1;
-	if (y2 >= GFX_HEIGHT) y2 = GFX_HEIGHT - 1;
-
-	if (opt.fullscreen) {
-	} else {
-		WriteChunkyPixels (rp,
-			win->BorderLeft + x1, win->BorderTop + y1,
-			win->BorderLeft + x2, win->BorderTop + y2,
-			vscreen + y1 * GFX_WIDTH + x1, GFX_WIDTH);
-	}
-}
-
-
-static void amiga_put_pixels (int x, int y, int w, UINT8 *p)
-{
-	UINT8 *v = vscreen + y * GFX_WIDTH + x;
-	while (w--) { *v++ = colors[*p++]; }
-}
-
-
-static int amiga_keypress ()
-{
-	process_events ();
-	return key_queue_start != key_queue_end;
-}
-
-
-static int amiga_get_key ()
-{
-	UINT16 k;
-
-	while (key_queue_start == key_queue_end)	/* block */
-		amiga_timer ();
-
-	key_dequeue(k);
-
-	return k;
-}
-
