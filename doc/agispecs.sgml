@@ -5840,87 +5840,65 @@ Byte  Meaning
   </tgroup>
 </table>
 
-<table id="tab-cycle">
+<table id="tab-view-flags">
   <title>Cycle table</title>
   <tgroup cols="3">
     <thead>
       <row/ <entry/Bit/ <entry/Flag reset/ <entry/Flag set/ /
     </thead>
     <tbody>
-      <row/ <entry/0/  <entry// <entry// /
+      <row/ <entry/0/  <entry/Not drawn/         <entry/Drawn/ /
       <row/ <entry/1/  <entry/Observe blocks/    <entry/Ignore blocks/ /
       <row/ <entry/2/  <entry/Variable priority/ <entry/Fixed priority/ /
       <row/ <entry/3/  <entry/Observe horizon/   <entry/Ignore horizon/ /
-      <row/ <entry/4/  <entry// <entry// /
+      <row/ <entry/4/  <entry/Not updating/      <entry/Updating/ /
       <row/ <entry/5/  <entry/Not cycling/       <entry/Cycling/ /
-      <row/ <entry/6/  <entry// <entry// /
-      <row/ <entry/7/  <entry// <entry// /
+      <row/ <entry/6/  <entry/Not animated/      <entry/Animated/ /
+      <row/ <entry/7/  <entry/Not moving/        <entry/Moving/ /
       <row/ <entry/8/  <entry//                  <entry/Object on water/ /
       <row/ <entry/9/  <entry/Observe objects/   <entry/Ignore objects/ /
-      <row/ <entry/10/ <entry// <entry// /
+      <row/ <entry/10/ <entry//                  <entry/(Update pos)/ /
       <row/ <entry/11/ <entry//                  <entry/Object on land/ /
-      <row/ <entry/12/ <entry// <entry// /
-      <row/ <entry/13/ <entry// <entry/Loop fixed/ /
-      <row/ <entry/14/ <entry// <entry// /
-      <row/ <entry/15/ <entry// <entry// /
+      <row/ <entry/12/ <entry//                  <entry/(Don't update)/ /
+      <row/ <entry/13/ <entry//                  <entry/Loop fixed/ /
+      <row/ <entry/14/ <entry/Object has moved/  <entry/Object didn't move/ /
     </tbody>
   </tgroup>
 </table>
 
-
-</para>
-<warning>
-  <para>
-    The above format structure is simply the way in which Sierra's
-    AGI interpreter stores information about VIEW objects. In attempting
-    to write an AGI interpreter, you would not have to restrict yourself
-    to this format, just as long as you store this information in some
-    manner that the interpreter can have access to.
-  </para>
-</warning>
 </sect1>
 
-<sect1><title>VIEW test commands</title>
+<sect1><title>View test commands</title>
 <para>
-   Lance Ewing, 31 August 1997.
-</para><para>
-
-   There are four LOGIC test commands that are to do with views. These are:
+  There are four LOGIC test commands that are to do with views:
+  <function/obj.in.box/, <function/posn/, <function/right.posn/ and
+  <function/center.posn/.
+  All of these commands are for testing whether a object is within
+  a given rectangle on the screen. All of them take the same parameters
+  and apart from a slight change in each case, they do exactly the same
+  thing and even share about 95% of their code. The general form is the
+  following:
 </para><para>
    <programlisting>
-obj.in.box()
-posn()
-right.posn()
-centre.posn()
+command (object num, left, top, right, bottom)
    </programlisting>
+</para>
+<para>
+  An object has a position stored in its view table entry that says where
+  abouts on the screen the view object is at the present time. The
+  problem with this position is saying which pixel is the position pixel
+  for an object that takes up usually over a hundred pixels. One might
+  say that most views are actors or props that sit on the ground and
+  therefore the bottom row of pixels will give you a y position.
+  This is a good argument, but now you need to say which of these pixels
+  in the bottom row is the actual position. Sierra must have faced this
+  problem or they wouldn't have provided four commands for achieving
+  essentially the same thing.
 </para><para>
 
-   All of these commands are for testing whether a VIEW object is within
-   a given rectangle on the screen. All of them take the same parameters
-   and apart from a slight change in each case, they do exactly the same
-   thing and even share about 95% of their code. The general form is the
-   following:
+  By default the position hot spot in a sprite is the bottom left pixel.
 </para><para>
-   <programlisting>
-command (VIEW object num, left, top, right, bottom)
-   </programlisting>
-</para><para>
-
-   A VIEW has a position stored in its VIEW table entry that says where
-   abouts on the screen the view object is at the present time. The
-   problem with this position is saying which pixel is the position pixel
-   for an object that takes up usually over a hundred pixels. Okay, you
-   might say that most views are actors or props that sit on the ground
-   and therefore the bottom row of pixels will give you a y position.
-   This is a good argument, but now you need to say which of these pixels
-   in the bottom row is the actual position. Sierra must have faced this
-   problem or they wouldn't have provided four commands for achieving
-   essentially the same thing.
-</para><para>
-
-   By default the position hot spot in a VIEW is the bottom left pixel.
-</para><para>
-   <programlisting>
+  <programlisting>
 .........
 .........
 .........
@@ -5928,87 +5906,76 @@ command (VIEW object num, left, top, right, bottom)
 .........
 .........
 X........
-   </programlisting>
+  </programlisting>
 
 </para><para>
-   This is the location that gets stored in the VIEW object table. The
-   difference between the test commands given above is how they adjust
-   the x position before testing it against the rectangle border lines.
-   <function/posn/ leaves the x position as it is (left side).
-   <function/right.posn/ adds (xsize - 1) to the x position giving the
-   right side. <function/center.posn/ adds (xsize / 2) to the x position
-   giving the centre. <function/obj.in.box/ tests both the left and right
-   sides which essentially tests whether the whole bottom row of pixels
-   is in the ``box''.
-
-</para><para>
-   The test is TRUE if
-</para><para>
-   <programlisting>
-(X1 >= left) && (y >= top) && (X2 <= right) && (y <= bottom).
-   </programlisting>
+  This is the location that gets stored in the view table. The
+  difference between the test commands given above is how they adjust
+  the x position before testing it against the rectangle border lines.
+  <function/posn/ leaves the x position as it is (left side).
+  <function/right.posn/ adds (xsize - 1) to the x position giving the
+  right side. <function/center.posn/ adds (xsize / 2) to the x position
+  giving the centre. <function/obj.in.box/ tests both the left and right
+  sides which essentially tests whether the whole bottom row of pixels
+  is in the ``box''.
 </para>
+
 </sect1>
 
-<sect1 id="viewcode"><title>Sample code</title>
-<para>
-   <simplelist>
-    <member><filename/viewview.pas/
-      by Peter Kelly: unit from AGIhack that displays VIEWs
-   </simplelist>
 </chapter>
 
 
-<chapter id="soundresource"><title>SOUND resources</title>
-<para>
-   Lance Ewing, updated by Claudio Matsuoka, 22 May 1999.
-</para>
+<chapter id="soundresource">
+<title>Sound resources</title>
 
-<sect1><title>Introduction</title>
+<sect1>
+<title>Introduction</title>
 <para>
-   Most people who think of AGI games remember that they played their
-   music and sounds over the PC speaker. What they may not know is that
-   all sounds in the MS-DOS, Tandy and Macintosh versions are composed of
-   four parts, one which is the melody, two which are accompaniment, and
-   the final one being noise. The IBM PC can only play one note at a time
-   so all AGI games for the PC play the melody by itself. The Apple IIgs
-   version has much more sophisticated sound: 16 channel wavetable based
-   MIDI songs for the soundtracks, and digitally sampled PCM sound effects.
+  Most people who think of AGI games remember that they played their
+  music and sounds over the PC speaker. What they may not know is that
+  all sounds in the MS-DOS, Tandy and Macintosh versions are composed of
+  four parts, one which is the melody, two which are accompaniment, and
+  the final one being noise. The IBM PC can only play one note at a time
+  so all AGI games for the PC play the melody by itself. The Apple IIgs
+  version has much more sophisticated sound: 16 channel wavetable based
+  MIDI songs for the soundtracks, and digitally sampled PCM sound effects.
 </para><para>
-   According to Donald B. Trivette, author of ``The Official Book of King's
-   Quest'', a year before the IBM PCjr was announced IBM asked Sierra to
-   create a game that would show off the new computers color graphics
-   capabilities. IBM supplied the company with a prototype Junior, and
-   Roberta set to work designing a new type of adventure game. The game
-   produced was called King's Quest. This is important because the IBM
-   PCjr had a different method of sound generation than the IBM
-   compatibles of today. The sound data was stored to make it easy to
-   send to the Juniors sound generators. This format appears to have
-   remained right through the AGI games up until 1989--90 when SCI took
-   over even though the PCjr had long since been surpassed by the 286,
-   and 386.
+  According to Donald B. Trivette, author of ``The Official Book of King's
+  Quest'', a year before the IBM PCjr was announced IBM asked Sierra to
+  create a game that would show off the new computers color graphics
+  capabilities. IBM supplied the company with a prototype Junior, and
+  Roberta set to work designing a new type of adventure game. The game
+  produced was called King's Quest. This is important because the IBM
+  PCjr had a different method of sound generation than the IBM
+  compatibles of today. The sound data was stored to make it easy to
+  send to the Juniors sound generators. This format appears to have
+  remained right through the AGI games up until 1989--90 when SCI took
+  over even though the PCjr had long since been surpassed by the 286,
+  and 386.
 </para>
 
-<sect1><title>Sound in the IBM PCjr</title>
+<sect1>
+<title>Sound in the IBM PCjr</title>
 <para>
-   The best known source of sound in the Junior is the TI SN76496A sound
-   generator chip. This source has four separate sound voices. Three of
-   these are tone generators and the fourth is a noise source. All four
-   voices have an independent volume control, providing an evenly
-   graduated set of 15 volume levels, plus a zero volume (off). Each of
-   the three pure voices has an independently selected frequency. The
-   noise voice has three preselected frequencies and a fourth option,
-   which borrows the frequency of the third pure voice. The data stored
-   in the AGI games is designed to be sent to these four voices.
+  The best known source of sound in the Junior is the TI SN76496A sound
+  generator chip. This source has four separate sound voices. Three of
+  these are tone generators and the fourth is a noise source. All four
+  voices have an independent volume control, providing an evenly
+  graduated set of 15 volume levels, plus a zero volume (off). Each of
+  the three pure voices has an independently selected frequency. The
+  noise voice has three preselected frequencies and a fourth option,
+  which borrows the frequency of the third pure voice. The data stored
+  in the AGI games is designed to be sent to these four voices.
 </para>
 
-<sect2><title>The tone generation</title>
+<sect2>
+<title>The tone generation</title>
 <para>
-   A tone is produced on a voice by passing the sound chip a 3-bit
-   register address and then a 10-bit frequency divisor. The register
-   address specifies which voice the tone will be produced on. This is
-   done through port 192 on the IBM PCjr by sending it 2 bytes in the
-   following format:
+  A tone is produced on a voice by passing the sound chip a 3-bit
+  register address and then a 10-bit frequency divisor. The register
+  address specifies which voice the tone will be produced on. This is
+  done through port 192 on the IBM PCjr by sending it 2 bytes in the
+  following format:
 </para><para>
 <programlisting>
 First Byte
@@ -6034,26 +6001,27 @@ R0      R1      R2
 </programlisting>
  
 </para><para>
-   The actual frequency produced is the 10-bit frequency divisor given by
-   F0 to F9 divided into 1/32 of the system clock frequency (3.579 MHz)
-   which turns out to be 111,860 Hz. Keeping all this in mind, the
-   following is the formula for calculating the frequency:
+  The actual frequency produced is the 10-bit frequency divisor given by
+  F0 to F9 divided into 1/32 of the system clock frequency (3.579 MHz)
+  which turns out to be 111,860 Hz. Keeping all this in mind, the
+  following is the formula for calculating the frequency:
 </para><para>
 <programlisting>
 f = 111860 / (((Byte2 & 0x3F) << 4) + (Byte1 & 0x0F))
 </programlisting>
 
 </para><para>
-   Note: The order of the bytes are reversed for AGI sound data.
+  Note: The order of the bytes are reversed for AGI sound data.
 </para>
 
-<sect2><title>Attenuation</title>
+<sect2>
+<title>Attenuation</title>
 <para>
-   Each voice in the T1 sound chip has an independent sound-level
-   control, which is calculated in terms of decibels of attenuation, or
-   softening. There are four bits uses to control the volume. These bits,
-   labeled A0 through A3, can be set independently or added together to
-   produce sixteen volume levels as shown below.
+  Each voice in the T1 sound chip has an independent sound-level
+  control, which is calculated in terms of decibels of attenuation, or
+  softening. There are four bits uses to control the volume. These bits,
+  labeled A0 through A3, can be set independently or added together to
+  produce sixteen volume levels as shown below.
 </para><para>
 <programlisting>
 A0 A1 A2 A3        Value        Attenuation (decibels)
@@ -6066,13 +6034,12 @@ A0 A1 A2 A3        Value        Attenuation (decibels)
 </programlisting>
 
 </para><para>
-   When a bit is set on, the sound is attenuated (reduced) by a specific
-   amount: either 2, 4, 8, or 16 decibels. When all four bits are set on,
-   the sound is turned completely off. When all four bits are off, the
-   sound is at
-   its fullest volume.
-
-</para><para>
+  When a bit is set on, the sound is attenuated (reduced) by a specific
+  amount: either 2, 4, 8, or 16 decibels. When all four bits are set on,
+  the sound is turned completely off. When all four bits are off, the
+  sound is at its fullest volume.
+</para>
+<para>
    The attenuation is set by sending a byte of the following format to
    the T1 sound chip:
 <programlisting>
@@ -6092,21 +6059,22 @@ R0      R1      R2
 </programlisting>
 </para>
 
-<sect2><title>The noise generator</title>
+<sect2>
+<title>The noise generator</title>
 <para>
-   There are two modes for the noise operation, besides the four
-   frequency selections. One, called periodic noise, produces a steady
-   sound; the other, called white noise, produces a hissing sound. These
-   two modes are controlled by a bit known as the FB bit. When FB is 0,
-   the periodic noise is generated; when FB is 1, the white noise is
-   produced.
-</para><para>
-
-   Two bits, known as NF0 and NF1, control the frequency at which the
-   noise generator works. Three of the four possible combinations of NF0
-   and NF1 set an independent noise frequency based on the timer. The
-   fourth combination borrows the frequency from the third of the three
-   pure voices made by the tone generators.
+  There are two modes for the noise operation, besides the four
+  frequency selections. One, called periodic noise, produces a steady
+  sound; the other, called white noise, produces a hissing sound. These
+  two modes are controlled by a bit known as the FB bit. When FB is 0,
+  the periodic noise is generated; when FB is 1, the white noise is
+  produced.
+</para>
+<para>
+  Two bits, known as NF0 and NF1, control the frequency at which the
+  noise generator works. Three of the four possible combinations of NF0
+  and NF1 set an independent noise frequency based on the timer. The
+  fourth combination borrows the frequency from the third of the three
+  pure voices made by the tone generators.
 </para><para>
 <programlisting>
  NF0  NF1       Noise Frequency
@@ -6115,10 +6083,11 @@ R0      R1      R2
   0    1         1,193,180 / 1024 = 1165
   1    0         1,193,180 / 2048 = 583
 </programlisting>
-</para><para>
+</para>
 
-   The noise frequency is set by sending a byte of the following format
-   to the T1 sound chip:
+<para>
+  The noise frequency is set by sending a byte of the following format
+  to the T1 sound chip:
 </para><para>
 <programlisting>
 7  6  5  4  3  2  1  0
@@ -6131,51 +6100,51 @@ R0      R1      R2
 </programlisting>
 </para>
 
-<sect1><title>Sound in the Apple IIgs</title>
+<sect1>
+<title>Sound in the Apple IIgs</title>
 <para>
-   The Apple IIgs uses the Ensoniq 5503 DOC (Digital Oscillator Chip)
-   to produce its sound. The 5503 has 32 oscillators and is capable of
-   playing wavetable based music using digital sound samples stored in
-   its own dedicated RAM (much like the Gravis Ultrasound card for the
-   IBM PC). Thanks to the 5503, AGI games for the IIgs have a much richer
-   sound than the PC, Mac or Tandy versions.
-</para><para>
-
-   Follows an excerpt of the Apple II Sound and Music FAQ, version 1.7.
+  The Apple IIgs uses the Ensoniq 5503 DOC (Digital Oscillator Chip)
+  to produce its sound. The 5503 has 32 oscillators and is capable of
+  playing wavetable based music using digital sound samples stored in
+  its own dedicated RAM (much like the Gravis Ultrasound card for the
+  IBM PC). Thanks to the 5503, AGI games for the IIgs have a much richer
+  sound than the PC, Mac or Tandy versions.
+</para>
+<para>
+  The following section is an excerpt from the Apple II Sound and Music
+  FAQ, version 1.7, written by Ian Schmidt.
 </para>
 
-<sect2><title>Technical Specs for the GS Ensoniq chip</title>
+<sect2>
+<title>Technical Specs for the GS Ensoniq chip</title>
 <para>
-   Ian Schmidt, 3 November 1997.
-
-</para><para>
-   The 5503 Ensoniq Digital Oscillator Chip (DOC) contains 32 fundamental
-   sound-generator units, known as ``oscillators''. Each oscillator is
-   capable of either making an independent tone by itself, or of being
-   paired up cooperatively with it's neighbor in a pairing known as a
-   ``generator''. The generator arrangement is used by most programs, for
-   it allows more flexibility and a thicker, lusher sound.
-
-</para><para>
-   The DOC plays 8-bit waveforms, with the centerline at 0x80 (128
-   decimal). This format is known as ``8-bit unsigned''. 0x00 (0 decimal
-   too) is reserved for `stop'. If a sample value of 0 is encountered by
-   a DOC oscillator, the oscillator will immediately halt and not produce
-   any more sound. The DOC additionally has an 8-bit volume register for
-   each oscillator, with a linear slope. The dynamic range of the DOC
-   (the `space' between the softest and loudest sounds it can produce) is
-   approximately 42 dB, or about on par with an average cassette tape.
-
-</para><para>
-   Each oscillator has it's own 16 bit frequency register, ranging from 0
-   to 65535. In a normal DOC configuration, each step of the frequency
-   register increases the play rate by 51 Hz, and computing the maximum
-   theoretical play rate is left as an exercise for the student.
-
-</para><para>
-   When oscillators are paired to create generators, there are 4 possible
-   modes:
-   <simplelist>
+  The 5503 Ensoniq Digital Oscillator Chip (DOC) contains 32 fundamental
+  sound-generator units, known as ``oscillators''. Each oscillator is
+  capable of either making an independent tone by itself, or of being
+  paired up cooperatively with it's neighbor in a pairing known as a
+  ``generator''. The generator arrangement is used by most programs, for
+  it allows more flexibility and a thicker, lusher sound.
+</para>
+<para>
+  The DOC plays 8-bit waveforms, with the centerline at 0x80 (128
+  decimal). This format is known as ``8-bit unsigned''. 0x00 (0 decimal
+  too) is reserved for `stop'. If a sample value of 0 is encountered by
+  a DOC oscillator, the oscillator will immediately halt and not produce
+  any more sound. The DOC additionally has an 8-bit volume register for
+  each oscillator, with a linear slope. The dynamic range of the DOC
+  (the `space' between the softest and loudest sounds it can produce) is
+  approximately 42 dB, or about on par with an average cassette tape.
+</para>
+<para>
+  Each oscillator has it's own 16 bit frequency register, ranging from 0
+  to 65535. In a normal DOC configuration, each step of the frequency
+  register increases the play rate by 51 Hz, and computing the maximum
+  theoretical play rate is left as an exercise for the student.
+</para>
+<para>
+  When oscillators are paired to create generators, there are 4 possible
+  modes:
+  <simplelist>
     <member>Free-run: the oscillator simply plays the waveform and stops. No
        interaction with it's 'twin' occurs.
     <member>Swap: Only one oscillator of the pair is active at a time. When
@@ -6187,34 +6156,35 @@ R0      R1      R2
        oscillator of the pair modulates the volume of the other with the
        waveform it's playing, or both oscillators sync up perfectly,
        causing a louder and more 'solid' sound.
-   </simplelist>
-
-</para><para>
-   Oscillators play waves stored in up to 128k of DRAM. This DRAM is not
-   directly visible from the GS's 65816 CPU, but can be accessed (slowly)
-   via services supplied by the Sound GLU chip. Note that no widely
-   manufactured IIgs motherboard supported the full 128k of DRAM that the
-   DOC can see. Conversely, no synthesizer Ensoniq made using the DOC had
-   anything less than the full 128k.
-
-</para><para>
-   The output of an oscillator can be directed to any one of 16 possible
-   channels. Apple only makes 8 channels avalible via the 3 bits on the
-   sound expansion connector, and all current stereo cards limit this to
-   1 bit, or two channels. However, the ``Bernie II The Rescue'' IIgs
-   emulator for the Power Mac expands this support to 4 discrete output
-   channels, two of which are encoded to the rear channel for Dolby
-   Pro-Logic compatible output. No IIgs software that I'm aware of
-   supports more than 2 channels however.
+  </simplelist>
+</para>
+<para>
+  Oscillators play waves stored in up to 128k of DRAM. This DRAM is not
+  directly visible from the GS's 65816 CPU, but can be accessed (slowly)
+  via services supplied by the Sound GLU chip. Note that no widely
+  manufactured IIgs motherboard supported the full 128k of DRAM that the
+  DOC can see. Conversely, no synthesizer Ensoniq made using the DOC had
+  anything less than the full 128k.
+</para>
+<para>
+  The output of an oscillator can be directed to any one of 16 possible
+  channels. Apple only makes 8 channels avalible via the 3 bits on the
+  sound expansion connector, and all current stereo cards limit this to
+  1 bit, or two channels. However, the ``Bernie II The Rescue'' IIgs
+  emulator for the Power Mac expands this support to 4 discrete output
+  channels, two of which are encoded to the rear channel for Dolby
+  Pro-Logic compatible output. No IIgs software that I'm aware of
+  supports more than 2 channels however.
 </para>
 
-<sect1><title>Sound in other platforms</title>
+<sect1>
+<title>Sound in other platforms</title>
 <para>
-   According to Paul Lunga, sound in the Macintosh and Tandy versions of
-   the AGI games are pretty much the same as the PCjr version (three
-   sound channels plus noise). AIFF files of AGI music in these platforms
-   are available at <ulink url="http://agi.helllabs.org/sound">
-   http://agi.helllabs.org/sound</ulink>.
+  According to Paul Lunga, sound in the Macintosh and Tandy versions of
+  the AGI games are pretty much the same as the PCjr version (three
+  sound channels plus noise). AIFF files of AGI music in these platforms
+  are available at <ulink url="http://agi.helllabs.org/sound">
+  http://agi.helllabs.org/sound</ulink>.
 </para>
 
 <sect1><title>Sound resource format (PCjr version)</title>

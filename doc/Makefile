@@ -21,11 +21,16 @@ dox:
 flowchart.ps: flowchart.dot
 	dot -Tps -o$@ $+
 
+
 specs: flowchart.ps
-	[ -d agispecs ] || mkdir agispecs
-	(cd agispecs; \
-	 convert ../flowchart.ps flowchart.png; \
-	 docbook2html ../agispecs.sgml; \
-	 ln -sf book1.html index.html) || true;
-	cp images/specs/*png agispecs/
+	if [ -x /usr/bin/docbook2html ]; then		\
+		[ -d agispecs ] || mkdir agispecs;	\
+		(cd agispecs; docbook2html ../agispecs.sgml) \
+	else						\
+		sgmltools -b html agispecs.sgml;	\
+	fi
+	(cd agispecs;					\
+	 convert ../flowchart.ps flowchart.png;		\
+	 ln -sf book1.html index.html; 			\
+	 cp ../images/specs/*png .)
 
