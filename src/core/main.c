@@ -37,10 +37,16 @@ struct agi_game game;
 INLINE void _D (char *s, ...) { s = s; }
 #endif
 
+
 #ifdef MACOSX
-/* real main for OS X is in src/graphics/cocoa/cocoa.m */
-#define main gamemain
+#  ifdef MACOSX_SDL
+#    define main SDL_main     
+#  else
+     /* real main for OS X is in src/graphics/cocoa/cocoa.m */
+#    define main gamemain
+#  endif
 #endif
+
 
 int main (int argc, char *argv[])
 {

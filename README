@@ -31,12 +31,12 @@ The following compilers/environments can be used to build sarien:
 	Apple cc (gcc)	MacOS X
 
 
-To build in UNIX platforms, run './configure; make'. ./configure --help
-will show the build options. If you're using mingw32 or djgpp with a
-UNIX-like shell (ksh, bash), copy the appropriate ruleset from rulesets/
-to ./Rules.
+To build in UNIX and UNIX-like platforms (including Cygwin, BeOS and
+MacOS X), run './configure; make'. Run ./configure --help to see the
+build options. If you're using djgpp with a UNIX-like shell (ksh, bash),
+copy the appropriate ruleset from rulesets/ to ./Rules.
 
-To build using VC++, check the files in the appropriate directory.
+To build using VC++, use the files in the appropriate directory.
 
 The list of known bugs can be browsed at
 http://sourceforge.net/tracker/?group_id=24759&atid=382570

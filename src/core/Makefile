@@ -21,15 +21,14 @@ LIB	= ../../lib/libagi.a
 
 all: fixcr $(LIB) archfiles exefile
 
-arch:
-	(cd $(CORE_ARCH); $(MAKE) all)
-
 include ../../Rules
-
-archfiles: $(ARCH_SUBDIR)
 
 exefile: ../../bin/sarien$(EXE_SUFFIX)
 
+archfiles:
+	[ "$(CORE_ARCH)" ] && (cd $(CORE_ARCH); $(MAKE) all)
+
+# Must be directly linked (not in lib)
 ifeq ($(CORE_ARCH),win32)
 XTRA_OBJS = win32/winres.o
 endif

@@ -27,6 +27,7 @@ Tested ports:
 ---------+-------+---------+---------+---------+---------+---------+
  MacOS   |  MPW  |  macos  |  macos  |   yes   |    no   | claudio |
  MacOS X |  cc   |  Cocoa  |  macos  |   yes   |    ?    |drzoltan |
+ MacOS X |  cc   |   SDL   |   SDL   |   yes   |    ?    |Benjamin |
 ---------+-------+---------+---------+---------+---------+---------+
 Dreamcast|   ?   |   dc    |   dc    |    no   |   yes   |brianpeek|
 ---------+-------+---------+---------+---------+---------+---------+

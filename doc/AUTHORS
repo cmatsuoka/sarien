@@ -87,6 +87,7 @@
 
 - Benjamin Zale <junior_aepi@users.sourceforge.net>
   * MacOS X fixes
+  * MacOS X SDL port
 
 - Brian Peek <brian@ganksoft.com>
   * Dreamcast port

@@ -15,6 +15,7 @@ Revision History
 	- implemented multi-slot savegames
 	- selectable Amiga-ish or EGA palettes
 	- merged Brian Peek's SarienDC Dreamcast port
+	- merged Benjamin Zale's MacOS X SDL port
 	- added Mike Montague's DirectX driver
 	- added runtime option settings to MacOS port
 	- integrated MacOS X port to the main buildsystem
