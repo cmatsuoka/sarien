@@ -47,8 +47,10 @@ static int check_clutter (struct vt_entry *v)
 		return 0;
 
 	for_each_vt_entry (u) {
-		if ((u->flags & (ANIMATED|DRAWN)) != (ANIMATED|DRAWN) ||
-		    u->flags & IGNORE_OBJECTS)
+		if ((u->flags & (ANIMATED|DRAWN)) != (ANIMATED|DRAWN))
+			continue;
+
+		if (u->flags & IGNORE_OBJECTS)
 			continue;
 
 		/* Same object, check next */
@@ -73,7 +75,7 @@ static int check_clutter (struct vt_entry *v)
 			continue;
 
 return_1:
-		_D (_D_WARN "check returns 1");
+		_D (_D_WARN "check returns 1 (object %d)", v->entry);
 		return 1;
 	}
 	

@@ -307,17 +307,13 @@ cmd(erase) {
 }
 
 cmd(position) {
-	vt.x_pos2 = vt.x_pos;
-	vt.y_pos2 = vt.y_pos;
-	vt.x_pos = p1;
-	vt.y_pos = p2;
+	vt.x_pos = vt.x_pos2 = vt.x_pos;
+	vt.y_pos = vt.y_pos2 = vt.y_pos;
 }
 
 cmd(position_f) {
-	vt.x_pos2 = vt.x_pos;
-	vt.y_pos2 = vt.y_pos;
-	vt.x_pos = _v[p1];
-	vt.y_pos = _v[p2];
+	vt.x_pos = vt.x_pos2 = vt.x_pos;
+	vt.y_pos = vt.y_pos2 = vt.y_pos;
 }
 
 cmd(get_posn) {
