@@ -8,6 +8,7 @@ OBJS = $(TARGET).o
 LIBS = -L../../../lib -lagi
 
 CC = m68k-palmos-coff-gcc
+LD = m68k-palmos-coff-multilink
 
 CFLAGS = -Wall -g -O2
 
@@ -44,7 +45,7 @@ bin.res: $(TARGET).rcp $(TARGET).pbm
 	touch bin.res
 
 $(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $(TARGET) $(LIBS)
+	$(LD) $(OBJS) -basnename $(TARGET) $(LIBS)
 	! $(NM) -u $(TARGET) | grep .
 
 send: $(TARGET).prc

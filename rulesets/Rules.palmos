@@ -8,8 +8,8 @@ MAN_DIR		= ${prefix}/man/man1
 
 CC		= m68k-palmos-coff-gcc
 CFLAGS		=  -DINLINE=inline -DPALMOS -DHAVE_STRING_H=1 -DHAVE_UNIX_STDIO_H=1 -DFILE=void -DSEEK_END=0 -DSEEK_SET=0 -DVERSION='"$(VERSION)"' -U_TRACE
-LD		= m68k-palmos-coff-gcc
-LDFLAGS		= -o $@
+LD		= m68k-palmos-coff-multilink
+LDFLAGS		= -basename $@ -fid FAGI -stdlib
 LIBS		=  #-lefence
 RANLIB		= m68k-palmos-coff-ranlib
 INSTALL		= /usr/bin/install -c
