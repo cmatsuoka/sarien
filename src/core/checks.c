@@ -198,7 +198,7 @@ void update_position ()
 			x = 0;
 			border = 4;
 		} else if (x + v->x_size > _WIDTH) {
-			x = 160 - v->x_size;
+			x = _WIDTH - v->x_size;
 			border = 2;
 		}
 
@@ -253,15 +253,17 @@ void update_position ()
 void fix_position (int n)
 {
 	struct vt_entry *v = &game.view_table[n];
-	int count, dir, tries;
+	int count, dir, size;
 
 	/* _D (_D_WARN "adjusting view table entry #%d (%d,%d)",
 		n, v->x_pos, v->y_pos); */
 
 	/* test horizon */
+	if ((~v->flags & IGNORE_HORIZON) && v->y_pos <= game.horizon)
+		v->y_pos = game.horizon + 1;
 
 	dir = 0;
-	count = tries = 1;
+	count = size = 1;
 
 	while (!check_position(v) || check_clutter(v) || !check_priority(v)) {
 		switch (dir) {
@@ -274,7 +276,7 @@ void fix_position (int n)
 			v->y_pos++;
 			if (--count) continue;
 			dir = 2;
-			tries++;
+			size++;
 			break;
 		case 2:			/* east */
 			v->x_pos++;
@@ -285,11 +287,11 @@ void fix_position (int n)
 			v->y_pos--;
 			if (--count) continue;
 			dir = 0;
-			tries++;
+			size++;
 			break;
 		}
 
-		count = tries;
+		count = size;
 	}
 
 	_D (_D_WARN "view table entry #%d position adjusted to (%d,%d)",
@@ -297,4 +299,3 @@ void fix_position (int n)
 }
 
 /* end: checks.c */
-
