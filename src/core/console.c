@@ -841,9 +841,21 @@ int console_init ()
 	return 0;
 }
 
+/* Date: Sun, 14 Oct 2001 23:02:02 -0700
+ * From: Vasyl Tsvirkunov <vasyl@pacbell.net>
+ * 
+ * This one was rather harmless and affected only builds without console.
+ * In SQ1&2 (and likely some others) name entry screen did not update
+ * properly. The bug caused by implicit assumption in cycle.c that
+ * console_cycle() updates the screen. Well, it does, if console is enabled.
+ * The fix is simple. In the second version of console_cycle() in console.c
+ * (the "dummy" one) add call to do_update(). The thing raises some
+ * questions about overall architecture of main cycle, but otherwise the fix
+ * works just fine.
+ */
 void console_cycle ()
 {
-	/* dummy */
+	do_update ();
 }
 
 void console_lock ()
