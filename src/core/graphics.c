@@ -165,8 +165,9 @@ static void init_console ()
 		palette[i + 48] = (palette[i] + 0x30) >> 2;
 
 	/* Console */
-	for (i = 0; i < CONSOLE_LINES_BUFFER; i++)
-		console.line[i] = strdup ("\n");
+	console.line[0] = calloc (CONSOLE_LINES_BUFFER, CONSOLE_LINE_SIZE + 1);
+	for (i = 1; i < CONSOLE_LINES_BUFFER; i++)
+		console.line[i] = console.line[i - 1] + CONSOLE_LINE_SIZE + 1;
 }
 
 #else

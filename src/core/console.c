@@ -66,6 +66,38 @@ static char _p[80];
 static int _pn;
 
 
+
+/*
+ * Console line management
+ */
+
+static int first_line = 0;
+
+static void add_console_line (char *s)
+{
+	int last_line;
+
+	last_line = (CONSOLE_LINES_BUFFER - 1 + first_line) %
+		CONSOLE_LINES_BUFFER;
+
+        strncpy (console.line[last_line], s, CONSOLE_LINE_SIZE);
+	first_line %= CONSOLE_LINES_BUFFER;
+}
+
+static char *get_console_line (int n)
+{
+	return console.line[(n + first_line) % CONSOLE_LINES_BUFFER];
+}
+
+static char *get_last_console_line ()
+{
+	int last_line = (CONSOLE_LINES_BUFFER - 1 + first_line) %
+		CONSOLE_LINES_BUFFER;
+
+	return console.line[last_line];
+}
+
+
 /*
  * Console command parsing
  */
@@ -454,14 +486,15 @@ static char *get_token (char *s, char d)
 
 static void build_console_lines (int n)
 {
-	int i, j, y1;
+	int j, y1;
+	char *line;
 
 	clear_console_screen (GFX_HEIGHT - n * 10);
 
 	for (j = CONSOLE_LINES_ONSCREEN - n; j < CONSOLE_LINES_ONSCREEN; j++) {
-		i = console.first_line + j;
-		print_text_console (console.line[i], 0, j,
-			strlen (console.line[i]) + 1, CONSOLE_COLOR, 0);
+		line = get_console_line (console.first_line + j);
+		print_text_console (line, 0, j, strlen (line) + 1,
+			CONSOLE_COLOR, 0);
 	}
 
 	y1 = console.y - n * 10;
@@ -559,10 +592,10 @@ void report (char *message, ...)
 	}
 
 	if (console_input) {
-		strcpy (z, console.line[CONSOLE_LINES_BUFFER - 1]);
+		strcpy (z, get_last_console_line ());
 		strcpy (x, ">");
 	} else {
-		strcpy (x, console.line[CONSOLE_LINES_BUFFER - 1]);
+		strcpy (x, get_last_console_line ());
 	}
 
 	strcat (x, y);
@@ -574,22 +607,17 @@ void report (char *message, ...)
 		if (*n == '\n')
 			s++;
 
-	/* Scroll console */
-	for (i = 0; i < (s - 1); i++)
-		free (console.line[i]);
-	for (i = 0; i < (CONSOLE_LINES_BUFFER - (s - 1)); i++)
-		console.line[i] = console.line[i + (s - 1)];
-	console.line[CONSOLE_LINES_BUFFER - s] = strdup (get_token (m, '\n'));
+	add_console_line (get_token (m, '\n'));
 	for (i = 1; i < s; i++) {
+		first_line++;
 		n = get_token (NULL, '\n');
-		console.line[CONSOLE_LINES_BUFFER - s + i] = strdup (n);
+		add_console_line (n);
 	}
 
 	console.first_line = CONSOLE_LINES_BUFFER - CONSOLE_LINES_ONSCREEN;
 
 	if (console_input) {
-		free (console.line[CONSOLE_LINES_BUFFER - 1]);
-		console.line[CONSOLE_LINES_BUFFER - 1] = strdup (z);
+		add_console_line (z);
 	}
 
 	/* Build layer */
@@ -738,17 +766,20 @@ int console_keyhandler (int k)
 		buffer[0] = 0;
 		console_prompt ();
 		break;
-	case KEY_BACKSPACE:
+	case KEY_BACKSPACE: {
+		char *x;
 		if (!console.index)
 			break;
-		console.line[CONSOLE_LINES_BUFFER-1][console.index]=0;
+		x = get_last_console_line ();
+		x[console.index] = 0;
 		*m = CONSOLE_CURSOR_EMPTY;
 		print_text_console (m, (console.index+1), 19, 2,
 			CONSOLE_COLOR, 0);
-		flush_block ((console.index+1)*8, y1, (console.index+1)*8+7, y2);
+		flush_block ((console.index + 1) * CHAR_COLS, y1,
+			(console.index + 1 + 1) * CHAR_COLS - 1, y2);
 		console.index--;
 		buffer[console.index] = 0;
-		break;
+		} break;
 	case CONSOLE_ACTIVATE_KEY:
 		console.active = !console.active;
 		if (console.active)
@@ -800,10 +831,9 @@ int console_keyhandler (int k)
 			*m=k;m[1]=0;
 			console.index++;
 
-			sprintf (l, "%s%c",
-				console.line[CONSOLE_LINES_BUFFER-1],k);
-			free (console.line[CONSOLE_LINES_BUFFER-1]);
-			console.line[CONSOLE_LINES_BUFFER-1] = strdup(l);
+			sprintf (l, "%s%c", get_last_console_line (), k);
+			strncpy (get_last_console_line (), l,
+				CONSOLE_LINE_SIZE);
 
 			buffer[console.index] = 0;
 			print_text_console (m, console.index, 19, 2,
