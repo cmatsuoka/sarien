@@ -55,6 +55,7 @@ static GWorldPtr gworld;
 static PixMapHandle pix, wpix;
 static UINT8 *screen_buffer;
 static int depth = 16;
+static int scale = 2;
 
 
 #define KEY_QUEUE_SIZE 16
@@ -128,7 +129,7 @@ static INLINE void putpixel_8 (void *img, int idx, int p)
 _putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
 	if (w == 0) return; \
 	x += y * GFX_WIDTH + y * 8; \
-	while (w--) { putpixel_##d## (screen_buffer, x++, rgb_palette[*p++]); }\
+	while (w--) { putpixel_##d (screen_buffer, x++, rgb_palette[*p++]); }\
 }
 
 #define _putpixels_scale2(d) static void \
@@ -139,10 +140,10 @@ _putpixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) { \
 	y = x + (GFX_WIDTH << 1); \
 	while (w--) { \
 		c = rgb_palette[*p++]; \
-		putpixel_##d## (screen_buffer, x++, c); \
-		putpixel_##d## (screen_buffer, x++, c); \
-		putpixel_##d## (screen_buffer, y++, c); \
-		putpixel_##d## (screen_buffer, y++, c); \
+		putpixel_##d (screen_buffer, x++, c); \
+		putpixel_##d (screen_buffer, x++, c); \
+		putpixel_##d (screen_buffer, y++, c); \
+		putpixel_##d (screen_buffer, y++, c); \
 	} \
 }
 
@@ -150,12 +151,9 @@ _putpixels_scale1(8);
 _putpixels_scale1(16);
 _putpixels_scale1(32);
 
-#if 0
-/* Don't need these for MacOS */
 _putpixels_scale2(8);
 _putpixels_scale2(16);
 _putpixels_scale2(32);
-#endif
 
 /* ===================================================================== */
 
@@ -180,15 +178,15 @@ _putpixels_fixratio_##d##bits_scale2 (int x, int y, int w, UINT8 *p0) { \
 	z = x + (GFX_WIDTH << 2); \
 	for (p = p0; w--; ) { \
 		c = rgb_palette[*p++]; \
-		putpixel_##d## (screen_buffer, x++, c); \
-		putpixel_##d## (screen_buffer, x++, c); \
-		putpixel_##d## (screen_buffer, y++, c); \
-		putpixel_##d## (screen_buffer, y++, c); \
+		putpixel_##d (screen_buffer, x++, c); \
+		putpixel_##d (screen_buffer, x++, c); \
+		putpixel_##d (screen_buffer, y++, c); \
+		putpixel_##d (screen_buffer, y++, c); \
 	} \
 	for (p = p0; extra--; ) { \
 		c = rgb_palette[*p++]; \
-		putpixel_##d## (screen_buffer, z++, c); \
-		putpixel_##d## (screen_buffer, z++, c); \
+		putpixel_##d (screen_buffer, z++, c); \
+		putpixel_##d (screen_buffer, z++, c); \
 	} \
 }
 
@@ -351,7 +349,9 @@ static int macos_init_vidmode ()
 	set_palette (palette, 0, 32);
 
 	/* Create offscreen pixmap */
-	SetRect (&gworld_rect, 0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
+	/* CM: it's inconsistent with window creation below -- why? :\ */
+	SetRect (&gworld_rect, 0, 0, (GFX_WIDTH - 1) * scale,
+		(GFX_HEIGHT - 1) * scale);
 	GetGWorld (&old_gw, &old_gd);
 	if (NewGWorld (&gworld, depth, &gworld_rect, NULL, NULL, 0) != noErr)
 		return -1;
@@ -362,10 +362,11 @@ static int macos_init_vidmode ()
 	SetGWorld (old_gw, old_gd);
 
 	/* Set optimized put_pixels handler */
-	gfx_macos.put_pixels = _putpixels_16bits_scale1;
+	gfx_macos.put_pixels = _putpixels_16bits_scale2;
 
 	/* Create window */
-	SetRect (&window_rect, 50, 50, 50 + GFX_WIDTH - 1, 50 + GFX_HEIGHT - 1);
+	SetRect (&window_rect, 50, 50, 50 + GFX_WIDTH * scale - 1,
+		50 + GFX_HEIGHT * scale - 1);
 	window = NewCWindow (NULL, &window_rect, "\pSarien", true,
 		noGrowDocProc, (WindowPtr) -1, false, NULL);
 
@@ -406,9 +407,12 @@ static void macos_put_block (int x1, int y1, int x2, int y2)
 	if (x2 >= GFX_WIDTH)  x2 = GFX_WIDTH  - 1;
 	if (y2 >= GFX_HEIGHT) y2 = GFX_HEIGHT - 1;
 
-	//SetRect (&r, x1, y1, x2, y2);
-	SetRect (&r, 0, 0, 319, 199);
+	x1 *= scale;
+	y1 *= scale;
+	x2 = (x2 + 1) * scale - 1;
+	y2 = (y2 + 1) * scale - 1;
 
+	SetRect (&r, x1, y1, x2, y2);
 	CopyBits ((BitMap *)*pix, (BitMap *)*wpix, &r, &r, srcCopy, 0L);
 }
 
