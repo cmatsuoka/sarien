@@ -126,7 +126,7 @@ static void process_menu (int mc)
 	case mFile:
 		switch (item) {
 		case iQuit:
-			gfx->deinit_vidmode ();
+			gfx->deinit_video_mode ();
 			ExitToShell ();
 			break;
 		}
@@ -140,7 +140,6 @@ static void process_events ()
 {
 	WindowPtr win;
 	EventRecord event;
-	Rect drag_rect;
 
 	SystemTask();
 
@@ -162,19 +161,22 @@ static void process_events ()
 				break;
 			case inDrag:
 				/* title bar: call Window Manager to drag */
-				DragWindow (win, event.where, &drag_rect);
+				DragWindow (win, event.where,
+					&qd.screenBits.bounds);
 				break;
 			case inContent:
 				/* body of application window:
 				 * make it active if not
 				 */
-				if (win != FrontWindow())
+				if (win != FrontWindow()) {
 					SelectWindow (win);
+					break;
+				}
 				break;
 			case inGoAway:
 				/* quit application */
 				if (TrackGoAway (win, event.where)) {
-					gfx->deinit_vidmode ();
+					gfx->deinit_video_mode ();
 					ExitToShell ();
 				}
 				break;
@@ -433,7 +435,7 @@ static int macos_init_vidmode ()
 		return -1;
 	
 	init_toolbox ();
-	init_menus ();
+	init_menu ();
 
 	/* Set palette */
 	set_palette (palette, 0, 32);
