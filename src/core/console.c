@@ -510,370 +510,370 @@ int console_init ()
 #endif
 	console_cmd ("step",   "Execute the next AGI instruction", ccmd_step);
 	console_cmd ("vars",   "Dump all AGI variables", ccmd_vars);
-		console_cmd ("ver",    "Show interpreter version", ccmd_ver);
+	console_cmd ("ver",    "Show interpreter version", ccmd_ver);
 
+	console.active = 1;
+	console.input_active = 1;
+	console.index = 0;
+	console.max_y = 150;
+	console.y = console.max_y;
+	console.first_line = CONSOLE_LINES_BUFFER - CONSOLE_LINES_ONSCREEN;
+
+	debug.enabled = 0;
+	debug.opcodes = 0;
+	debug.logic0 = 1;
+	debug.priority = 0;
+
+	has_console = 1;
+
+	return err_OK;
+}
+
+static void build_console_layer ()
+{
+	build_console_lines (console.max_y / 10);
+}
+
+
+void report (char *message, ...)
+{
+	char x[512], y[512], z[64], *m, *n;
+	va_list	args;
+	int i, s, len;
+
+	va_start (args, message);
+
+#ifdef HAVE_VSNPRINTF
+	vsnprintf (y, 510, (char*)message, args);
+#else
+	vsprintf (y, (char*)message, args);
+#endif
+
+	va_end (args);
+
+	if (!has_console) {
+#ifndef NATIVE_MACOSX
+		fprintf (stderr, "%s", y);
+#endif
+		return;
+	}
+
+	if (console_input) {
+		strcpy (z, console.line[CONSOLE_LINES_BUFFER - 1]);
+		strcpy (x, ">");
+	} else {
+		strcpy (x, console.line[CONSOLE_LINES_BUFFER - 1]);
+	}
+
+	strcat (x, y);
+
+	len = 40;
+	m = n = word_wrap_string (x, &len);
+
+	for (s = 1; *n; n++)
+		if (*n == '\n')
+			s++;
+
+	/* Scroll console */
+	for (i = 0; i < (s - 1); i++)
+		free (console.line[i]);
+	for (i = 0; i < (CONSOLE_LINES_BUFFER - (s - 1)); i++)
+		console.line[i] = console.line[i + (s - 1)];
+	console.line[CONSOLE_LINES_BUFFER - s] = strdup (get_token (m, '\n'));
+	for (i = 1; i < s; i++) {
+		n = get_token (NULL, '\n');
+		console.line[CONSOLE_LINES_BUFFER - s + i] = strdup (n);
+	}
+
+	console.first_line = CONSOLE_LINES_BUFFER - CONSOLE_LINES_ONSCREEN;
+
+	if (console_input) {
+		free (console.line[CONSOLE_LINES_BUFFER - 1]);
+		console.line[CONSOLE_LINES_BUFFER - 1] = strdup (z);
+	}
+
+	/* Build layer */
+	if (console.y) {
+		if (s > 1)
+			build_console_layer ();
+		else
+			build_console_lines (1);
+	}
+
+	do_update ();
+}
+
+
+
+void console_cycle ()
+{
+	static int old_y = 0;
+	static int blink = 0;
+	static char cursor[] = "  ";
+
+	/* If no game has been loaded, keep the console visible! */
+	if (game.state < STATE_RUNNING) {
 		console.active = 1;
-		console.input_active = 1;
-		console.index = 0;
-		console.max_y = 150;
-		console.y = console.max_y;
-		console.first_line = CONSOLE_LINES_BUFFER - CONSOLE_LINES_ONSCREEN;
-
-		debug.enabled = 0;
-		debug.opcodes = 0;
-		debug.logic0 = 1;
-		debug.priority = 0;
-
-		has_console = 1;
-
-		return err_OK;
+		console.count = 10;
 	}
 
-	static void build_console_layer ()
-	{
-		build_console_lines (console.max_y / 10);
+	/* Initial console auto-hide timer */
+	if (console.count > 0)
+		console.count--;
+	if (console.count == 0) {
+		console.active = 0;
+		console.count = -1;
 	}
 
+	if (console.active) {
+		if (console.y < console.max_y)
+			console.y += 15;
+		else
+			console.y = console.max_y;
+	} else {
+		console.count = -1;
 
-	void report (char *message, ...)
-	{
-		char x[512], y[512], z[64], *m, *n;
-		va_list	args;
-		int i, s, len;
-
-		va_start (args, message);
-
-	#ifdef HAVE_VSNPRINTF
-		vsnprintf (y, 510, (char*)message, args);
-	#else
-		vsprintf (y, (char*)message, args);
-	#endif
-
-		va_end (args);
-
-		if (!has_console) {
-	#ifndef NATIVE_MACOSX
-			fprintf (stderr, "%s", y);
-	#endif
-			return;
-		}
-
-		if (console_input) {
-			strcpy (z, console.line[CONSOLE_LINES_BUFFER - 1]);
-			strcpy (x, ">");
-		} else {
-			strcpy (x, console.line[CONSOLE_LINES_BUFFER - 1]);
-		}
-
-		strcat (x, y);
-
-		len = 40;
-		m = n = word_wrap_string (x, &len);
-
-		for (s = 1; *n; n++)
-			if (*n == '\n')
-				s++;
-
-		/* Scroll console */
-		for (i = 0; i < (s - 1); i++)
-			free (console.line[i]);
-		for (i = 0; i < (CONSOLE_LINES_BUFFER - (s - 1)); i++)
-			console.line[i] = console.line[i + (s - 1)];
-		console.line[CONSOLE_LINES_BUFFER - s] = strdup (get_token (m, '\n'));
-		for (i = 1; i < s; i++) {
-			n = get_token (NULL, '\n');
-			console.line[CONSOLE_LINES_BUFFER - s + i] = strdup (n);
-		}
-
-		console.first_line = CONSOLE_LINES_BUFFER - CONSOLE_LINES_ONSCREEN;
-
-		if (console_input) {
-			free (console.line[CONSOLE_LINES_BUFFER - 1]);
-			console.line[CONSOLE_LINES_BUFFER - 1] = strdup (z);
-		}
-
-		/* Build layer */
-		if (console.y) {
-			if (s > 1)
-				build_console_layer ();
-			else
-				build_console_lines (1);
-		}
-
-		do_update ();
+		if (console.y > 0)
+			console.y -= 15;
+		else
+			console.y = 0;
 	}
 
-
-
-	void console_cycle ()
-	{
-		static int old_y = 0;
-		static int blink = 0;
-		static char cursor[] = "  ";
-
-		/* If no game has been loaded, keep the console visible! */
-		if (game.state < STATE_RUNNING) {
-			console.active = 1;
-			console.count = 10;
-		}
-
-		/* Initial console auto-hide timer */
-		if (console.count > 0)
-			console.count--;
-		if (console.count == 0) {
-			console.active = 0;
-			console.count = -1;
-		}
-
-		if (console.active) {
-			if (console.y < console.max_y)
-				console.y += 15;
-			else
-				console.y = console.max_y;
-		} else {
-			console.count = -1;
-
-			if (console.y > 0)
-				console.y -= 15;
-			else
-				console.y = 0;
-		}
-
-		/* console shading animation */
-		if (old_y != console.y) {
-			int y = console.y;
-			if (old_y > console.y) {
-				/* going up */
-				y = old_y;
-			} 
-			flush_block (0, 0, GFX_WIDTH - 1, y);
-			old_y = console.y;
-		}
-
-		blink++;
-		blink %= 16;
-		if (console.input_active) {
-			*cursor = blink < 8 ?
-				CONSOLE_CURSOR_SOLID : CONSOLE_CURSOR_EMPTY;
-		} else {
-			*cursor = CONSOLE_CURSOR_HOLLOW;
-		}
-		if (console.y > 0 && console.first_line == CONSOLE_LINES_BUFFER -
-			CONSOLE_LINES_ONSCREEN)
-		{
-			SINT16 y1 = console.y - 10, y2 = console.y - 1;
-			if (y1 < 0) y1 = 0;
-			if (y2 < 0) y2 = 0;
-			print_text_console (cursor,
-				(1 + console.index), 19, 2, CONSOLE_COLOR, 0);
-			flush_block ((1 + console.index) * 8, y1,
-				(1 + console.index) * 8 + 7, y2 - 1);
-		}
-
-		do_update ();
+	/* console shading animation */
+	if (old_y != console.y) {
+		int y = console.y;
+		if (old_y > console.y) {
+			/* going up */
+			y = old_y;
+		} 
+		flush_block (0, 0, GFX_WIDTH - 1, y);
+		old_y = console.y;
 	}
 
-
-	/* Return TRUE if key was handled */
-	int console_keyhandler (int k)
+	blink++;
+	blink %= 16;
+	if (console.input_active) {
+		*cursor = blink < 8 ?
+			CONSOLE_CURSOR_SOLID : CONSOLE_CURSOR_EMPTY;
+	} else {
+		*cursor = CONSOLE_CURSOR_HOLLOW;
+	}
+	if (console.y > 0 && console.first_line == CONSOLE_LINES_BUFFER -
+		CONSOLE_LINES_ONSCREEN)
 	{
-		static char buffer[CONSOLE_INPUT_SIZE];
-		SINT16 y1,y2;
-		char m[2];
-
-		/* Right button switches console on/off*/
-		if (k == BUTTON_RIGHT)
-			k = CONSOLE_ACTIVATE_KEY;
-
-		if (!console.active) {
-			if (k == CONSOLE_ACTIVATE_KEY) {
-				console.active = 1;
-				return TRUE;
-			}
-			return FALSE;
-		}
-
-		if (!console.input_active) {
-			if (k == CONSOLE_SWITCH_KEY) {
-				console.input_active = 1;
-				return TRUE;
-			}
-			if (k == CONSOLE_ACTIVATE_KEY) {
-				console.active = 0;
-				return TRUE;
-			}
-			return FALSE;
-		}
-
-		y1 = console.y - 10;
-		y2 = console.y - 1;
-
+		SINT16 y1 = console.y - 10, y2 = console.y - 1;
 		if (y1 < 0) y1 = 0;
 		if (y2 < 0) y2 = 0;
+		print_text_console (cursor,
+			(1 + console.index), 19, 2, CONSOLE_COLOR, 0);
+		flush_block ((1 + console.index) * 8, y1,
+			(1 + console.index) * 8 + 7, y2 - 1);
+	}
 
-		/* Ignore left button in console */
-		if (k == BUTTON_LEFT)
+	do_update ();
+}
+
+
+/* Return TRUE if key was handled */
+int console_keyhandler (int k)
+{
+	static char buffer[CONSOLE_INPUT_SIZE];
+	SINT16 y1,y2;
+	char m[2];
+
+	/* Right button switches console on/off*/
+	if (k == BUTTON_RIGHT)
+		k = CONSOLE_ACTIVATE_KEY;
+
+	if (!console.active) {
+		if (k == CONSOLE_ACTIVATE_KEY) {
+			console.active = 1;
 			return TRUE;
-
-		if (k) {
-			if (k != KEY_ENTER && console.first_line != CONSOLE_LINES_BUFFER -
-				CONSOLE_LINES_ONSCREEN) {
-				console.first_line = CONSOLE_LINES_BUFFER -
-					CONSOLE_LINES_ONSCREEN;
-				build_console_layer ();
-			}
-			console.count = -1;
 		}
-
-		switch (k) {
-		case KEY_ENTER:
-			console_lock ();
-			console.index = 0;
-			report ("\n");
-
-			if (console_parse (buffer) != 0)
-				report ("What? Where?\n");
-
-			buffer[0] = 0;
-			console_prompt ();
-			break;
-		case KEY_BACKSPACE:
-			if (!console.index)
-				break;
-			console.line[CONSOLE_LINES_BUFFER-1][console.index]=0;
-			*m = CONSOLE_CURSOR_EMPTY;
-			print_text_console (m, (console.index+1), 19, 2,
-				CONSOLE_COLOR, 0);
-			flush_block ((console.index+1)*8, y1, (console.index+1)*8+7, y2);
-			console.index--;
-			buffer[console.index] = 0;
-			break;
-		case CONSOLE_ACTIVATE_KEY:
-			console.active = !console.active;
-			if (console.active)
-				build_console_layer ();
-			break;
-		case CONSOLE_SWITCH_KEY:
-			console.count = -1;
-			if (console.y)
-				console.input_active = !console.input_active;
-			break;
-		case CONSOLE_SCROLLUP_KEY:
-			console.count = -1;
-			if (!console.y)
-				break;
-			if (console.first_line > (CONSOLE_LINES_ONSCREEN / 2))
-				console.first_line -= CONSOLE_LINES_ONSCREEN / 2;
-			else
-				console.first_line = 0;
-			build_console_layer ();
-			break;
-		case CONSOLE_SCROLLDN_KEY:
-			console.count = -1;
-			if (!console.y)
-				break;
-			if (console.first_line < (CONSOLE_LINES_BUFFER -
-				CONSOLE_LINES_ONSCREEN - CONSOLE_LINES_ONSCREEN / 2))
-				console.first_line += CONSOLE_LINES_ONSCREEN / 2;
-			else
-				console.first_line = CONSOLE_LINES_BUFFER -
-					CONSOLE_LINES_ONSCREEN;
-			build_console_layer ();
-			break;
-		case CONSOLE_START_KEY:
-			console.count = -1;
-			if (console.y)
-				console.first_line = 0;
-			break;
-		case CONSOLE_END_KEY:
-			console.count = -1;
-			if (console.y)
-				console.first_line = CONSOLE_LINES_BUFFER -
-					CONSOLE_LINES_ONSCREEN;
-			break;
-		default:
-			if (k >= 0x20 && k <= 0x7f && (console.index < CONSOLE_INPUT_SIZE - 2))
-			{
-				char l[42];
-				buffer[console.index] = k;
-				*m=k;m[1]=0;
-				console.index++;
-
-				sprintf (l, "%s%c",
-					console.line[CONSOLE_LINES_BUFFER-1],k);
-				free (console.line[CONSOLE_LINES_BUFFER-1]);
-				console.line[CONSOLE_LINES_BUFFER-1] = strdup(l);
-
-				buffer[console.index] = 0;
-				print_text_console (m, console.index, 19, 2,
-					CONSOLE_COLOR, 0);
-				flush_block (console.index*8, y1, console.index*8+7, y2);
-			}
-			break;
-		}
-
-		do_update ();
-
-		return TRUE;
-	}
-
-	void console_prompt ()
-	{
-		report (CONSOLE_PROMPT);
-		console_input = 1;
-	}
-
-
-	void console_lock ()
-	{
-		console_input = 0;
-	}
-
-
-	#else
-
-	void *debug;
-
-	void report (char *message, ...)
-	{
-		/* dummy */
-	}
-
-	int console_init ()
-	{
-		return 0;
-	}
-
-	/* Date: Sun, 14 Oct 2001 23:02:02 -0700
-	 * From: Vasyl Tsvirkunov <vasyl@pacbell.net>
-	 * 
-	 * This one was rather harmless and affected only builds without console.
-	 * In SQ1&2 (and likely some others) name entry screen did not update
-	 * properly. The bug caused by implicit assumption in cycle.c that
-	 * console_cycle() updates the screen. Well, it does, if console is enabled.
-	 * The fix is simple. In the second version of console_cycle() in console.c
-	 * (the "dummy" one) add call to do_update(). The thing raises some
-	 * questions about overall architecture of main cycle, but otherwise the fix
-	 * works just fine.
-	 */
-	void console_cycle ()
-	{
-		do_update ();
-	}
-
-	void console_lock ()
-	{
-		/* dummy */
-	}
-
-	void console_prompt ()
-	{
-		/* dummy */
-	}
-
-	int console_keyhandler (int i)
-	{
 		return FALSE;
 	}
+
+	if (!console.input_active) {
+		if (k == CONSOLE_SWITCH_KEY) {
+			console.input_active = 1;
+			return TRUE;
+		}
+		if (k == CONSOLE_ACTIVATE_KEY) {
+			console.active = 0;
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+	y1 = console.y - 10;
+	y2 = console.y - 1;
+
+	if (y1 < 0) y1 = 0;
+	if (y2 < 0) y2 = 0;
+
+	/* Ignore left button in console */
+	if (k == BUTTON_LEFT)
+		return TRUE;
+
+	if (k) {
+		if (k != KEY_ENTER && console.first_line != CONSOLE_LINES_BUFFER -
+			CONSOLE_LINES_ONSCREEN) {
+			console.first_line = CONSOLE_LINES_BUFFER -
+				CONSOLE_LINES_ONSCREEN;
+			build_console_layer ();
+		}
+		console.count = -1;
+	}
+
+	switch (k) {
+	case KEY_ENTER:
+		console_lock ();
+		console.index = 0;
+		report ("\n");
+
+		if (console_parse (buffer) != 0)
+			report ("What? Where?\n");
+
+		buffer[0] = 0;
+		console_prompt ();
+		break;
+	case KEY_BACKSPACE:
+		if (!console.index)
+			break;
+		console.line[CONSOLE_LINES_BUFFER-1][console.index]=0;
+		*m = CONSOLE_CURSOR_EMPTY;
+		print_text_console (m, (console.index+1), 19, 2,
+			CONSOLE_COLOR, 0);
+		flush_block ((console.index+1)*8, y1, (console.index+1)*8+7, y2);
+		console.index--;
+		buffer[console.index] = 0;
+		break;
+	case CONSOLE_ACTIVATE_KEY:
+		console.active = !console.active;
+		if (console.active)
+			build_console_layer ();
+		break;
+	case CONSOLE_SWITCH_KEY:
+		console.count = -1;
+		if (console.y)
+			console.input_active = !console.input_active;
+		break;
+	case CONSOLE_SCROLLUP_KEY:
+		console.count = -1;
+		if (!console.y)
+			break;
+		if (console.first_line > (CONSOLE_LINES_ONSCREEN / 2))
+			console.first_line -= CONSOLE_LINES_ONSCREEN / 2;
+		else
+			console.first_line = 0;
+		build_console_layer ();
+		break;
+	case CONSOLE_SCROLLDN_KEY:
+		console.count = -1;
+		if (!console.y)
+			break;
+		if (console.first_line < (CONSOLE_LINES_BUFFER -
+			CONSOLE_LINES_ONSCREEN - CONSOLE_LINES_ONSCREEN / 2))
+			console.first_line += CONSOLE_LINES_ONSCREEN / 2;
+		else
+			console.first_line = CONSOLE_LINES_BUFFER -
+				CONSOLE_LINES_ONSCREEN;
+		build_console_layer ();
+		break;
+	case CONSOLE_START_KEY:
+		console.count = -1;
+		if (console.y)
+			console.first_line = 0;
+		break;
+	case CONSOLE_END_KEY:
+		console.count = -1;
+		if (console.y)
+			console.first_line = CONSOLE_LINES_BUFFER -
+				CONSOLE_LINES_ONSCREEN;
+		break;
+	default:
+		if (k >= 0x20 && k <= 0x7f && (console.index < CONSOLE_INPUT_SIZE - 2))
+		{
+			char l[42];
+			buffer[console.index] = k;
+			*m=k;m[1]=0;
+			console.index++;
+
+			sprintf (l, "%s%c",
+				console.line[CONSOLE_LINES_BUFFER-1],k);
+			free (console.line[CONSOLE_LINES_BUFFER-1]);
+			console.line[CONSOLE_LINES_BUFFER-1] = strdup(l);
+
+			buffer[console.index] = 0;
+			print_text_console (m, console.index, 19, 2,
+				CONSOLE_COLOR, 0);
+			flush_block (console.index*8, y1, console.index*8+7, y2);
+		}
+		break;
+	}
+
+	do_update ();
+
+	return TRUE;
+}
+
+void console_prompt ()
+{
+	report (CONSOLE_PROMPT);
+	console_input = 1;
+}
+
+
+void console_lock ()
+{
+	console_input = 0;
+}
+
+
+#else
+
+void *debug;
+
+void report (char *message, ...)
+{
+	/* dummy */
+}
+
+int console_init ()
+{
+	return 0;
+}
+
+/* Date: Sun, 14 Oct 2001 23:02:02 -0700
+ * From: Vasyl Tsvirkunov <vasyl@pacbell.net>
+ * 
+ * This one was rather harmless and affected only builds without console.
+ * In SQ1&2 (and likely some others) name entry screen did not update
+ * properly. The bug caused by implicit assumption in cycle.c that
+ * console_cycle() updates the screen. Well, it does, if console is enabled.
+ * The fix is simple. In the second version of console_cycle() in console.c
+ * (the "dummy" one) add call to do_update(). The thing raises some
+ * questions about overall architecture of main cycle, but otherwise the fix
+ * works just fine.
+ */
+void console_cycle ()
+{
+	do_update ();
+}
+
+void console_lock ()
+{
+	/* dummy */
+}
+
+void console_prompt ()
+{
+	/* dummy */
+}
+
+int console_keyhandler (int i)
+{
+	return FALSE;
+}
 
 #endif /* USE_CONSOLE */

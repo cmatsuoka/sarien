@@ -1,10 +1,10 @@
 Name: sarien
-Version: 0.6.cvs20010909
+Version: 0.7.0
 Release: 1cm
 Summary: An interpreter for old Sierra AGI games
 Group: Games
 License: GPL
-Source: sarien-20010909.tar.gz
+Source: %{name}-%{version}.tar.gz
 URL: http://sarien.sourceforge.net/
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 

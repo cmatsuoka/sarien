@@ -220,7 +220,6 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 	}
 	console_init ();
 	report ("--- Starting console ---\n\n");
-
 	if (!opt.gfxhacks)
 		report ("Graphics driver hacks disabled (if any)\n");
 
@@ -233,7 +232,6 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 	}
 
 	_D ("Init sound");
-
 	init_sound ();
 
 	report (" \nSarien " VERSION " is ready.\n");
@@ -243,32 +241,30 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 	}
 
 	/* Execute the game */
-    	do 
+    	do {
+		_D(_D_WARN "game loop");
 
-		{
-			_D(_D_WARN "game loop"); 
-
+		if (game.state < STATE_RUNNING) {
 			ec = agi_init ();
 			game.state = STATE_RUNNING;
+		}
 
-			if (ec == err_OK) 
+		if (ec == err_OK) {
+			/* setup machine specific AGI flags, etc */
+			setvar (V_computer, 0);	/* IBM PC */
+			setvar (V_soundgen, 1);	/* IBM PC SOUND */
+			setvar (V_max_input_chars, 38);
+			setvar (V_monitor, 0x3); /* EGA monitor */
+			game.horizon = HORIZON;
+			game.player_control = FALSE;
 
-			{
-   			/* setup machine specific AGI flags, etc */
-    			setvar (V_computer, 0);	/* IBM PC */
-    			setvar (V_soundgen, 1);	/* IBM PC SOUND */
-    			setvar (V_max_input_chars, 38);
-    			setvar (V_monitor, 0x3); /* EGA monitor */
-	   			game.horizon = HORIZON;
-				game.player_control = FALSE;
+			ec = run_game();
+		}
 
-				ec = run_game();
-    		}
+		/* deinit our resources */
+		game.state = STATE_LOADED;
+		agi_deinit ();
 
-    		/* deinit our resources */
-
-			game.state = STATE_LOADED;
-    		agi_deinit ();
     	} while (ec == err_RestartGame);
 
 	deinit_sound ();
