@@ -23,7 +23,7 @@ static UINT8	*data;
 static UINT32	flen;
 static UINT32	foffs;
 
-static UINT8	patCode;
+static UINT8	pat_code;
 static UINT8	patNum;
 static UINT8	pri_on;
 static UINT8	scr_on;
@@ -316,7 +316,6 @@ static void absolute_draw_line (int res)
 **************************************************************************/
 static INLINE int is_ok_fill_here (int x, int y)
 {
-	unsigned int i;
 	UINT8 p;
 
 	if (x < 0 || x >= _WIDTH || y < 0 || y >= _HEIGHT)
@@ -325,8 +324,7 @@ static INLINE int is_ok_fill_here (int x, int y)
 	if (!scr_on && !pri_on)
 		return FALSE;
 
-	i = y * _WIDTH + x;
-	p = game.sbuf[i];
+	p = game.sbuf[y * _WIDTH + x];
 
 	if (!pri_on && scr_on && scr_colour != 15)
 		return (p & 0x0f) == 15;
@@ -480,41 +478,74 @@ static void fill ()
 }
 
 
-#define plotPatternPoint() do {						\
-	if (patCode & 0x20) {						\
-		if ((splatterMap[bitPos>>3] >> (7-(bitPos&7))) & 1) 	\
-			put_virt_pixel(x1, y1, 1);			\
-		bitPos++;						\
-		if (bitPos == 0xff)					\
-			bitPos=0;					\
-	} else put_virt_pixel(x1, y1, 1);				\
-} while (0)
-
 /**************************************************************************
 ** plotPattern
 **
 ** Draws pixels, circles, squares, or splatter brush patterns depending
 ** on the pattern code.
 **************************************************************************/
-void plotPattern(unsigned int x, unsigned int y)
+
+/* Extra randomness in hi-res mode added to brush fill, and double width
+ * to single pixels (makes MUMG and others look a lot nicer). 
+ */
+
+static int plot_pattern_point (int x, int y, int bitpos, int res)
+{
+	if (pat_code & 0x20) {
+		if ((splatterMap[bitpos >> 3] >> (7 - (bitpos & 7))) & 1) {
+#ifdef USE_HIRES
+			if (res > 1) {
+				if (rnd(4))  put_virt_pixel(x * 2, y, 2);
+				if (!rnd(4)) put_virt_pixel(x * 2 + 1, y, 2);
+			} else
+#endif
+			{
+				put_virt_pixel (x, y, 1);
+			}
+		}
+		bitpos++;
+		if (bitpos == 0xff)
+			bitpos=0;
+	} else {
+#ifdef USE_HIRES
+		if (res > 1) {
+ 			put_virt_pixel (x * 2, y, 2);
+			put_virt_pixel (x * 2 + 1, y, 2);
+		} else
+#endif
+		{
+			put_virt_pixel (x, y, 1);
+		}
+	}
+
+	return bitpos;
+}
+
+
+static void plot_pattern (int x, int y, int res)
 {
 	SINT32 circlePos = 0;
-	UINT32 x1, y1, penSize, bitPos = splatterStart[patNum];
+	UINT32 x1, y1, pensize, bitpos = splatterStart[patNum];
 
-	penSize = (patCode & 7);
+	pensize = (pat_code & 7);
 
-	if (x < penSize)
-		x = penSize-1;
-	if (y < penSize)
-		y = penSize;
+	if (x < pensize)
+		x = pensize-1;
+	if (y < pensize)
+		y = pensize;
 
-	for (y1 = y - penSize; y1 <= y + penSize; y1++) {
-		for (x1 = x-(penSize+1)/2; x1<=x+penSize/2; x1++) {
-			if (patCode & 0x10) {		/* Square */
-				plotPatternPoint();
+	for (y1 = y - pensize; y1 <= y + pensize; y1++) {
+		for (x1 = x - (pensize+1)/2; x1 <= x + pensize / 2; x1++) {
+			if (pat_code & 0x10) {		/* Square */
+				bitpos = plot_pattern_point
+					(x1, y1, bitpos, res);
 			} else {			/* Circle */
-				if ((circles[patCode&7][circlePos>>3] >> (7-(circlePos&7)))&1)
-					plotPatternPoint();
+				if ((circles[pat_code&7][circlePos>>3] >>
+					(7-(circlePos&7)))&1)
+				{
+					bitpos = plot_pattern_point
+						(x1, y1, bitpos, res);
+				}
 				circlePos++;
 			}
 		}
@@ -526,12 +557,12 @@ void plotPattern(unsigned int x, unsigned int y)
 **
 ** Plots points and various brush patterns.
 **************************************************************************/
-static void plot_brush ()
+static void plot_brush (int res)
 {
 	int x1, y1;
 
 	while (42) {
-		if (patCode & 0x20) {
+		if (pat_code & 0x20) {
 			if ((patNum = next_byte) >= 0xF0)
 				break;
 			patNum = (patNum >> 1) & 0x7f;
@@ -543,7 +574,7 @@ static void plot_brush ()
 		if ((y1 = next_byte) >= 0xf0)
 			break;
 
-		plotPattern (x1, y1);
+		plot_pattern (x1, y1, res);
    	}
 
    	foffs--;
@@ -561,7 +592,7 @@ static void draw_picture ()
 	int save_foffs;
 #endif
 
- 	patCode = 0;
+ 	pat_code = 0;
  	patNum = 0;
  	pri_on = scr_on = FALSE;
  	scr_colour = 0xf;
@@ -610,10 +641,10 @@ static void draw_picture ()
 			fill ();
 			break;
 		case 0xf9:			/* set pattern */
-			patCode = next_byte;
+			pat_code = next_byte;
 			break;
 		case 0xfA:			/* plot brush */
-			plot_brush ();
+			plot_brush (1);
 			break;
 		case 0xFF:			/* end of pic data */
 		default:
@@ -658,10 +689,10 @@ static void draw_picture ()
 			hires_fill ();
 			break;
 		case 0xf9:			/* set pattern */
-			patCode = next_byte;
+			pat_code = next_byte;
 			break;
 		case 0xfA:			/* plot brush */
-			plot_hires_brush ();
+			plot_brush (2);
 			break;
 		case 0xFF:			/* end of pic data */
 		default:
@@ -735,7 +766,7 @@ int decode_picture (int n, int clear)
 {
 	_D (_D_WARN "(%d)", n);
 
-	patCode = 0;
+	pat_code = 0;
 	patNum = 0;
 	pri_on = scr_on = FALSE;
 	scr_colour = 0xF;

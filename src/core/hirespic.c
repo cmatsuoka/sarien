@@ -68,7 +68,6 @@ static INLINE int hires_fill_here (int x, int y)
 			return FALSE;
 	}
 
-
 	return TRUE;
 }
 
@@ -184,80 +183,6 @@ static void hires_fill ()
 	foffs--;
 }
 
-/* Extra randomness added to brush fill, and double width to single
- * pixels (makes MUMG and others look a lot nicer). 
- */
-
-#define plotHiresPatternPoint() do {					\
-	if (patCode & 0x20) {						\
-		if ((splatterMap[bitPos>>3] >> (7-(bitPos&7))) & 1) {	\
-			if (rnd(4)) put_virt_pixel(x1*2, y1, 2);	\
-			if (!rnd(4))put_virt_pixel(x1*2+1, y1, 2);	\
-		}							\
-		bitPos++;						\
-		if (bitPos == 0xff)					\
-			bitPos=0;					\
-	} else { put_virt_pixel(x1*2,y1,2); put_virt_pixel(x1*2+1,y1,2); }\
-} while (0)
-
-/**************************************************************************
-** plotPattern
-**
-** Draws pixels, circles, squares, or splatter brush patterns depending
-** on the pattern code.
-**************************************************************************/
-static void plot_hires_pattern(UINT8 x, UINT8 y)
-{
-	SINT32 circlePos = 0;
-	UINT32 x1, y1, penSize, bitPos = splatterStart[patNum];
-
-	penSize = (patCode & 7);
-
-	if (x < penSize)
-		x = penSize-1;
-	if (y < penSize)
-		y = penSize;
-
-	for (y1 = y - penSize; y1 <= y + penSize; y1++) {
-		for (x1 = x - (penSize+1)/2; x1<=x + penSize/2; x1++) {
-			if (patCode & 0x10) {		/* Square */
-				plotHiresPatternPoint();
-			} else {			/* Circle */
-				if ((circles[patCode&7][circlePos>>3] >> (7-(circlePos&7)))&1)
-					plotHiresPatternPoint();
-				circlePos++;
-			}
-		}
-	}
-}
-
-/**************************************************************************
-** plotBrush
-**
-** Plots points and various brush patterns.
-**************************************************************************/
-static void plot_hires_brush ()
-{
-	UINT8 x1, y1;
-
-	while (42) {
-		if (patCode & 0x20) {
-			if ((patNum = next_byte) >= 0xF0)
-				break;
-			patNum = (patNum >> 1) & 0x7f;
-		}
-
-		if ((x1 = next_byte) >= 0xf0)
-			break;
-
-		if ((y1 = next_byte) >= 0xf0)
-			break;
-
-		plot_hires_pattern (x1, y1);
-   	}
-
-   	foffs--;
-}
 
 /**
  * Show AGI picture.
