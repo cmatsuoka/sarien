@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2003 Stuart George and Claudio Matsuoka
  *
  *  $Id$
  *
@@ -123,6 +123,9 @@ blit_pixel (UINT8 *p, UINT8 *end, UINT8 col, int spr, int width, int *hidden)
 	 *
 	 * Update: this solution breaks other games, and can't be used.
 	 */
+
+	if (p >= end)
+		return;
 
 	/* Check if we're on a control line */
 	if ((pr = *p & 0xf0) < 0x30) {

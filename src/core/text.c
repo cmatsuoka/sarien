@@ -398,6 +398,9 @@ int print (char *p, int lin, int col, int len)
 
 	_D (_D_WARN "lin = %d, col = %d, len = %d", lin, col, len);
 
+	if (col == 0 && lin == 0 && len == 0)
+		lin = col = -1;
+
 	if (len == 0)
 		len = 30;
 
