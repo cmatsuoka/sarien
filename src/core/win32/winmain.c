@@ -294,14 +294,13 @@ WinMain (HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int nWinMode)
 	if (!opt.gfxhacks)
 		report ("Graphics driver hacks disabled (if any)\n");
 
-	_D ("Detect game");
+	game.ver = -1;		/* Don't display the conf file warning */
 
+	_D ("Detect game");
 	if (agi_detect_game (filename) == err_OK ||
 		agi_detect_game (get_current_directory ()) == err_OK)
 	{
 		game.state = STATE_LOADED;
-	} else {
-		game.ver = -1;	/* Don't display the conf file warning */
 	}
 
 	_D ("Init sound");
@@ -311,7 +310,8 @@ WinMain (HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int nWinMode)
 	if (game.state < STATE_LOADED) {
        		console_prompt ();
 		do { main_cycle (); } while (game.state < STATE_RUNNING);
-		game.ver = 0;	/* Display the conf file warning */
+		if (game.ver < 0)
+			game.ver = 0;	/* Display the conf file warning */
 	}
 
 	ec = run_game ();

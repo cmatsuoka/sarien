@@ -46,7 +46,8 @@ int agi_init ()
 {
 	int ec, i;
 
-	_D("initializing");
+	_D ("initializing");
+	_D (_D_WARN "game.ver = 0x%x", game.ver);
 
 	/* reset all flags to false and all variables to 0 */
 	for (i = 0; i < MAX_FLAGS; i++)

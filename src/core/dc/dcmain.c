@@ -131,7 +131,8 @@ int main(int argc, char *argv[])
 			{
 				main_cycle ();
 			} while (game.state < STATE_RUNNING);
-			game.ver = 0;	/* Enable conf file warning */
+			if (game.ver < 0)
+				game.ver = 0;	/* Enable conf file warning */
 		}
 	
 		ec = run_game ();

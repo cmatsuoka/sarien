@@ -206,6 +206,7 @@ int v2id_game ()
 	ver = match_version (crc);
 	game.crc = crc;
 	game.ver = ver;
+	_D (_D_WARN "game.ver = 0x%x", game.ver);
 	agi_set_release (ver);
 	return setup_v2_game(ver, crc);
 #endif

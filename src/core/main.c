@@ -160,6 +160,8 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 	if (!opt.gfxhacks)
 		report ("Graphics driver hacks disabled (if any)\n");
 
+	game.ver = -1;		/* Don't display the conf file warning */
+
 	_D ("Detect game");
 	if (agi_detect_game (argc > 1 ? argv[optind] :
 		get_current_directory ()) == err_OK)
@@ -171,7 +173,6 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 			report ("Could not open AGI game \"%s\".\n\n",
 				argv[optind]);
 		}
-		game.ver = -1;	/* Don't display the conf file warning */
 	}
 
 	_D ("Init sound");
@@ -181,7 +182,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 	if (game.state < STATE_LOADED) {
        		console_prompt ();
 		do { main_cycle (); } while (game.state < STATE_RUNNING);
-		game.ver = 0;	/* Enable conf file warning */
+		if (game.ver < 0) game.ver = 0;	/* Enable conf file warning */
 	}
 
 	ec = run_game ();

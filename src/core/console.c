@@ -258,6 +258,7 @@ static void ccmd_load ()
 {
 	stop_sound ();
 
+	_D (_D_WARN "game.ver = 0x%x", game.ver);
 	if (game.state >= STATE_LOADED) {
 		report ("AGI game already loaded.\n");
 		return;
@@ -267,6 +268,7 @@ static void ccmd_load ()
 	if (agi_detect_game (_p1) == err_OK) {
 		game.state = STATE_RUNNING;
 		report ("AGI game successfully loaded.\n");
+		_D (_D_WARN "game.ver = 0x%x", game.ver);
 		console_prompt ();
 		return;
 	}

@@ -336,6 +336,7 @@ static int play_game ()
 	int ec = err_OK;
 
 	_D (_D_WARN "initializing...");
+	_D (_D_WARN "game.ver = 0x%x", game.ver);
 	stop_sound ();
 	clear_screen (0);
 
@@ -412,15 +413,16 @@ int run_game ()
 	/* Execute the game */
     	do {
 		_D(_D_WARN "game loop");
+		_D(_D_WARN "game.ver = 0x%x", game.ver);
 
 		if (agi_init () != err_OK)
 			break;
 		if (ec == err_RestartGame)
 			setflag (F_restart_game, TRUE);
 
-		setvar (V_computer, 0);			/* IBM PC */
-		setvar (V_soundgen, 1);			/* IBM PC SOUND */
-		setvar (V_monitor, 0x3);		/* EGA monitor */
+		setvar (V_computer, 0);		/* IBM PC (4 = Atari ST) */
+		setvar (V_soundgen, 1);		/* IBM PC SOUND */
+		setvar (V_monitor, 0x3);	/* EGA monitor */
 		setvar (V_max_input_chars, 38);
 		game.input_mode = INPUT_NONE;
 		game.input_enabled = 0;

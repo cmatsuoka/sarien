@@ -74,11 +74,14 @@ int main (int argc, char *argv[])
 	_D ("Init sound");
 	init_sound ();
 
+	game.ver = -1;		/* Disable conf file warning */
+
 	report (" \nSarien " VERSION " is ready.\n");
 	if (game.state < STATE_LOADED) {
        		console_prompt ();
 		do { main_cycle (); } while (game.state < STATE_RUNNING);
-		game.ver = 0;	/* Enable conf file warning */
+		if (game.ver < 0)
+			game.ver = 0;	/* Enable conf file warning */
 	}
 
 	ec = run_game ();
