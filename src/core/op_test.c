@@ -42,7 +42,12 @@ static UINT8 test_keypressed ()
 	int x = game.keypress;
 
 	game.keypress = 0;
-	if (!x) main_cycle ();
+	if (!x) {
+		int mode = game.input_mode;
+		game.input_mode = INPUT_NONE;
+		main_cycle ();
+		game.input_mode = mode;
+	}
 
 	if (x) _D (_D_WARN "keypress = %02x", x);
 
@@ -257,6 +262,7 @@ int test_if_code (int lognum)
 			break;
 		case 0x0D:
 			ec = test_keypressed ();
+			_D (_D_WARN "have.key = %d", ec);
 			break;
 		case 0x0E:
 			ec = test_said (p[0], (UINT8*)code + (ip + 1));

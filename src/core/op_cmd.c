@@ -548,6 +548,7 @@ cmd(configure_screen) {
 }
 
 cmd(text_screen) {
+	_D (_D_WARN "switching to text mode");
 	game.gfx_mode = FALSE;
 	/*
 	 * Simulates the "bright background bit" of the PC video
@@ -559,6 +560,7 @@ cmd(text_screen) {
 }
 
 cmd(graphics) {
+	_D (_D_WARN "switching to graphics mode");
 	if (!game.gfx_mode) {
 		game.gfx_mode = TRUE;
 		clear_screen (0);
