@@ -570,10 +570,18 @@ void fix_hires_picture ()
 	b = game.sbuf;
 
 	for (i = 0; p < &game.hires[_WIDTH * _HEIGHT * 2] - 1; p++, i++) {
+/*
 		if ((*p & 0x0f) == 0x0f && (*(p + 1) & 0x0f) != 0x0f)
 			*p = *(p + 1);
 		else if ((*p & 0x0f) == 0x0f && (*b & 0x0f) != 0x0f)
 			*p = *b;
+*/
+		if ((*p & 0x0f) == 0x0f && (*b & 0x0f) != 0x0f) {
+			if ((*(p + 1) & 0x0f) != 0x0f)
+				*p = *(p + 1);
+			else
+				*p = *b;
+		}
 		if ((*p >> 4) == 4 && (*b >> 4) != 4 &&
 			(*(b + 1) >> 4) != 4)
 		{
