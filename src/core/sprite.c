@@ -1,6 +1,6 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
  *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
- *  
+ *
  *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 #include "savegame.h"
 
 /**
- * Sprite structure. 
+ * Sprite structure.
  * This structure holds information on visible and priority data of
  * a rectangular area of the AGI screen. Sprites are chained in two
  * circular lists, one for updating and other for non-updating sprites.
@@ -35,8 +35,40 @@ struct sprite {
 #ifdef USE_HIRES
 	UINT8 *hires;			/**< buffer for hi-res background */
 #endif
-};    
+};
 
+
+/*
+ * Blitting one pixel considering the priorities
+ */
+
+static void blit_pixel (UINT8 *p, UINT8 col, int spr, int width, int *hidden)
+{
+	int epr, pr;		/* effective and real priorities */
+
+	/* Check if we're on a control line */
+	if ((pr = *p & 0xf0) < 0x30) {
+		UINT8 *p1;
+		/* Yes, get effective priority going down */
+		for (p1 = p; (epr = *p1 & 0xf0) < 0x30; p1 += width) {
+			if (p1 >= game.sbuf + _WIDTH * _HEIGHT) {
+				epr = 0x40;
+				break;
+			}
+		}
+	} else {
+		epr = pr;
+	}
+	if (spr >= epr) {
+		/* Keep control line information visible,
+		 * but put our priority over water (0x30)
+		 * surface
+		 */
+		*p = (pr < 0x30 ? pr : spr) | col;
+		*hidden = FALSE;
+	}
+
+}
 
 /*
  * Blitter functions
@@ -46,46 +78,34 @@ struct sprite {
 
 static int blit_hires_cel (int x, int y, int spr, struct view_cel *c)
 {
+	/* Horizontal hires factor */
+	#define X_FACT 2
 	UINT8 *q = NULL;
 	UINT8 *h0, *h;
-	int i, j, t;
-	int epr, pr;		/* effective and real priorities */
+	int i, j, t, m, col;
 	int hidden = TRUE;
 
-	h0 = &game.hires[(x + y * _WIDTH) * 2];
 	q = c->data;
 	t = c->transparency;
+	m = c->mirror;
 	spr <<= 4;
+	h0 = &game.hires[(x + y * _WIDTH + m*(c->width-1)) * X_FACT];
 
 	for (i = 0; i < c->height; i++) {
 		h = h0;
-		for (j = c->width * 2; j; j--, h++) {
-			/* Check if we're on a control line */
-			if ((pr = *h & 0xf0) < 0x30) {
-				UINT8 *p1;
-				/* Yes, get effective priority going down */
-				for (p1 = h; (epr = *p1 & 0xf0) < 0x30; p1 += _WIDTH * 2) {
-					if (p1 >= game.sbuf + _WIDTH * _HEIGHT) {
-						epr = 0x40;
-						break;
-					}
+		while (*q){
+			col = (*q & 0xF0)>>4;
+			for (j = *q & 0x0F; j; j--, h+=X_FACT*(1-2*m)){
+				if (col != t){
+					blit_pixel (h, col, spr, _WIDTH * X_FACT, &hidden);
+					blit_pixel (h+1, col, spr, _WIDTH * X_FACT, &hidden);
 				}
-			} else {
-				epr = pr;
 			}
-			if (*q != t && spr >= epr) {
-				/* Keep control line information visible,
-				 * but put our priority over water (0x30)
-				 * surface
-				 */
-				*h = (pr < 0x30 ? pr : spr) | *q;
-				hidden = FALSE;
-			}
-			q += (j & 1);
+			q++;
 		}
-		h0 += _WIDTH * 2;
+		h0 += _WIDTH * X_FACT;
+		q++;
 	}
-
 	return hidden;
 }
 
@@ -94,8 +114,7 @@ static int blit_hires_cel (int x, int y, int spr, struct view_cel *c)
 static int blit_cel (int x, int y, int spr, struct view_cel *c)
 {
 	UINT8 *p0, *p, *q = NULL;
-	int i, j, t;
-	int epr, pr;		/* effective and real priorities */
+	int i, j, t, m, col;
 	int hidden = TRUE;
 
 	/* Fixes bug #477841 (crash in PQ1 map C4 when y == -2) */
@@ -109,37 +128,24 @@ static int blit_cel (int x, int y, int spr, struct view_cel *c)
 		blit_hires_cel (x, y, spr, c);
 #endif
 
-	p0 = &game.sbuf[x + y * _WIDTH];
 	q = c->data;
 	t = c->transparency;
+	m = c->mirror;
 	spr <<= 4;
+	p0 = &game.sbuf[x + y * _WIDTH + m*(c->width-1)];
 
 	for (i = 0; i < c->height; i++) {
 		p = p0;
-		for (j = c->width; j; j--, p++, q++) {
-			/* Check if we're on a control line */
-			if ((pr = *p & 0xf0) < 0x30) {
-				UINT8 *p1;
-				/* Yes, get effective priority going down */
-				for (p1 = p; (epr = *p1 & 0xf0) < 0x30; p1 += _WIDTH) {
-					if (p1 >= game.sbuf + _WIDTH * _HEIGHT) {
-						epr = 0x40;
-						break;
-					}
-				}
-			} else {
-				epr = pr;
+		while (*q){
+			col = (*q & 0xF0)>>4;
+			for (j = *q & 0x0F; j; j--, p+=1-2*m){
+				if (col != t)
+					blit_pixel (p, col, spr, _WIDTH, &hidden);
 			}
-			if (*q != t && spr >= epr) {
-				/* Keep control line information visible,
-				 * but put our priority over water (0x30)
-				 * surface
-				 */
-				*p = (pr < 0x30 ? pr : spr) | *q;
-				hidden = FALSE;
-			}
+			q++;
 		}
 		p0 += _WIDTH;
+		q++;
 	}
 
 	return hidden;
@@ -338,7 +344,7 @@ build_list (struct list_head *head, int (*test)(struct vt_entry *))
 
 	/* fill the arrays with all sprites that satisfy the 'test'
 	 * condition and their y values
-	 */ 
+	 */
 	i = 0;
 	for_each_vt_entry(v) {
 		if (test (v)) {
@@ -400,7 +406,7 @@ static void free_list (struct list_head *head)
 #ifdef USE_HIRES
 		free (s->hires);
 #endif
-		/*    
+		/*
 		 * if (h->prev != head)
      		 *     free (list_entry (h->prev, struct sprite, list));
 		 *
@@ -638,7 +644,7 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 	UINT8 *p1, *p2;
 
 	_D ("v=%d, l=%d, c=%d, x=%d, y=%d, p=%d, m=%d",
-		view, loop, cel, x, y, pri, mar); 
+		view, loop, cel, x, y, pri, mar);
 
 	record_image_stack_call(ADD_VIEW, view, loop, cel, x, y, pri, mar);
 
@@ -721,7 +727,7 @@ void show_obj (n)
 	agi_load_resource (rVIEW, n);
 	if (!(c = &game.views[n].loop[0].cel[0]))
 		return;
-	
+
 	x1 = (_WIDTH - c->width) / 2;
 	y1 = 120;
 	x2 = x1 + c->width - 1;

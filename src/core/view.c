@@ -1,6 +1,6 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
  *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
- *  
+ *
  *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -15,51 +15,6 @@
 #include "agi.h"
 #include "sprite.h"
 
-
-static void mirror_cel (struct view_cel *vc)
-{
-	UINT8 *p;
-	int x, y;
-
-	p = vc->data;
-
-	for (y = 0; y < vc->height; y++) {
-		int z = vc->width - 1;
-		int w = y * vc->width;
-
-		x = 0;
-		do {
-			int temp = p[w + x];
-			p[w + x] = p[w + z];
-			p[w + z] = temp;
-		} while (++x <= --z);
-	}
-}
-
-static void decode_cel (struct view_cel *vc, UINT8 *data)
-{
-	int h, c, l, d;
-	UINT8 *p;
-
-	p = vc->data;
-	memset (p, vc->transparency, vc->height * vc->width);
-
-	if (vc->width == 0 || vc->height == 0)
-		return;
-
-	for (d = h = 0; h < vc->height; h++) {
-		p = vc->data + (h * vc->width);
-
-		while (42) {
-			if ((l = data[d++]) == 0)
-				break;
-			c = (l >> 4) & 0xf;
-			l = l & 0xf;
-			memset (p, c, l);
-			p += l;
-		}
-	}
-}
 
 static void _set_cel (struct vt_entry *v, int n)
 {
@@ -193,32 +148,20 @@ int decode_view (int n)
     			cofs = lofs + lohi_getword (v + lofs + 1 + (cel * 2));
     			vc = &vl->cel[cel];
 
-             		vc->width = lohi_getbyte (v + cofs);
-             		vc->height = lohi_getbyte (v + cofs + 1);
-             		vc->transparency = lohi_getbyte (v + cofs + 2) & 0xf;
+    			vc->width = lohi_getbyte (v + cofs);
+    			vc->height = lohi_getbyte (v + cofs + 1);
+    			vc->transparency = lohi_getbyte (v + cofs + 2) & 0xf;
     			vc->mirror_loop = (lohi_getbyte (v + cofs + 2) >>4) & 0x7;
-             		vc->mirror = (lohi_getbyte (v + cofs + 2) >> 7) & 0x1;
+    			vc->mirror = (lohi_getbyte (v + cofs + 2) >> 7) & 0x1;
 
-             		/* skip over width/height/trans|mirror data */
-             		cofs += 3;
+    			/* skip over width/height/trans|mirror data */
+    			cofs += 3;
 
-    			vc->data = malloc ((vc->height + 1) * (vc->width + 1));
-
-    			if (vc->data == NULL) {
-    				for (cel--; cel >= 0; cel--)
-    					free (game.views[n].loop[loop].cel[cel].data);
-    				for (; loop >= 0; loop--)
-    					free(game.views[n].loop[loop].cel);
-
-    				free (game.views[n].loop);
-    				game.views[n].num_loops = 0;
-    				return err_NotEnoughMemory;
-    			}
-
-			decode_cel (vc, v + cofs);
-
-    			if (vc->mirror == 1 && vc->mirror_loop != loop)
-    				mirror_cel (vc);
+    			vc->data = v+cofs;
+    			/* If mirror_loop is pointing to the current loop,
+    			   then this is the original. */
+    			if (vc->mirror_loop == loop)
+    				vc->mirror=0;
     		} /* cel */
 	} /* loop */
 
@@ -231,17 +174,13 @@ int decode_view (int n)
  */
 void unload_view (int n)
 {
-	int x, y;
+	int x;
 
 	if (~game.dir_view[n].flags & RES_LOADED)
 		return;
 
 	/* free all the loops */
 	for (x = 0; x < game.views[n].num_loops; x++) {
-		for (y = 0; y < game.views[n].loop[x].num_cels; y++)
-			if (game.views[n].loop[x].cel[y].data != NULL)
-				free (game.views[n].loop[x].cel[y].data);
-
 		if (game.views[n].loop[x].cel != NULL)
 			free (game.views[n].loop[x].cel);
 	}
@@ -388,7 +327,7 @@ void update_viewtable ()
 		{
 			set_loop (v, loop);
 		}
-			
+
 		if (~v->flags & CYCLING)
 			continue;
 
