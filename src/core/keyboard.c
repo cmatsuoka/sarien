@@ -1,6 +1,6 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
  *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
- *  
+ *
  *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -75,7 +75,13 @@ UINT8 scancode_table[26] = {
 
 void init_words ()
 {
-	clean_input ();
+	int i;
+
+	for (i = 0; i < MAX_WORDS; i++) {
+		game.ego_words[i].word = NULL;
+		game.ego_words[i].id = 0xffff;
+	}
+	game.num_ego_words = 0;
 }
 
 
@@ -84,10 +90,12 @@ void clean_input ()
 	int i;
 
 	for (i = 0; i < MAX_WORDS; i++) {
-		game.ego_words[i].word = "";
+		if (game.ego_words[i].word != NULL) {
+			free (game.ego_words[i].word);
+			game.ego_words[i].word = NULL;
+		}
 		game.ego_words[i].id = 0xffff;
 	}
-
 	game.num_ego_words = 0;
 }
 
@@ -180,7 +188,7 @@ int handle_controller (int key)
 				v->parm1 = WIN_TO_PIC_X(mouse.x);
 				v->parm2 = WIN_TO_PIC_Y(mouse.y);
 				return TRUE;
-			} 
+			}
 		}
 #endif
 

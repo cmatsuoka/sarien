@@ -1,11 +1,15 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
  *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
- *  
+ *
  *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; see docs/COPYING for further details.
+ */
+
+/*
+ * New find_word algorithm by Thomas Akesson <tapilot@home.se>
  */
 
 #include <stdio.h>
@@ -14,74 +18,15 @@
 #include "agi.h"
 #include "keyboard.h"		/* for clean_input() */
 
-static struct agi_word *words;			/* words in the game */
-extern int decode_words(UINT8* mem, UINT32 flen);
+UINT8 *words;			/* words in the game */
 
-static unsigned int num_words, num_syns;
 
-int decode_words (UINT8* mem, UINT32 flen)
-{
-#ifndef PALMOS
-	unsigned int sc, wc, woff, wid;
-	UINT8 c, x[128];
+char *strndup (char* src, int n) {
 
-	num_words = 0;
-	num_syns = 0;
-	words = NULL;
-
-	/* scan for first entry with words */
-	for (wc = woff = 0; woff == 0 && wc < flen; wc += 2)
-		woff = hilo_getword (mem + wc);
-
-#ifdef AGDS_SUPPORT
-	/* AGDS kludge for bad word file :( */
-	if (woff > flen)
-		return err_OK;
-#endif
-
-	/* count all the words in the list */
-	for (sc = 0, wc = 0; woff < flen; ) {
-		c = hilo_getbyte (mem + woff);
-		woff++;
-
-		if (c > 0x80) {
-			wc++;
-			wid = hilo_getword (mem+woff);
-			woff += 2;
-			if (wid > sc && wid != 9999)
-				sc = wid;
-		}
-	}
-	num_words = wc;
-	num_syns = sc;
-
-	/* scan for first words entry */
-	for(wc = woff = 0; wc == 0; wc += 2)
-		woff = hilo_getword(mem+wc);
-
-	/* alloc word memory */
-	if ((words = calloc (num_words, sizeof(struct agi_word))) == NULL) {
-		return err_NotEnoughMemory;
-	}
-
-	/* build word list */
-	for (wc = 0; wc < num_words; wc++) {
-		c = hilo_getbyte (mem + woff); woff++;
-		wid = c;
-		while (c < 0x80) {
-			c = hilo_getbyte (mem + woff); woff++;
-			x[wid] = ((c ^ 0x7F) & 0x7F); wid++;
-		}
-		x[wid] = 0;
-
-		(words + wc)->id = hilo_getword (mem + woff); woff+=2;
-		(words + wc)->word = strdup (x);
-	}
-
-	return err_OK;
-#endif
+	char *tmp = strncpy (malloc(n+1), src, n);
+	tmp[n] = 0;
+	return tmp;
 }
-
 
 int load_words (char *fname)
 {
@@ -90,10 +35,7 @@ int load_words (char *fname)
 	UINT32 flen;
 	UINT8 *mem = NULL;
 	char *path = NULL;
-	int ec=err_OK;
 
-	num_words = 0;
-	num_syns = 0;
 	words = NULL;
 
 	path = fixpath (NO_GAMEDIR, fname);
@@ -114,63 +56,81 @@ int load_words (char *fname)
 	fread(mem, 1, flen, fp);
 	fclose (fp);
 
-	ec = decode_words(mem, flen);
-	free(mem);
+	words = mem;
 
-	return ec;
+	return err_OK;
 #endif
 }
 
 
 void unload_words ()
 {
-	unsigned int i;
-
 	if (words != NULL) {
-		for (i = 0; i < num_words; i++)
-			free (words[i].word);
 		free (words);
+		words = NULL;
 	}
 }
 
 
 /**
- * Scan dictionary for word, returning its ID.
- * Uses a fast "Divide and Conquer" routine to get the word your looking for.
+ *
+ * Uses an algorithm hopefully like the one Sierra used.
+ * Returns the ID of the word and the length in flen. Returns -1 if not found.
+ *
+ * Thomas Åkesson, November 2001
  */
-int find_word (char *word)
+int find_word (char *word, int* flen)
 {
-	unsigned int i, offs = 0, id = 0, val, lid = 0, llen = 0;
+	#define chrA 0x41
+	#define chrZ 0x5A
+	#define chra 0x61
+	#define chrz 0x7A
 
-	for (; offs < num_words && words[offs].word[0] != word[0]; offs++);
-	for (; offs < num_words && words[offs].word[0] == word[0]; offs++) {
-		i = strlen ((char*)words[offs].word);
-		val = 1;
+	int fchr, matchedchars = 0, id = -1;
+	int len = strlen(word);
+	UINT8* p = words;
+	*flen = 0;
 
-		if (strlen((char*)word) >= i) {
-			val = strncmp ((char*)words[offs].word,
-				(char*)word, i);
-		}
+	if (word[0] >= chrA && word[0] <= chrZ)
+		fchr = word[0] - chrA;
+	else if (word[0] >= chra && word[0] <= chrz)
+		fchr = word[0] - chra;
+	else /* some special character */
+		return -1;
 
-		if (val == 0 && (word[i] == 0 || word[i] == 0x20)) {
-			id = strlen((char*)words[offs].word);
-			if(id > llen) {
-				llen=id;
-				lid=offs;
+	/* Get the offset to the first word beginning with the right character. */
+	p += hilo_getword (p + 2*fchr);
+	while (p[0] >= matchedchars) {
+		if (p[0] == matchedchars){
+			p++;
+			/* Loop through all matching characters */
+			while ((p[0] ^ word[matchedchars]) == 0x7F && matchedchars < len) {
+				matchedchars++;
+				p++;
+			}
+			/* Check if this is the last character of the word and if it matches */
+			if ((p[0] ^ word[matchedchars]) == 0xFF && matchedchars < len) {
+				matchedchars++;
+				if (word[matchedchars] == 0 || word[matchedchars] == 0x20) {
+					id = hilo_getword (p+1);
+					*flen = matchedchars;
+				}
 			}
 		}
+		/* Step to the next word */
+		while (p[0] < 0x80)
+				p++;
+		p += 3;
 	}
-
-	return llen ? lid : -1;
+	return id;
 }
 
 
 void dictionary_words (char *msg)
 {
-	static char bad_word[256];	/* FIXME: dynamic allocation? */
 	char *p	= NULL;
 	char *q = NULL;
-	int wc1;
+	int wid, wlen;
 
 	_D ("msg = \"%s\"", msg);
 
@@ -183,46 +143,34 @@ void dictionary_words (char *msg)
 		if(*p == 0)
 			break;
 
- 		wc1 = find_word(p);
- 		_D ("find_word(p) == %d", wc1);
+ 		wid = find_word(p, &wlen);
+ 		_D ("find_word(p) == %d", wid);
 
- 		if (wc1 != -1) {
- 			switch (words[wc1].id) {
+ 		switch (wid) {
  			case -1:
- 				_D (_D_WARN "bad word");
+ 				_D (_D_WARN "unknown word");
  				game.ego_words[game.num_ego_words].word = strdup(p);
  				q = game.ego_words[game.num_ego_words].word;
  				game.ego_words[game.num_ego_words].id = 19999;
  				setvar(V_word_not_found, 1 + game.num_ego_words);
  				game.num_ego_words++;
- 				p += strlen (words[wc1].word);
+ 				p += strlen (p);
  				break;
  			case 0:
  				/* ignore this word */
  				_D (_D_WARN "ignore word");
- 				p += strlen((char*)words[wc1].word);
+ 				p += wlen;
  				q = NULL;
  				break;
  			default:
  				/* an OK word */
  				_D (_D_WARN "ok word (%d)", wc1);
- 				game.ego_words[game.num_ego_words].id = words[wc1].id;
- 				game.ego_words[game.num_ego_words].word = words[wc1].word;
+ 				game.ego_words[game.num_ego_words].id = wid;
+ 				game.ego_words[game.num_ego_words].word = strndup(p, wlen);
  				game.num_ego_words++;
- 				p += strlen((char*)words[wc1].word);
+ 				p += wlen;
  				break;
  			}
- 		} else {
- 			/* unknown word */
- 			_D (_D_WARN "unknown word");
-			strcpy (bad_word, p);
- 			game.ego_words[game.num_ego_words].word = bad_word;
-			q = game.ego_words[game.num_ego_words].word;
- 			game.ego_words[game.num_ego_words].id = 19999;
- 			setvar (V_word_not_found, 1 + game.num_ego_words);
- 			game.num_ego_words++;
- 			p = strchr (p, 0x20);
- 		}
 
  		if (p != NULL && *p) {
  			*p=0;
@@ -248,6 +196,8 @@ void dictionary_words (char *msg)
 #ifdef OPT_LIST_DICT
 int show_words ()
 {
+	/* This does not work anymore since the word list is not expanded as before.
+	   A similar function can easily be written based on the old decode_words(...).
 	unsigned int i, uid, sid;
 	int lid;
 
@@ -272,7 +222,7 @@ int show_words ()
 "\nThis is dodgy, only synonyms are id'd if they follow each other\n"
 "e.g. in Space Quest I, knife, army knife, xenon army knife are all synonyms\n"
 "but are not treated as such as they do not alphabetically follow each other.\n");
-
+*/
 	return err_OK;
 }
 #endif

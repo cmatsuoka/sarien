@@ -80,6 +80,7 @@
 
 - Thomas Akesson <tapilot@home.se>
   * Word parser bug fixes
+  * New find_word algorithm
 
 
 Special thanks to:

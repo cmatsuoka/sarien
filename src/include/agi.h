@@ -1,6 +1,6 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
  *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
- *  
+ *
  *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -90,6 +90,7 @@ struct agi_word {
 	char *word;
 };
 
+
 struct agi_dir {
 	UINT8  volume;
 	UINT32 offset;
@@ -128,7 +129,7 @@ struct agi_game {
 	int state;		/**< state of the interpreter */
 
 	char name[8];		/**< lead in id (e.g. `GR' for goldrush) */
-	char id[8];		/**< game id */	
+	char id[8];		/**< game id */
 	char dir[MAX_PATH];	/**< game dir */
 	UINT32 crc;		/**< game CRC */
 	UINT32 ver;		/**< detected game version */
@@ -242,7 +243,7 @@ int	agi_unload_resource	(int, int);
 int	show_words	(void);
 int	load_words	(char *);
 void	unload_words	(void);
-int	find_word	(char *);
+int	find_word (char *word, int *flen);
 void	dictionary_words(char *);
 
 /* objects */

@@ -104,7 +104,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 "Copyright (C) 1999-2001 Stuart George\n"
 "Portions Copyright (C) 1998 Lance Ewing, (C) 1999 Felipe Rosinha,\n"
 "(C) 1999-2001 Claudio Matsuoka, (C) 1999-2001 Igor Nesterov,\n"
-"(C) 2001 Vasyl Tsvirkunov\n"
+"(C) 2001 Vasyl Tsvirkunov, (C) 2001 Thomas Akesson\n"
 #ifndef HAVE_GETOPT_LONG
 "Portions Copyright (C) 1989-1997 Free Software Foundation, Inc.\n"
 #endif
