@@ -1433,42 +1433,85 @@ print ("Message 34 in logic.0 is %g34.");
    interpreter uses its memory. You can view this in operation in MS-DOS
    by using a memory resident program like Game Wizard.
 </para><para>
-<programlisting>
-                    Length of first data area (2 bytes)
-
-                          Game signature (8 bytes)
-
-                           Variables (256 bytes)
-
-                         Flags (256 bits, 32 bytes)
-
-              Timers, blocks, and other special AGI variables
-
-                    Strings (12*40 bytes or 24*40 bytes)
-
-                                  unknown
-
-                         "Press ENTER to quit" etc
-
-                         Script command jump table
-
-                      "Avis Durgan" encryption string
-
-                       Rest of agidata.ovl is in here
-
-                                  unknown
-
-                               words.tok file
-
-                                object file
-
-                             VIEW object table
-
-                                  logic.0
-
-                           Other loaded resources
-</programlisting>
-
+   <informaltable>
+    <tgroup cols="2">
+     <thead> 
+      <row>
+       <entry>Size (bytes)</entry>
+       <entry>Description</entry>
+      </row>
+     </thead> 
+     <tbody>
+      <row>
+       <entry>2</entry>
+       <entry>Length of first data area</entry>
+      </row>
+      <row>
+       <entry>2</entry>
+       <entry>Game signature</entry>
+      </row>
+      <row>
+       <entry>256</entry>
+       <entry>Variables</entry>
+      </row>
+      <row>
+       <entry>32</entry>
+       <entry>Flags (256 bits)</entry>
+      </row>
+      <row>
+       <entry></entry>
+       <entry>Timers, blocks, and other special AGI variables</entry>
+      </row>
+      <row>
+       <entry>12*40 or 24*40</entry>
+       <entry>Strings</entry>
+      </row>
+      <row>
+       <entry></entry>
+       <entry>unknown</entry>
+      </row>
+      <row>
+       <entry></entry>
+       <entry>"Press ENTER to quit", etc</entry>
+      </row>
+      <row>
+       <entry></entry>
+       <entry>Script command jump table</entry>
+      </row>
+      <row>
+       <entry></entry>
+       <entry>"Avis Durgan" encryption string</entry>
+      </row>
+      <row>
+       <entry></entry>
+       <entry>Rest of <filename/agidata.ovl/
+      </row>
+      <row>
+       <entry></entry>
+       <entry>unknown</entry>
+      </row>
+      <row>
+       <entry></entry>
+       <entry><filename/words.tok/ file</entry>
+      </row>
+      <row>
+       <entry></entry>
+       <entry>object file</entry>
+      </row>
+      <row>
+       <entry></entry>
+       <entry>view object table</entry>
+      </row>
+      <row>
+       <entry></entry>
+       <entry><filename/logic.0/</entry>
+      </row>
+      <row>
+       <entry></entry>
+       <entry>Other loaded resources</entry>
+     </tbody>
+    </tgroup>
+   </informaltable>
 
 </para>
 </sect1>
@@ -1515,9 +1558,10 @@ print ("Message 34 in logic.0 is %g34.");
    in the gap although it is useful when searching for the game ID
    because, as you can see, this text is always <literal/"eIDX"/> (presubably
    from ``gameIDX'' before being overwritten by the actual ID) or a suffix
-   of it (i.e. <literal/"IDX"/, <literal/"DX"/, or <literal/"X"/). For most games,
-   the game ID is two or three characters which means that you will be able
-   to rely on the <literal/"IDX"/ string being there for these games.
+   of it (i.e. <literal/"IDX"/, <literal/"DX"/, or <literal/"X"/).
+   For most games, the game ID is two or three characters which means
+   that you will be able to rely on the <literal/"IDX"/ string being
+   there for these games.
 </para><para>
    <emphasis>Method 2: The easy way</emphasis>
 </para><para>
@@ -1563,8 +1607,8 @@ print ("Message 34 in logic.0 is %g34.");
 </sect1>
 
 <sect1 id="crypt"><title>Encrypted AGI data</title>
-<para>
 
+<para>
    Many AGI files are encrypted. This
    was probably to give some protection to their product which was quite
    unique at the time. You can tell the difference between an encrypted
@@ -1925,6 +1969,7 @@ MH2	3.03	AGI	3.002.149	08/17/89
    make sure the programmer does not use a var, for example, when they
    think they are using a flag).
 
+</para><para>
 <programlisting>
 assign.v(v50,0);
 program.control();
@@ -1932,12 +1977,14 @@ program.control();
 </para><para>
    Multiple commands may be placed on the one line:
 
+</para><para>
 <programlisting>
 reset(f6); reset(f7);
 </programlisting>
 </para><para>
    Substitutions for the following action commands are available:
 
+</para><para>
 <programlisting>
 increment(v30);       v30++;
 decrement(v30);       v30--;
@@ -1958,6 +2005,7 @@ rindirect(v30,v32);   v30 = *v32;
 </para>
 
 <sect2><title><literal/if/ structures and test commands</title>
+
 <para>
    An <literal/if/ structure looks like this:
 </para><para>
@@ -2145,15 +2193,18 @@ if (said("open","door")) { .....
 <para>
    Labels are given like this:
 
+</para><para>
 <programlisting>
 Label1:
 </programlisting>
+</para><para>
 
    The label name can contain letters, numbers, and the characters "_"
    and ".". No spaces are allowed.
 
    The <literal/goto/ command takes one parameter, the name of a label.
 
+</para><para>
 <programlisting>
 goto(Label1);
 </programlisting>
@@ -2163,14 +2214,17 @@ goto(Label1);
 <para>
    There are three ways that comments can be used.
 
+</para><para>
 <programlisting>
 // Rest of line is ignored
 [  Rest of line is ignored
 /* Text between these are ignored */
 </programlisting>
+</para><para>
 
    The /*...*/ can be nested:
 
+</para><para>
 <programlisting>
 /* comment start
   print("Hello");    // won't be run
@@ -2187,26 +2241,29 @@ goto(Label1);
    To give vars, flags etc. proper names the <literal/#define/ command is used.
    The name of the define is given followed by the define value:
 
+</para><para>
 <programlisting>
 #define ego o0
 #define room_descr "This is a large hall with tall pillars down each side."
 </programlisting>
+</para><para>
 
    Then the define name can be used in place of the define value:
 
+</para><para>
 <programlisting>
 draw(ego);
 print(room_descr);
 </programlisting>
+</para><para>
 
    Define names can only be used in arguments of commands (including
-   <literal/goto/s and the <literal/v0 == 3/ type syntax), although some compilers
-   may allow you to use them anywhere.
-
+   <function/goto/s and the <literal/v0 == 3/ type syntax), although
+   some compilers may allow you to use them anywhere.
+</para><para>
    Defines must be defined in the file before they are used.
-
-   The define name can contain letters, numbers, and the characters <literal/'_'/
-   and <literal/./. No spaces are allowed.
+   The define name can contain letters, numbers, and the characters
+   <literal/'_'/ and <literal/./. No spaces are allowed.
 </para>
 
 <sect2><title>Including files</title>
@@ -2214,17 +2271,20 @@ print(room_descr);
    You can include another file in your logic source code by using the
    <literal/#include/ command:
 
+</para><para>
 <programlisting>
 #include "file.txt"
 </programlisting>
+</para><para>
 
    When the compiler encounters the above line, it will replace it with
-   the contents of <literal/file.txt/.
+   the contents of <function/file.txt/.
 
+</para><para>
    It is a good idea to have all the defines that you need for multiple
-   logics in an <literal/#include/ file, so if you need to change the define value
-   you only have to do it once (although you will need to recompile all
-   logics that use that define).
+   logics in an <literal/#include/ file, so if you need to change the
+   define value you only have to do it once (although you will need to
+   recompile all logics that use that define).
 </para>
 
 <sect2><title>More on messages</title>
@@ -2251,8 +2311,8 @@ print(m4);
 print("You can't do that now.");
 </programlisting>
 
-   <literal/#message/ can be used anywhere in the file, so you do not have to set
-   the message before you use it.
+   <literal/#message/ can be used anywhere in the file, so you do not
+   have to set the message before you use it.
 </para>
 
 <sect2><title>The return command</title>
@@ -2455,12 +2515,13 @@ From the AGDS documentation translated by Vassili Bykov,
    VIEW, and SOUND resources. Always remember that the internal memory of
    the interpreter is 64K. This restriction is rarely a problem, but do
    not forget about it.
-
+</para><para>
    When the internal memory is full, the program has to be broken into
    parts which are loaded and unloaded as the story unfolds in the given
    room, or PICTURE, VIEW, and SOUND resources have to be manipulated
    using the commands below.
 
+</para><para>
    Remember that when a resource is unloaded, all resources loaded after
    it <emphasis>are also automatically unloaded</emphasis>!
 
@@ -2717,6 +2778,7 @@ From the AGDS documentation translated by Vassili Bykov,
    The interpreter controls the movement of objects in the screen
    automatically checking the following conditions:
 
+</para><para>
    <orderedlist>
     <listitem><para>
       If an object priority is 0 it cannot cross an unconditional barrier
@@ -2752,30 +2814,55 @@ From the AGDS documentation translated by Vassili Bykov,
 <sect3><title>Object description commands</title>
 <para>
    <variablelist>
-<function id="animate.obj">animate.obj(n)</function>
-   Object number <parameter/n/ is included in the list of object controlled by the
-   interpreter. <parameter>Objects not included in that list are considered
-   inexistent!</parameter>
+    <varlistentry>
+      <term><function id="animate.obj">animate.obj(n)</function></term>
+      <listitem><para>
+       Object number <parameter/n/ is included in the list of object
+       controlled by the interpreter. <emphasis>Objects not included in
+       that list are considered inexistent!</emphasis>
+      </para></listitem>
+    </varlistentry>
 
-<function id="unanimate.all">unanimate.all()</function>
-   All objects are removed from the control list and are considered
-   inexistent.
+    <varlistentry>
+      <term><function id="unanimate.all">unanimate.all()</function></term>
+      <listitem><para>
+       All objects are removed from the control list and are considered
+       inexistent.
+      </para></listitem>
+    </varlistentry>
 
-<function id="set.view">set.view(n,m), set.view.v(n,m)</function>
-   Object <parameter/n/ is associated with a VIEW resource number <parameter/m/ (or pointed to by
-   <parameter/vm/), which may be an image of the object.
+    <varlistentry>
+      <term><function id="set.view">set.view(n,m), set.view.v(n,m)</function></term>
+      <listitem><para>
+       Object <parameter/n/ is associated with a view resource number
+       <parameter/m/ (or pointed to by <parameter/vm/), which may be an
+       image of the object.
+      </para></listitem>
+    </varlistentry>
 
-<function id="set.loop">set.loop(n,m), set.loop.v(n,m)</function>
-   Chooses a loop m (or <parameter/vm/) in the VIEW resource associated with the
-   object <parameter/n/.
+    <varlistentry>
+      <term><function id="set.loop">set.loop(n,m), set.loop.v(n,m)</function>
+      <listitem><para>
+       Chooses a loop <parameter/m/ (or <parameter/vm/) in the view
+       resource associated with the object <parameter/n/.
+      </para></listitem>
+    </varlistentry>
 
-<function id="fix.loop">fix.loop(n)</function>
-   Turns off automatic choice of loop number for the object number <parameter/n/.
+    <varlistentry>
+      <term><function id="fix.loop">fix.loop(n)</function></term>
+      <listitem><para>
+       Turns off automatic choice of loop number for the object number
+       <parameter/n/.
+      </para></listitem>
+    </varlistentry>
 
-<function id="release.loop">release.loop(n)</function>
-   Turns on automatic choice of loop number depending on the direction of
-   motion of the object <parameter/n/.
-   <verb>
+    <varlistentry>
+      <term><function id="release.loop">release.loop(n)</function></term>
+      <listitem><para>
+       Turns on automatic choice of loop number depending on the direction
+       of motion of the object <parameter/n/.
+      </para></para>
+       <literal>
                       1
                 8     |     2
                   \   |   /
@@ -2785,118 +2872,268 @@ From the AGDS documentation translated by Vassili Bykov,
                   /   |   \
                 6     |     4
                       5
-   </verb>
-   Automatic choice of the loop is done according to the table:
+       </literal>
+      </para></para>
+       For objects with fewer than 4 but more than 1 loop, automatic
+       choice of the loop is done according to the following table:
+      </para></para>
 
-   <simplelist>
-    <member>for objects with fewer than 4 but more than 1 loops:
-<programlisting>
-Direction  0  1  2  3  4  5  6  7  8
-  Loop     x  x  0  0  0  x  1  1  1
-</programlisting>
+       <informaltable>
+        <tgroup cols="10">
+         <thead>
+          <row>
+           <entry>Direction</entry>
+           <entry>0</entry>
+           <entry>1</entry>
+           <entry>2</entry>
+           <entry>3</entry>
+           <entry>4</entry>
+           <entry>5</entry>
+           <entry>6</entry>
+           <entry>7</entry>
+           <entry>8</entry>
+          </row>
+         </thead>
+         <tbody>
+          <row>
+           <entry>Loop</entry>
+           <entry>x</entry>
+           <entry>x</entry>
+           <entry>0</entry>
+           <entry>0</entry>
+           <entry>0</entry>
+           <entry>x</entry>
+           <entry>1</entry>
+           <entry>1</entry>
+           <entry>1</entry>
+          </row>
+         </tbody>
+        </tgroup>
+       </informaltable>
 
-    <member>for objects with more than 4 loops:
-<programlisting>
-Direction  0  1  2  3  4  5  6  7  8
-  Loop     x  3  0  0  0  2  1  1  1
-</programlisting>
-   </simplelist>
-   <literal/x/ means that the current loop number is retained.
+      </para></para>
+       For objects with more than 4 loops, the following table is used:
+      </para></para>
 
-<function id="set.cel">set.cel(n,m), set.cel.v(n,m)</function>
-   Selects a cel <parameter/m/ in the current loop of the object <parameter/n/.
+       <informaltable>
+        <tgroup cols="10">
+         <thead>
+          <row>
+           <entry>Direction</entry>
+           <entry>0</entry>
+           <entry>1</entry>
+           <entry>2</entry>
+           <entry>3</entry>
+           <entry>4</entry>
+           <entry>5</entry>
+           <entry>6</entry>
+           <entry>7</entry>
+           <entry>8</entry>
+          </row>
+         </thead>
+         <tbody>
+          <row>
+           <entry>Loop</entry>
+           <entry>x</entry>
+           <entry>3</entry>
+           <entry>0</entry>
+           <entry>0</entry>
+           <entry>0</entry>
+           <entry>2</entry>
+           <entry>1</entry>
+           <entry>1</entry>
+           <entry>1</entry>
+          </row>
+         </tbody>
+        </tgroup>
+       </informaltable>
 
-<function id="last.cel">last.cel(n,m)</function>
-   The number of the last cel of the current loop of the object <parameter/n/ is
-   stored in <parameter/vm/.
+      </para></para>
+       <literal/x/ means that the current loop number is retained.
+      </para></listitem>
+    </varlistentry>
 
-<function id="current.cel">current.cel(n,m)</function>
-   The number of the current cel of the object <parameter/n/ is stored in <parameter/vm/.
+    <varlistentry>
+      <term><function id="set.cel">set.cel(n,m), set.cel.v(n,m)</function>
+      </term>
+      <listitem><para>
+       Selects a cel <parameter/m/ in the current loop of the object
+       <parameter/n/.
+      </para></listitem>
+    </varlistentry>
 
-<function id="current.loop">current.loop(n,m)</function>
-   The number of the current loop of the object <parameter/n/ is stored in
-   <parameter/vm/.
+    <varlistentry>
+      <term><function id="last.cel">last.cel(n,m)</function></term>
+      <listitem><para>
+       The number of the last cel of the current loop of the object
+       <parameter/n/ is stored in <parameter/vm/.
+      </para></listitem>
+    </varlistentry>
 
-<function id="current.view">current.view(n,m)</function>
-   The number of the current VIEW resource associated with the object <parameter/n/
-   is stored in <parameter/vm/.
+    <varlistentry>
+      <function id="current.cel">current.cel(n,m)</function>
+      <listitem><para>
+       The number of the current cel of the object <parameter/n/ is
+       stored in <parameter/vm/.
+      </para></listitem>
+    </varlistentry>
 
-<function id="set.priority">set.priority(n,m), set.priority.v(n,m)</function>
-   Set priority of the view of the object <parameter/n/ to <parameter/m/ (or <parameter/vm/).
+    <varlistentry>
+      <term><function id="current.loop">current.loop(n,m)</function></term>
+      <listitem><para>
+       The number of the current loop of the object <parameter/n/ is
+       stored in <parameter/vm/.
+      </para></listitem>
+    </varlistentry>
 
-<function id="release.priority">release.priority(n)</function>
-   Turns on the automatic priority choice for the object <parameter/n/.
-   The priority is set depending on the vertical coordinate of the object.
-   This way, as an object moves down it approaches the viewer.
-   See section <xref linkend="bands" name="Priority bands and control lines">
-   for a table of y coordinates and the associated priorities.
+    <varlistentry>
+      <term><function id="current.view">current.view(n,m)</function></term>
+      <listitem><para>
+       The number of the current view resource associated with the
+       object <parameter/n/ is stored in <parameter/vm/.
+      </para></listitem>
+    </varlistentry>
 
-<function id="get.priority">get.priority(n,m)</function>
-   The value of the current priority of the object <parameter/n/ is
-   stored in <parameter/vm/.
+    <varlistentry>
+      <term><function id="set.priority">set.priority(n,m), set.priority.v(n,m)</function></term>
+      <listitem><para>
+       Set priority of the view of the object <parameter/n/ to
+       <parameter/m/ (or <parameter/vm/).
+      </para></listitem>
+    </varlistentry>
 
-<function id="position">position(n,x,y), position.v(n,x,y)</function>
+    <varlistentry>
+      <term><function id="release.priority">release.priority(n)</function></term>
+      <listitem><para>
+        Turns on the automatic priority choice for the object <parameter/n/.
+        The priority is set depending on the vertical coordinate of the object.
+        This way, as an object moves down it approaches the viewer.
+        See <xref linkend="bands"> for a table of y coordinates and the
+        associated priorities.
+      </para></listitem>
+    </varlistentry>
 
-   Coordinates of the object <parameter/n/, not yet displayed on the
-   screen, are set to <parameter/x/ and <parameter/y/ (or <parameter/vx/
-   and <parameter/vy/).
+    <varlistentry>
+      <term><function id="get.priority">get.priority(n,m)</function><term>
+      <listitem><para>
+        The value of the current priority of the object <parameter/n/ is
+        stored in <parameter/vm/.
+      </para></listitem>
+    </varlistentry>
 
-<function id="draw">draw(n)</function>
-   Object <parameter/n/ is shown on the screen. The image uses the
-   values of the loop and the cel in the VIEW resource associated with
-   the object <parameter/n/ (see
-   <function><ulink name="set.view"/set.view"/</function>), as well as
-   the priority and coordinates of the object. If a command
-   <function><ulink name="start.cycling"/start.cycling/</function> is also
-   issued, a looped animation for object <parameter/n/ is shown until
-   stopped (for example, with
-   <function><ulink name="stop.cycling"/stop.cycling/</function>).
+    <varlistentry>
+      <term><function id="position">position(n,x,y), position.v(n,x,y)</function></term>
+      <listitem><para>
+        Coordinates of the object <parameter/n/, not yet displayed on the
+        screen, are set to <parameter/x/ and <parameter/y/ (or <parameter/vx/
+        and <parameter/vy/).
+      </para></listitem>
+    </varlistentry>
 
-<function id="erase">erase(n)</function>
-   Object <parameter/n/ is erased from the screen.
+    <varlistentry>
+      <term><function id="draw">draw(n)</function></term>
+      <listitem><para>
+        Object <parameter/n/ is shown on the screen. The image uses the
+        values of the loop and the cel in the VIEW resource associated with
+        the object <parameter/n/ (see
+        <function><ulink name="set.view"/set.view"/</function>), as well as
+        the priority and coordinates of the object. If a command
+        <function><ulink name="start.cycling"/start.cycling/</function>
+        is also issued, a looped animation for object <parameter/n/ is
+        shown until stopped (for example, with
+        <function><ulink name="stop.cycling"/stop.cycling/</function>).
+      </para></listitem>
+    </varlistentry>
 
-<function id="get.posn">get.posn(n,x,y)</function>
-   Coordinates of the object <parameter/n/ are stored in <parameter/vx/
-   and <parameter/vy/. Coordinates of the object are coordinates of the
-   base point (bottom left corner) of cels of the VIEW resource
-   associated with the object.
+    <varlistentry>
+      <term><function id="erase">erase(n)</function></term>
+      <listitem><para>
+        Object <parameter/n/ is erased from the screen.
+      </para></listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><function id="get.posn">get.posn(n,x,y)</function></term>
+      <listitem><para>
+        Coordinates of the object <parameter/n/ are stored in <parameter/vx/
+        and <parameter/vy/. Coordinates of the object are coordinates of the
+        base point (bottom left corner) of cels of the view resource
+        associated with the object.
+      </para></listitem>
+    </varlistentry>
+   </variablelist>
+</para><para>
 
    The interpreter automatically plays the animation (a loop in the VIEW
    resource) associated with the object, starting at the specified cel.
    The following commands control this process.
 
-<function id="start.cycling">start.cycling(n)</function>
-   Enables automatic change of cels in a chosen (using
-   <function><ulink name="set.loop"/set.loop/</function>) loop of
-   a VIEW resource associated with the object <parameter/n/ (using
-   <function><ulink name="set.view"/set.view/</function>).
+</para><para>
+   <variablelist>
+    <varlistentry>
+      <term><function id="start.cycling">start.cycling(n)</function></term>
+      <listitem><para>
+        Enables automatic change of cels in a chosen (using
+        <function><ulink name="set.loop"/set.loop/</function>) loop of
+        a view resource associated with the object <parameter/n/ (using
+        <function><ulink name="set.view"/set.view/</function>).
+      </para></listitem>
+    </varlistentry>
 
-<function id="stop.cycling">stop.cycling(n)</function>
-   Disables automatic change of cels in a chosen (using
-   <function><ulink name="set.loop"/set.loop"/</function>) loop of
-   a VIEW resource associated with the object <parameter/n/ (using
-   <function><ulink name="set.view"/set.view/</function>).
+    <varlistentry>
+      <term><function id="stop.cycling">stop.cycling(n)</function></term>
+      <listitem><para>
+        Disables automatic change of cels in a chosen (using
+        <function><ulink name="set.loop"/set.loop"/</function>) loop of
+        a view resource associated with the object <parameter/n/ (using
+        <function><ulink name="set.view"/set.view/</function>).
+      </para></listitem>
+    </varlistentry>
 
-<function id="normal.cycle">normal.cycle(n)</function>
-   Cels of the loop associated with the object <parameter/n/ follow in
-   a normal order: 0, 1, 2, ..., <parameter/k/-1, 0, 1, 2, ...
+    <varlistentry>
+      <term><function id="normal.cycle">normal.cycle(n)</function></term>
+      <listitem><para>
+        Cels of the loop associated with the object <parameter/n/ follow in
+        a normal order: 0, 1, 2, ..., <parameter/k/-1, 0, 1, 2, ...
+      </para></listitem>
+    </varlistentry>
 
-<function id="reverse.cycle">reverse.cycle(n)</function>
-   Cels of the loop associated with the object <parameter/n/ follow a reverse
-   order: <parameter/k/-1, <parameter/k/-2, ..., 1, 0, <parameter/k/-1,
-   <parameter/k/-2, ..., 1, 0, ...
+    <varlistentry>
+      <term><function id="reverse.cycle">reverse.cycle(n)</function></term>
+      <listitem><para>
+        Cels of the loop associated with the object <parameter/n/ follow
+        a reverse order: <parameter/k/-1, <parameter/k/-2, ..., 1, 0,
+        <parameter/k/-1, <parameter/k/-2, ..., 1, 0, ...
+      </para></listitem>
+    </varlistentry>
 
-<function id="end.of.loop">end.of.loop(n,m)</function>
-   Plays the loop associated with the object <parameter/n/ once, from the current cel
-   to the last. When finished, <literal/f/<parameter/m/ is set to 1.
+    <varlistentry>
+      <term><function id="end.of.loop">end.of.loop(n,m)</function></term>
+      <listitem><para>
+        Plays the loop associated with the object <parameter/n/ once,
+        from the current cel to the last. When finished, <parameter/fm/
+        is set.
+      </para></listitem>
+    </varlistentry>
 
-<function id="reverse.loop">reverse.loop(n,m)</function>
-   Plays the loop associated with the object <parameter/n/ once in a reverse order,
-   from the current cel to the first. When finished, <literal/f/<parameter/m/ is set to 1.
+    <varlistentry>
+      <term><function id="reverse.loop">reverse.loop(n,m)</function></term>
+      <listitem><para>
+        Plays the loop associated with the object <parameter/n/ once
+        in a reverse order, from the current cel to the first. When
+        finished, <parameter/fm/ is set.
+      </para></listitem>
+    </varlistentry>
 
-<function id="cycle.time">cycle.time(n,m)</function>
-   <parameter/vm/ sets the time in interpreter cycles between cel changes for the
-   object n. When <parameter/vm/ = 1 cels are changed every cycle.
+    <varlistentry>
+      <term><function id="cycle.time">cycle.time(n,m)</function></term>
+      <listitem><para>
+        <parameter/vm/ sets the time in interpreter cycles between cel
+        changes for the object <parameter/n/. When <parameter/vm/ = 1
+        cels are changed every cycle.
+      </para></listitem>
+    </varlistentry>
+
    </variablelist>
 </para>
 
