@@ -406,13 +406,11 @@ cmd(start_motion) {
 }
 
 cmd(player_control) {
-	_D (_D_CRIT "player control");
 	game.player_control = TRUE;
 	game.view_table[0].motion = MOTION_NORMAL;
 }
 
 cmd(program_control) {
-	_D (_D_CRIT "program control");
 	game.player_control = FALSE;
 }
 

@@ -173,7 +173,7 @@ extern "C"{
 #    define _D_INFO "I: "
 #    define _D_CRIT "C: "
 #    define _D_WARN "W: "
-#    define _D fflush (stdout); printf ("\n%s:%d: ", __FILE__, __LINE__); printf
+#    define _D fflush(stdout); printf("\n%s:%d: ", __FILE__, __LINE__); printf
 #  endif /* __GNUC__ */
 #else /* _TRACE */
 #  define _D_INFO

@@ -1,10 +1,10 @@
+# $Id$
 
 XCFLAGS = -I../include
 OBJS	=
 DFILES	= Makefile
 CFILES	=
-# XoXus: Modified this to include "svgalib" at end
-DDIRS	= msdos win32 unix # beos macos
+DDIRS	= msdos win32 unix macos
 XDFILES =
 LIB	=
 

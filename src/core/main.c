@@ -107,8 +107,10 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
     	do {
 		_D(_D_WARN "game loop");
 
-    		ec = agi_init ();
-		game.state = STATE_RUNNING;
+    		if (game.state < STATE_RUNNING) {
+			ec = agi_init ();
+			game.state = STATE_RUNNING;
+		}
 
 		if (ec == err_OK) {
    			/* setup machine specific AGI flags, etc */

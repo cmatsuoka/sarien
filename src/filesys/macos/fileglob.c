@@ -42,6 +42,9 @@ int mkdir (char *s, int n)
 }
 
 
+/*
+ * opendir() implementation from ImageMagick
+ */
 static DIR *opendir(const char *path)
 {
 	char pathname[1664];
@@ -81,6 +84,9 @@ static DIR *opendir(const char *path)
 }
 
 
+/*
+ * closedir() implementation from ImageMagick
+ */
 static void closedir (DIR *entry)
 {
 	assert(entry != (DIR *) NULL);
@@ -88,6 +94,9 @@ static void closedir (DIR *entry)
 }
 
 
+/*
+ * readdir() implementation from ImageMagick
+ */
 static struct dirent *readdir (DIR *entry)
 {
 	CInfoPBRec search_info;
@@ -138,7 +147,7 @@ static char *match (char *p, int f)
 		dir = ".";
 	}
 	
-	_D ("dir=%s, pattern=%s", dir, pattern);
+	report ("dir=%s, pattern=%s\n", dir, pattern);
 
 	/* empty pattern given */
 	if (!*pattern)
@@ -169,10 +178,12 @@ static char *match (char *p, int f)
 			} else {
 				strcpy (path, e->d_name);
 			}
+			report ("path = %s\n", path);
 			return path;
 		}
 	}
 
+	report ("** returning NULL\n", path);
 	return NULL;
 }
 
