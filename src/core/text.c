@@ -483,7 +483,8 @@ static char *safe_strcat (char *s, const char *t)
 #define MAX_LEN 768
 char *agi_sprintf (char *s)
 {
-	static char x[MAX_LEN];
+	static char y[MAX_LEN];
+	char x[MAX_LEN];
 	char z[16], *p;
 
 	_D ("logic %d, '%s'", game.lognum, s);
@@ -536,7 +537,7 @@ char *agi_sprintf (char *s)
 			case 'm': {
 				int n = game.lognum, m = strtoul (s, NULL, 10) - 1;
 				if (game.logics[n].num_texts > m)
-					safe_strcat(p, game.logics[n].texts[m]);
+					safe_strcat(p, agi_sprintf(game.logics[n].texts[m]));
 				break;
 				}
 			}
@@ -554,7 +555,8 @@ char *agi_sprintf (char *s)
 		}
 	}
 
-	return x;
+	strcpy (y, x);
+	return y;
 }
 
 /**

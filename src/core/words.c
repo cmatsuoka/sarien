@@ -158,7 +158,7 @@ void dictionary_words (char *msg)
 		if (*p == 0x20)
 			p++;
 
-		if(*p == 0)
+		if (*p == 0)
 			break;
 
  		wid = find_word(p, &wlen);
@@ -191,7 +191,8 @@ void dictionary_words (char *msg)
  		}
 
  		if (p != NULL && *p) {
- 			*p=0;
+			_D ("p = %s", p);
+ 			*p = 0;
  			p++;
  		}
 
