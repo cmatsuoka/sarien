@@ -52,6 +52,10 @@
 - Magnus Kristiansen <>
   * Status line display fixes
 
+- Dopefish Justin <>
+  * Cygwin build fixes
+  * Extensive testing
+
 - Matt Hargett <matt@use.net>
   * VC++ build fixes
   * Memory usage profiling
@@ -98,5 +102,4 @@ Special thanks to:
 
 - Helen Zommer <helen@cc.huji.ac.il>
   * Author of the Linux AGI Studio
-M
 
