@@ -101,7 +101,7 @@ static UINT32 match_crc (UINT32 crc, char *path)
  */
 static UINT32 match_version (UINT32 crc)
 {
-#ifndef MSDOS
+#ifndef _M_MSDOS
 	char buf[256];
 	int ver;
 
@@ -111,7 +111,7 @@ static UINT32 match_version (UINT32 crc)
 		ver = match_crc (crc, "/etc/sarien.conf");
 #endif
 
-#ifdef MSDOS
+#ifdef _M_MSDOS
 	char buf[256];
 	int ver;
 	char *q;
