@@ -4,451 +4,283 @@
         <!ENTITY amp "&">
 ]>
 
-<Book>
-  <Title>The Sierra Adventure Game Interpreter Specification</Title>
+<book>
+<title>
+  The Sierra On-Line Adventure Game Interpreter Specification
+</title>
+<titleabbrev>
+  AGI Specs
+</titleabbrev>
 
-  <TitleAbbrev>AGI Specs</TitleAbbrev>
+<bookinfo>
+<authorgroup>
+  <author>
+    <firstname>Peter</firstname>
+    <surname>Kelly</surname>
+    <affiliation>
+      <jobtitle>Author of MEKA and AGI Studio</jobtitle>
+    </affiliation>
+  </author>
 
-  <BookInfo>
+  <author>
+    <firstname>Lance</firstname>
+    <surname>Ewing</surname>
+    <affiliation>
+      <jobtitle>Author of MEKA and The Ruby Cast</jobtitle>
+    </affiliation>
+  </author>
 
-   <authorgroup>
-    <Author>
-     <firstname>Peter</firstname>
-     <surname>Kelly</surname>
-     <AuthorBlurb><para>
-      Peter Kelly (<email>ptrkelly@ozemail.com.au</email>) is one
-      of the original AGI hackers, and the editor of the first and
-      second editions of this document.
-     </para></AuthorBlurb>
-    </Author>
+  <author>
+    <firstname>Claudio</firstname>
+    <othername>S.</othername>
+    <surname>Matsuoka</surname>
+    <affiliation>
+      <jobtitle>Member of the Sarien development team</jobtitle>
+    </affiliation>
+  </author>
 
-    <Author>
-     <firstname>Lance</firstname>
-     <surname>Ewing</surname>
-     <AuthorBlurb><para>
-      Lance Ewing (<email></email>) is one of the original AGI hackers.
-     </para></AuthorBlurb>
-    </Author>
-
-    <author>
-     <firstname>Claudio</firstname>
-     <othername>S.</othername>
-     <surname>Matsuoka</surname>
-     <affiliation>
-      <organization>Sarien development team</organization>
-     </affiliation>
-     <AuthorBlurb><para>
-      Claudio Matsuoka (<email>claudio@helllabs.org</email>) is the
-      current maintainer of this document and one of the Sarien developers.
-     </para></AuthorBlurb>
-    </author>
-
-    <author>
-     <firstname>Nick</firstname>
-     <surname>Sonneveld</surname>
-     <affiliation>
-      <organization>Developer of NAGI</organization>
-     </affiliation>
-     <AuthorBlurb><para>
-     </para></AuthorBlurb>
-    </author>
-
-   </authorgroup>
+  <author>
+    <firstname>Nick</firstname>
+    <surname>Sonneveld</surname>
+    <affiliation>
+      <jobtitle>Author of the New Adventure Game Interpreter</jobtitle>
+    </affiliation>
+  </author>
+</authorgroup>
 
 
+<abstract><para>
+  This document is a collection of all the information currently known
+  about the structure and operation of the Adventure Game Interpreter,
+  used in 1984--1989 for a variety of adventure games published by
+  Sierra On-Line such as Space Quest I and II, and Leisure Suit Larry in
+  the Land of the Lounge Lizards.
+</para></abstract>
 
-   <abstract>
-     <para>
-      This document is a collection of all the information currently known
-      about the structure and operation of the Adventure Game Interpreter,
-      used in 1984--1989 for a variety of adventure games published by
-      Sierra On-Line such as Space Quest I and II, and Leisure Suit Larry in
-      the Land of the Lounge Lizards.
-     </para>
-    </abstract>
+<releaseinfo>
+  $Id$
+</releaseinfo>
 
-    <ReleaseInfo>
-      $Id$
-    </ReleaseInfo>
-
-    <LegalNotice>
-     <para>
-     Copyright (C) 1997-2001 by the authors
-     </para>
-     <para>
-   Permission is hereby granted, free of charge, to any person obtaining a
-   copy of this documentation to deal in the Documentation without restriction,
-   including without limitation the rights to use, copy, modify, merge,
-   publish, distribute, sublicense, and/or sell copies of the Documentation,
-   and to permit persons to whom the Documentation is furnished to do so,
-   subject to the following conditions:
+<legalnotice><para>
+  Copyright (C) 1997-2001 by the authors
 </para><para>
-   The above copyright notice and this permission notice shall be included in
-   all copies or substantial portions of the Documentation.
+  Permission is hereby granted, free of charge, to any person obtaining
+  a copy of this documentation to deal in the Documentation without
+  restriction, including without limitation the rights to use, copy,
+  modify, merge, publish, distribute, sublicense, and/or sell copies of
+  the Documentation, and to permit persons to whom the Documentation is
+  furnished to do so, subject to the following conditions:
 </para><para>
-   THE DOCUMENTATION IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-   IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-   FROM, OUT OF OR IN CONNECTION WITH THE DOCUMENTATION OR THE USE OR
-   OTHER DEALINGS IN THE DOCUMENTATION.
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Documentation.
 </para><para>
-   The Adventure Game Interpreter was originally developed by Sierra
-   On-Line, Inc. "Sierra On-Line Inc. (TM)" is a registered trademark
-   of Sierra On-Line, Inc. Names of the AGI games produced by Sierra
-   On-Line, Inc., including, but not limited to, "Leisure Suit Larry
-   in the Land of the Lounge Lizards", "Space Quest: The Sarien
-   Encounter" and "Space Quest 2: Vohaul's Revenge" are trademarks of
-   Sierra On-Line, Inc.
-</para>
-   </LegalNotice>
+  THE DOCUMENTATION IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+  IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+  FROM, OUT OF OR IN CONNECTION WITH THE DOCUMENTATION OR THE USE OR
+  OTHER DEALINGS IN THE DOCUMENTATION.
+</para><para>
+  The Adventure Game Interpreter was originally developed by Sierra
+  On-Line, Inc. "Sierra On-Line Inc. (TM)" is a registered trademark
+  of Sierra On-Line, Inc. Names of the AGI games produced by Sierra
+  On-Line, Inc., including, but not limited to, "Leisure Suit Larry
+  in the Land of the Lounge Lizards", "Space Quest: The Sarien
+  Encounter" and "Space Quest 2: Vohaul's Revenge" are trademarks of
+  Sierra On-Line, Inc.
+</para></legalnotice>
 
-  </BookInfo>
+</bookinfo>
 
-  <Preface>
-  <Title/Preface/
-   <para>
-   </para>
-  </Preface>
-
-
-<chapter id="intro"><title>Introduction</title>
+<chapter id="intro">
+<title>Introduction</title>
 <para>
-   AGI (Adventure Game Interpreter) was the first major interpreter used
-   by Sierra. With the release of King's Quest 1 in the early 80's, it
-   introduced the gaming world to the concept of a 3D graphical adventure
-   game, where the player could move a character around the screen,
-   behind, in front of and over objects. Other commands could be typed
-   in, just like a text adventure. This concept, in various forms, has
-   been used many many times since, by Sierra and other companies
-   very successful and continues to be used today in games such as Larry 7.
+  AGI (Adventure Game Interpreter) was the first major interpreter used
+  by Sierra. With the release of King's Quest 1 in the early 80's, it
+  introduced the gaming world to the concept of a 3D graphical adventure
+  game, where the player could move a character around the screen,
+  behind, in front of and over objects. Other commands could be typed
+  in, just like a text adventure. This concept, in various forms, has
+  been used many many times since, by Sierra and other companies. It
+  has proved very successful and has been used until the late 90's in
+  games such as Leisure Suit Larry 7.
 </para>
 
-<sect1 id="about"><title>About this document</title>
+<sect1 id="credits">
+<title>Credits</title>
 <para>
-   The latest version of this document can be found at
-   http://agi.helllabs.org/agispecs/ in
-   SGML, HTML, Postscript and plain text formats.
-
-   If you have any questions about the individual sections in this
-   document, email the author of that section.
-</para><para>
-   If you have documented an aspect of the interpreter, or have updated
-   your documentation which is already included this document, please
-   send it to the current maintainer (claudio@helllabs.org) so that it can be
-   added in future versions. Preferred format is DocBook DTD or plain
-   text.
-</para>
-</sect1>
-
-<sect1 id="audience"><title>Audience</title>
-<para>
-   AGI specs is intended for people writing AGI programs such as
-   editors, viewers and interpreters. It is not supposed to be a
-   beginners' introduction to AGI, or an AGI programming guide for
-   those who just want to create games (although it can serve as a
-   reference for more advanced AGI programmers). If you want to
-   learn the AGI logic programming language, we suggest you read the
-   logic section of the AGI Studio help file, and the various other
-   bits of documentation and tutorials available on-line.
-   The programming info contained in this document is mostly from
-   <application>AGDS</application> and uses different syntax and
-   terminology for the language and can be confusing if you are using
-   AGI Studio for your programming.
-</para>
-</sect1>
-
-
-<sect1><title>What's still missing</title>
- <para>
-   Although this document has many details about the AGI specs, a few
-   pieces of information are still missing:
-   <itemizedlist>
-    <listitem><para>Savegame file format</para></listitem>
-    <listitem><para>Some chunks of the memory organization</para></listitem>
-    <listitem><para>Unknown view table entries</para></listitem>
-    <listitem><para>Unknown fields in the IIgs sound header</para></listitem>
-    <listitem><para>The release date of many AGI games</para></listitem>
-    <listitem><para>The purpose of commands 171, 172 and 174</para></listitem>
-    <listitem><para>The meaning of bit 0 in the argument byte</para></listitem>
-    <listitem><para>The meaning of bytes 0--1 in the VIEW resource
-        header</para></listitem>
-    <listitem><para>Canonical names of commands 170--181</para></listitem>
-    <listitem><para>Canonical variable and flag names</para></listitem>
-    <listitem><para>More information about differences of AGI in other
-        platforms (Amiga, Apple II, CoCo 3, etc)</para></listitem>
-   </itemizedlist>
- </para>
-</sect1>
-
-<sect1 id="credits"><title>Acknowledgements</title>
-
-<para>
-The following people (and probably more) have contributed to this document:
-Peter Kelly (ptrkelly@ozemail.com.au),
-Lance Ewing (lance.e@ihug.co.nz),
-Alex Simkin (simkin@argussoft.ru),
-Vassili Bykov (nest@rtsnet.ru),
-Anders M. Olsson (anders.m.olsson@abc.se),
-Jeremy Hayes (mikeph@concentric.net),
-Joakim Möller (jmoller@algonet.se),
-Martin Tillenius (mrtn@rocketmail.com),
-Stuart George (entropy@ihug.com.au),
-Dark Minister (dark_minister@hotmail.com),
-Kevin A. Lee,
-Jens Christian Restemeier (jchrr@hrz.uni-bielefeld.de),
-Paul Lunga (paul123@freenet.tlh.fl.us),
-Ian Schmidt (irsman@iag.net),
-XoXus (xoxus@usa.net),
-Claudio Matsuoka (claudio@helllabs.org),
-Please contact the document maintainer to add more names to this list.
+  The following people (and probably more) have contributed to this document:
+  Peter Kelly &lt;ptrkelly@ozemail.com.au&gt;,
+  Lance Ewing &lt;lance.e@ihug.co.nz&gt;,
+  Alex Simkin &lt;simkin@argussoft.ru&gt;,
+  Vassili Bykov &lt;nest@rtsnet.ru&gt;,
+  Anders M. Olsson &lt;anders.m.olsson@abc.se&gt;,
+  Jeremy Hayes &lt;mikeph@concentric.net&gt;,
+  Joakim Möller &lt;jmoller@algonet.se&gt;,
+  Martin Tillenius &lt;mrtn@rocketmail.com&gt;,
+  Stuart George &lt;entropy@ihug.com.au&gt;,
+  Dark Minister &lt;dark_minister@hotmail.com&gt;,
+  Kevin A. Lee,
+  Jens Christian Restemeier &lt;jchrr@hrz.uni-bielefeld.de&gt;,
+  Paul Lunga &lt;paul123@freenet.tlh.fl.us&gt;,
+  Ian Schmidt &lt;irsman@iag.net&gt;,
+  XoXus &lt;xoxus@usa.net&gt;,
+  Claudio Matsuoka &lt;claudio@helllabs.org&gt;,
+  Nick Sonneveld &lt;&gt;.
 </para>
 </sect1>
 </chapter>
 
-
-<chapter id="overview"><title>General AGI overview</title>
+<chapter id="overview">
+<title>General AGI overview</title>
 <para>
-   <author><firstname/Lance/ <surname/Ewing/</author>, modified by
-   <author><firstname/Claudio/ <surname/Matsuoka/</author>, 22 May 1999.
-<para>
-   AGI stands for <emphasis/Adventure Game Interpreter/ and it is the old
-   version of Sierra On-Line's 3D adventure interpreter. It was used
-   in Donald Duck's Playground, Kings Quest 1--3,
-   King's Quest 4 (256K version), Space Quest 1 and 2, Police Quest,
-   Leisure Suit Larry in the Land of the Lounge Lizards, Black Cauldron,
-   Mixed Up Mother Goose, Gold Rush and Manhunter 1 and 2. There were also a
-   number of demos that were written in AGI: the XMAS animated christmas card,
-   King's Quest 4 demo, and Sierra demo packs 1--4.
+  AGI stands for <emphasis/Adventure Game Interpreter/ and it is the old
+  version of Sierra On-Line's 3D adventure interpreter. It was used
+  in Donald Duck's Playground, King's Quest 1 to 4, Space Quest 1 and 2,
+  Police Quest, Leisure Suit Larry in the Land of the Lounge Lizards,
+  The Black Cauldron, Mixed-Up Mother Goose, Gold Rush! and Manhunter
+  1 and 2. There were also a number of demos that were written in AGI:
+  the XMAS animated christmas card, the King's Quest 4 demo, and several
+  Sierra demo packs 1--4.
+</para><para>
+  Interpreters that run AGI bytecode have been implemented in different
+  platforms, such as IBM-PC, Tandy, Amiga, Atari ST, Macintosh, Apple
+  II and Apple IIgs.
 </para>
 
-<sect1><title>Versions of the AGI interpreter</title>
+<sect1>
+<title>Versions of the AGI interpreter</title>
 <para>
-   There were three main version of the AGI interpreter. The first
-   version was the one used with KQ1 and KQ2 when they were originally
-   released. The graphics were in CGA but apart from that the games
-   looked very much like the later EGA remakes. The second version is the
-   one we are most familiar with and was used for the majority of the
-   above games. It added support for the 16 colour EGA card but
-   still kept the old 160x200 resolution that the original games had. The
-   third and final version of the AGI interpreter came out for only a
-   short while before the SCI interpreter hit the scene. There were five
-   games that I know of which used this version. Sierra obviously noticed
-   the increased size of the games and therefore added data compression
-   to this version. There are a few differences in the way the data is
-   stored other than the compression as well, but the data itself still
-   contains exactly the same information. It is therefore possible to
-   convert a version 3 game into the version 2 format and vice versa.
+  There were three main version of the AGI interpreter. The first
+  version was the one used with KQ1 and KQ2 when they were originally
+  released. The second version is the one we are most familiar with
+  and was used for the majority of the above games. The third and final
+  version of the AGI interpreter came out for only a short while before
+  the SCI interpreter hit the scene. Sierra obviously noticed the
+  increased size of the games and therefore added data compression
+  to this version (there are a few differences in the way the data is
+  stored other than the compression as well, but the data itself still
+  contains the same information).
 </para>
 </sect1>
 
-<sect1><title>AGI game files</title>
+<sect1>
+<title>AGI game files</title>
 <para>
-   An AGI game package contains the AGI game resource files, usually
-   platform-idependent, and the platform-specific interpreter binaries.
-   The MS-DOS version is the most popular and best known AGI interpreter;
-   there are, however, versions for the Macintosh, Atari, Amiga, Apple IIgs
-   and Tandy computers.
+  An AGI game package contains platform-independent AGI game resource
+  files and the platform-specific interpreter binaries. The
+  platform-independent games can be summarized as follows:
 </para>
-<para>
-   The following files are the platform-specific components of the
-   Sierra AGI interpreter for MS-DOS:
-   <variablelist>
-    <varlistentry><term><filename/agi/</term>
-     <listitem>
-      <para>
-      This is the main interpreter file in the MS-DOS version.
-      It contains all the routines for the various AGI commands.
-      </para>
-     </listitem>
-    </varlistentry>
-    <varlistentry><term><filename/agidata.ovl/</term>
-     <listitem>
-      <para>
-      In MS-DOS, this overlay file contains various
-      bits of data for the AGI such as interpreter error messages and jump
-      tables for the AGI commands inside the AGI file.
-      </para>
-     </listitem>
-    </varlistentry>
-    <varlistentry><term><filename/sierra.com/</term>
-     <listitem>
-      <para>
-      In MS-DOS, this is the loader which loads the
-      interpreter file. In some games this will be combined with the
-      AGI file to give one executable often called <filename/sierra.exe/
-      or the initials of the game.
-      </para>
-     </listitem>
-    </varlistentry>
-    <varlistentry><term><filename/*.ovl/</term>
-     <listitem>
-      <para>
-      Apart from <filename/agidata.ovl/ mentioned above,
-      most of these files are the device drivers for the various display
-      adapters that are supported. They are overlay files which are only
-      brought in depending on which display adapter has been selected.
-      <filename/ibm_objs.ovl/ and <filename/hgc_objs.ovl/ seem to be more
-      to do with the VIEW resources though.
-      </para>
-     </listitem>
-    </varlistentry>
-   </variablelist>
-</para>
-<para>
-   The following files are the platform-specific components for the
-   Apple IIgs interpreter:
-   <variablelist>
-    <varlistentry><term><filename/*.sys16/</term>
-     <listitem>
-      <para>
-      The AGI interpreter in the Apple IIgs version.
-      The name of the executable is the initial of the game (e.g.
-      <filename/kq.sys16/ for King's Quest).
-      </para>
-     </listitem>
-    </varlistentry>
-    <varlistentry><term><filename/sierrastandard/</term>
-     <listitem>
-      <para>
-      The file containing the sampled instruments
-      and sound effects used in the game.
-      </para>
-     </listitem>
-    </varlistentry>
-   </variablelist>
-</para>
-<para>
-   The following files are platform-independent:
-   <variablelist>
-    <varlistentry><term><filename/logdir/, <filename/viewdir/, <filename/picdir/, <filename/snddir/</term>
-     <listitem>
-      <para>
-      These directory files give the location of each of LOGIC, PICTURE,
-      VIEW, and SOUND data within the VOL files.
-      </para>
-      <para>
-      In version 3 of the interpreter, these files are combined into one
-      file with a header which gives the offset of each part.
-      The name of this single directory file is <filename/*dir/ where the *
-      is the initials of the game (e.g. <filename/kq4dir/, <filename/mh2dir/,
-      <filename/grdir/, <filename/bcdir/, <filename/mh1dir/).
-      </para>
-     </listitem>
-    </varlistentry>
-    <varlistentry><term><filename/vol.*/</term>
-     <listitem>
-      <para>
+
+<variablelist>
+  <varlistentry>
+    <term><filename/{log,view,pic,snd}dir/
+    <listitem><para>
+      These directory files give the location of each of logic, picture,
+      view, and sound resources within the ``vol'' files. In version 3 of
+      the interpreter, these files are combined into a single file with a
+      header which gives the offset of each part. The name of this single
+      directory file is <filename/*dir/ (or just <filename/Dirs/ in some
+      versions) where the <filename/*/ is the game ID code (e.g.
+      <filename/kq4dir/, <filename/mh2dir/, <filename/grdir/,
+      <filename/bcdir/, <filename/mh1dir/).
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><filename/vol.*/</term>
+    <listitem><para>
       These files contain the main game data. Whereas the AGI
       interpreter may not change between games, the vol files will always be
       different. They look very much like a virtual device which contain
       many individual files indexed by the directory files.
-      </para>
-      <para>
-      In version 3 games, the VOL files are named after the game with a
+      In version 3 games, the ``vol'' files are named after the game with a
       <filename/vol/ suffix (e.g. <filename/kq4vol.0/, <filename/grvol.10/,
       <filename/mh2vol.5/).
-      </para>
-     </listitem>
-    </varlistentry>
-    <varlistentry><term><filename/words.tok/</term>
-     <listitem>
-      <para>
-      This file contains a list of all the words that the
-      user may type in during the game. The words are partly compressed and
-      encrypted as well, so you won't be able to see the words if you
-      display the file as you normally would.
-      </para>
-     </listitem>
-    </varlistentry>
-    <varlistentry><term><filename/object/</term>
-     <listitem>
-      <para>
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><filename/words.tok/</term>
+    <listitem><para>
+      This file contains a list of all the words that the user may type
+      in during the game. The words are partly compressed and encrypted
+      as well, so you won't be able to see the words if you display the
+      file as you normally would.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><filename/object/</term>
+    <listitem><para>
       This file contains a list of all the inventory members
       that the user can find in the game. This file is also encrypted but
       in a different way using the phrase "Avis Durgan". Each object also
       has associated with it a number that gives the starting room for that
       object.
-      </para>
-     </listitem>
-    </varlistentry>
-   </variablelist>
+    </para></listitem>
+  </varlistentry>
+</variablelist>
+
+</sect1>
+
+<sect1>
+<title>AGI resource files</title>
+<para>
+  AGI uses four types of resources: Logic, Picture, View and Sound.
+</para><para>
+  Logic resources contain the scripts with AGI commands which the
+  interpreter runs. All rooms have a Logic script that governs what
+  happens within that room. At the end of a Logic resource there is a
+  text section containing all the messages that are specific to the
+  functioning of that particular logic script (these are encrypted with
+  the ``Avis Durgan'' string in the case of version 2 games).
+</para><para>
+  Picture resources contain the picture codes which are used to draw
+  the full screen pictures that you see for each room. The codes are
+  vector based and draw a screen in the manner that the artist
+  originally did. There are two screens store in each picture resource:
+  the <emphasis/visual screen/ and the <emphasis/priority screen/.
+  The priority screen contains priority information and control lines.
+  In version 3 games, this file is not compressed with adaptive LZW as
+  the View, Logic, and Sound resources are.
+</para><para>
+  View resources contain all the still props (like objects), actors
+  (like ogres and Labion Terror Beasts), and animated props (like flags
+  blowing in the breeze). All inventory item pictures are a specialized
+  type of view which has a text description tagged to the end of the
+  file. Views are made up of many <emphasis/loops/ (animation cycles)
+  that are in turn made up of many <emphasis/cels/ (a single frame of
+  animation).
+</para><para>
+  Sound resources contain all the musical scores and sound effects
+  which on the IBM-PC are one voice over the PC speaker but on some
+  machines, like the PCjr and Amiga will be in three voices. The Apple
+  IIgs version of the interpreter recognize PCM sampled sound effects
+  and 16 channel wavetable-based MIDI music.
 </para>
 </sect1>
 
-<sect1><title>AGI resource files</title>
+<sect1>
+<title>What is Ego?</title>
 <para>
-   AGI uses four types of resources: LOGIC, PICTURE, VIEW and SOUND.
-</para>
-<para>
-   LOGIC resources contain the LOGIC scripts that contain the AGI
-   commands which the interpreter runs. All rooms have a single LOGIC
-   script that governs what happens within that room. At the end of a
-   LOGIC file is a text section which contains all the messages that are
-   specific to the functioning of that particular LOGIC script. These are
-   encrypted with the ``Avis Durgan'' string in the case of version 2
-   games.
-</para>
-<para>
-   PICTURE resources contain the picture codes which are used to draw
-   the full screen pictures that you see for each room. The codes are
-   vector based and draw a screen in the manner that the artist
-   originally did. There are two screens store in each PICTURE file: the
-   visual screen and the priority screen. The priority screen contains
-   priority bands and control lines. In version 3 games, this file is not
-   compressed with adaptive LZW as the VIEW, LOGIC, and SOUND files are.
-   The format is also slightly different for codes 0xF0 and 0xF2 in order
-   to slighly compress the data.
-</para>
-<para>
-   VIEW resources contain all the still props (like objects), actors
-   (like ogres and labion terror beasts), and animated props (like flags
-   blowing in the breeze). All inventory member pictures are a specialized
-   type of VIEW which has a text description tagged to the end of the
-   file. Views are made up of many loops (animation cycles) that are in
-   turn made up of many cels (a single frame of animation).
-</para>
-<para>
-   SOUND resources contain all the musical scores and sound effects
-   which on most machines are one voice over the PC speaker but on some
-   machines, like the PCjr, will be in three voices. The IIgs version
-   of the interpreter recognize PCM sampled sound effects and 16 channel
-   wavetable-based MIDI music.
+  Ego is the name given to the player character (e.g. Rosella, Roger,
+  Graham). The AGI games have commands which actually use the name ego
+  in the command itself (e.g. <function/follow.ego/).
 </para>
 </sect1>
 
-<sect1><title>What is Ego?</title>
+<sect1>
+<title>The script language</title>
 <para>
-   Ego is the name given to the player character (e.g. Rosella, Roger,
-   Graham). The AGI games have commands which actually use the name ego
-   in the command itself (e.g. <function/follow.ego/). The later SCI games
-   retain this name.
+  The AGI script language 
 </para>
-</sect1>
 
-<sect1><title>AGI commands</title>
+<example>
+<title>Example LOGIC code (from the AGI version of KQ4)</title>
 <para>
-   The AGI commands are what makes up the AGI programming language if you
-   like. Everyones had a muck around with BASIC which is almost always an
-   interpreted language. Well, the AGI commands are like the BASIC
-   statements in BASIC, or like the procedures and functions in Pascal.
-   In both of these languages there are two types of command, those that
-   return a value and those that don't. AGI is much the same in that it
-   has one group of commands that return boolean values and one group
-   which returns nothing. It also has a small subset of keywords (if,
-   else, not, else, or, and, goto, return) which aren't AGI commands as
-   such. At the last count, there were about 181 procedure type commands
-   and about 18 boolean returning function commands (test commands). We
-   only know the names of 169 of the procedure type commands because this
-   is all Sierra has included in their command list used in debug
-   tracing.
-</para>
-<para>
-   Example LOGIC code (from the AGI version of KQ4):
-</para>
-<para>
-<programlisting>
+  <programlisting>
 animate.obj (smoke);
 ignore.horizon (smoke);
 set.view (smoke, v.fish.cabin);
@@ -459,42 +291,49 @@ work = 3;
 step.time (smoke, work);
 cycle.time (smoke, work);
 draw (smoke);
-</programlisting>
+  </programlisting>
 </para>
+</example>
+
 </sect1>
 
-<sect1><title>Debug modes</title>
+<sect1>
+<title>Debug modes</title>
 <para>
-   Testers often need some way to achieve certain things quickly so that
-   they can test a certain part of the game. Most AGI games still have
-   the debug code that these testers used when the games were being
-   developed. Of the thirteen AGI games mentioned above, there are only
-   three which I havn't discovered the debug mode in. Most of the games
-   activate their debug modes by pushing the
-   <keycombo><keycap>ALT</keycap><keycap>D</keycap></keycombo>
-   key combination. The other games used a magic phrase to enter the
-   debug mode.
+  Testers often need some way to achieve certain things quickly so that
+  they can test a certain part of the game. Most AGI games still have
+  the debug code that these testers used when the games were being
+  developed. Of the thirteen AGI games mentioned above, there are only
+  three which I havn't discovered the debug mode in. Most of the games
+  activate their debug modes by pushing the
+  <keycombo><keycap>ALT</keycap><keycap>D</keycap></keycombo>
+  key combination. The other games used a magic phrase to enter the
+  debug mode.
 </para>
+
+<informaltable>
+  <tgroup cols="2">
+    <thead>
+      <row><entry/Game/ <entry/Command/ </row>
+    </thead>
+    <tbody>
+      <row><entry/Gold Rush/     <entry><command/BIRD MAN/</entry></row>
+      <row><entry/King's Quest 3 <entry><command/RATS ASS/ (in some versions
+        <keycombo><keycap/ALT/<keycap/D/</keycombo>)</entry></row>
+      <row><entry/Police Quest   <entry><command/STINK BUG/ </entry></row>
+      <row><entry/>Space Quest 2 <entry><command/BACKSTAGE/ or
+        <command/DBG/ (<command/TESTER/ brings up ego position) </entry></row>
+    </tbody>
+  </tgroup>
+</informaltable>
+
 <para>
-   <simplelist>
-    <member>Gold Rush: type <command>BIRD MAN</command>.
-    <member>King's Quest 3: type <command>RATS ASS</command> (in some versions
-     <keycombo><keycap>ALT</keycap><keycap>D</keycap></keycombo>
-     works instead).
-    <member>Police Quest: type <command>STINK BUG</command>.
-    <member>Space Quest 2: type <command>BACKSTAGE</command> or
-     <command>DBG</command> (type <command>TESTER</command> to
-      bring up Roger's screen coordinates).
-   </simplelist>
-</para>
-<para>
-   The following are standard debug mode commands:
-</para>
-<para>
-   <simplelist>
+  The following are standard debug mode commands:
+</para><para>
+  <simplelist>
     <member><command/TP/: Teleport to another room.
-    <member><command/SHOW PRIORITY/: Show the current rooms priority bands and
-      control lines.
+    <member><command/SHOW PRIORITY/: Show the current room's priority
+      screen and control lines.
     <member><command/GET OBJECT/: Get any inventory member.
     <member><command/GIMME GIMME/: Get all inventory members.
     <member><command/SHOW FLAG/: Show one of the 256 flags.
@@ -505,32 +344,22 @@ draw (smoke);
     <member><command/POSITION/: Change egos position.
     <member><command/SHOW POSITION/: Show egos current screen coordinates.
     <member><command/OBJECT NUMBER/: Gives a list of all the objects and their
-	object numbers.
+      object numbers.
     <member><command/OBJECT ROOM/: Says which room an object is found in.
     <member><command/ROOM/: Says what room number ego is currently in.
     <member><command/SET PRIORITY/: Set the priority of ego.
-    <member><command/RELEASE PRIORITY/: Release the last priority that ego was set to.
-   </simplelist>
-</para>
-<para>
-   Of all the AGI games, it is unknown whether MH1, MH2 and Mixed Up
-   Mother Goose have a debug mode or not. MUMG probably doesn't even
-   though its <literal/words.tok/ file has all the debug words contained in it.
-   Manhunter 2 has some kind of debug mode which allows you to teleport
-   and change variable values because there are text messages in the
-   first LOGIC file along these lines. Manhunter: New York probably has
-   the same debug mode.
-</para>
-<para>
-   You may be lucky to find a game which allows command tracing. Almost
-   all games have this facility taken out. It is possible to get it to
-   work on some games if you add certain things to the data. What this
-   mode does is to respond to the Scroll-Lock key by displaying a window
-   box which you can step through the test commands that are being
-   executed. In this case most keys step forward one test command, and
-   the <keycap/+/ key steps to the start of the next LOGIC file.
-</para>
-<para>
+    <member><command/RELEASE PRIORITY/: Release the last priority that
+      ego was set to.
+  </simplelist>
+</para><para>
+  You may be lucky to find a game which allows command tracing. Almost
+  all games have this facility taken out. It is possible to get it to
+  work on some games if you add certain things to the data. What this
+  mode does is to respond to the <keycap/Scroll-Lock/ key by displaying
+  a window box which you can step through the test commands that are being
+  executed. In this case most keys step forward one test command, and
+  the <keycap/+/ key steps to the start of the next logic script.
+</para><para>
    Example:
 <programlisting>
      =============================
@@ -538,194 +367,141 @@ draw (smoke);
                  (0, 0)         :F
 
 </programlisting>
-</para>
-<para>
-   The line of <keycap/=/ characters shows the start of an AGI cycle.
-   The number at the start of a line gives the script number that is
-   currently being executed. In the case above, the <literal/(0, 0)/ is
-   the numeric value of the two parameters above it, i.e. the 17 in the
-   above line refers to variable 17, and the 0 below it is the current
-   value of variable 17. The <literal/F/ or <literal/T/ characters at
-   the end of a line tell us whether the expression evaluated to be
-   false or true.
 </para><para>
-   Notice that when you reach the start of <filename/logic.0/ again, all the
-   controlled VIEW objects on the screen are updated. Using this tracing
-   mode is a good way to get a feel for what happens which each cycle of
-   interpretation.
+  The line of <keycap/=/ characters shows the start of an AGI cycle.
+  The number at the start of a line gives the script number that is
+  currently being executed. In the case above, the <literal/(0, 0)/ is
+  the numeric value of the two parameters above it, i.e. the 17 in the
+  above line refers to variable 17, and the 0 below it is the current
+  value of variable 17. The <literal/F/ or <literal/T/ characters at
+  the end of a line tell us whether the expression evaluated to be
+  false or true.
+</para><para>
+  Notice that when you reach the start of <filename/logic.0/ again,
+  all the controlled sprites on the screen are updated. Using this
+  tracing mode is a good way to get a feel for what happens which each
+  cycle of interpretation.
 </para>
 </sect1>
 
-<sect1 id="bands"><title>Priority bands and control lines</title>
+<sect1 id="bands">
+<title>The priority screen</title>
+
+<sect2>
+<title>Priority data</title>
 <para>
-   Okay, you've probably all seen those strange screens that you can
-   activate by typing <command/SHOW PRIORITY/ in the debug modes discussed
-   above. Here's an explanation of what this screen is used for.
+  To create a three dimensional sensation in the rooms, every object is
+  constructed with a priority in relation to other objects. The higher
+  the priority value, the more priority it has to be drawn.
+</para><para>
+  The screen has about eleven even sized invisible bands across the
+  screen called priority bands. When ego walks up and down the screen,
+  he or she will move from one priority band into the next priority band.
+  This is used to give the affect of ego moving behind trees and rocks etc.
+</para><para>
+  Although the priority bands are invisible in the finished product, the
+  artist must use them like a horizontal grid as he draws the room.
+  Considerable effort and time is spent placing houses, bushes, and
+  trees so the player remains unaware of the rooms mathematical rigidity.
+  It wouldn't so for things to look like they were lined up on
+  a checker board.
+</para><para>
+  In AGI games, the priority bands lie roughly in the following y ranges:
 </para>
 
-<sect2><title>Priority bands</title>
-<para>
-   To maintain and enhance the three dimensional quality of the rooms,
-   every object is constructed with a priority in relation to other
-   objects. The priority is shown by its colour on the priority screen.
-   The higher the priority colour, the more priority it has to be drawn.
-</para>
-<para>
-   The screen has about eleven even sized invisible bands
-   across the screen called priority bands. When ego walks up and down
-   the screen, he or she will move from one priority band into the next
-   priority band. The current priority band that ego is in, along with
-   the priority screen that you see when you type <command/SHOW PRIORITY/, is
-   used to determine which parts of ego to draw and which parts not to
-   draw. This is used to give the affect of ego moving behind trees and
-   rocks etc.
-</para>
-<para>
-   Although the priority bands are invisible in the finished product, the
-   artist must use them like a horizontal grid as he draws the room.
-   Considerable effort and time is spent placing houses, bushes, and
-   trees so the player remains unaware of the rooms mathematical
-   rigidity. It wouldn't so for things to look like they were lined up on
-   a checker board.
-</para>
-<para>
-   In AGI games, the priority bands lie roughly in the following y
-   ranges:
-</para>
-   <informaltable>
-    <tgroup cols="2">
-     <thead>
-      <row>
-       <entry>Priority band</entry>
-       <entry>Y range</entry>
-      </row>
-     </thead>
-     <tbody>
-      <row>
-       <entry> 4</entry> <entry>    -    </entry>
-      </row>
-      <row>
-       <entry> 5</entry> <entry> 48 - 59 </entry>
-      </row>
-      <row>
-       <entry> 6</entry> <entry> 60 - 71 </entry>
-      </row>
-      <row>
-       <entry> 7</entry> <entry> 72 - 83 </entry>
-      </row>
-      <row>
-       <entry> 8</entry> <entry> 84 - 95 </entry>
-      </row>
-      <row>
-       <entry> 9</entry> <entry> 96 - 107</entry>
-      </row>
-      <row>
-       <entry>10</entry> <entry>108 - 119</entry>
-      </row>
-      <row>
-       <entry>11</entry> <entry>120 - 131</entry>
-      </row>
-      <row>
-       <entry>12</entry> <entry>132 - 143</entry>
-      </row>
-      <row>
-       <entry>13</entry> <entry>144 - 155</entry>
-      </row>
-      <row>
-       <entry>14</entry> <entry>156 - 167</entry>
-      </row>
-      <row>
-       <entry>15</entry> <entry>   168   </entry>
-      </row>
-     </tbody>
-    </tgroup>
-   </informaltable>
+<informaltable>
+  <tgroup cols="2">
+    <thead>
+      <row><entry/Priority band/ <entry/Y range/ </row>
+    </thead>
+    <tbody>
+      <row><entry/ 4/ <entry/    -    / </row>
+      <row><entry/ 5/ <entry/ 48 - 59 / </row>
+      <row><entry/ 6/ <entry/ 60 - 71 / </row>
+      <row><entry/ 7/ <entry/ 72 - 83 / </row>
+      <row><entry/ 8/ <entry/ 84 - 95 / </row>
+      <row><entry/ 9/ <entry/ 96 - 107/ </row>
+      <row><entry/10/ <entry/108 - 119/ </row>
+      <row><entry/11/ <entry/120 - 131/ </row>
+      <row><entry/12/ <entry/132 - 143/ </row>
+      <row><entry/13/ <entry/144 - 155/ </row>
+      <row><entry/14/ <entry/156 - 167/ </row>
+      <row><entry/15/ <entry/   168   / </row>
+    </tbody>
+  </tgroup>
+</informaltable>
+
 <para>
    The reason that there is no priority 0 to 3 shown above is because
    they don't exist. Priority four has the least priority. It is given to
    the background components. Nothing is ever given a priority of four
-   except for the background parts of the picture itself. The colours
-   black, blue, green, and cyan are infact used for control lines because
-   the control lines and the priority bands are drawn on the same screen
-   for AGI games, and this means that there would be a clash if we had
-   priority 0 to 3.
-</para><para>
-   I've checked all the AGI games including those using version 3 and it
-   looks as if nothing is ever drawn below 168. Some objects in the
-   picture might have a priority of 15. These objects will start from a
-   position with a Y component of 168. Ego can never walk below 167 and
-   thus never has a priority of 15. SCI games are obviously a bit
-   different because they extend the pictures down to the full 200
-   pixels.
+   except for the background parts of the picture itself. Values 0 to 3
+   (represented by colours black, blue, green, and cyan) are infact used
+   for <emphasis/control lines/ drawn in the priority screen.
 </para>
 </sect2>
 
 <sect2><title>Control lines</title>
 <para>
    As the room nears completion, the artist adds control lines that
-   determine where Ego can walk. Ego shouldn't walk through a wall or
-   tree, for example, but sometimes Ego does. The Sierra staff spend a
-   lot of time running Ego all over the rooms looking for places where
-   Ego falls off or walks through something Ego shouldn't. Fixing an
-   error may involve shifting things around or adding new features to a
-   room to cover up a bug. I remember finding a bug in Space Quest 2
-   which allowed Roger to walk off into space in the starting room.
-</para><para>
-   These are the black, blue, green, and cyan lines that
-   you see drawn on the priority screen. They control what happens to ego
-   when he or she walks past these lines. They might trigger a falling
+   determine where ego can walk. These are the black, blue, green, and
+   cyan lines drawn on the priority screen. They control what happens to
+   ego when he or she walks past these lines. They might trigger a falling
    script for the edge of a cliff or a drowning script for the edge of a
    lake. There are four types of control lines:
-</para><para>
-   <itemizedlist>
-    <listitem>
-     <para>the black control line is a unconditional obstacle;</para>
-    </listitem>
-    <listitem>
-     <para>the blue is a conditional obstacle;</para>
-    </listitem>
-    <listitem>
-     <para>the green is an alarm line;</para>
-    </listitem>
-    <listitem>
-     <para>the cyan is typically used for water (or something that a
-      VIEW can be confined to being on).</para>
-    </listitem>
-   </itemizedlist>
-</para>
-<para>
-   In most games, black and blue appear to be used for obstacle use which
-   means that Ego can't walk past that line. This is the main use for
-   control lines. Other uses include triggers which active an event. For
-   example, control lines are used at the edge of water, or the edge of a
-   cliff to tell the interpreter at what point it should execute its
-   ``drowning'' or ``falling'' sequence of events. We can all remember the
-   nasty trap that the hunter beast on Labion set for us in Space Quest
-   II. This is activated when Ego walks past a green control line.
-</para>
-<para>
-   The cyan control line will often be a whole filled area. A VIEW object
-   such as a crocodile can be given the <function/object.on.water/ command and
-   then told to wander. The interpreter will only allow the crocodile to
-   wander over the area that has a control colour of cyan.
 </para>
 
-<sect2><title>Control lines and priority information</title>
+<itemizedlist>
+  <listitem><para>
+    the black control line is a unconditional obstacle;
+  </para></listitem>
+
+  <listitem><para>
+    the blue is a conditional obstacle;
+  </para></listitem>
+
+  <listitem><para>
+    the green is an alarm (trigger) line;
+  </para></listitem>
+
+  <listitem><para>
+    the cyan is typically used for water (or something that a object can
+    be confined to being on).
+  </para></listitem>
+</itemizedlist>
+
 <para>
-   In the AGI interpreter, the priority bands and control lines are drawn
-   on the same screen. This can lead to problems when the interpreter
-   wants to know the priority of a pixel that has a control line drawn
-   over it. The way that the interpreter deals with this is to search
-   downwards until it finds a pixel that isn't a control line and it
-   assumes that the pixel it is looking at is the same priority as the
-   one it found by searching downwards (increasing Y). Usually this will
-   be the pixel immediately below but for some pixels this can be as far
-   away as twenty pixels or more!! In some games this can cause a
-   noticeable visual error if you are aware of it. For example, you could
-   walk behind a strip of grass that thinks it is part of the tree below
-   it (KQ1, room 20, blue control line beside left hand tree). There are
-   also a number of other one pixel visual errors that are virtually
-   unnoticeable if you don't know they are there.
+  In most games, black and blue appear to be used for obstacle use which
+  means that ego can't walk past that line. This is the main use for
+  control lines. Other uses include triggers which active an event. For
+  example, control lines are used at the edge of water, or the edge of a
+  cliff to tell the interpreter at what point it should execute its
+  ``drowning'' or ``falling'' sequence of events.
+</para>
+<para>
+  The cyan control line will often be a whole filled area. An object
+  such as a crocodile can be given the <function/object.on.water/ command
+  and then told to wander. The interpreter will only allow the crocodile
+  to wander over the area that has a control colour of cyan.
+</para>
+
+<sect2>
+<title>Control lines and priority information</title>
+<para>
+  In the AGI interpreter, the priority data and control lines are drawn
+  on the same screen. This can lead to problems when the interpreter
+  wants to know the priority of a pixel that has a control line drawn
+  over it. The way that the interpreter deals with this is to search
+  downwards until it finds a pixel that isn't a control line and it
+  assumes that the pixel it is looking at is the same priority as the
+  one it found by searching downwards (increasing Y). Usually this will
+  be the pixel immediately below but for some pixels this can be as far
+  away as twenty pixels or more!! In some games this can cause a
+  noticeable visual error if you are aware of it. For example, you could
+  walk behind a strip of grass that thinks it is part of the tree below
+  it (KQ1, room 20, blue control line beside left hand tree). There are
+  also a number of other one pixel visual errors that are virtually
+  unnoticeable if you don't know they are there.
 </para><para>
 <programlisting>
                              _
