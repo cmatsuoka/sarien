@@ -167,6 +167,7 @@ static void erase_textbox ()
 	restore_block (game.window.x1, game.window.y1,
 		game.window.x2, game.window.y2, game.window.buffer);
 
+	free (game.window.buffer);
 	game.window.active = FALSE;
 
 	do_update ();
@@ -397,6 +398,7 @@ char *agi_sprintf (char *s, int n)
 			break;
 
 		default:
+			assert (p < x + 255);
 			*p++ = *s++;
 			*p = 0;
 			break;

@@ -123,9 +123,8 @@ static void objs_restorearea (struct sprite *s)
 static LIST_HEAD(spr_upd_head);
 static LIST_HEAD(spr_nonupd_head);
 
-
-/* condition to determine whether a sprite will be in the
- * 'updating' list
+/**
+ * Condition to determine whether a sprite will be in the 'updating' list.
  */
 static int test_updating (struct vt_entry *v)
 {
@@ -133,40 +132,45 @@ static int test_updating (struct vt_entry *v)
 		(ANIMATED|UPDATE|DRAWN);
 }
 
-/* condition to determine whether a sprite will be in the
- * 'non-updating' list
+/**
+ * Condition to determine whether a sprite will be in the 'non-updating' list.
  */
 static int test_not_updating (struct vt_entry *v)
 {
 	return (v->flags & (ANIMATED|UPDATE|DRAWN)) == (ANIMATED|DRAWN);
 }
 
-/* convert sprite priority to y value */
+/**
+ * Convert sprite priority to y value.
+ */
 static INLINE int prio_to_y (int p)
 {
 	return (p - 5) * 12 + 48;
 }
 
-/* create and initialize a new sprite structure to be added in
- * the sprite list
+/**
+ * Create and initialize a new sprite structure.
  */
 static struct sprite *new_sprite (struct vt_entry *v)
 {
 	struct sprite *s;
 
 	s = malloc (sizeof (struct sprite));
-	s->v = v;
+	if (s == NULL)
+		abort ();
+	s->v = v;	/* link sprite to associated view table entry */
 	s->x_pos = v->x_pos;
 	s->y_pos = v->y_pos - v->y_size + 1;
 	s->x_size = v->x_size;
 	s->y_size = v->y_size;
 	s->buffer = malloc (s->x_size * s->y_size);
-	v->s = s;
+	v->s = s;	/* link view table entry to this sprite */
 
 	return s;
 }
 
-/* insert the sprite in the given circular list
+/**
+ * Insert sprite in the specified sprite list.
  */
 static void spr_addlist (struct list_head *head, struct vt_entry *v)
 {
@@ -176,7 +180,8 @@ static void spr_addlist (struct list_head *head, struct vt_entry *v)
 	list_add_tail (&s->list, head);
 }
 
-/* sort from lower y values to build the list
+/**
+ * Sort sprintes from lower y values to build a sprite list.
  */
 static struct list_head *
 build_list (struct list_head *head, int (*test)(struct vt_entry *))
@@ -219,21 +224,24 @@ build_list (struct list_head *head, int (*test)(struct vt_entry *))
 	return head;
 }
 
-/* build list of updating sprites
+/**
+ * Build list of updating sprites.
  */
 static struct list_head *build_upd_blitlist ()
 {
 	return build_list (&spr_upd_head, test_updating);
 }
 
-/* build list of non-updating sprites
+/**
+ * Build list of non-updating sprites.
  */
 static struct list_head *build_nonupd_blitlist ()
 {
 	return build_list (&spr_nonupd_head, test_not_updating);
 }
 
-/* clear the given list
+/**
+ * Clear the given sprite list.
  */
 static void free_list (struct list_head *head)
 {
@@ -249,7 +257,8 @@ static void free_list (struct list_head *head)
 	}
 }
 
-/* check if sprites of the given list have moved
+/**
+ * Check if sprites of the given list have moved.
  */
 static void checkmove_sprites (struct list_head *head)
 {
@@ -272,7 +281,9 @@ static void checkmove_sprites (struct list_head *head)
 	}
 }
 
-/* erase all sprites in the given list */
+/**
+ * Erase all sprites in the given list.
+ */
 static void erase_sprites (struct list_head *head)
 {
 	struct list_head *h;
@@ -285,7 +296,9 @@ static void erase_sprites (struct list_head *head)
 	free_list (head);
 }
 
-/* blit all sprites in the given list */
+/**
+ * Blit all sprites in the given list.
+ */
 static void blit_sprites (struct list_head *head)
 {
 	struct list_head *h;

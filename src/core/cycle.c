@@ -35,9 +35,6 @@ void new_room (int n)
 		v->entry = i++;
 		v->flags &= ~(ANIMATED|DRAWN);
 		v->flags |= UPDATE;
-		v->cel_data = NULL;
-		v->view_data = NULL;
-		v->s = NULL;			/* sprite */
 		v->step_time = 1;
 		v->step_time_count = 1;
 		v->cycle_time = 1;
