@@ -28,6 +28,9 @@ Tested ports:
  OS/2    |  gcc  |   X11   |  dummy  |   yes   |    no   |    no   |
 ---------+-------+---------+---------+---------+---------+---------+
 
+The Linux/X11 driver is known to work in the following architectures:
+i386, PowerPC, IA64, S/390.
+
 
 Not integrated to the main tree:
 
@@ -48,7 +51,6 @@ Untested, expected to work:
          Compiler  Driver    Driver   Graphics  Graphics    Sound
 ---------+-------+---------+---------+---------+---------+---------+
  OpenBSD |  gcc  |   X11   |   BSD   |   yes   |    no   |    no   |
- S/Linux |  gcc  |   X11   |   BSD   |   yes   |    no   |   yes   |
  HP-UX   |  gcc  |   X11   |  dummy  |   yes   |    no   |    no   |
  IRIX    |  gcc  |   X11   |   sgi   |   yes   |    no   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
@@ -70,5 +72,7 @@ Planned:
          Compiler  Driver    Driver   Graphics  Graphics    Sound
 ---------+-------+---------+---------+---------+---------+---------+
  PalmOS  |  gcc  |  palm   |  palm   |    no   |   yes   |   yes   |
+---------+-------+---------+---------+---------+---------+---------+
+ WinCE   |   ?   |    ?    |    ?    |    ?    |    ?    |    ?    |
 ---------+-------+---------+---------+---------+---------+---------+
 

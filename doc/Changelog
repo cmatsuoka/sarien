@@ -2,6 +2,12 @@
 Revision History
 ================
 
+0.7.0 (cvs)
+	- fixed pixel dust in object viewing
+	- fixed QNX Photon driver
+	- fixed SVGAlib driver
+	- added QNX Neutrino sound driver
+
 0.6.0 (20010625)
 	- file layout changes
 	- interpreter core redesigned

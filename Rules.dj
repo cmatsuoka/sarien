@@ -2,7 +2,7 @@
 
 include $(TOPDIR)/Version
 
-CFLAGS = -I$(TOPDIR)/src/include -O2 -m386 -DVERSION='"$(VERSION)"' -DHAVE_ALLEGRO -DSTACK_PUSHPOP -Wall
+CFLAGS = -I$(TOPDIR)/src/include -O2 -m386 -DVERSION='"$(VERSION)"' -DHAVE_ALLEGRO -Wall
 
 %.o : %.asm
 	$(NSM) -f coff $< -o$@

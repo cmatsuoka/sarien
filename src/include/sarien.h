@@ -183,7 +183,7 @@ extern	volatile UINT32	msg_box_secs2;
 
 int	init_machine	(int, char **);
 int	deinit_machine	(void);
-int	file_exists	(char *fname);
+int	file_isthere	(char *fname);	/* Allegro has file_exists() */
 char*	file_name	(char *fname);
 
 char*	fixpath		(int flag, char *fname);

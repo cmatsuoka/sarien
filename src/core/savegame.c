@@ -461,13 +461,13 @@ int savegame_dialog ()
 
 	/* DATADIR conflicts with ObjIdl.h in win32 SDK,
 		renamed to DATA_DIR */
-	snprintf (path, MAX_PATH, "%s/" DATA_DIR "/", home);
+	sprintf (path, "%s/" DATA_DIR "/", home);
 	mkdir (path, 0755);
-	snprintf (path, MAX_PATH, "%s/" DATA_DIR "/%s/", home, game.id);
+	sprintf (path, "%s/" DATA_DIR "/%s/", home, game.id);
 	_D (_D_WARN "path is [%s]", path);
 	mkdir (path, 0711);
 
-	snprintf (path, MAX_PATH, "%s/" DATA_DIR "/%s/%08d.iff",
+	sprintf (path, "%s/" DATA_DIR "/%s/%08d.iff",
 		home, game.id, slot);
 	_D (_D_WARN "file is [%s]", path);
 	
@@ -490,12 +490,12 @@ int loadgame_dialog ()
 		return err_BadFileOpen;
 	}
 
-	snprintf (path, MAX_PATH, "%s/" DATA_DIR "/", home);
+	sprintf (path, "%s/" DATA_DIR "/", home);
 	mkdir (path, 0755);
-	snprintf (path, MAX_PATH, "%s/" DATA_DIR "/%s/", home, game.id);
+	sprintf (path, "%s/" DATA_DIR "/%s/", home, game.id);
 	mkdir (path, 0711);
 	
-	snprintf (path, MAX_PATH, "%s/" DATA_DIR "/%s/%08d.iff",
+	sprintf (path, "%s/" DATA_DIR "/%s/%08d.iff",
 		home, game.id, slot);
 	if ((rc = load_game (path)) == err_OK) {
 		message_box ("Gamed loaded.");

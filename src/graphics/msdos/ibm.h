@@ -33,8 +33,6 @@ extern	volatile UINT32	msg_box_ticks;
 extern	UINT16	init_machine(int, char **);
 extern	UINT16	deinit_machine(void);
 extern	UINT16	setup_machine(void);
-extern	UINT8	__file_exists(UINT8 *fname);
-extern	UINT8*	__file_name(UINT8 *fname);
 
 extern	UINT8	is_keypress(void);
 extern	UINT16	get_keypress(void);

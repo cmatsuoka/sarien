@@ -11,11 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <dos.h>
-#include <conio.h>
-
 #include <allegro.h>
-
 #include "sarien.h"
 #include "graphics.h"
 
@@ -23,24 +19,25 @@ static BITMAP *screen_buffer;
 
 static int	init_vidmode	(void);
 static int	deinit_vidmode	(void);
-static void	blit_block	(int, int, int, int);
-static void	put_pixels	(int x, int y, int w, UINT8 *c);
+static void	gfx_put_block	(int, int, int, int);
+static void	gfx_put_pixels	(int x, int y, int w, UINT8 *c);
 static void	dummy		(void);
-static int	get_key		(void);
-static int	keypress	(void);
+static int	gfx_get_key	(void);
+static int	gfx_keypress	(void);
 
 #define TICK_SECONDS 20
 
-static struct gfx_driver GFX_ibm= {
+static struct gfx_driver gfx_pcdos = {
 	init_vidmode,
 	deinit_vidmode,
-	blit_block,
-	put_pixels,
+	gfx_put_block,
+	gfx_put_pixels,
 	dummy,
-	keypress,
-	get_key
+	gfx_keypress,
+	gfx_get_key
 };
 
+extern struct gfx_driver *gfx;
 
 static void dummy(void)
 {
@@ -60,7 +57,7 @@ END_OF_FUNCTION(new_timer);
 
 int init_machine (int argc, char **argv)
 {
-	gfx=&GFX_ibm;
+	gfx = &gfx_pcdos;
 
 	install_keyboard();
 	install_timer();
@@ -70,9 +67,7 @@ int init_machine (int argc, char **argv)
 
 	install_int_ex(new_timer, BPS_TO_TIMER(TICK_SECONDS));
 
-	screen_mode=GFX_MODE;
 	screen_buffer=create_bitmap(320, 200);
-	clear_buffer();
 
 	clock_count=0;
 	clock_ticks=0;
@@ -106,8 +101,6 @@ static int init_vidmode ()
 		set_color(i, &p);
 	}
 
-	screen_mode=GFX_MODE;
-
 	return err_OK;
 }
 
@@ -115,14 +108,12 @@ static int init_vidmode ()
 static int deinit_vidmode (void)
 {
 	set_gfx_mode (GFX_TEXT, 0, 0, 0, 0);
-	screen_mode = TXT_MODE;
-
 	return err_OK;
 }
 
 
 /* blit a block onto the screen */
-static void blit_block (int x1, int y1, int x2, int y2)
+static void gfx_put_block (int x1, int y1, int x2, int y2)
 {
 	int h;
 	int w;
@@ -139,25 +130,24 @@ static void blit_block (int x1, int y1, int x2, int y2)
 	h = y2 - y1 + 1;
 	w = x2 - x1 + 1;
 
-	blit(screen_buffer, screen, x1, y1, x1, y1, w, h);
-	//blit(screen_buffer, screen, 0, 0, 0, 0, 320, 200);
+	blit (screen_buffer, screen, x1, y1, x1, y1, w, h);
 }
 
 
-static void put_pixels (int x, int y, int w, UINT8 *p)
+static void gfx_put_pixels (int x, int y, int w, UINT8 *p)
 {
 	UINT8 *s = &screen_buffer->line[y][x];
 	while (w--) *s++ = *p++;
 }
 
 
-static int keypress ()
+static int gfx_keypress ()
 {
 	return !!keypressed();
 }
 
 
-static int get_key ()
+static int gfx_get_key ()
 {
 	UINT16 key;
 

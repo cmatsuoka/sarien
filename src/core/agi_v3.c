@@ -50,7 +50,7 @@ int agi_v3_detect_game (char *gn)
 	path = fixpath (GAMEDIR, x);
 
 	_D (_D_WARN "path = %s", path);
-	if (file_exists(path)) {
+	if (file_isthere (path)) {
 		_D(_D_WARN "getting xname for path = %s", path);
 		xname = file_name (path);
 		/* remove the DIR from xname */

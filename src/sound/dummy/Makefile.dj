@@ -4,7 +4,7 @@
 # $Id$
 #
 
-include $(TOPDIR)/src/graphics/msdos/djgpp.dep
+include $(TOPDIR)/Rules.dj
 
 OBJS = dummy.o
 

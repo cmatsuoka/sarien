@@ -41,10 +41,10 @@ static int agi_v2_detect_game (char *gn)
 	strncpy (game.dir, gn, MAX_PATH);
 	_D (_D_WARN "game.dir = %s", game.dir);
 
-	if (	!file_exists (fixpath (NO_GAMEDIR, LOGDIR)) ||
-		!file_exists (fixpath (NO_GAMEDIR, PICDIR)) ||
-		!file_exists (fixpath (NO_GAMEDIR, SNDDIR)) ||
-		!file_exists (fixpath (NO_GAMEDIR, VIEWDIR)))
+	if (	!file_isthere (fixpath (NO_GAMEDIR, LOGDIR)) ||
+		!file_isthere (fixpath (NO_GAMEDIR, PICDIR)) ||
+		!file_isthere (fixpath (NO_GAMEDIR, SNDDIR)) ||
+		!file_isthere (fixpath (NO_GAMEDIR, VIEWDIR)))
 	{
 		return err_InvalidAGIFile;
 	}

@@ -20,7 +20,7 @@
 #include "agi.h"
 
 
-int file_exists (char *fname)
+int file_isthere (char *fname)
 {
 	struct _finddata_t fdata;
 

@@ -142,7 +142,11 @@ static UINT32 match_version (UINT32 crc)
 	char buf[256];
 	int ver;
 
+#ifdef HAVE_SNPRINTF
 	snprintf (buf, 256, "%s/.sarienrc", getenv ("HOME"));
+#else
+	sprintf (buf, "%s/.sarienrc", getenv ("HOME"));
+#endif
 
 	if (!(ver = match_crc (crc, buf)))
 		ver = match_crc (crc, "/etc/sarien.conf");

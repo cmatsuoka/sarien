@@ -16,7 +16,7 @@ core:
 	cd ..\..
 
 drivers:
-	@echo Building master graphics driver
+	@echo Building graphics driver
 	cd src\graphics\msdos
 	make -f makefile.dj TOPDIR=../../..
 	cd ..\..\..

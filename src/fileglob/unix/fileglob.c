@@ -83,7 +83,7 @@ static char *match (char *p, int f)
 }
 
 
-int file_exists (char *fname)
+int file_isthere (char *fname)
 {
 	_D ("(fname=%s)", fname);
 	return match (fname, 0) != NULL;

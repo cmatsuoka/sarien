@@ -16,7 +16,7 @@
 #include "agi.h"
 
 
-int file_exists (char *fname)
+int file_isthere (char *fname)
 {
 	struct find_t fdata;
 	return !_dos_findfirst (fname, _A_NORMAL | _A_ARCH | _A_RDONLY, &fdata);
