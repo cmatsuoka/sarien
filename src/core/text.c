@@ -431,7 +431,7 @@ int print (char *p, int lin, int col, int len)
 /**
  *
  */
-void print_status (char *message, ...)
+static void print_status (char *message, ...)
 {
 	char x[42];
 	va_list	args;
@@ -636,4 +636,3 @@ void draw_window (int x1, int y1, int x2, int y2)
 }
 
 /* end: text.c */
-

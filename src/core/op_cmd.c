@@ -694,6 +694,11 @@ cmd(set_string) {
 }
 
 cmd(display) {
+	/* If status line is active, don't overwrite it. Fixes blue
+	 * status bar in Escape Quest (bug #457623)
+	 */
+	if (game.status_line && p0 == game.line_status)
+		return;
 	print_text (cur_logic->texts[p2 - 1], p1, 0, p0, 40,
 		game.color_fg, game.color_bg);
 }
