@@ -47,11 +47,15 @@
 <sect1 id="intro-base">
 <title>Sarien basics</title>
 <para>
-  Sarien is a portable implementation of the Sierra On-Line Adventure
-  Game Interpreter (AGI) written in C language. It runs in a variety
-  of enviroments including the X Window System and MS-Windows. The
+  <ulink url="http://sarien.sourceforge.net/">Sarien</ulink> is a
+  portable implementation of the Sierra On-Line Adventure Game
+  Interpreter (AGI) written in C language by Stuart George and others,
+  based on research made in the late 1990's by a group of enthusiasts
+  including Peter Kelly and Lance Ewing. It runs in a variety of
+  enviroments including the X Window System and MS-Windows. The
   interpreter runs in a single thread, and in some platforms an optional
   sound thread can generate PCM audio via real-time software synthesis.
+
 </para><para>
   Sarien exceeds the original AGI interpreter in many aspects, and its
   goal is to correctly implement the complete set of AGI instructions
@@ -63,17 +67,23 @@
   errors exist and are caused not by design or implementation errors,
   but by incomplete or incorrect specifications. Produce a document
   containing the full AGI specifications is still a work in progress.
+
 </para><para>
   For those not yet familiar with the AGI system, a study of the
   currently available documentation is recommended. In a few words,
   it manages a number of graphic, textual and musical resources using
-  a script language (called the "Logic" language) which is compiled
+  a script language (called the ``Logic'' language) which is compiled
   to bytecode and executed by the interpreter. To work in Sarien
   development, using an AGI development suite is highly recommended.
   AGI Studio is the standard development tool, and is currently
-  available for Windows (Peter Kelly's original implementation) and
-  UNIX systems (Helen Zommer's Qt-based implementation). Both tools
-  are licensed under the GNU General Public License.
+  available for Windows (Peter Kelly's <ulink
+  url="http://members.ozemail.com.au/~ptrkelly/agi/agistudio.html">original
+  implementation</ulink>) and UNIX systems (Helen Zommer's
+  <ulink url="http://samhain.cc.huji.ac.il/agi/">Qt-based
+  implementation</ulink>). Both tools are licensed under the
+  <ulink url="http://www.fsf.org/copyleft/gpl.html">GNU General
+  Public License</ulink>.
+
 </para><para>
   As mentioned above, the most likely source of script execution errors 
   is the lack of complete specifications. Problems arising from partial
@@ -591,7 +601,7 @@
 
 </para><para>
   Among the aforementioned subsystems, only the interpreter core is
-  AGI-aware, and deals directly with AGI resources. Similary, only
+  AGI-aware, and deals directly with AGI resources. Similarily, only
   the lowlevel drivers know details about the underlying hardware.
   The other subsystems sit in the middle and work with
   platform-independent raw (i.e. non-AGI) data. <footnote><para>That
@@ -600,8 +610,8 @@
   organization adopted by AGI becomes meaningless to these subsystems.
   The sound subsystem, for instance, reads sequencing information from
   data in AGI format, and the graphics subsystem has its Z-buffer with
-  the same format as the AGI priority buffer, but the "cel", "loop" or
-  "view" table concepts are irrelevant.</para></footnote>.
+  the same format as the AGI priority buffer, but the ``cel'', ``loop''
+  or ``view table'' concepts are irrelevant.</para></footnote>.
 </para>
 </sect1>
 
@@ -629,7 +639,7 @@
   </figure>
 
 <para>
-  The AGI cycle runs in "spriteless mode". All sprites are removed before
+  The AGI cycle runs in ``spriteless mode''. All sprites are removed before
   running logic 0 and updated when logic 0 finishes. All graphic operations
   are performed on the AGI 160x160 buffers, actual image blitting (to the
   output device) happens only at the end of the main loop. 
@@ -698,7 +708,7 @@ struct agi_game {
 
 </para><para>
    Some of the members of <function/struct agi_game/ are redundant and
-   should be removed in a near future. (For example, the "internal flags"
+   should be removed in a near future. (For example, the ``internal flags''
    might be bitmapped into <parameter/game_flags/).
 </para>
 </sect1>
@@ -809,7 +819,7 @@ struct agi_game {
   </figure>
 
   <xref linkend="fig-keymenu"> shows key event routing when the menu
-  is active. In this case, the main loop is "short-circuited" so timers
+  is active. In this case, the main loop is ``short-circuited'' so timers
   and script execution are paused. The same happens when the console
   is active.
 
@@ -827,7 +837,7 @@ struct agi_game {
   AGI games (at least in the IBM-PC) were not designed to accept mouse
   input. All game interaction is done through the keyboard. However, a
   few functions would clearly benefit from mouse (or other pointing
-  device) input: the menus, dialog boxes and even a "click to walk"
+  device) input: the menus, dialog boxes and even a ``click to walk''
   interface could be implemented. Mouse input is currently not supported
   in Sarien, but it can be eventually be added. It's important not to
   block this possibility when implementing the keyboard input system.
