@@ -34,6 +34,7 @@ extern struct agi_view_table view_table[];
 
 /* FIXME */
 extern struct gfx_driver *gfx;
+extern int open_dialogue;
 
 
 /*
@@ -99,7 +100,7 @@ void print_line_prompt ()
 		/* Command prompt */
 
 		/* FIXME : dont show line input if its a dialogue box */
-		if(open_dialogue==0){
+		if (open_dialogue==0){
 
       		print_text (agi_printf (game.strings[0], 0), 0, 0,
     			game.line_user_input * 8, 40, txt_fg, txt_bg );
