@@ -724,6 +724,10 @@ int decode_picture (int n, int clear)
 
 	draw_picture ();
 
+#ifdef USE_HIRES
+	fix_hires_picture ();
+#endif
+
 	return err_OK;
 }
 

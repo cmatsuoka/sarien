@@ -44,9 +44,7 @@ int view_pictures ()
 	int ec = err_OK;
 	char x[64];
 	int i, pic = 0, dir = 1;
-	int mode;
-
-	mode = 'v';
+	int hires = 0;
 
 	for (i = 0; ec == err_OK; i = 1) {
 		while (game.dir_pic[pic].offset == _EMPTY) {
@@ -68,24 +66,24 @@ int view_pictures ()
 		if ((ec = agi_load_resource (rPICTURE, pic)) != err_OK)
 			continue;
 
-		sprintf (x, "Picture:%3i     [drawing]      Show: %3s",
-			pic, 0 /*opt.showscreendraw*/ ? " on" : "off");
-		print_text (x, 0, 0, 0, strlen (x) + 1, 0, 15);
+		print_text ("[drawing]", 0, 16, 0, strlen (x) + 1, 0, 15);
 
 		/* decodes the raw data to useable form */
 		decode_picture (pic, TRUE);
+
 #ifdef USE_HIRES
-		show_hires_pic ();
-#else
-		show_pic ();
+		if (hires)
+			show_hires_pic ();
+		else
 #endif
+			show_pic ();
 		put_screen ();
 		
 update_statusline:
-		sprintf (x, "Picture:%3i                    Show: %3s",
-			pic, 0 /*opt.showscreendraw*/ ? " on" : "off");
+		sprintf (x, "Picture:%3i                  Hi-res: %3s",
+			pic, hires ? " on" : "off");
 		print_text (x, 0, 0, 0, strlen (x) + 1, 0, 15);
-		sprintf (x, "V:Visible    P:Priority    +:Next -:Prev");
+		sprintf (x, "H:Hi-res     P:Vis/Prio    +:Next -:Prev");
 		print_text (x, 0, 0, 23, strlen (x) + 1, 15, 0);
 		sprintf (x, "R:Redraw     D:Show drawing       Q:Quit");
 		print_text (x, 0, 0, 24, strlen (x) + 1, 15, 0);
@@ -95,18 +93,24 @@ update_statusline:
     			switch (tolower (picviewer_get_key() & 0xff)) {
     			case 'q':
 				goto end_view;
-    			case 'v':
-				debug.priority = 0;
 #ifdef USE_HIRES
-				show_hires_pic ();
-#else
-				show_pic ();
-#endif
+    			case 'h':
+				hires = !hires;
+				if (hires)
+					show_hires_pic ();
+				else
+					show_pic ();
 				put_screen ();
-    				break;
+				goto update_statusline;
+#endif
     			case 'p':
-				debug.priority = 1;
-				show_pic ();
+				debug.priority = !debug.priority;
+#ifdef USE_HIRES
+				if (hires)
+					show_hires_pic ();
+				else
+#endif
+					show_pic ();
 				put_screen ();
     				break;
 			case 'd':

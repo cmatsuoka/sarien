@@ -216,22 +216,28 @@ static void absolute_hires_line ()
 **************************************************************************/
 static INLINE int hires_fill_here (int x, int y)
 {
-	UINT8 p;
+	UINT8 *p;
 
 	if (!scr_on && !pri_on)
 		return FALSE;
 
-	p = game.hires[y * (_WIDTH * 2) + x * 2];
+	p = &game.hires[y * (_WIDTH * 2) + x * 2];
 
-	if (scr_on && (p & 0x0f) != 0x0f)
+	if (scr_on && (*p & 0x0f) != 0x0f)
 		return FALSE;
-	if (pri_on && (p >> 4) != 0x04)
+	if (scr_on && (*(p + 1) & 0x0f) != 0x0f)
 		return FALSE;
 
-	p = game.sbuf[y * _WIDTH + x];
-	if (scr_on && (p & 0x0f) != scr_colour)
+	if (pri_on && (*p >> 4) != 0x04)
 		return FALSE;
-	if (pri_on && (p >> 4) != pri_colour)
+	if (pri_on && (*(p + 1) >> 4) != 0x04)
+		return FALSE;
+
+
+	p = &game.sbuf[y * _WIDTH + x];
+	if (scr_on && (*p & 0x0f) != scr_colour)
+		return FALSE;
+	if (pri_on && (*p >> 4) != pri_colour)
 		return FALSE;
 
 	return TRUE;
@@ -261,6 +267,15 @@ static void fix_pixel_right (int x, int y)
 		put_hires_pixel (2 * x, y);
 }
 
+static void fix_pixel_here (int x, int y)
+{
+	UINT8 p;
+
+	p = game.hires[y * (_WIDTH * 2) + x * 2 + 1];
+	if (scr_on && (p & 0x0f) == 0x0f)
+		put_hires_pixel (2 * x + 1, y);
+}
+
 
 /**************************************************************************
 ** agiFill
@@ -282,7 +297,7 @@ static void hiresFill (int x, int y)
 
 		if (hires_fill_here (c.x, c.y)) {
 			put_hires_pixel (2 * c.x, c.y);
-			put_hires_pixel (2 * c.x + 1, c.y);
+			fix_pixel_here (c.x, c.y);
 
 			if (c.x > 0 && hires_fill_here (c.x - 1, c.y)) {
 				c.x--; _PUSH (&c); c.x++;
@@ -520,8 +535,26 @@ void show_hires_pic ()
 	flush_screen ();
 }
 
+void fix_hires_picture ()
+{
+	UINT8 *p, *b;
+
+	p = game.hires;
+	b = game.sbuf;
+
+	while (b < &game.sbuf[_WIDTH * _HEIGHT]) {
+		if ((*p & 0x0f) == 0x0f && (*b & 0x0f) != 0x0f)
+			*p = *b;
+		p++;
+		if ((*p & 0x0f) == 0x0f && (*b & 0x0f) != 0x0f)
+			*p = *b;
+		p++; b++;
+	}
+}
+
 #endif /* USE_HIRES */
 
 /* end: hirespic.c */
+
 
 
