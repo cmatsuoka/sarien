@@ -170,12 +170,12 @@ static void blit_textbox (char *p, int y, int x, int len)
 		x = y = -1;
 
 	if (len <= 0 || len >= 40)
-		len=30;
+		len = 30;
 
 	xoff = x * CHAR_COLS;
 	yoff = y * CHAR_LINES;
 	len--;
-	
+
 	m = msg = word_wrap_string (agi_sprintf (p, 0), &len);
 
 	for (lin = 1; *m; m++) {
@@ -191,6 +191,8 @@ static void blit_textbox (char *p, int y, int x, int len)
 
 	if (xoff < 0)
 		xoff = (GFX_WIDTH - w) / 2;
+	else
+		xoff -= CHAR_COLS;
 
 	if (yoff < 0)
 		yoff = (GFX_HEIGHT - 2 * CHAR_LINES - h) / 2;
