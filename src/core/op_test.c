@@ -23,6 +23,7 @@ static UINT8	test_posn	(UINT8, UINT8, UINT8, UINT8, UINT8);
 static UINT8	test_said	(UINT8, UINT8 *);
 static UINT8	test_controller	(UINT8);
 static UINT8	test_keypressed	(void);
+static UINT8	test_compare_strings(UINT8, UINT8);
 
 #define ip (game.logics[lognum].cIP)
 #define code (game.logics[lognum].data)
@@ -33,9 +34,69 @@ static UINT8	test_keypressed	(void);
 #define test_isset(flag)	(getflag (flag))
 #define test_has(obj)		(object_get_location (obj) == EGO_OWNED)
 #define test_obj_in_room(obj,v)	(object_get_location (obj) == getvar (v))
-#define test_compare_strings(s1,s2) (!strcmp(game.strings[s1], game.strings[s2]))
 
 extern int timer_hack;	/* For the timer loop in MH1 logic 153 */
+
+static UINT8 test_compare_strings(UINT8 s1, UINT8 s2)
+{
+	char	ms1[MAX_STRINGLEN];
+	char	ms2[MAX_STRINGLEN];
+	int		j, k, l;
+
+	strcpy(ms1, game.strings[s1]);
+	strcpy(ms2, game.strings[s2]);
+
+
+	l=strlen(ms1);
+	for(k=0, j=0; k<l; k++)
+	{
+		switch(ms1[k])
+		{
+			case 0x20:
+			case 0x09:
+			case '-':
+			case '.':
+			case ',':
+			case ':':
+			case ';':
+			case '!':
+			case '\'':
+				break;
+
+			default:
+				ms1[j++]=toupper(ms1[k]);
+				break;
+		}
+	}
+	ms1[j]=0x0;
+
+	l=strlen(ms2);
+	for(k=0, j=0; k<l; k++)
+	{
+		switch(ms2[k])
+		{
+			case 0x20:
+			case 0x09:
+			case '-':
+			case '.':
+			case ',':
+			case ':':
+			case ';':
+			case '!':
+			case '\'':
+				break;
+
+			default:
+				ms2[j++]=toupper(ms2[k]);
+				break;
+		}
+	}
+	ms2[j]=0x0;
+
+
+	return !strcmp(ms1, ms2);
+}
+
 
 static UINT8 test_keypressed ()
 {
