@@ -35,7 +35,7 @@
 #include "console.h"
 
 #define CONSOLE_LINES_ONSCREEN	20
-#define CONSOLE_PROMPT		"$ "
+#define CONSOLE_PROMPT		"$"
 #define CONSOLE_CURSOR_HOLLOW	1
 #define CONSOLE_CURSOR_SOLID	2
 #define CONSOLE_CURSOR_EMPTY	3
