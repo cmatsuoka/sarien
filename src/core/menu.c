@@ -23,19 +23,19 @@
 struct agi_menu {
 	struct agi_menu	*next;		/* next along */
 	struct agi_menu	*down;		/* next menu under this */
-	int enabled;			/* enabled or disabled */
-	int event;			/* menu event */
-	char *text;			/* text of menu item */
+	int enabled;				/* enabled or disabled */
+	int event;					/* menu event */
+	char *text;					/* text of menu item */
 };
 
-static struct agi_menu *master_menu;
-static struct agi_menu *menu;
+static struct agi_menu *master_menu	= NULL;
+static struct agi_menu *menu		= NULL;
 
 /* menu broken due to changes in graphics.c, I'll fix it later */
 
 static void draw_horizontal_menu_bar (int cur_menu, int max_menu)
 {
-	struct agi_menu *men;
+	struct agi_menu *men	= NULL;
 	int col, z;
 
 	clear_lines (0, 0, MENU_BG);
@@ -66,7 +66,8 @@ static void draw_vertical_menu (int h_menu, int cur_men, int max_men)
 {
 	/* draw box and pulldowns. */
 	int col, lin, x, y, z, l, len;
-	struct agi_menu *men = master_menu->next, *down;
+	struct agi_menu *men = master_menu->next;
+	struct agi_menu *down = NULL;
 	char menu[64];
 
 	_D (_D_WARN "menu %d, cur %d, max %d", h_menu, cur_men, max_men);
@@ -177,7 +178,7 @@ void add_menu (char *message)
 
 void add_menu_item (char *message, int code)
 {
-	struct agi_menu *m1;
+	struct agi_menu *m1	= NULL;
 
 	_D (_D_WARN "Adding menu item: %s", message);
 	for (m1 = menu; m1->next; m1 = m1->next);
@@ -202,10 +203,10 @@ void submit_menu ()
 int menu_keyhandler (int key)
 {
 	static int clock_val;
-	static int h_cur_menu = 0, h_max_menu = 0;
-	static int v_cur_menu = 0, v_max_menu = 0;
-	static struct agi_menu *men;
-	static int menu_active = FALSE;
+	static int h_cur_menu		= 0, h_max_menu = 0;
+	static int v_cur_menu		= 0, v_max_menu = 0;
+	static struct agi_menu *men	= NULL;
+	static int menu_active		= FALSE;
 	int i;
 
 	if (!getflag (F_menus_work)) 
@@ -309,7 +310,8 @@ exit_menu:
 
 void menu_set_item (int event, int state)
 {
-	struct agi_menu *m0, *m1;
+	struct agi_menu *m0	= NULL;
+	struct agi_menu *m1	= NULL;
 
 	/* scan all menus for event number # */
 
