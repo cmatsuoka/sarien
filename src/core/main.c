@@ -1,6 +1,6 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
  *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
- *  
+ *
  *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -10,6 +10,11 @@
 
 #include <stdio.h>
 #include <string.h>
+
+#ifdef HAVE_ALLEGRO
+#include <allegro.h>
+#endif
+
 #include "sarien.h"
 #include "agi.h"
 #include "text.h"
@@ -23,7 +28,7 @@ volatile UINT32 clock_ticks;
 volatile UINT32 clock_count;
 
 extern int optind;
-extern UINT8 *font, font_english[];
+extern UINT8 *cur_font, font_english[];
 
 struct sarien_options opt;
 struct game_id_list game_info;
@@ -41,6 +46,7 @@ int main (int argc, char *argv[])
 	/* we must do this before _ANYTHING_ else if using allegro!! */
 #ifdef HAVE_ALLEGRO
 	allegro_init ();
+	install_keyboard();
 #endif
 
 	printf(
@@ -70,7 +76,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 	game.color_fg = 15;
 	game.color_bg = 0;
 
-	font = font_english;
+	cur_font = font_english;
 
 	if (init_video () != err_OK) {
 		ec = err_Unk;
@@ -166,6 +172,10 @@ bail_out:
 	printf("\nUse parameter -h to list the command line options\n");
 
 	deinit_machine ();
+
+#ifdef HAVE_ALLEGRO
+	remove_keyboard();
+#endif
 
 	return ec;
 }

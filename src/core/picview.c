@@ -25,7 +25,7 @@ struct sarien_options opt;
 
 static UINT8 mode;
 
-extern UINT8 *font, font_english[];
+extern UINT8 *cur_font, font_english[];
 
 #ifndef _TRACE
 INLINE void _D (char *s, ...) { }
@@ -158,7 +158,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 	init_machine (argc, argv);
 	screen_mode = GFX_MODE;
 
-	font = font_english;
+	cur_font = font_english;
 
 	ec = agi_detect_game (argc > 1 ? argv[1] : get_current_directory ());
 	if (ec != err_OK) {

@@ -103,7 +103,7 @@ struct update_block {
 	int x2, y2;
 };
 
-extern UINT8 *font;
+extern UINT8 *cur_font;
 
 
 static struct update_block update = {
@@ -225,7 +225,7 @@ void put_text_character (int l, int x, int y, int c, int fg, int bg)
 		c = 1;
 #endif
 
-	p = font + (c * CHAR_LINES);
+	p = cur_font + (c * CHAR_LINES);
 	for (y1 = 0; y1 < CHAR_LINES; y1++) {
 		for (x1 = 0; x1 < CHAR_COLS; x1 ++) {
 			xx = x + x1;

@@ -612,6 +612,9 @@ cmd(get_string) {
 		print_text (cur_logic->texts[p1 - 1], 0, p3,
 			p2, len, game.color_fg, game.color_bg);
 		get_string (p3 + len - 1, p2, p4, p0);
+
+		/* SGEO : display input char */
+		print_character ((p3 + len ), p2, game.cursor_char, game.color_fg, game.color_bg);
 	}
 
 	do {
@@ -636,10 +639,12 @@ cmd(get_num) {
 #endif
 }
 
-cmd(set_cursor_char) {
+cmd(set_cursor_char)
+{
 	if (cur_logic->texts != NULL && (p0 - 1) <= cur_logic->num_texts) {
 		game.cursor_char = *cur_logic->texts[p0 - 1];
 	} else {
+		/* default */
 		game.cursor_char = '_';
 	}
 }

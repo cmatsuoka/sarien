@@ -12,7 +12,7 @@ drivers: .symbolic
 	@echo Building master graphics driver
 	cd src\graphics\msdos
 	wmake -h -f makefile.wat HOME=..\..\..
-	@echo Building fileglob driver
+	@echo Building filesys driver
 	cd src\filesys\msdos
 	wmake -h -f makefile.wat HOME=..\..\..
 	cd ..\..\..
@@ -34,8 +34,8 @@ clean: .symbolic
 	cd src\sound\dummy
 	wmake -h -f makefile.wat clean HOME=..\..\..
 	cd ..\..\..
-	@echo Cleaning fileglob
-	cd src\fileglob\msdos
+	@echo Cleaning filegsys
+	cd src\filesys\msdos
 	wmake -h -f makefile.wat clean HOME=..\..\..
 	cd ..\..\..
 	@echo Cleaning Libs

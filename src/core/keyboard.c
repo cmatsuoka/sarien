@@ -174,7 +174,7 @@ void handle_getstring (int key)
 		return;
 
 	_D ("handling key: %02x", key);
- 	
+
 	switch (key) {
 	case KEY_ENTER:
 		_D ("KEY_ENTER");
@@ -187,13 +187,17 @@ void handle_getstring (int key)
 		_D ("KEY_ESCAPE");
 		new_input_mode (INPUT_MENU);
 		break;
-	case 0x08:
+	case KEY_BACKSPACE: /*0x08:*/
 		if (!pos)
 			break;
 
 		/* Print cursor */
+		/*
 		print_character (stringdata.x + (pos + 1), stringdata.y,
 			game.cursor_char, game.color_bg, game.color_bg );
+		*/
+
+		print_character (stringdata.x + (pos + 1), stringdata.y, ' ', game.color_fg, game.color_bg);
 
 		pos--;
 		buffer[pos] = 0;
@@ -211,8 +215,13 @@ void handle_getstring (int key)
 		/* Echo */
 		print_character (stringdata.x + pos, stringdata.y,
 			buffer[pos - 1], game.color_fg, game.color_bg);
+
 		break;
 	}
+
+	/* SGEO */
+	print_character (stringdata.x + pos+1, stringdata.y,
+		game.cursor_char, game.color_fg, game.color_bg);
 }
 
 
@@ -231,7 +240,7 @@ void handle_keys (int key)
 	if (!KEY_ASCII(key)) {
 		/* Print prompt and cursor if they're not there */
 		if (!has_prompt) {
-			print_line_prompt ();	
+			print_line_prompt ();
 			/* Print cursor */
 			print_character (pos + 1, l, game.cursor_char, fg, bg);
 			has_prompt = 1;
@@ -240,7 +249,7 @@ void handle_keys (int key)
 	}
 
 	_D ("handling key: %02x", key);
- 	
+
 	switch (key) {
 	case KEY_ENTER:
 		_D (("KEY_ENTER"));
@@ -249,9 +258,9 @@ void handle_keys (int key)
 		for (p = buffer; *p && *p == 0x20; p++);
 
 		/* Copy to internal buffer */
-		for (; *p; p++) {	
+		for (; *p; p++) {
 			/* Squash spaces */
-			if (*p == 0x20 && *(p + 1) == 0x20) {	
+			if (*p == 0x20 && *(p + 1) == 0x20) {
 				p++;
 				continue;
 			}
@@ -283,8 +292,10 @@ void handle_keys (int key)
 		if (pos == 0) break;
 
 		/* Erase cursor */
-		print_character (pos + 1, l, game.cursor_char, bg, bg);
+		/*print_character (pos + 1, l, game.cursor_char, bg, bg);*/
 
+		/* fix erase, print a space! */
+		print_character (pos + 1, l, ' ', fg, bg);
 		buffer[--pos] = 0;
 		break;
 	default:

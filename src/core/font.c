@@ -1,6 +1,6 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
  *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
- *  
+ *
  *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -11,7 +11,7 @@
 #include "sarien.h"
 
 /* font pointer */
-UINT8 *font;
+UINT8 *cur_font;
 
 #if defined PALMOS || defined FAKE_PALMOS
 

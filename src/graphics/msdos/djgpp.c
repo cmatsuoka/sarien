@@ -67,7 +67,8 @@ int init_machine (int argc, char **argv)
 
 	install_int_ex (tick_increment, BPS_TO_TIMER (TICK_SECONDS));
 
-	screen_buffer = create_bitmap (320, 200);
+	screen_buffer = create_bitmap (GFX_WIDTH, GFX_HEIGHT);
+	clear(screen_buffer);
 
 	clock_count = 0;
 	clock_ticks = 0;
@@ -92,7 +93,7 @@ static int init_vidmode ()
 	int i;
 	RGB p;
 
-	set_gfx_mode(GFX_VGA, 320, 200, 0, 0);
+	set_gfx_mode(GFX_VGA, GFX_WIDTH, GFX_HEIGHT, 0, 0);
 
 	for(i=0; i<16; i++) {
 		p.r=palette[(i*3)+0];
@@ -143,7 +144,7 @@ static void gfx_put_pixels (int x, int y, int w, UINT8 *p)
 
 static int gfx_keypress ()
 {
-	return !!keypressed();
+	return keypressed();
 }
 
 

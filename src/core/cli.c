@@ -175,6 +175,11 @@ int parse_cli (int argc, char **argv)
 #else
 			printf("disabled\n");
 #endif
+#ifdef USE_EGA_PALETTE
+			printf("Using EGA colour palette\n");
+#else
+			printf("Using AMIGA colour palette\n");
+#endif
 			exit (0);
 		case 'A':
 			opt.amiga = TRUE;

@@ -29,7 +29,7 @@ extern struct agi_loader agi_v3;
 extern struct agi_loader agi_v4;
 #endif
 
-extern UINT8 *font;
+extern UINT8 *cur_font;
 extern UINT8 font_english[];
 #ifdef AGDS_SUPPORT
 extern UINT8 font_russian[];
@@ -43,9 +43,9 @@ int agi_init ()
 
 	/* set the font */
 #ifdef AGDS_SUPPORT
-	font = opt.agds ? font_russian : font_english;
+	cur_font = opt.agds ? font_russian : font_english;
 #else
-	font = font_english;
+	cur_font = font_english;
 #endif
 
 	/* reset all flags to false and all variables to 0 */

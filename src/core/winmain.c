@@ -20,7 +20,7 @@
 volatile UINT32 clock_ticks;
 volatile UINT32 clock_count;
 
-extern UINT8 *font, font_english[];
+extern UINT8 *cur_font, font_english[];
 
 struct sarien_options opt;
 struct game_id_list game_info;
@@ -65,15 +65,20 @@ int CALLBACK BrowseCallbackProc(HWND hwnd,UINT uMsg,LPARAM lp, LPARAM pData)
 {
 	CHAR szDir[MAX_PATH] = {0};
 
+
+
 	switch(uMsg) 
 	{
 		case BFFM_INITIALIZED: 
 		{
+
 			SendMessage(hwnd,BFFM_SETSELECTION,TRUE,(LPARAM)szDir);
 			break;
+
 		}
 		case BFFM_SELCHANGED: 
 		if (SHGetPathFromIDList((LPITEMIDLIST) lp ,szDir)) 
+
 		{
 			if(CheckForOVL(szDir))
 			{
@@ -140,7 +145,7 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 	game.color_fg = 15;
 	game.color_bg = 0;
 
-	font = font_english;
+	cur_font = font_english;
 
 	if (init_video () != err_OK) {
 		ec = err_Unk;
@@ -148,10 +153,12 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 	}
 	console_init ();
 	report ("--- Starting console ---\n\n");
+
 	if (!opt.gfxhacks)
 		report ("Graphics driver hacks disabled (if any)\n");
 
 	_D ("Detect game");
+
 	if (	agi_detect_game (filename) == err_OK ||
 		agi_detect_game (get_current_directory ()) == err_OK)
 	{
@@ -159,6 +166,7 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 	}
 
 	_D ("Init sound");
+
 	init_sound ();
 
 	report (" \nSarien " VERSION " is ready.\n");
@@ -169,12 +177,15 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 
 	/* Execute the game */
     	do 
+
 		{
 			_D(_D_WARN "game loop"); 
+
 			ec = agi_init ();
 			game.state = STATE_RUNNING;
 
 			if (ec == err_OK) 
+
 			{
    			/* setup machine specific AGI flags, etc */
     			setvar (V_computer, 0);	/* IBM PC */
@@ -188,6 +199,7 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
     		}
 
     		/* deinit our resources */
+
 			game.state = STATE_LOADED;
     		agi_deinit ();
     	} while (ec == err_RestartGame);
