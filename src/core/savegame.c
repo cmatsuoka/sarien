@@ -719,6 +719,9 @@ int savegame_dialog ()
 		0, x, vm + 17 * CHAR_LINES, w, MSG_BOX_TEXT, MSG_BOX_COLOUR);
 
 	slot = select_slot (path);
+	if (slot < 0)	/* ESC pressed */
+		return err_OK;
+
 	draw_window (hm, vm + 5 * CHAR_LINES, GFX_WIDTH - hm,
 		GFX_HEIGHT - vm - 9 * CHAR_LINES);
 	draw_text ("Enter a description for this game:",
