@@ -23,8 +23,3 @@ To build using VC++, check the files in the appropriate directory.
 The list of known bugs can be browsed at
 http://sourceforge.net/tracker/?group_id=24759&atid=382570
 
-The code is currently under a cleanup/redesign process, in order to modularize
-and remove global data mess. The graphics layer will probably need a rewrite.
-Check the project page at sourceforge (http://sourceforge.net/projects/sarien/)
-to see how you can help.
-

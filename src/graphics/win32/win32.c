@@ -9,9 +9,7 @@
  */
 
 /*
- *
  * Win32 port by Felipe Rosinha <rosinha@helllabs.org>
- *
  */
 #include <ctype.h>
 #include <string.h>
@@ -25,7 +23,6 @@
 #include "graphics.h"
 #include "keyboard.h"
 #include "console.h"
-
 #include "win32.h"
 
 #define TICK_SECONDS		18
@@ -297,12 +294,12 @@ int init_machine (int argc, char **argv)
 		fprintf (stderr, "win32: high resoultion timer needed\n");
 		return err_Unk;
 	}
-#endif
 
 //      update_freq = 45 * (update_freq / 1000);	/* X11 speed  */
 //	g_update_freq = g_update_freq / TICK_SECONDS;	/* Sierra speed */
 //	g_counts_per_msec = g_update_freq / 1000;
 //	g_update_freq /= TICK_SECONDS;			/* Original speed */
+#endif
 	
 	return err_OK;
 }
@@ -320,16 +317,18 @@ static int init_vidmode ()
 
 	fprintf (stderr,
 	"win32: Win32 DIB support by rosinha@dexter.damec.cefetpr.br\n");
+
 	g_hExchEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 	ResetEvent(g_hExchEvent);
+
 #ifdef __CYGWIN__
-	g_hThread = (HANDLE)CreateThread(NULL, 0,
-		(LPTHREAD_START_ROUTINE)GuiThreadProc, NULL, 0, (PDWORD)&id);
+	g_hThread = (HANDLE)CreateThread(NULL, 0, GuiThreadProc, NULL, 0, &id);
 #else
 	g_hThread = (HANDLE)_beginthreadex(NULL, 0, GuiThreadProc, NULL, 0, &id);
 #endif
 	if (g_hThread == INVALID_HANDLE_VALUE)
 		return err_Unk;
+
 	WaitForSingleObject(g_hExchEvent, INFINITE);
 	ResetEvent(g_hExchEvent);
 	return g_err;	
@@ -404,10 +403,10 @@ static unsigned int __stdcall GuiThreadProc(void *param)
 	}
 
 	/* Create the offscreen bitmap buffer */
-	hDC = GetDC( hwndMain );
+	hDC = GetDC (hwndMain);
 	g_screen.screen_bmp = CreateDIBSection (hDC, g_screen.binfo,
 		DIB_RGB_COLORS, (void **)(&g_screen.screen_pixels), NULL, 0);
-	ReleaseDC( hwndMain, hDC );
+	ReleaseDC (hwndMain, hDC);
 
 	if (g_screen.screen_bmp == NULL || g_screen.screen_pixels == NULL) {
 		fprintf( stderr, "win32: can't create DIB section\n");
@@ -421,7 +420,7 @@ static unsigned int __stdcall GuiThreadProc(void *param)
 exx:
 	SetEvent(g_hExchEvent);		/* notify main thread to continue */
 
-	while ( GetMessage( &msg, NULL, 0, 0) ) {
+	while (GetMessage (&msg, NULL, 0, 0)) {
 		TranslateMessage (&msg);
 		DispatchMessage  (&msg);
 	}
@@ -470,8 +469,8 @@ static void gui_put_block (int x1, int y1, int x2, int y2) //1
 	if (scale > 1) {
 		x1 *= scale;
 		y1 *= scale;
-		x2 *= scale;
-		y2 *= scale;
+		x2 = (x2 + 1) * scale - 1;
+		y2 = (y2 + 1) * scale - 1;
 	}
 
 	hDC = GetDC( hwndMain );
@@ -613,13 +612,10 @@ static int set_palette (UINT8 *pal, int scol, int numcols)
 
 	hDC = GetDC(hwndMain);
 
-	if ( GetDeviceCaps(hDC, PLANES) * GetDeviceCaps(hDC, BITSPIXEL) <= 8 )
-	{
-
-		palette                = (LOGPALETTE *)malloc(sizeof(*palette) + 16 * sizeof(PALETTEENTRY));
-		if (NULL == palette)
-		{
-			fprintf(stderr, "set_palette(): malloc failed for palette\n");
+	if (GetDeviceCaps(hDC, PLANES) * GetDeviceCaps(hDC, BITSPIXEL) <= 8 ) {
+		palette = malloc(sizeof(*palette) + 16 * sizeof(PALETTEENTRY));
+		if (NULL == palette) {
+			fprintf(stderr, "malloc failed for palette\n");
 			return err_Unk;
 		}
 
@@ -632,8 +628,7 @@ static int set_palette (UINT8 *pal, int scol, int numcols)
 
 		entries = (PALETTEENTRY *)malloc(256 * sizeof(PALETTEENTRY));
 
-		for (i = 0, j = 0; j < 256; j++)
-		{
+		for (i = 0, j = 0; j < 256; j++) {
 			entries[j].peRed   = pal[i*3    ] << 2;
 			entries[j].peGreen = pal[i*3 + 1] << 2;
 			entries[j].peBlue  = pal[i*3 + 2] << 2;

@@ -38,7 +38,7 @@ beos*)
 qnx*)
 	AC_CHECK_HEADERS(Pt.h Ph.h)
 	;;
-cygwin*)
+cygwin*|mingw*)
 	AC_CHECK_HEADERS(wingdi.h)
 	with_win32="yes"
 	;;

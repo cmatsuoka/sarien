@@ -442,7 +442,6 @@ int load_game (char *s)
 	return err_OK;
 }
 
-
 int savegame_dialog ()
 {
 	char home[MAX_PATH], path[MAX_PATH];
