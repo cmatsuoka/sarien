@@ -28,6 +28,7 @@ int load_game (char *);
 void clear_image_stack(void);
 void record_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3, SINT16 p4, SINT16 p5, SINT16 p6, SINT16 p7);
 void replay_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3, SINT16 p4, SINT16 p5, SINT16 p6, SINT16 p7);
+void release_image_stack(void);
 
 #ifdef __cplusplus
 };

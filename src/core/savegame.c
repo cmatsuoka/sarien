@@ -54,8 +54,9 @@ struct image_stack_element {
 	SINT16 parm7;
 };
 
-#define IMAGE_STACK_SIZE 32
-static struct image_stack_element image_stack[IMAGE_STACK_SIZE];
+#define INITIAL_IMAGE_STACK_SIZE 32
+static int stack_size = 0;
+static struct image_stack_element* image_stack = NULL;
 static int image_stack_pointer = 0;
 
 void clear_image_stack(void)
@@ -63,11 +64,36 @@ void clear_image_stack(void)
 	image_stack_pointer = 0;
 }
 
+void release_image_stack(void)
+{
+	if(image_stack)
+		free(image_stack);
+	image_stack = NULL;
+	stack_size = image_stack_pointer = 0;
+}
+
 void record_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3, SINT16 p4, SINT16 p5, SINT16 p6, SINT16 p7)
 {
 	struct image_stack_element* pnew;
 
-	assert (image_stack_pointer < IMAGE_STACK_SIZE);
+	if(image_stack_pointer == stack_size)
+	{
+		if(stack_size == 0) /* first call */
+		{
+			image_stack = (struct image_stack_element*)malloc(INITIAL_IMAGE_STACK_SIZE*sizeof(struct image_stack_element));
+			stack_size = INITIAL_IMAGE_STACK_SIZE;
+		}
+		else /* has to grow */
+		{
+			struct image_stack_element* new_stack;
+			new_stack = (struct image_stack_element*)malloc(2*stack_size*sizeof(struct image_stack_element));
+			memcpy(new_stack, image_stack, stack_size*sizeof(struct image_stack_element));
+			free(image_stack);
+			image_stack = new_stack;
+			stack_size *= 2;
+		}
+	}
+
 	pnew = &image_stack[image_stack_pointer];
 	image_stack_pointer++;
 
@@ -358,7 +384,7 @@ int load_game(char* s)
 	game.state = read_sint16(f);
 	/* game.name - not saved */
 	read_string(f, id);
-	if (strcmp (id, game.id)) {
+	if(strcmp(id, game.id)) {
 		fclose(f);
 		return err_BadFileOpen;
 	}
@@ -574,7 +600,7 @@ static int select_slot (char *path)
 		FILE *f;
 		char sig[8];
 #ifdef DREAMCAST
-		sprintf (name, VMU_PATH, g_vmu_port, game.id, i);
+		sprintf(name, VMU_PATH, g_vmu_port, game.id, i);
 #else
 		sprintf (name, "%s/%08d.sav", path, i);
 #endif

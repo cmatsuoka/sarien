@@ -15,6 +15,7 @@
 #include "graphics.h"
 #include "keyboard.h"
 #include "menu.h"
+#include "savegame.h"
 
 #define TICK_SECONDS	20
 
@@ -390,6 +391,8 @@ int run_game ()
     	} while (ec == err_RestartGame);
 
 	deinit_menus ();
+
+	release_image_stack();
 
 	return ec;
 }
