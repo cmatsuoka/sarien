@@ -260,7 +260,6 @@ static void ccmd_load ()
 	if (agi_detect_game (_p1) == err_OK) {
 		game.state = STATE_RUNNING;
 		report ("AGI game successfully loaded.\n");
-		agi_init ();
 		console_prompt ();
 		return;
 	}

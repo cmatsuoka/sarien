@@ -308,13 +308,15 @@ static int play_game ()
 	stop_sound ();
 	clear_screen (0);
 
-	setvar (V_computer, 0);	/* IBM PC */
-	setvar (V_soundgen, 1);	/* IBM PC SOUND */
+	setvar (V_computer, 0);			/* IBM PC */
+	setvar (V_soundgen, 1);			/* IBM PC SOUND */
+	setvar (V_monitor, 0x3);		/* EGA monitor */
 	setvar (V_max_input_chars, 38);
-	setvar (V_monitor, 0x3); /* EGA monitor */
 	game.horizon = HORIZON;
 	game.player_control = FALSE;
 
+	setflag (F_logic_zero_firsttime, TRUE);	/* not in 2.917 */
+	setflag (F_new_room_exec, TRUE);	/* needed for MUMG and SQ2! */
 	setflag (F_sound_on, TRUE);		/* enable sound */
 	setvar (V_time_delay, 2);		/* "normal" speed */
 
@@ -344,7 +346,9 @@ static int play_game ()
 		if (!main_cycle ())
 			continue;
 	
-		if (getvar (V_time_delay) == 0 || (1 + clock_count) % getvar (V_time_delay) == 0) {
+		if (getvar (V_time_delay) == 0 ||
+		    (1 + clock_count) % getvar (V_time_delay) == 0)
+		{
 			if (!game.has_prompt && game.input_mode == INPUT_NORMAL) {
 				print_line_prompt ();
 				game.has_prompt = 1;
@@ -369,26 +373,17 @@ int run_game ()
 {
 	int ec = err_OK;
 
-	setflag (F_logic_zero_firsttime, TRUE);	/* not in 2.917 */
-	setflag (F_new_room_exec, TRUE);	/* needed for MUMG and SQ2! */
 	setflag (F_restart_game, FALSE);
 
 	/* Execute the game */
     	do {
 		_D(_D_WARN "game loop");
-
-		if (game.state < STATE_RUNNING) {
-			if (agi_init () != err_OK)
-				break;
-			game.state = STATE_RUNNING;
-		}
-
+		if (agi_init () != err_OK)
+			break;
+		game.state = STATE_RUNNING;
 		ec = play_game();
-
-		/* deinit our resources */
 		game.state = STATE_LOADED;
 		agi_deinit ();
-
     	} while (ec == err_RestartGame);
 
 	return ec;
