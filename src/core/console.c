@@ -425,6 +425,17 @@ static void ccmd_logic0 ()
 	return;
 }
 
+static void ccmd_trigger ()
+{
+	if (_pn != 1 || (strcmp (_p1, "on") && strcmp (_p1, "off"))) {
+		report ("Usage: trigger on|off\n");
+		return;
+	}
+
+	debug.ignoretriggers = strcmp (_p1, "on");
+	return;
+}
+
 static void ccmd_step ()
 {
 	debug.enabled = 1;
@@ -551,6 +562,7 @@ int console_init ()
 	console_cmd ("say",    "Pass argument to the AGI parser", ccmd_say);
 #endif
 	console_cmd ("step",   "Execute the next AGI instruction", ccmd_step);
+	console_cmd ("trigger","Turn trigger lines on/off", ccmd_trigger);
 	console_cmd ("vars",   "Dump all AGI variables", ccmd_vars);
 	console_cmd ("ver",    "Show interpreter version", ccmd_ver);
 

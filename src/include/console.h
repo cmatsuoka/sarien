@@ -40,6 +40,7 @@ struct sarien_debug {
 	int steps;
 	int priority;
 	int statusline;
+	int ignoretriggers;
 };
 
 extern struct sarien_console console;

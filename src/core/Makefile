@@ -26,7 +26,7 @@ include ../../Rules
 exefile: ../../bin/sarien$(EXE_SUFFIX)
 
 archfiles:
-	[ "$(CORE_ARCH)" ] && (cd $(CORE_ARCH); $(MAKE) all)
+	@[ "$(CORE_ARCH)" ] && (cd $(CORE_ARCH); $(MAKE) all) ||:
 
 # Must be directly linked (not in lib)
 ifeq ($(CORE_ARCH),win32)
