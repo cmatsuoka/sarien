@@ -97,10 +97,26 @@ void agi_put_bitmap (UINT8 *src, int x1, int y1, int w, int h, int trans, int pr
 			if (y + y1 >= _HEIGHT || xx >= _WIDTH)
 				continue;
 
-			if (prio < priority_data[yy + xx])
+			/* prio will be always >= 4, so no problem with
+			 * control lines here
+			 */
+			if (prio < xdata_data[yy + xx])
 				continue;
 
-			priority_data[yy + xx] = prio;
+			if (xdata_data[yy + xx] < 4) {
+				int k;
+				for (k = y1 + y; k < _HEIGHT; k++) {
+					if (prio < xdata_data[k * _WIDTH + xx])
+						continue;
+					if (xdata_data[k * _WIDTH + xx] >= 4)
+						break;
+				}
+				if (k == _HEIGHT)
+					continue;
+			}
+
+			if (xdata_data[yy + xx] >= 4)
+				xdata_data[yy + xx] = prio;
 
 			if (!greatest_kludge_of_all_time) {
 				screen_data[yy+xx] = c;
@@ -131,7 +147,7 @@ static void release_sprite (int i)
 	}
 
 	if (view_table[i].bg_pri) {
-		put_bitmap (priority_data, view_table[i].bg_pri,
+		put_bitmap (xdata_data, view_table[i].bg_pri,
 			view_table[i].bg_x, view_table[i].bg_y,
 			view_table[i].bg_x_size,
 			view_table[i].bg_y_size, 0xff, 0xff);
@@ -279,8 +295,8 @@ void reset_graphics(void)
 
 	memset (screen2, 0, _WIDTH * _HEIGHT);
 	memset (screen_data, 0, _WIDTH * _HEIGHT);
-	memset (priority_data, 0, _WIDTH * _HEIGHT);
-	memset (control_data, 0, _WIDTH * _HEIGHT);
+	//memset (priority_data, 0, _WIDTH * _HEIGHT);
+	//memset (control_data, 0, _WIDTH * _HEIGHT);
 	memset (xdata_data, 0, _WIDTH * _HEIGHT);
 
 	memset (layer1_data, 0, 320 * 200);

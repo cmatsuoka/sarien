@@ -325,10 +325,17 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int priority, int ma
 		 * If margin >= 4, this extra margin is not shown.
 		 */
 		if (margin < 4) {
-			/* add rectangle around object */
-			for (y1 = y; y1 < c->height; y1++)
-				for (x1 = x; x1 < c->width; x1++)
-					priority_data[y1*_WIDTH+x1] = margin;
+			/* add rectangle around object, don't clobber control
+			 * info in xdata
+			 */
+			for (y1 = y; y1 < c->height; y1++) {
+				for (x1 = x; x1 < c->width; x1++) {
+					int idx = y1 * _WIDTH + x1;
+					//priority_data[y1*_WIDTH+x1] = margin;
+					if (xdata_data[idx] >= 4)
+						xdata_data[idx] = margin;
+				}
+			}
 		}
 	}
 }
@@ -429,7 +436,7 @@ void draw_obj (int vt)
 
 	/* copy background (priority map) */
 	v->bg_pri = (UINT8*)malloc(v->bg_x_size * v->bg_y_size);
-	get_bitmap (v->bg_pri, priority_data, v->bg_x, v->bg_y, v->bg_x_size,
+	get_bitmap (v->bg_pri, xdata_data /*priority_data*/, v->bg_x, v->bg_y, v->bg_x_size,
 		v->bg_y_size);
 
 	/* FR:

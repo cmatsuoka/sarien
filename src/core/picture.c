@@ -40,8 +40,6 @@ static UINT8	pri_colour;
 
 UINT8	screen2[_WIDTH * _HEIGHT];
 UINT8	screen_data[_WIDTH * _HEIGHT];
-UINT8	priority_data[_WIDTH * _HEIGHT];
-UINT8	control_data[_WIDTH * _HEIGHT];
 UINT8	xdata_data[_WIDTH * _HEIGHT];
 
 UINT8	layer1_data[GFX_WIDTH * GFX_HEIGHT];
@@ -66,44 +64,9 @@ void dump_screen2 ()
 }
 
 
-void dump_pri ()
-{
-	put_block_buffer (priority_data);
-	put_screen ();
-}
-
-#if 0
-void dump_con (int resnum)
-{
-	put_block_buffer (pictures[resnum].cdata);
-	put_screen();
-}
-
-
-void dump_x (int resnum)
-{
-	put_block_buffer (pictures[resnum].xdata);
-	put_screen ();
-}
-#endif
-
 void dump_screen3 ()
 {
 	put_block_buffer (screen2);
-	put_screen ();
-}
-
-
-void dump_pri_screen ()
-{
-	put_block_buffer (priority_data);
-	put_screen ();
-}
-
-
-void dump_con_screen ()
-{
-	put_block_buffer (control_data);
 	put_screen ();
 }
 
@@ -124,41 +87,10 @@ void dump_screenX ()
 }
 
 
-static void clear_base ()
+static void clear_picture ()
 {
 	memset (&screen2, 0x0F, _WIDTH * _HEIGHT);
-}
-
-
-static void clear_priority ()
-{
-	memset (&priority_data, 0x4, _WIDTH * _HEIGHT);
-	memset (&control_data, 0x4, _WIDTH * _HEIGHT);
 	memset (&xdata_data, 0x4, _WIDTH * _HEIGHT);
-}
-
-
-static void put_virt_screen_pixel (int x, int y)
-{
-	screen2[y * _WIDTH + x] = scr_colour;
-}
-
-
-static void put_virt_pri_pixel (int x, int y)
-{
-	xdata_data[y * _WIDTH + x] = pri_colour;
-
-	if (pri_colour >= 0x4)
-		priority_data[y * _WIDTH + x] = pri_colour;
-#if 0
-	/* This can't be done here. It doesn't understand control lines
-	 * painted over with priority data.
-	 */
-	if (pri_colour >= 0x4)
-		priority_data[y * _WIDTH + x] = pri_colour;
-	else
-		control_data[y * _WIDTH + x] = pri_colour;
-#endif
 }
 
 
@@ -180,9 +112,9 @@ static void put_virt_pixel (UINT16 x, UINT16 y)
 		return;
 
 	if (pri_on)
-		put_virt_pri_pixel (x, y);
+		xdata_data[y * _WIDTH + x] = pri_colour;
 	if (scr_on)
-		put_virt_screen_pixel (x, y);
+		screen2[y * _WIDTH + x] = scr_colour;
 }
 
 
@@ -689,6 +621,7 @@ UINT8* convert_v2_v3_pic (UINT8 *data, UINT32 len)
 }
 
 
+#if 0
 /**************************************************************************
 ** splitPriority
 **
@@ -732,6 +665,7 @@ void splitPriority (int resnum)
 		}
 	}
 }
+#endif
 
 
 /* FIXME */
@@ -755,10 +689,8 @@ static void draw_picture ()
 	if (opt.showscreendraw == 3)
 		opt.showscreendraw = TRUE;
 
-	if (pic_clear_flag == TRUE) {
-		clear_base ();
-		clear_priority ();
-	}
+	if (pic_clear_flag == TRUE)
+		clear_picture ();
 
 	we_are_drawing = 1;
 
@@ -864,7 +796,11 @@ int decode_picture (int resnum)
 	 */
 
 	draw_picture ();
-	splitPriority (resnum);
+
+	/* control lines/priority data splitting removed, this is now
+	 * made at runtime by the blitting routines
+	 */
+	//splitPriority (resnum);
 
 	return ec;
 }
@@ -890,12 +826,14 @@ void show_buffer (int mode)
 	case 'x':
 		put_block_buffer (xdata_data);
 		break;
+#if 0
 	case 'c':
 		put_block_buffer (control_data);
 		break;
 	case 'p':
 		put_block_buffer (priority_data);
 		break;
+#endif
 	case 'v':
 	default:
 		dump_screenX ();

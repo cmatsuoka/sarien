@@ -187,7 +187,7 @@ static int check_control_lines (int em, int x, int y)
 
 	w = 0;
 	for (i = x + cel_width - 1; i >= x; i--) {
-		switch (control_data[y * _WIDTH + i]) {
+		switch (xdata_data[y * _WIDTH + i]) {
 		case 0:	/* unconditional black. no go at all! */
 			return -1;
 		case 1:			/* conditional blue */
@@ -221,7 +221,7 @@ static int check_surface (int em, int x, int y)
 
 	w = 0;
 	for (i = x + cel_width - 1; i >= x; i--) {
-		if (control_data[y * _WIDTH + i] == 3 && em == EGO_VIEW_TABLE)
+		if (xdata_data[y * _WIDTH + i] == 3 && em == EGO_VIEW_TABLE)
 			w++;
 	}
 
@@ -242,16 +242,16 @@ static int check_surface (int em, int x, int y)
 		if (y < game.horizon || y >= _HEIGHT || i < 0 || i >= _WIDTH)
 			return -1;
 
-		z = control_data[y * _WIDTH + i];
+		z = xdata_data[y * _WIDTH + i];
 
 		if ((vt_obj->flags & ON_WATER) && z != 3) {
 			_D (_D_CRIT "failed: must stay ON_WATER");
-			return -2;
+			return -1;
 		}
 
-		if ((vt_obj->flags & ON_LAND) && z != 4) {
+		if ((vt_obj->flags & ON_LAND) && z == 3) {
 			_D (_D_CRIT "failed: must stay ON_LAND");
-			return -2;
+			return -1;
 		}
 	}
 

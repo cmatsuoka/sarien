@@ -25,8 +25,8 @@ extern UINT8	sprite_data[];
 extern UINT8	screen_data[];
 extern UINT8	screen2[];
 extern UINT8	xdata_data[];
-extern UINT8	control_data[];
-extern UINT8	priority_data[];
+//extern UINT8	control_data[];
+//extern UINT8	priority_data[];
 extern UINT8	pic_clear_flag;
 
 
