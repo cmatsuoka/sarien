@@ -6,7 +6,7 @@ DFILES	= Makefile Makefile.wat ibm.c ibm.h djgpp.c djgpp.h watcom.dep \
 CFILES	=
 DDIRS	=
 XDFILES	=
-LIB	= ../../../lib/libagi.a
+LIB	= ../../../lib/libsarien.a
 
 all: $(LIB)
 

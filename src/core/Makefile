@@ -14,7 +14,7 @@ DFILES	= Makefile $(OBJS:.o=.c) main.c winmain.c id.c hirespic.c \
 	  Makefile.wat Makefile.dj
 CFILES	=
 DDIRS	=
-XLIBS	= -L../../lib -lagi
+XLIBS	= -L../../lib -lagi -lsarien
 
 LIB	= ../../lib/libagi.a
 

@@ -69,7 +69,6 @@ int decode_logic (int n)
 		 * blah DF YA WANKER!!@!@# frag. i'm so dumb. not every logic
 		 * has text
 		 */
-		message_box ("Uh-oh. Out of memory.");
 		free (game.logics[n].data);
 		ec = err_NotEnoughMemory;
 	}

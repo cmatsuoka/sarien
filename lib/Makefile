@@ -12,5 +12,5 @@ all:
 include ../Rules
 
 clean::
-	rm -f libagi.a *.obj
+	rm -f libagi.a libsarien.a *.obj
 

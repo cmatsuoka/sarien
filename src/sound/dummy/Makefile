@@ -6,7 +6,7 @@ DFILES	= Makefile $(OBJS:.o=.c) Makefile.wat Makefile.dj
 CFILES	=
 DDIRS	=
 XDFILES	=
-LIB	= ../../../lib/libagi.a
+LIB	= ../../../lib/libsarien.a
 
 all: $(LIB)
 

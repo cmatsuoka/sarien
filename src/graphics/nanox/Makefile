@@ -5,7 +5,7 @@ OBJS	= nanox.o
 DFILES	= Makefile $(OBJS:.o=.c)
 CFILES	=
 DDIRS	=
-LIB	= ../../../lib/libagi.a
+LIB	= ../../../lib/libsarien.a
 
 all: $(LIB)
 
