@@ -85,11 +85,11 @@ int decode_words (UINT8* mem, UINT32 flen)
 int load_words (char *fname)
 {
 #ifndef PALMOS
-	FILE *fp	= NULL;
+	FILE *fp = NULL;
 	UINT32 flen;
-	UINT8 *mem	= NULL;
-	char *path	= NULL;
-	int	ec=err_OK;
+	UINT8 *mem = NULL;
+	char *path = NULL;
+	int ec=err_OK;
 
 	num_words = 0;
 	num_syns = 0;
@@ -113,7 +113,7 @@ int load_words (char *fname)
 	fread(mem, 1, flen, fp);
 	fclose (fp);
 
-	ec=decode_words(mem, flen);
+	ec = decode_words(mem, flen);
 	free(mem);
 
 	return ec;

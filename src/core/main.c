@@ -63,7 +63,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 "\n");
 
 #ifdef __MSDOS__
-	exec_name=strdup(argv[0]);
+	exec_name = strdup(argv[0]);
 #endif
 
 	game.clock_enabled = FALSE;

@@ -14,6 +14,7 @@
 #include <assert.h>
 #include "sarien.h"
 #include "agi.h"
+#include "sprite.h"		/* for commit_both() */
 #include "graphics.h"
 #include "keyboard.h"
 #include "text.h"
