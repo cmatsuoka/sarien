@@ -5,7 +5,8 @@ Revision History
 0.7.0 (cvs)
 	- added QNX native sound driver (untested)
 	- ported to DOS 16-bit using Turbo C++
-	- partial port to MacOS using MPW
+	- started MacOS port using MPW (incomplete)
+	- started AmigaOS port using DICE C (incomplete)
 	- changed palette to use Amiga-ish colors instead of PC EGA
 	- added "crc" command to the interpreter console
 	- sprite blitting algorithm changed to work with hidden screens

@@ -38,7 +38,7 @@ static char *match (char *p, int f)
 		dir = s; 
 	} else {
 		pattern = s;
-		dir = ".";
+		dir = "";
 	}
 	
 	_D ("dir=%s, pattern=%s", dir, pattern);
@@ -68,7 +68,8 @@ static char *match (char *p, int f)
 		if (i < 0 && j <= 0) {
 			if (f) {
 				strcpy (path, dir);
-				strcat (path, "/");
+				if (strlen (path))
+					strcat (path, "/");
 				strcat (path, e->d_name);
 			} else {
 				strcpy (path, e->d_name);

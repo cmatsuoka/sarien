@@ -54,9 +54,7 @@ static struct gfx_driver gfx_amiga = {
 };
 
 static struct Window *win;
-static struct Screen *scr;
-static struct RastPort *rp, temprp;
-static PLANEPTR raster;
+static struct RastPort *rp;
 static UBYTE *vscreen;
 static UBYTE colors[NUMCOLS];
 static struct CIA *ciamou = (struct CIA *)CIAAPRA;
@@ -86,6 +84,7 @@ static void process_events ()
 	if (message) {
 		switch (message->Class) {
 		case IDCMP_CLOSEWINDOW:
+			amiga_deinit_vidmode ();
 			exit (0);
 		}
 	}
@@ -130,7 +129,6 @@ static void amiga_timer ()
 
 static int amiga_init_vidmode ()
 {
-	struct BitMap tempbm;
 	int i;
 
 	/* Make sure necessary ROM libraries are open */
@@ -144,11 +142,11 @@ static int amiga_init_vidmode ()
 	if (GfxBase == NULL)
 		return -1;
 
-	vscreen = (UBYTE *)AllocMem (GFX_WIDTH + GFX_HEIGHT,
+	vscreen = (UBYTE *)AllocMem (GFX_WIDTH * GFX_HEIGHT,
 		MEMF_PUBLIC | MEMF_CLEAR);
 
 	win = OpenWindowTags (NULL,
-		WA_Title, "Sarien" ##VERSION,
+		WA_Title, "Sarien " ##VERSION,
 		WA_AutoAdjust, TRUE,
 		WA_InnerWidth, GFX_WIDTH, 
 		WA_InnerHeight, GFX_HEIGHT,
@@ -156,14 +154,12 @@ static int amiga_init_vidmode ()
 		WA_CloseGadget, TRUE,
 		WA_DepthGadget,TRUE,
 		WA_SimpleRefresh, TRUE,
-		WA_IDCMP,IDCMP_CLOSEWINDOW,
+		WA_IDCMP, IDCMP_CLOSEWINDOW,
 		TAG_DONE);
 	if (win == NULL)
 		return -1;
 
 	rp = win->RPort;
-	/*bleft = win->BorderLeft;
-	btop=win->BorderTop;*/
 
 	for (i = 0; i < NUMCOLS; i++) {
 		colors[i] = ObtainBestPen (win->WScreen->ViewPort.ColorMap,
@@ -174,27 +170,12 @@ static int amiga_init_vidmode ()
 			TAG_DONE);
 	}
 
-	InitBitMap (&tempbm, 7, GFX_WIDTH, GFX_HEIGHT);
-
-	raster = (PLANEPTR)AllocRaster (GFX_WIDTH, 7 * GFX_HEIGHT);
-	if (raster == NULL)
-		return -1;
-
-	for (i = 0; i < 7; i++) {
-		tempbm.Planes[i] = raster +
-			(i * RASSIZE (GFX_WIDTH, GFX_HEIGHT));
-	}
-	InitRastPort (&temprp);
-	temprp.BitMap = &tempbm;
-
 	return 0;
 }
 
 static int amiga_deinit_vidmode ()
 {
 	CloseWindow (win);
-	CloseScreen (scr);
-	FreeRaster (raster, GFX_WIDTH, 7 * GFX_HEIGHT);
 	FreeMem (vscreen, GFX_WIDTH * GFX_HEIGHT);
 	CloseLibrary ((struct Library *)GfxBase);
 	CloseLibrary ((struct Library *)IntuitionBase);
@@ -206,25 +187,22 @@ static int amiga_deinit_vidmode ()
 /* blit a block onto the screen */
 static void amiga_put_block (int x1, int y1, int x2, int y2)
 {
-	unsigned int h, w;
-
 	if (x1 >= GFX_WIDTH)  x1 = GFX_WIDTH  - 1;
 	if (y1 >= GFX_HEIGHT) y1 = GFX_HEIGHT - 1;
 	if (x2 >= GFX_WIDTH)  x2 = GFX_WIDTH  - 1;
 	if (y2 >= GFX_HEIGHT) y2 = GFX_HEIGHT - 1;
 
-	h = y2 - y1 + 1;
-	w = x2 - x1 + 1;
-
-	WritePixelArray8 (rp, win->BorderLeft + x1, win->BorderTop + y1,
-		2, 2, vscreen, &temprp);
+	WriteChunkyPixels (rp,
+		win->BorderLeft + x1, win->BorderTop + y1,
+		win->BorderLeft + x2, win->BorderTop + y2,
+		vscreen + y1 * GFX_WIDTH + x1, GFX_WIDTH);
 }
 
 
 static void amiga_put_pixels (int x, int y, int w, UINT8 *p)
 {
 	UINT8 *v = vscreen + y * GFX_WIDTH + x;
-	while (w--) { *v++ = *p++; }
+	while (w--) { *v++ = colors[*p++]; }
 }
 
 

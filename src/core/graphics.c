@@ -243,6 +243,9 @@ void put_text_character (int l, int x, int y, unsigned int c, int fg, int bg)
 
 		p++;
 	}
+	/* FIXME: we don't want this when we're writing on the
+	 *        console!
+	 */
 	flush_block (x, y, x + CHAR_COLS - 1, y + CHAR_LINES - 1);
 }
 
@@ -311,7 +314,7 @@ void print_character (int x, int y, char c, int fg, int bg)
 
 	put_text_character (0, x, y, c, fg, bg);
 	/* CM: the extra pixel in y is for the underline cursor */
-	flush_block (x, y, x + 7, y + 8); 
+	flush_block (x, y, x + CHAR_COLS - 1, y + CHAR_LINES); 
 }
 
 
