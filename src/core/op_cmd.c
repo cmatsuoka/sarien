@@ -100,17 +100,18 @@ void cmd_set_view (UINT8 entry, UINT8 view)
 void cmd_call (UINT8 log)
 {
 	UINT16 oip;
-	UINT16 osp;
+
+	/* CM: we don't save sIP because set.scan.start can be
+	 *     used in a called script (fixes xmas demo)
+	 */
 
 #ifndef NO_DEBUG
 	if (opt.debug == 4)
 		opt.debug = TRUE;
 #endif
 	oip = logics[log].cIP;
-	osp = logics[log].sIP;
 	run_logic (log);
 	logics[log].cIP = oip;
-	logics[log].sIP = osp;
 }
 
 
@@ -1368,13 +1369,15 @@ void cmd_discard_view (UINT8 vw)
 
 void cmd_set_scan_start (UINT8 logic, UINT16 xip)
 {
-	logics[logic].sIP=xip;
+	_D (_D_WARN "%d:sIP = %d", logic, xip);
+	logics[logic].sIP = xip;
 }
 
 
 void cmd_reset_scan_start (UINT8 logic)
 {
-	logics[logic].sIP=2;
+	logics[logic].sIP = 2;
+	_D (_D_WARN "%d:sIP = %d", logic, logics[logic].sIP);
 }
 
 
@@ -2175,13 +2178,13 @@ void run_logic (int lognum)
 		memmove (&p, (code + ip), 16);
 
 		switch (op) {
-		case 0xFF:				/* IF (open/close) */
+		case 0xff:			/* if (open/close) */
 			test_if_code (lognum);
 			break;
-		case 0xFE:				/* GOTO */
-			ip += 2+((SINT16)lohi_getword (code+ip));	/* +2 covers goto size*/
+		case 0xfe:			/* goto */
+			ip += 2 + ((SINT16)lohi_getword (code+ip));	/* +2 covers goto size*/
 			break;
-		case 0x00:				/* return */
+		case 0x00:			/* return */
 			return;
 		default:
 			execute_agi_command (op, lognum, p);

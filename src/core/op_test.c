@@ -258,6 +258,8 @@ int test_if_code (int lognum)
 			ip++;		/* skip num_words opcode */
 			break;
 		case 0x0F:
+			_D(_D_WARN "comparing [%s], [%s]",
+				game.strings[p[0]], game.strings[p[1]]);
 			ec = test_compare_strings (p[0], p[1]);
 			break;
 		case 0x10:

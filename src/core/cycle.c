@@ -545,28 +545,29 @@ void old_input_mode ()
 /* If main_cycle returns FALSE, don't process more events! */
 int main_cycle ()
 {
-	int key;
+	int key, kascii;
 
 	poll_timer ();		/* msdos driver -> does nothing */
 	update_timer ();
 
 	key = poll_keyboard ();
+	kascii = KEY_ASCII (key);
 
 	if (!console_keyhandler (key)) {
 		switch (game.input_mode) {
 		case INPUT_NORMAL:
-			setvar (V_key, KEY_ASCII (key));
+			if (kascii) setvar (V_key, kascii);
 			handle_controller (key);
 			handle_keys (key);
 			if (key) game.keypress = key;
 			break;
 		case INPUT_GETSTRING:
-			setvar (V_key, KEY_ASCII (key));
+			if (kascii) setvar (V_key, kascii);
 			handle_controller (key);
 			handle_getstring (key);
 			break;
 		case INPUT_MENU:
-			setvar (V_key, KEY_ASCII (key));
+			if (kascii) setvar (V_key, kascii);
 			menu_keyhandler (key);
 			console_cycle ();
 			return FALSE;
