@@ -19,6 +19,21 @@
 	<!ENTITY p5 "<entry/5/">
 	<!ENTITY p6 "<entry/6/">
 	<!ENTITY p7 "<entry/7/">
+	<!ENTITY sq1 "Space Quest I">
+	<!ENTITY sq2 "Space Quest II">
+	<!ENTITY pq1 "Police Quest I">
+	<!ENTITY kq1 "King's Quest I">
+	<!ENTITY kq2 "King's Quest II">
+	<!ENTITY kq3 "King's Quest III">
+	<!ENTITY kq4 "King's Quest IV">
+	<!ENTITY kq4d "King's Quest IV demo">
+	<!ENTITY lsl1 "Leisure Suit Larry">
+	<!ENTITY mumg "Mixed-Up Mother Goose">
+	<!ENTITY xmas "Christmas Card">
+	<!ENTITY gr "Gold Rush!">
+	<!ENTITY bc "The Black Cauldron">
+	<!ENTITY mh1 "Man Hunter: New York">
+	<!ENTITY mh2 "Man Hunter: San Francisco">
 ]>
 
 <book>
@@ -766,26 +781,26 @@ draw (smoke);
   <title>Reserved variables</title>
   <tgroup cols="2">
     <thead>
-      <row> <entry/Variable/ <entry/Description/ </row>
+      <row/ <entry/Variable/ <entry/Description//
     </thead>
 
     <tbody>
-      <row> <entry/0/ <entry/Ego's base line is completely on water/ </row>
-      <row> <entry/1/ <entry/Ego is completely obscured by another object/</row>
-      <row> <entry/2/ <entry/the player has entered a command/ </row>
-      <row> <entry/3/ <entry/Ego touched a trigger line/ </row>
-      <row> <entry/4/ <entry/<function/said/ accepted user input/ </row>
-      <row> <entry/5/ <entry/Room script executed for the first time/ </row>
-      <row> <entry/6/ <entry/<function/restart.game/ has been executed/ </row>
-      <row> <entry/7/ <entry/Writing to the script buffer is blocked/ </row>
-      <row> <entry/8/ <entry/If set, v15 determines joystick sensitivity/ </row>
-      <row> <entry/9/ <entry/Sound is enabled/ </row>
-      <row><entry/10/ <entry/Built-in debugger is enabled/ </row>
-      <row><entry/11/ <entry/Logic 0 is executed for the first time/ </row>
-      <row><entry/12/ <entry/<function/restore.game/ has been executed/ </row>
-      <row><entry/13/ <entry/Allows <function/status/ to select items/ </row>
-      <row><entry>14/ <entry/Enable menu/ </row>
-      <row><entry>15/ <entry/Enable non-blocking windows/ </row>
+      <row/ <entry/0/  <entry/Ego's base line is completely on water//
+      <row/ <entry/1/  <entry/Ego is completely obscured by another object//
+      <row/ <entry/2/  <entry/the player has entered a command//
+      <row/ <entry/3/  <entry/Ego touched a trigger line//
+      <row/ <entry/4/  <entry/<function/said/ accepted user input//
+      <row/ <entry/5/  <entry/Room script executed for the first time//
+      <row/ <entry/6/  <entry/<function/restart.game/ has been executed//
+      <row/ <entry/7/  <entry/Writing to the script buffer is blocked//
+      <row/ <entry/8/  <entry/If set, v15 determines joystick sensitivity//
+      <row/ <entry/9/  <entry/Sound is enabled//
+      <row/ <entry/10/ <entry/Built-in debugger is enabled//
+      <row/ <entry/11/ <entry/Logic 0 is executed for the first time//
+      <row/ <entry/12/ <entry/<function/restore.game/ has been executed//
+      <row/ <entry/13/ <entry/Allows <function/status/ to select items//
+      <row/ <entry/14/ <entry/Enable menu//
+      <row/ <entry/15/ <entry/Enable non-blocking windows//
     </tbody>
   </tgroup>
 </table>
@@ -950,7 +965,8 @@ print ("Message 34 in logic.0 is %g34.");
 </para>
 </sect1>
 
-<sect1 id="crypt"><title>Encrypted AGI data</title>
+<sect1 id="crypt">
+<title>Encrypted AGI data</title>
 
 <para>
   Many AGI files are encrypted. This
@@ -1123,58 +1139,55 @@ LOADER v3.0 (c) Copyright Sierra On-Line, Inc. 1987 keyOfs
 
 </sect1>
 
-<sect1 id="verctrl">
+<sect1 id="agi-versions">
 <title>AGI interpreter versions</title>
 
-<sect2><title>Sorted by Game</title>
-<para>
-<programlisting>
-Game	Ver.	Int. Ver.	Date
-------- ------- --------------- ---------
-AGID	?.?	2.915		??/??/??
-BC	2.00	2.439		06/14/87
-BC	2.10	3.002.098	11/10/88
-GR	2.01	3.002.149	12/22/88
-KQ1	1.0U	2.272		Unknown
-KQ1	2.0F	2.425		??/??/87
-KQ1	2.0F	2.917		Unknown
-KQ2	2.1	2.411		Unknown
-KQ2	2.2	2.426		Unknown
-KQ2	2.2	2.917		??/??/87
-KQ3	1.01	2.272		11/08/86
-KQ3	2.00	2.435		05/25/87
-KQ3	2.14	2.936		03/15/88
-KQ4	2.0	3.002.086	07/27/88
-KQ4D	?.??	3.002.102	??/??/??
-LSL1	1.00	2.440		06/01/87
-LSL1	1.0	2.917		06/01/87
-MG	?.??	2.915		Unknown
-MH1	1.22	3.002.102	08/30/88
-MH1	1.22	3.002.107	08/31/88
-MH2	3.02B	3.002.149	07/26/89
-MH2	3.03	3.002.149	08/17/89
-PQ1	2.0G	2.917		12/03/87
-SQ1	1.0X	2.089		Unknown
-SQ1	2.2	2.426		??/??/??
-SQ1	2.2	2.917		??/??/??
-SQ1	2.2	2.917		??/??/87
-SQ2	2.0C	2.915		??/??/87
-SQ2	2.0C	2.917		Unknown
-SQ2	2.0D	2.936		Unknown
-SQ2	2.0F	2.936		Unknown
-XM86	?.??	2.272		Unknown
-</programlisting>
+  Known Sierra AGI versions are listed in <xref linkend="tab-agi-versions">.
+
+  <table>
+    <tgroup cols="4">
+      <thead>
+        <row/ <entry/Game/ <entry/Version/ <entry/Int. version/ <entry/Date//
+      </thead>
+      <tbody>
+        <row/ <entry/ &bc;  <entry/2.00/ <entry/2.439/    <entry/14 Jun 1987// 
+        <row/ <entry/ &gr;  <entry/2.01/ <entry/3.002.149/<entry/22 Dec 1988//
+        <row/ <entry/ &kq1; <entry/1.0U/ <entry/2.272/    <entry/Unknown//
+        <row/ <entry/ &kq1; <entry/2.0F/ <entry/2.425/    <entry/1987//
+        <row/ <entry/ &kq1; <entry/2.0F/ <entry/2.917/    <entry/Unknown//
+        <row/ <entry/ &kq2; <entry/2.1/  <entry/2.411/    <entry/Unknown//
+        <row/ <entry/ &kq2; <entry/2.2/  <entry/2.426/    <entry/Unknown//
+        <row/ <entry/ &kq2; <entry/2.2/  <entry/2.917/    <entry/1987//
+        <row/ <entry/ &kq3; <entry/1.01/ <entry/2.272/    <entry/ 8 Nov 1986//
+        <row/ <entry/ &kq3; <entry/2.00/ <entry/2.435/    <entry/25 May 1987//
+        <row/ <entry/ &kq3; <entry/2.14/ <entry/2.936/    <entry/15 Mar 1988//
+        <row/ <entry/ &kq4; <entry/2.0/  <entry/3.002.086/<entry/27 Jul 1988//
+        <row/ <entry/ &kq4d;<entry/?/    <entry/3.002.102/<entry/Unknown//
+        <row/ <entry/ &lsl1;<entry/1.00/ <entry/2.440/    <entry/ 1 Jun 1987//
+        <row/ <entry/ &mumg;<entry/?/    <entry/2.915/    <entry/Unknown//
+        <row/ <entry/ &mh1; <entry/1.22/ <entry/3.002.102/<entry/30 Aug 1988//
+        <row/ <entry/ &mh1; <entry/1.22/ <entry/3.002.107/<entry/31 Aug 1988//
+        <row/ <entry/ &mh2; <entry/3.02B/<entry/3.002.149/<entry/26 Jul 1989//
+        <row/ <entry/ &mh2; <entry/3.03/ <entry/3.002.149/<entry/17 Aug 1989//
+        <row/ <entry/ &pq1; <entry/2.0G/ <entry/2.917/    <entry/ 3 Dec 1987//
+        <row/ <entry/ &sq1; <entry/1.0X/ <entry/2.089/    <entry/Unknown//
+        <row/ <entry/ &sq1; <entry/2.2/  <entry/2.426/    <entry/Unknown//
+        <row/ <entry/ &sq1; <entry/2.2/  <entry/2.917/    <entry/1987//
+        <row/ <entry/ &sq2; <entry/2.0C/ <entry/2.915/    <entry/1987//
+        <row/ <entry/ &sq2; <entry/2.0C/ <entry/2.917/    <entry/Unknown//
+        <row/ <entry/ &sq2; <entry/2.0D/ <entry/2.936/    <entry/Unknown//
+        <row/ <entry/ &sq2; <entry/2.0F/ <entry/2.936/    <entry/Unknown//
+        <row/ <entry/ &xmas;<entry/?/    <entry/2.272/    <entry/Unknown//
+      </tbody>
+    </tgroup>
+  </table>
+
 </para>
 
-</sect1>
-
-<sect1 id="verdif"><title>Version differences</title>
-<para>
-
-   There are a number of different versions of the AGI interpeter but
-   generally the data formats are the same or can easy be converted
-   between each other. The following table is a list of AGI interpreter
-   versions that I know of:
+  There are a number of different versions of the AGI interpeter but
+  generally the data formats are the same or can easy be converted
+  between each other. The following table is a list of AGI interpreter
+  versions that I know of:
 </para><para>
 <programlisting>
      AGI       Interp.  Agidata   Num of   Object file  LZW
@@ -4939,21 +4952,20 @@ do {
 </chapter>
 
 
-<chapter id="picture"><title>Picture resources</title>
+<chapter id="picture-resources">
+<title>Picture resources</title>
 <para>
 
 <sect1 id="picintro"><title>Introduction</title>
 <para>
   Picture resources are used for background scenarios and other full
-  screen images. Pictures in AGI and early SCI games are not stored as a
-  complete picture. Instead they're constructed and stored as
+  screen images. Pictures in AGI and early SCI games are stored as
   coordinates and vectors. Vectors give the instructions for drawing a
   picture and they have the advantage of taking less space than would a
-  bit image of a complete picture.
-
+  bitmap image of the picture.
 </para><para>
-   Pictures are drawn using nine different drawing actions. These actions
-   are given values from 0xF0 to 0xFA and are defined as follows:
+  Pictures are drawn using nine different drawing actions. These actions
+  are given values from 0xF0 to 0xFA and are defined as follows:
 
 </para><para>
    <simplelist>
@@ -5375,7 +5387,9 @@ Code  Color             R    G    B
 </para>
 </sect1>
 
-<sect1 id="picimpl"><title>Implementation</title>
+<sect1 id="pic-implementation">
+<title>Implementation</title>
+
 <para>
    Writing code to interpret the picture data in order to draw the
    picture on the screen is easier said than done. It turns out that you

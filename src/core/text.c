@@ -251,7 +251,9 @@ end:
 void close_window ()
 {
 	_D (_D_WARN "close window");
+	erase_upd_sprites ();
 	erase_textbox ();		/* remove window, if any */
+	blit_upd_sprites ();
 	commit_both ();			/* redraw sprites */
 	game.has_window = FALSE;
 }

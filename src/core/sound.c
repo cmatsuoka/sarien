@@ -321,7 +321,7 @@ void start_sound (int resnum, int flag)
 #endif
 	endflag = flag;
 
-	/* Nat Budin reports that the flag should be reset when sound starts,
+	/* Nat Budin reports that the flag should be reset when sound starts
 	 */
 	setflag (endflag, FALSE);
 

@@ -302,11 +302,9 @@ extern	void inventory(void);
  * each call to this function will overwrite the previously
  * returned data.
  *
- * Implementations of this function are in the fileglob directory.
+ * Implementations of this function are in src/filesys/.
  */
 char* get_current_directory (void);
-
-
 int get_app_dir (char *app_dir, unsigned int size);
 char* get_config_file(void);
 
