@@ -185,6 +185,7 @@ irix*)
 	fi
 	;;
 cygwin*)
+	LDFLAGS="${LDFLAGS} -Wl,--subsystem,windows,-e,_mainCRTStartup"
 	LIBS="-lwinmm ${LIBS}"
 	SOUND_DRIVER="win32"
 	;;
