@@ -267,36 +267,39 @@ void draw_rectangle (int x1, int y1, int x2, int y2, int c)
 }
 
 
-void draw_frame (int x1, int y1, int x2, int y2, int c)
+static void draw_frame (int x1, int y1, int x2, int y2, int c1, int c2)
 {
 	int y, w;
 	UINT8 *p0;
 
-	x1 &= ~1;
-	x2 &= ~1;
-
 	/* top line */
 	w = x2 - x1 + 1;
 	p0 = &sarien_screen[x1 + y1 * GFX_WIDTH];
-	memset (p0, c, w);
+	memset (p0, c1, w);
 
 	/* bottom line */
 	p0 = &sarien_screen[x1 + y2 * GFX_WIDTH];
-	memset (p0, c, w);
+	memset (p0, c2, w);
 
 	/* side lines */
 	for (y = y1; y <= y2; y++) {
-		sarien_screen[x1 + y * GFX_WIDTH] = c;
-		sarien_screen[x2 + y * GFX_WIDTH] = c;
+		sarien_screen[x1 + y * GFX_WIDTH] = c1;
+		sarien_screen[x2 + y * GFX_WIDTH] = c2;
 	}
 }
 
 
 void draw_box (int x1, int y1, int x2, int y2, int colour1, int colour2)
 {
-	draw_rectangle (x1, y1, x2, y2, colour1);
-	draw_frame (x1 + 2, y1 + 2, x2 - 2, y2 - 2, colour2);
+#ifdef FANCY_BOX
+	draw_rectangle (x1, y1, x2, y2, 7);
+	draw_frame (x1, y1, x2, y2, 15, 8);
 	flush_block (x1, y1, x2, y2);
+#else
+	draw_rectangle (x1, y1, x2, y2, colour1);
+	draw_frame (x1 + 2, y1 + 2, x2 - 2, y2 - 2, colour2, colour2);
+	flush_block (x1, y1, x2, y2);
+#endif
 }
 
 

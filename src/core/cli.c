@@ -53,7 +53,7 @@ static void help (int argc, char **argv)
 "  -g --no-gfx-optimizations\n"
 "                     Disable optimized graphic driver hacks (if available).\n"
 #ifdef USE_HIRES
-"  -H --hires         Enable experimental hi-res mode.\n"
+"  -H --hires {0|1}   Enable/disable experimental hi-res mode.\n"
 #endif
 "  -h --help          Display this help screen.\n"
 "  -n --no-sound      Disable sound output.\n"
@@ -66,7 +66,7 @@ static void help (int argc, char **argv)
 #endif
 #ifndef __MSDOS__
 "  -S --scale {num}   Window size scale (only for windowed graphics).\n"
-"  -r --fix-aspect-ratio\n"
+"  -r --aspect-ratio {0|1}\n"
 "                     Adjust aspect ratio to match the PC EGA 320x200 screen.\n"
 #endif
 "  -v --emulate-version {version}\n"
@@ -103,7 +103,7 @@ int parse_cli (int argc, char **argv)
 		{0x0, (UINT8*)""}
 	};
 	int o, optidx = 0;
-#define OPTIONS "AaCDdE:FgHhLlnoprskS:Vv:x"
+#define OPTIONS "AaCDdE:FgH:hLlnopr:skS:Vv:x"
 	static struct option lopt[] = {
 		{ "version",		0, 0, 'V' },
 		{ "help",		0, 0, 'h' },
@@ -124,7 +124,7 @@ int parse_cli (int argc, char **argv)
 		{ "debug",		0, 0, 'D' },
 		{ "full-screen",	0, 0, 'F' },
 #ifdef USE_HIRES
-		{ "hires",		0, 0, 'H' },
+		{ "hires",		1, 0, 'H' },
 #endif
 		{ "no-sound",		0, 0, 'n' },
 #ifdef OPT_LIST_OBJECTS
@@ -136,7 +136,7 @@ int parse_cli (int argc, char **argv)
 		{ "emulate-sound",	1, 0, 'E' },
 		{ "wait-key",		0, 0, 'k' },
 		{ "no-x-shm",		0, 0, 'x' },
-		{ "fix-aspect-ratio",   0, 0, 'r' },
+		{ "aspect-ratio",       1, 0, 'r' },
 		{ "scale",		1, 0, 'S' },
 		{ "no-gfx-optimizations",0,0, 'g' }
 	};
@@ -150,7 +150,9 @@ int parse_cli (int argc, char **argv)
 	memset (&opt, 0, sizeof (struct sarien_options));
 	opt.gamerun = GAMERUN_RUNGAME;
 	opt.scale = 2;
+	opt.fixratio = TRUE;
 	opt.gfxhacks = TRUE;
+	opt.hires = TRUE;
 #ifdef MITSHM
 	opt.mitshm = TRUE;
 #endif
@@ -220,7 +222,7 @@ int parse_cli (int argc, char **argv)
 			break;
 #ifdef USE_HIRES
 		case 'H':
-			opt.hires = TRUE;
+			opt.hires = strtoul (optarg, NULL, 0);
 			break;
 #endif
 #ifdef OPT_LIST_DICT

@@ -179,6 +179,11 @@ static void erase_textbox ()
  * Public functions
  */
 
+void draw_text (unsigned char *msg, int f, int x, int y, int len, int fg, int bg)
+{
+	print_text2 (0, agi_sprintf (msg), f, x, y, len, fg, bg);
+}
+
 /**
  * Print text in the Sarien screen.
  */
@@ -468,7 +473,7 @@ void clear_lines (int l1, int l2, int c)
 	 * ie, from 22 to 24 is 3 lines, not 2 lines.
 	 */
 
-	if (c) c = 15;
+	/* if (c) c = 15; */
 	l1 *= CHAR_LINES;
 	l2 *= CHAR_LINES;
 	l2 += CHAR_LINES - 1;

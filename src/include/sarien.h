@@ -19,6 +19,7 @@ extern "C"{
 #define USE_CONSOLE
 #define USE_PCM_SOUND
 #define USE_IIGS_SOUND
+#define USE_HIRES
 #define AGDS_SUPPORT
 #define OPT_LIST_OBJECTS
 #define OPT_PICTURE_VIEWER
@@ -28,6 +29,7 @@ extern "C"{
 #  include <PalmOS.h>
 #  undef USE_CONSOLE
 #  undef USE_PCM_SOUND
+#  undef USE_HIRES
 #  undef AGDS_SUPPORT
 #  undef OPT_LIST_OBJECTS
 #  undef OPT_PICTURE_VIEWER
@@ -58,6 +60,7 @@ extern "C"{
 #  include <alloc.h>
 #  undef USE_CONSOLE
 #  undef USE_PCM_SOUND
+#  undef USE_HIRES
 #  undef AGDS_SUPPORT
 #  undef OPT_LIST_OBJECTS
 #  undef OPT_PICTURE_VIEWER
@@ -172,16 +175,19 @@ extern "C"{
 #define	CRYPT_KEY_SIERRA	"Avis Durgan"
 #define CRYPT_KEY_AGDS		"Alex Simkin"
 
+#ifdef FANCY_BOX
+#define	MSG_BOX_COLOUR	0x07		/* Grey */
+#define MENU_BG		0x07		/* Grey */
+#else
 #define	MSG_BOX_COLOUR	0x0f		/* White */
+#define MENU_BG		0x0f		/* White */
+#endif
 #define MSG_BOX_TEXT	0x00		/* Black */
 #define MSG_BOX_LINE	0x04		/* Red */
-#define MENU_BG		0x0f		/* White bg */
-#define MENU_FG		0x00		/* Black fg */
-#define MENU_LINE	0x00		/* Black line */
+#define MENU_FG		0x00		/* Black */
+#define MENU_LINE	0x00		/* Black */
+#define STATUS_FG	0x00		/* Black */
 #define	STATUS_BG	0x0f		/* White */
-#define STATUS_FG	0x00		/* Blue */
-#define STATUS_FG_CLEAN	0x00		/* Black */
-
 
 #define DISABLE_COPYPROTECTION		/* only works on some games */
 

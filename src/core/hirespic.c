@@ -216,29 +216,32 @@ static void absolute_hires_line ()
 **************************************************************************/
 static INLINE int hires_fill_here (int x, int y)
 {
-	UINT8 *p;
+	UINT8 *p, *s;
 
 	if (!scr_on && !pri_on)
 		return FALSE;
 
 	p = &game.hires[y * (_WIDTH * 2) + x * 2];
+	s = &game.sbuf[y * _WIDTH + x];
 
-	if (scr_on && (*p & 0x0f) != 0x0f)
-		return FALSE;
-	if (scr_on && (*(p + 1) & 0x0f) != 0x0f)
-		return FALSE;
+	if (scr_on) {
+		if (scr_colour == 0x0f)
+			return FALSE;
+		if ((*p & 0x0f) != 0x0f || (*(p + 1) & 0x0f) != 0x0f)
+			return FALSE;
+		if ((*s & 0x0f) != scr_colour)
+			return FALSE;
+	}
 
-	if (pri_on && (*p >> 4) != 0x04)
-		return FALSE;
-	if (pri_on && (*(p + 1) >> 4) != 0x04)
-		return FALSE;
+	if (pri_on) {
+		if (pri_colour == 0x04)
+			return FALSE;
+		if ((*p >> 4) != 0x04 || (*(p + 1) >> 4) != 0x04)
+			return FALSE;
+		if ((*s >> 4) != pri_colour)
+			return FALSE;
+	}
 
-
-	p = &game.sbuf[y * _WIDTH + x];
-	if (scr_on && (*p & 0x0f) != scr_colour)
-		return FALSE;
-	if (pri_on && (*p >> 4) != pri_colour)
-		return FALSE;
 
 	return TRUE;
 }
@@ -299,15 +302,19 @@ static void hiresFill (int x, int y)
 			put_hires_pixel (2 * c.x, c.y);
 			fix_pixel_here (c.x, c.y);
 
-			if (c.x > 0 && hires_fill_here (c.x - 1, c.y)) {
-				c.x--; _PUSH (&c); c.x++;
-    			} else {
-				fix_pixel_left (c.x - 1, c.y);
+			if (c.x > 0) {
+				if (hires_fill_here (c.x - 1, c.y)) {
+					c.x--; _PUSH (&c); c.x++;
+    				} else {
+					fix_pixel_left (c.x - 1, c.y);
+				}
 			}
-			if (c.x < _WIDTH - 1 && hires_fill_here (c.x + 1, c.y)) {
-				c.x++; _PUSH (&c); c.x--;
- 			} else {
-				fix_pixel_right (c.x + 1, c.y);
+			if (c.x < _WIDTH - 1) {
+				if (hires_fill_here (c.x + 1, c.y)) {
+					c.x++; _PUSH (&c); c.x--;
+ 				} else {
+					fix_pixel_right (c.x + 1, c.y);
+				}
 			}
 			if (c.y < _HEIGHT - 1 && hires_fill_here (c.x, c.y + 1)) {
 				c.y++; _PUSH (&c); c.y--;
@@ -547,7 +554,7 @@ void fix_hires_picture ()
 		if ((*p & 0x0f) == 0x0f && (*b & 0x0f) != 0x0f)
 			*p = *b;
 		if ((*p >> 4) == 4 && (*b >> 4) != 4)
-			*p = *b;
+			*p = (*p & 0x0f) | (*b & 0xf0);
 		p++; b++;
 	}
 }
@@ -555,6 +562,4 @@ void fix_hires_picture ()
 #endif /* USE_HIRES */
 
 /* end: hirespic.c */
-
-
 

@@ -18,6 +18,7 @@ extern "C"{
 int	message_box	(char *);
 void	close_window	(void);
 void	print_status	(char *, ...);
+void	draw_text	(unsigned char *, int, int, int, int, int, int);
 void	print_text	(unsigned char *, int, int, int, int, int, int);
 void	print_text_console
 			(char *, int, int, int, int, int);
