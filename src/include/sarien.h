@@ -276,6 +276,11 @@ char*	file_name	(char *fname);
 char*	fixpath		(int flag, char *fname);
 
 
+/* from motion.c */
+extern int get_direction (int x, int y, int x0, int y0, int s);
+/* from text.c */
+extern int message_box (char *s);
+
 extern	void inventory(void);
 
 /*

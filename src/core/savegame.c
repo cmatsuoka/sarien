@@ -19,6 +19,9 @@
 #endif
 #include <sys/types.h>
 #endif
+#ifdef WIN32
+#include <direct.h>
+#endif
 
 #include "sarien.h"
 #include "agi.h"
@@ -31,7 +34,7 @@
 
 static int loading_ok;
 
-#ifdef __DICE__
+#if defined(__DICE__) || defined(WIN32)
 #  define MKDIR(a,b) mkdir(a)
 #else
 #  define MKDIR(a,b) mkdir(a,b)

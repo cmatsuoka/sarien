@@ -9,6 +9,7 @@
  */
 
 #include <windows.h>
+#include <stdio.h>
 #include "sarien.h"
 #include "agi.h"
 
@@ -53,8 +54,6 @@ int get_app_dir (char *app_dir, unsigned int size)
 
 char* get_config_file(void)
 {
-	int ver;
-
 	strcpy(ini_path, "./");
 
 	if(getenv("SARIEN")!=NULL)

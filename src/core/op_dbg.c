@@ -294,8 +294,8 @@ void debug_console (int lognum, int mode, char *str)
     		break;
     	default:
 		x = mode == lCOMMAND_MODE ? logic_names_cmd : logic_names_test;
-    		a = (x + *(code + ip))->num_args;
-    		c = (x + *(code + ip))->arg_mask;
+    		a = (unsigned char)(x + *(code + ip))->num_args;
+    		c = (unsigned char)(x + *(code + ip))->arg_mask;
 
 		if (debug.opcodes) {
 			report("%02X %02X %02X %02X %02X %02X %02X %02X %02X\n"

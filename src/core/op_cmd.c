@@ -309,8 +309,8 @@ cmd(position_f) {
 }
 
 cmd(get_posn) {
-	game.vars[p1] = vt.x_pos;
-	game.vars[p2] = vt.y_pos;
+	game.vars[p1] = (unsigned char)vt.x_pos;
+	game.vars[p2] = (unsigned char)vt.y_pos;
 }
 
 cmd(reposition) {
@@ -603,7 +603,7 @@ cmd(distance) {
 	} else {
 		d = 0xff;
 	}
-	_v[p2] = d;
+	_v[p2] = (unsigned char)d;
 }
 
 cmd(get_string) {

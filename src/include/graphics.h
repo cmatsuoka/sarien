@@ -74,6 +74,11 @@ void	restore_block	(int, int, int, int, UINT8 *);
 
 void	put_pixel	(int, int, int);	
 
+
+#ifdef USE_HIRES
+void put_pixels_hires (int x, int y, int n, UINT8 *p);
+#endif
+
 int	keypress	(void);
 int	get_key		(void);
 

@@ -145,11 +145,11 @@ static UINT8 console_parse (char *b)
 					logic_names_cmd[i].num_args);
 				return 0;
 			}
-			p[0] = _p1 ? strtoul (_p1, NULL, 0) : 0;
-			p[1] = _p2 ? strtoul (_p2, NULL, 0) : 0; 
-			p[2] = _p3 ? strtoul (_p3, NULL, 0) : 0;
-			p[3] = _p4 ? strtoul (_p4, NULL, 0) : 0;
-			p[4] = _p5 ? strtoul (_p5, NULL, 0) : 0;
+			p[0] = _p1 ? (char)strtoul (_p1, NULL, 0) : 0;
+			p[1] = _p2 ? (char)strtoul (_p2, NULL, 0) : 0; 
+			p[2] = _p3 ? (char)strtoul (_p3, NULL, 0) : 0;
+			p[3] = _p4 ? (char)strtoul (_p4, NULL, 0) : 0;
+			p[4] = _p5 ? (char)strtoul (_p5, NULL, 0) : 0;
 
 			execute_agi_command (i, p); 
 
