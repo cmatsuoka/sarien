@@ -628,20 +628,17 @@ cmd(get_string) {
 }
 
 
-/* FIXME: remove lowlevel print_text() call from here */
 cmd(get_num) {
-#if 0
 	game.input_mode = INPUT_GETSTRING;
 
 	if (cur_logic->texts != NULL && (p0 - 1) <= cur_logic->num_texts) {
-		char *prompt = agi_printf (cur_logic->texts[p0 - 1]);
+		char *prompt = agi_sprintf (cur_logic->texts[p0 - 1]);
 		print_text (prompt, 0, 0, 23 * CHAR_LINES, strlen (prompt) + 1,
 			game.color_fg, game.color_bg);
-		p = get_string (strlen (prompt) - 1) * CHAR_COLS,
-			23 * CHAR_LINES, 4);
+		get_string (strlen (prompt) + 1, 23 * CHAR_LINES, (strlen (prompt) - 1) * CHAR_COLS,
+			p1);
 		_v[p1] = atoi (prompt);
 	}
-#endif
 }
 
 cmd(set_cursor_char)

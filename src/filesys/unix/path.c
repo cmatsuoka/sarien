@@ -14,8 +14,6 @@
 #include "sarien.h"
 #include "agi.h"
 
-char rc_path[MAX_PATH];
-
 int get_app_dir (char *app_dir, unsigned int size)
 {
 	char *x;
@@ -36,13 +34,18 @@ int get_app_dir (char *app_dir, unsigned int size)
 	return x ? 0 : -1;
 }
 
-char* get_config_file(void)
+char* get_config_file (void)
 {
+#if 0
+	char rc_path[MAX_PATH];
+
 #ifdef HAVE_SNPRINTF
-	snprintf (rc_path, 256, "%s/.sarienrc", getenv ("HOME"));
+	snprintf (rc_path, 256, "et/.sarienrc", getenv ("HOME"));
 #else
 	sprintf (rc_path, "%s/.sarienrc", getenv ("HOME"));
 #endif
-	return (char*)rc_path;
+#endif
+
+	return "/etc/sarien.conf";
 }
 

@@ -150,18 +150,11 @@ static UINT32 match_crc (UINT32 crc, char *path)
 
 static UINT32 match_version (UINT32 crc)
 {
-	int	ver;
+	int ver;
 	char *fname;
 
-	fname=get_config_file();
+	fname = get_config_file();
 	ver = match_crc(crc, fname);
-
-#if 0
-	/* FIXME */
-	/*  unix special case! */
-	if (!ver)
-		ver = match_crc (crc, "/etc/sarien.conf");
-#endif
 
 	return ver;
 }
