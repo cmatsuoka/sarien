@@ -461,17 +461,14 @@ int loadgame_dialog ()
 		/* FIXME: restore at correct point instead of using the
 		 *	  new.room hack
 		 */
-#if 0
 		show_pic ();
 		flush_screen ();
 		do_update ();
-#else
 		game.vars[V_border_touch_ego] = 0;
 		new_room (game.vars[0]);
 		setflag (F_new_room_exec, TRUE);
 		game.input_mode = INPUT_NORMAL;
 		write_status ();
-#endif
 	} else {
 		message_box ("Error loading game.");
 	}

@@ -24,12 +24,14 @@ struct sarien_options opt;
 struct game_id_list game_info;
 struct agi_game game;
 
+#ifndef __GNUC__
 void _D (char *x, ...)
 {
 #ifdef _TRACE
 	OutputDebugString(x);
 #endif
 }
+#endif
 
 
 BOOL CheckForGame(char *szDir)
