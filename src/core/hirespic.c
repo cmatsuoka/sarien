@@ -79,6 +79,9 @@ static void fix_pixel_left (int x, int y)
 	if (!scr_on)
 		return;
 
+	if (x == 0 && y == 0)
+		return;
+
 	p = &game.hires[y * (_WIDTH * 2) + x * 2 + 1];
 	if ((*p & 0x0f) == 0x0f)
 		put_virt_pixel (2 * x + 1, y, 2);
@@ -88,10 +91,12 @@ static void fix_pixel_left (int x, int y)
 
 static void fix_pixel_right (int x, int y)
 {
-	UINT8 p;
+	int idx = y * (_WIDTH * 2) + x * 2;
 
-	p = game.hires[y * (_WIDTH * 2) + x * 2];
-	if (scr_on && (p & 0x0f) == 0x0f)
+	if (idx >= 160 * 168)
+		return;
+
+	if (scr_on && (game.hires[idx] & 0x0f) == 0x0f)
 		put_virt_pixel (2 * x, y, 2);
 }
 
@@ -143,6 +148,7 @@ static void hires_fill_scanline (int x, int y)
 			newspan_down = 1;
 		}
 	}
+
 	fix_pixel_right (c, y);
 }
 

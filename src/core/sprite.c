@@ -44,7 +44,7 @@ struct sprite {
 #undef ALLOC_DEBUG
 
 #ifdef USE_HIRES
-#  define POOL_SIZE 40000
+#  define POOL_SIZE 42000
 #else
 #  define POOL_SIZE 20000
 #endif
