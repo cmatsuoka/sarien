@@ -34,7 +34,11 @@ static char *match (char *p, int f)
 	*path = 0;
 
 	strcpy (s, p);
+#ifdef WIN32			/* Use backslash in Cygwin (bug #540848) */
+	slash = strrchr (s, '\\');
+#else
 	slash = strrchr (s, '/');
+#endif
 	if (slash) {
 		*slash = 0;
 		pattern = slash + 1;
@@ -71,7 +75,11 @@ static char *match (char *p, int f)
 		if (i < 0 && j <= 0) {
 			if (f) {
 				strcpy (path, dir);
+#ifdef WIN32
+				strcat (path, "\\");
+#else
 				strcat (path, "/");
+#endif
 				strcat (path, e->d_name);
 			} else {
 				strcpy (path, e->d_name);
