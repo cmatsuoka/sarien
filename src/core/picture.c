@@ -58,7 +58,7 @@ static UINT16 *stack[MAX_STACK_SEGS];
 
 static INLINE void _PUSH (UINT16 c)
 {
-	if (stack_ptr >= STACK_SEG_SIZE || (stack_ptr==0 && stack_num_segs==0)) {
+	if (stack_ptr >= STACK_SEG_SIZE) {
 		/* Allocate new stack segment */
 
 		assert (stack_num_segs < MAX_STACK_SEGS);
@@ -84,14 +84,6 @@ static INLINE UINT16 _POP ()
 		if (stack_seg == 0) {
 			return 0xffff;
 		} else {
-#if 0
-			/* release stack when not in use */
-			if(stack_num_segs>0)
-			{
-				free(stack[stack_num_segs]);
-				stack_num_segs--;
-			}
-#endif
 			stack_seg--;
 			stack_ptr = STACK_SEG_SIZE;
 		}
