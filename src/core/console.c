@@ -105,6 +105,7 @@ static char *get_last_console_line ()
 
 /*
  * Console command parsing
+ * 'o' commands added by Shaun Jackman <sjackman@shaw.ca>, 11 Apr 2002
  */
 
 static UINT8 console_parse (char *b)
@@ -117,8 +118,8 @@ static UINT8 console_parse (char *b)
 	if (!*b)
 		return 0;
 
-	/* get or set flag/var values */
-	if ((b[0] == 'f' || b[0] == 'v') && isdigit (b[1])) {
+	/* get or set flag/var/obj values */
+	if ((b[0] == 'f' || b[0] == 'v' || b[0] == 'o') && isdigit (b[1])) {
 		char *e;
 		int f = (int)strtoul (&b[1], &e, 10);
 		if (*e == 0) {
@@ -130,6 +131,10 @@ static UINT8 console_parse (char *b)
 					break;
 				case 'v':
 					report ("%3d\n", getvar (f));
+					break;
+				case 'o':
+					report ("%3d]%-24s(%3d)\n", f, object_name (f),
+							object_get_location (f));
 					break;
 				}
 				return 0;
@@ -143,6 +148,9 @@ static UINT8 console_parse (char *b)
 				break;
 			case 'v':
 				setvar (f, n);
+				break;
+			case 'o':
+				object_set_location (f, n);
 				break;
 			}
 			return 0;

@@ -95,6 +95,9 @@
   * DirectX 8 driver
   * Win32 fixes
 
+- Shaun Jackman <sjackman@shaw.ca>
+  * interpreter console hacks
+
 
 Special thanks to:
 
