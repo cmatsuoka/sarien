@@ -40,8 +40,10 @@ void list_games ()
 	UINT32 id, ver;
 	int min, maj, i = 0;
 
-	/**/
-	f = fopen (get_config_file(), "r");
+	if ((f = fopen (get_config_file(), "r")) == NULL) {
+		printf ("Configuration file not found.\n");
+		return;
+	}
 
 	printf (
 "Game#  AGI ver.   Title                                    CRC\n"
