@@ -199,6 +199,10 @@ void update_position ()
 		if (x < 0) {
 			x = 0;
 			border = 4;
+		} else if (v->entry == 0 && x == 0 && v->flags & ADJ_EGO_XY) {
+			/* Extra test to walk west clicking the mouse */
+			x = 0;
+			border = 4;
 		} else if (x + v->x_size > _WIDTH) {
 			x = 160 - v->x_size;
 			border = 2;

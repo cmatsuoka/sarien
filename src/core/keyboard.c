@@ -124,10 +124,10 @@ int handle_controller (int key)
 	struct vt_entry *v = &game.view_table[0];
 	int i;
 
+	/* Click-to-walk mouse interface */
 	if (game.player_control && v->flags & ADJ_EGO_XY) {
 		v->direction = get_direction (v->x_pos, v->y_pos,
-			WIN_TO_PIC_X(mouse.x), WIN_TO_PIC_Y(mouse.y),
-			v->step_size);
+			v->parm1, v->parm2, v->step_size);
 
 		if (v->direction == 0)
 			in_destination (v);
@@ -153,21 +153,32 @@ int handle_controller (int key)
 		}
 	}
 
-	if (game.player_control && !KEY_ASCII (key)) {
+	if (game.player_control) {
 		int d = 0;
+
+		if (!KEY_ASCII (key)) {
+			switch (key) {
+			case KEY_UP:         d = 1; break;
+			case KEY_DOWN:       d = 5; break;
+			case KEY_LEFT:       d = 7; break;
+			case KEY_RIGHT:      d = 3; break;
+			case KEY_UP_RIGHT:   d = 2; break;
+			case KEY_DOWN_RIGHT: d = 4; break;
+			case KEY_UP_LEFT:    d = 8; break;
+			case KEY_DOWN_LEFT:  d = 6; break;
+			}
+		}
+
+		/* Handle mouse button events */
 		switch (key) {
-		case KEY_UP:         d = 1; break;
-		case KEY_DOWN:       d = 5; break;
-		case KEY_LEFT:       d = 7; break;
-		case KEY_RIGHT:      d = 3; break;
-		case KEY_UP_RIGHT:   d = 2; break;
-		case KEY_DOWN_RIGHT: d = 4; break;
-		case KEY_UP_LEFT:    d = 8; break;
-		case KEY_DOWN_LEFT:  d = 6; break;
 		case BUTTON_LEFT:
 			v->flags |= ADJ_EGO_XY;
+			v->parm1 = WIN_TO_PIC_X(mouse.x);
+			v->parm2 = WIN_TO_PIC_Y(mouse.y);
 			return TRUE;
-		}
+		case BUTTON_RIGHT:
+			return TRUE;
+		} 
 
 		v->flags &= ~ADJ_EGO_XY;
 
