@@ -85,7 +85,7 @@ static void iff_chunk_pad (UINT32 i, FILE *f)
 
 #define WORD_ALIGN(x) (((((x) -1) >> 1) + 1) << 1)
 
-UINT16 save_game (char *s, char *d)
+int save_game (char *s, char *d)
 {
 	FILE *f;
 	UINT8 b;
@@ -134,8 +134,7 @@ UINT16 save_game (char *s, char *d)
 	iff_newchunk ("VARS", s_vars, f);
 	write32 (MAX_VARS, f);
 	s_vars -= 4;
-	for (i = 0; i < MAX_VARS; i++, s_vars--)
-	{
+	for (i = 0; i < MAX_VARS; i++, s_vars--) {
 		b = getvar (i);
 		write8 (b, f);
 	}
@@ -145,8 +144,7 @@ UINT16 save_game (char *s, char *d)
 	iff_newchunk ("FLAG", s_flag, f);
 	write32 (MAX_FLAGS, f);
 	s_flag -= 4;
-	for (i = 0; i < MAX_FLAGS; i++, s_flag--)
-	{
+	for (i = 0; i < MAX_FLAGS; i++, s_flag--) {
 		b = getflag (i);
 		write8 (b, f);
 	}
@@ -254,10 +252,8 @@ static void get_stri (int size, UINT8 *buffer)
 	n = hilo_getdword (buffer);
  	buffer += 4;
 
-	for (i = 0; i < n; i++)
-	{
-		for (j = 0, b = 1; b; j++)
-		{
+	for (i = 0; i < n; i++) {
+		for (j = 0, b = 1; b; j++) {
 			b = hilo_getbyte (buffer++);
 			strings[i][j] = b;
 		}
@@ -285,7 +281,7 @@ static void get_flag (int size, UINT8 *buffer)
 
 static void get_vars (int size, UINT8 *buffer)
 {
-	int i, n;
+	UINT32 i, n;
 	UINT8 b;
 
 	_D (("(%d, %p)", size, buffer));
@@ -303,7 +299,7 @@ static void get_vars (int size, UINT8 *buffer)
 
 static void get_objs (int size, UINT8 *buffer)
 {
-	int i, n;
+	UINT32 i, n;
 
 	n = hilo_getdword (buffer);
 	buffer += 4;
@@ -318,8 +314,7 @@ static void get_agid (int size, UINT8 *buffer)
 {
 	_D (("(%d, %p)", size, buffer));
 
-	if (size < strlen (gid))
-	{
+	if (size < strlen (gid)) {
 		loading_ok = 0;
 		return;
 	}
@@ -335,7 +330,7 @@ static void get_gcrc (int size, UINT8 *buffer)
 }
 
 
-UINT16 load_game (char *s)
+int load_game (char *s)
 {
 	FILE *f;
 	struct iff_header h;
