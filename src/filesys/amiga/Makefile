@@ -1,8 +1,8 @@
 # $Id$
 
 XCFLAGS	= -I../../include
-OBJS	= dummy.o
-DFILES	= Makefile $(OBJS:.o=.c) Makefile.wat Makefile.dj
+OBJS	= fileglob.o path.o
+DFILES	= Makefile $(OBJS:.o=.c)
 CFILES	=
 DDIRS	=
 XDFILES	=
