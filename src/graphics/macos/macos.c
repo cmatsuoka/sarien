@@ -183,6 +183,83 @@ _putpixels_fixratio_scale2 (32);
 
 /* ===================================================================== */
 
+/*
+ * AppleEvents
+ */
+
+static void load_game (FSSpec *fs)
+{
+	if (game.state >= STATE_LOADED) {
+		report ("AGI game already loaded.\n");
+		return;
+	}
+
+	if (agi_detect_game (fs->name) == err_OK) {
+		game.state = STATE_RUNNING;
+		report ("AGI game successfully loaded.\n");
+		console_prompt ();
+		return;
+	}
+	
+	report ("AGI game load failed.\n");
+	return;
+}
+
+static pascal OSErr open_app (AppleEvent *event, AppleEvent *reply, long refcon)
+{
+	return noErr;
+}
+
+static pascal OSErr quit_app (AppleEvent *event, AppleEvent *reply, long refcon)
+{
+	gfx->deinit_video_mode ();
+	ExitToShell ();
+	return noErr;
+}
+
+static pascal OSErr open_doc (AppleEvent *event, AppleEvent *reply, long refcon)
+{
+	OSErr err;
+	FSSpec fileSpec;
+	long i, numDocs;
+	DescType returnedType;
+	AEKeyword keywd;
+	Size actualSize;
+	AEDescList docList = { typeNull, nil };
+
+	err = AEGetParamDesc (event, keyDirectObject, typeAEList, &docList);
+
+	err = AECountItems (&docList, &numDocs);
+   
+	for (i = 1; i <= numDocs; i++) {
+		err = AEGetNthPtr (&docList, i, typeFSS, &keywd, &returnedType,
+			(Ptr)&fileSpec, sizeof (fileSpec), &actualSize);
+
+		load_game (&fileSpec);
+	}
+
+	err = AEDisposeDesc (&docList);
+
+	return err;
+}
+
+static void init_events ()
+{
+	AEInstallEventHandler (kCoreEventClass, kAEOpenApplication, 
+		NewAEEventHandlerProc (open_app), 0, false);
+
+	AEInstallEventHandler (kCoreEventClass, kAEOpenDocuments,
+		NewAEEventHandlerProc (open_doc), 0, false);
+
+	AEInstallEventHandler (kCoreEventClass, kAEQuitApplication,
+		NewAEEventHandlerProc (quit_app), 0, false);
+}
+
+/* ===================================================================== */
+
+/*
+ * Toolbox & menu functions
+ */
 
 void (*ppix[2][3][MAX_SCALE])() = {
 	{
@@ -197,11 +274,6 @@ void (*ppix[2][3][MAX_SCALE])() = {
 	}
 };
 
-
-
-/*
- * Toolbox & menu functions
- */
 
 static void init_toolbox ()
 {
@@ -524,6 +596,7 @@ static int macos_init_vidmode ()
 		return -1;
 	
 	init_toolbox ();
+	init_events ();
 	init_menu ();
 	adjust_menu ();
 
