@@ -65,6 +65,8 @@ void new_room (int n)
 	game.vars[V_border_code] = 0;
 	game.vars[V_ego_view_resource] = game.view_table[0].current_view;
 
+	/* Always reload logic 0, messages may be referenced */
+	agi_load_resource (rLOGIC, 0);
 	agi_load_resource (rLOGIC, n);
 
 	/* Reposition ego in the new room */

@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2003 Stuart George and Claudio Matsuoka
  *
  *  $Id$
  *
@@ -523,23 +523,26 @@ char *agi_sprintf (char *s)
 				safe_strcat(p, z + i);
 				break;
 			case '0':
-				safe_strcat(p, object_name (strtoul (s, NULL, 10)-1));
+				i = strtoul (s, NULL, 10) - 1;
+				safe_strcat(p, object_name(i));
 				break;
 			case 'g':
-				safe_strcat(p, game.logics[0].texts[strtoul (s, NULL, 10)-1]);
+				i = strtoul (s, NULL, 10) - 1;
+				safe_strcat(p, game.logics[0].texts[i]);
 				break;
 			case 'w':
-				safe_strcat(p, game.ego_words[strtoul (s, NULL, 10) - 1].word);
+				i = strtoul (s, NULL, 10) - 1;
+				safe_strcat(p, game.ego_words[i].word);
 				break;
 			case 's':
-				safe_strcat(p, game.strings[strtoul (s, NULL, 10)]);
+				i = strtoul (s, NULL, 10);
+				safe_strcat(p, game.strings[i]);
 				break;
-			case 'm': {
-				int n = game.lognum, m = strtoul (s, NULL, 10) - 1;
-				if (game.logics[n].num_texts > m)
-					safe_strcat(p, agi_sprintf(game.logics[n].texts[m]));
+			case 'm':
+				i = strtoul (s, NULL, 10) - 1;
+				if (game.logics[game.lognum].num_texts > i)
+					safe_strcat(p, agi_sprintf(game.logics[game.lognum].texts[i]));
 				break;
-				}
 			}
 
 			while (*s >= '0' && *s <= '9') s++;
