@@ -188,7 +188,7 @@ static void init_console ()
 /* Based on LAGII 0.1.5 by XoXus */
 void shake_screen (int n)
 {
-#ifndef __TURBOC__
+#if !defined (__TURBOC__) && !defined (__DICE__)
 #define MAG 3
 	int i;
 	UINT8 b[GFX_WIDTH * GFX_HEIGHT], c[GFX_WIDTH * GFX_HEIGHT];
