@@ -160,7 +160,6 @@ cmd(obj_status_f)	{ report ("obj.status.f\n"); }
  * unk_181: Deactivate keypressed control (default control of ego)
  */
 cmd(set_simple)		{ report ("set.simple\n"); }
-cmd(push_script)	{ report ("push.script\n"); }
 cmd(pop_script)		{ report ("pop.script\n"); }
 cmd(hold_key)		{ report ("hold.key\n"); }
 cmd(discard_sound)	{ report ("discard.sound\n"); }
@@ -711,6 +710,16 @@ cmd(echo_line) {
 cmd(clear_lines) {
 	clear_lines (p0, p1, p2);
 	flush_lines (p0, p1);
+}
+
+cmd(push_script) {
+	if (opt.agimouse) {
+		game.vars[27] = mouse.button ? 1 : 0;
+		game.vars[28] = mouse.x;
+		game.vars[29] = mouse.y;
+	} else {
+		report ("push.script\n");
+	}
 }
 
 cmd(set_pri_base) {

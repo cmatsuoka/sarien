@@ -1,0 +1,113 @@
+$Id$
+
+This is the original AGI Mouse 1.0 documentation from
+From http://www.classicgaming.com/agisci/am-prgov.shtml
+
+AGI Mouse is a third-party hack written by Brian Provinciano,
+and conflicts with Sierra's official mouse support functions,
+redefining command 171 (Sierra's command 171 is push.script and
+is used in some AGI v3 games such as Manhunter.)
+
+Support for AGI Mouse in sarien can be enabled using the
+-m or --agimouse command line switch.
+
+
+--------[ start of AGI Mouse documentation ]-------
+
+
+How to use the AGI Mouse 1.0 API
+
+Introduction
+
+AGI Mouse 1.0 gives AGI support for the mouse with extreme ease. This
+document shows you how to make use of the AGI Mouse 1.0 API.
+
+When I hacked the interpreter to give it mouse support, I removed the
+existing unknown171 command, and replaced it with a routine I wrote to
+poll the mouse status (x position, y position, button status). I call
+this command from logic.000. Every interpreter loop executes logic.000,
+thus polling the status. This way, you will need not worry about calling
+the command every time you use the mouse status variables.
+
+The unknown171 command returns the following variables...
+
+v27	Button pressed (0=none, 1=left, 2=right, 3=middle) 
+v28	The X position of the mouse
+v29	The Y position of the mouse
+
+You won't need to remember those numbers, because I edited defines.txt
+to simplify things. The defines are as follows...
+
+/***************************************************************************
+ * AGI Mouse 1.0 defines
+ ****************************************************************************/
+#define mouse_button	v27	// The mouse button pressed 
+#define mouse_x		v28	// Pixels from the left of the screen 
+#define mouse_y		v29	// Pixels from the top of the screen 
+
+#define mb_up		0	// Mouse button is up (not pressed) 
+#define Mb_left		1	// Left mouse button 
+#define Mb_right	2	// Right mouse button 
+#define Mb_middle	3	// Middle mouse button
+/***************************************************************************
+ * End of AGI Mouse 1.0 defines -- Brian Provinciano
+ ****************************************************************************/
+
+
+Important Things to Note
+
+The mouse coordinates are not limited to playing area, they are returned
+for the entire screen. As a result, if you are doing something such as
+moving egothe the position that the mouse has clicked, you should subtract
+8 (the amount of pixels the playing area is from the top of the screen)
+from the mouse_y variable. I did this because it allows you to add a Lucas
+Arts style Point and Click text buttons at the bottom of the screen (like
+in The Secret of Money Island).
+
+Ever since I added the code to hide/show the mouse cursor when text is
+drawn on the screen, it's caused a lot of flickering. This is because if
+you use a command such as display, and place it in your main execution
+area, it draws the text every interpreter cycle (hiding and showing the
+mouse cursor many times per second). Without this code, the mouse would
+cause problems if it is in the area when the text is drawn.
+
+
+How to Control Ego With the Mouse
+
+To control the ego with the mouse, where you click, and the ego walks to
+where you clicked, all you need to do is check to see if the mouse button
+is pressed and then use the move.to.v command. Here's the code...
+
+ if(mouse_button == Mb_left) { 
+   mouse_y -= 8;	// remember, the play area is 8 pixels from
+			// the top of the screen
+   move.obj.v(ego, mouse_x, mouse_y, 2, f255); 
+ }
+
+
+How to Add a Button Control
+
+To add a button control to your game is very easy. The following code
+demonstrates a button with three states, mouse out, mouse over and mouse
+down. It draws the view associated with object 2 (o2) accordingly. If
+the button is pressed, it jumps to room 3.
+
+ // Is mouse in the area of the button?
+ if(mouse_y > 32 && mouse_y < 68 && mouse_x > 56 && mouse_x < 103) {
+   // Is the mouse button pressed
+   if(mouse_button == Mb_left) {
+     // If it is, draw the mouse button down, then jump to room 3
+     set.loop(o2,2);
+     new.room(3);
+   } else {
+     // Otherwise, draw the button as a mouse over graphic
+     set.loop(o2,1);
+   }
+ } else {
+   // Draw the mouse button in normal state
+   set.loop(o2,0);
+ }
+ draw(o2); 
+
+--------[ end of AGI Mouse documentation ]-------
+

@@ -57,6 +57,7 @@ static void help (int argc, char **argv)
 "  -H --hires {0|1}   Enable/disable experimental hi-res mode.\n"
 #endif
 "  -h --help          Display this help screen.\n"
+"  -m --agimouse      AGI Mouse 1.0 compatibility mode.\n"
 "  -n --no-sound      Disable sound output.\n"
 #ifdef OPT_PICTURE_VIEWER
 "  -p --picture-viewer\n"
@@ -104,7 +105,7 @@ int parse_cli (int argc, char **argv)
 		{0x0, (UINT8*)""}
 	};
 	int o, optidx = 0;
-#define OPTIONS "AaCDdE:FgH:hLlnopr:skS:Vv:x"
+#define OPTIONS "AaCDdE:FgH:hLlmnopr:skS:Vv:x"
 	static struct option lopt[] = {
 		{ "version",		0, 0, 'V' },
 		{ "help",		0, 0, 'h' },
@@ -138,6 +139,7 @@ int parse_cli (int argc, char **argv)
 		{ "wait-key",		0, 0, 'k' },
 		{ "no-x-shm",		0, 0, 'x' },
 		{ "aspect-ratio",       1, 0, 'r' },
+		{ "agimouse",		0, 0, 'm' },
 		{ "scale",		1, 0, 'S' },
 		{ "no-gfx-optimizations",0,0, 'g' }
 	};
@@ -196,9 +198,20 @@ int parse_cli (int argc, char **argv)
 		case 'A':
 			opt.amiga = TRUE;
 			break;
+		case 'a':
+			opt.agds = TRUE;
+			break;
 		case 'C':
 			opt.gamerun = GAMERUN_CRC;
 			break;
+		case 'c':
+			opt.cache = TRUE;
+			break;
+#ifdef OPT_LIST_DICT
+		case 'd':
+			opt.gamerun = GAMERUN_WORDS;
+			break;
+#endif
 		case 'E':
 			if (!strcmp (optarg, "pc"))
 				opt.soundemu = SOUND_EMU_PC;
@@ -215,6 +228,10 @@ int parse_cli (int argc, char **argv)
 		case 'F':
 			opt.fullscreen = TRUE;
 			break;
+		case 'f':
+			opt.forceload = TRUE;
+			opt.cache = TRUE;
+			break;
 		case 'L':
 			opt.gamerun = GAMERUN_GAMES;
 			break;
@@ -226,11 +243,12 @@ int parse_cli (int argc, char **argv)
 			opt.hires = strtoul (optarg, NULL, 0);
 			break;
 #endif
-#ifdef OPT_LIST_DICT
-		case 'd':
-			opt.gamerun = GAMERUN_WORDS;
+		case 'm':
+			opt.agimouse = TRUE;
 			break;
-#endif
+		case 'n':
+			opt.nosound = TRUE;
+			break;
 #ifdef OPT_LIST_OBJECTS
 		case 'o':
 			opt.gamerun = GAMERUN_OBJECTS;
@@ -241,9 +259,18 @@ int parse_cli (int argc, char **argv)
 			opt.gamerun = GAMERUN_PICVIEW;
 			break;
 #endif
-		case 'n':
-			opt.nosound = TRUE;
+#ifndef __MSDOS__
+		case 'r':
+			opt.fixratio = TRUE;
 			break;
+		case 'S':
+			opt.scale = strtoul (optarg, NULL, 0);
+			if (opt.scale < 1)
+				opt.scale = 1;
+			if (opt.scale > 4)
+				opt.scale = 4;
+			break;
+#endif
 		case 'v':
 			for (xc = 0; xc != 0xfff0 && cmp_versions[xc].vers; xc++) {
 				if (!strcmp ((char*)optarg, cmp_versions[xc].string)) {
@@ -257,28 +284,6 @@ int parse_cli (int argc, char **argv)
 				exit (-1);
 			}
 			break;
-		case 'a':
-			opt.agds = TRUE;
-			break;
-		case 'c':
-			opt.cache = TRUE;
-			break;
-		case 'f':
-			opt.forceload = TRUE;
-			opt.cache = TRUE;
-			break;
-#ifndef __MSDOS__
-		case 'r':
-			opt.fixratio = TRUE;
-			break;
-		case 'S':
-			opt.scale = strtoul (optarg, NULL, 0);
-			if (opt.scale < 1)
-				opt.scale = 1;
-			if (opt.scale > 4)
-				opt.scale = 4;
-			break;
-#endif
 #ifdef MITSHM
 		case 'x':
 			opt.mitshm = FALSE;
@@ -295,3 +300,4 @@ int parse_cli (int argc, char **argv)
 }
 
 #endif /* USE_COMMAND_LINE */
+

@@ -397,6 +397,7 @@ struct sarien_options {
 #endif
 	int soundemu;		/**< sound emulation mode */
 	int gfxhacks;		/**< enable graphics driver optimizations */
+	int agimouse;		/**< AGI Mouse 1.0 emulation */
 };
 
 extern struct sarien_options opt;

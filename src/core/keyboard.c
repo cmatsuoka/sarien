@@ -179,13 +179,15 @@ int handle_controller (int key)
 			}
 		}
 
-		/* Handle mouse button events */
-		if (key == BUTTON_LEFT) {
-			v->flags |= ADJ_EGO_XY;
-			v->parm1 = WIN_TO_PIC_X(mouse.x);
-			v->parm2 = WIN_TO_PIC_Y(mouse.y);
-			return TRUE;
-		} 
+		if (!opt.agimouse) {
+			/* Handle mouse button events */
+			if (key == BUTTON_LEFT) {
+				v->flags |= ADJ_EGO_XY;
+				v->parm1 = WIN_TO_PIC_X(mouse.x);
+				v->parm2 = WIN_TO_PIC_Y(mouse.y);
+				return TRUE;
+			} 
+		}
 
 		v->flags &= ~ADJ_EGO_XY;
 
