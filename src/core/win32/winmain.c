@@ -228,7 +228,7 @@ int WINAPI
 WinMain (HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int nWinMode)
 {
 	int ec = err_OK;
-	char *c	= NULL;
+	char *c, *t;
 	char filename[MAX_PATH]	= "";
 	
 	game.clock_enabled = FALSE;
@@ -245,14 +245,19 @@ WinMain (HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int nWinMode)
 #endif
 	opt.soundemu = SOUND_EMU_NONE;
 
-	for (c = GetCommandLine(); *c && *c != 0x20; c++);
+	c = GetCommandLine();
+
+	for (t = strtok(c, " "); t != NULL; t = strtok(NULL, " ")) {
+#ifdef OPT_PICTURE_VIEWER
+		if (!strcmp(t, "/p"))
+			opt.gamerun = GAMERUN_PICVIEW;
+#endif
+
+		c = t;
+	}
 
 	if (*c)
-		strcpy (filename, ++c);
-/*
-	else
-		open_file (hThisInst, filename);
-*/
+		strcpy (filename, c);
 
 	init_machine (1, 0);
 
@@ -271,6 +276,23 @@ WinMain (HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int nWinMode)
 	if (init_video () != err_OK)
 		goto bail_out4;
 	
+#ifdef OPT_PICTURE_VIEWER
+	if (opt.gamerun == GAMERUN_PICVIEW) {
+		console.y = 0;
+		if (agi_detect_game (filename ? filename :
+			get_current_directory ()) == err_OK)
+		{
+			game.state = STATE_LOADED;
+		}
+		do { main_cycle (); } while (game.state < STATE_LOADED);
+		
+		agi_init ();
+		view_pictures ();
+
+		goto bail_out;
+	}
+#endif
+
 	console_init ();
 	report ("--- Starting console ---\n\n");
 	if (!opt.gfxhacks)

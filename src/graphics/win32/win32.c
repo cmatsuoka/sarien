@@ -248,9 +248,9 @@ static void resize_window(HWND hwnd)
 	SetWindowPos(
 		hwnd, HWND_TOP,
 		0, 0,
-		xsize + GetSystemMetrics (SM_CXFRAME),
+		xsize + GetSystemMetrics (SM_CXFRAME) * 2,
 		ysize + GetSystemMetrics (SM_CYCAPTION) +
-			GetSystemMetrics (SM_CYFRAME) +
+			GetSystemMetrics (SM_CYFRAME) * 2 +
 			GetSystemMetrics (SM_CYMENU),
 		SWP_NOMOVE | SWP_NOZORDER
 	);
@@ -262,6 +262,7 @@ static void refresh_screen()
 	show_pic ();
 	blit_both ();
 	commit_both ();
+	put_screen ();
 }
 
 LRESULT CALLBACK
@@ -636,9 +637,9 @@ static int init_vidmode ()
 		WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		xsize + GetSystemMetrics (SM_CXFRAME),
+		xsize + GetSystemMetrics (SM_CXFRAME) * 2,
 		ysize + GetSystemMetrics (SM_CYCAPTION) +
-			GetSystemMetrics (SM_CYFRAME) +
+			GetSystemMetrics (SM_CYFRAME) * 2 +
 			GetSystemMetrics (SM_CYMENU),
 		NULL,
 		NULL,

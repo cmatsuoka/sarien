@@ -1,3 +1,4 @@
+# $Id$
 
 prefix		= /usr/local
 exec_prefix 	= /usr/local
@@ -6,24 +7,35 @@ LIB_DIR		= ${exec_prefix}/lib
 MAN_DIR		= ${prefix}/man/man1
 
 CC		= gcc
-CFLAGS		= -O2 -Wall -DVERSION='"$(VERSION)"' -U_TRACE \
-		  -DSTACK_PUSHPOP -DNO_DEBUG
+CFLAGS		= -g -O2 -Wall -DELIDE_CODE -U_TRACE -DINLINE=inline -DPACKAGE_NAME=\"\" -DPACKAGE_TARNAME=\"\" -DPACKAGE_VERSION=\"\" -DPACKAGE_STRING=\"\" -DPACKAGE_BUGREPORT=\"\" -DHAVE_WINGDI_H=1 -DSTDC_HEADERS=1 -DHAVE_STRING_H=1 -DHAVE_GETOPT_H=1 -DHAVE_DIRENT_H=1 -DHAVE_TIME_H=1 -DTIME_WITH_SYS_TIME=1 -DHAVE_VPRINTF=1 -DHAVE_VSNPRINTF=1 -DHAVE_GETTIMEOFDAY=1 -DHAVE_GETOPT_LONG=1  -DVERSION='"$(VERSION)"'
 LD		= gcc
-LDFLAGS		= -o $@
-LIBS		= -lkernel32 -lgdi32 -luser32
+LDFLAGS		= -o $@ 
+LIBS		= -lwinmm -lgdi32 -lcomdlg32
 RANLIB		= ranlib
-INSTALL		= ./scripts/install-sh -c
+INSTALL		= /usr/bin/install -c
+WINDRES		= windres
+X11CFLAGS	= 
+X11LIBS		=  
+WINLDFLAGS	=  -Wl,--subsystem,windows,-e,_mainCRTStartup
 SHELL		= /bin/sh
 MAKEFILE	= Makefile
 STRIP		= strip
+LINT		= lclint
+LINTFLAGS	= +matchanyintegral +charint +ignoresigns \
+		  -unrecog -predboolint -predboolothers -retvalint
 
-SOUND_DRIVER	= dummy
+SOUND_DRIVER	= win32
 CONSOLE_DRIVER	= win32
-FILEIO_DRIVER	= win32
+FILEIO_DRIVER	= unix
+ARCH_SUBDIR	= arch
+CORE_ARCH	= win32
+MAIN_FILE	= win32/winmain
+EXE_SUFFIX	= .exe
 
 #
 # Ideally it should not be necessary to tweak parameters below this line
 #
+.SUFFIXES: .c .o .a .so .html .sgml .lint
 
 .c.o:
 	$(CC) -c $(CFLAGS) $(XCFLAGS) -o $@ $<
@@ -31,10 +43,13 @@ FILEIO_DRIVER	= win32
 .o.so:
 	ld -shared -o $@ $<
 
+.c.lint:
+	$(LINT) $(LINTFLAGS) $(XCFLAGS) $<
+
 dummy:
 
 clean distclean::
-	rm -f *.o core errlist depend $(BIN) $(CFILES)
+	rm -f *.o errlist depend $(BIN) $(CFILES)
 ifdef DDIRS
 	@for i in $(DDIRS); do \
 		(cd $$i; [ -f $(MAKEFILE) ] && $(MAKE) $@) \
@@ -46,7 +61,9 @@ distclean::
 
 depend:       
 	@echo Building dependencies...
-	@$(CC) $(CFLAGS) $(XCFLAGS) -MM -MG $(OBJS:.o=.c) $(XDEPS:.o=.c) >$@
+	@$(CC) $(CFLAGS) $(XCFLAGS) -M $(OBJS:.o=.c) $(XDEPS:.o=.c) >$@
+
+lint:
 
 $(OBJS): $(MAKEFILE)
 
@@ -54,7 +71,7 @@ $(LIB): $(LIB)($(OBJS) $(XOBJS))
 	$(RANLIB) $(LIB)
 
 subdist:
-	cp -dp $(DFILES) $(DISTDIR)
+	cp -dp $(DFILES) $(XDFILES) $(DISTDIR)
 ifdef DDIRS
 	for i in $(DDIRS); do \
 		mkdir $(DISTDIR)/$$i; \

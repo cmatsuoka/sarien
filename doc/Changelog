@@ -36,6 +36,7 @@ Revision History
 	- added CGA palette emulation
 	- added CGA video card support for PC DOS
 	- added icon and menu resources to the win32 port
+	- added picture viewer to the win32 port
 	- added runtime screen size, palette and aspect ratio settings
 	  to the win32 port
 
