@@ -192,7 +192,7 @@ void shake_screen (int n)
 	
 	memset (c, 0, GFX_WIDTH * GFX_HEIGHT);
 	memcpy (b, layer1_data, GFX_WIDTH * GFX_HEIGHT);
-	for (i = 0; i < (200 - MAG); i++)
+	for (i = 0; i < (GFX_HEIGHT - MAG); i++)
 		memcpy (&c[GFX_WIDTH * (i + MAG) + MAG],
 			&b[GFX_WIDTH * i], GFX_WIDTH - MAG);
 

@@ -477,15 +477,16 @@ void cmd_word_to_string (UINT8 sn, UINT8 wn)
 /* FIXME: remove lowlevel print_text() call from here */
 void cmd_get_num (UINT8 logic, UINT8 msg, UINT8 num)
 {
-	UINT8	*p=NULL;
+	char *p;
 
-	if (logics[logic].texts!=NULL && (msg-1)<=logics[logic].num_texts) {
+	if (logics[logic].texts != NULL && (msg-1) <= logics[logic].num_texts) {
 		p = agi_printf (logics[logic].texts[msg-1], logic);
-		print_text (p, 0, 0, 23*CHAR_LINES, strlen ((char*)p) + 1, txt_fg, txt_bg);
-		p = get_string (8* (strlen ((char*)p)-1), 23*8, 4);
-		while (*p!=0x0 && isspace (*p)!=0)
+		print_text (p, 0, 0, 23 * CHAR_LINES, strlen (p) + 1,
+			txt_fg, txt_bg);
+		p = get_string ((strlen (p) - 1) * CHAR_COLS, 23 * CHAR_LINES, 4);
+		while (*p && isspace (*p))
 			p++;
-		setvar (num, (UINT8)atoi ((char*)p));
+		setvar (num, (UINT8)atoi (p));
 	}
 }
 
@@ -1115,12 +1116,12 @@ void cmd_quit (UINT8 f)
 
 void cmd_display (UINT8 logic, UINT8 y, UINT8 x, UINT8 msg)
 {
-	UINT8	*p;
+	char *p;
 
-	/*_D (("(%d, %d, %d, %d)", logic, y, x, msg));*/
-	if (logics[logic].texts!=NULL && (msg-1)<=logics[logic].num_texts) {
+	if (logics[logic].texts != NULL && (msg-1) <= logics[logic].num_texts) {
 		p = agi_printf (logics[logic].texts[msg-1], logic);
-		print_text (p, x*8, 0, y*8, 40, txt_fg, txt_bg);
+		print_text (p, x * CHAR_COLS, 0, y * CHAR_LINES, 40,
+			txt_fg, txt_bg);
 	}
 }
 
