@@ -23,11 +23,26 @@
 #include <pthread.h>
 #include <Pt.h>
 #include <Ph.h>
+#include <photon/Pf.h>
+#include <photon/PhRender.h>
 
 #include "sarien.h"
 #include "graphics.h"
 #include "keyboard.h"
 #include "agi.h"
+
+typedef struct
+{
+	PhImage_t *img;
+	PhImage_t *behind_img;
+	PhPoint_t pos;
+
+	struct mouse sarien_mouse;
+} ph_mouse_t;
+
+#define PH_MOUSE_CURSOR_W 10
+#define PH_MOUSE_CURSOR_H 16
+#define PH_MOUSE_TRANS_COL 2
 
 extern struct sarien_options opt;
 extern struct gfx_driver *gfx;
@@ -43,7 +58,7 @@ static char **__argv;
 static PgDisplaySettings_t oldvidmode;
 static PdDirectContext_t *dc;
 
-static struct mouse ph_mouse;
+static ph_mouse_t ph_mouse;
 
 #define KEY_QUEUE_SIZE 16
 static int key_queue[KEY_QUEUE_SIZE];
@@ -70,6 +85,7 @@ static int	ph_keypress_cb	(PtWidget_t *, void *, PtCallbackInfo_t *);
 static int	ph_cause_damage	(void *, int, void *, size_t);
 static int	ph_mouse_cb	(PtWidget_t *widget, void *data, PtCallbackInfo_t *cb);
 static int	ph_close_cb	(PtWidget_t *widget, void *data, PtCallbackInfo_t *cb);
+static void	ph_setup_mouse_image (void);
 
 static pthread_t ph_tid;
 static PhImage_t *phimage;
@@ -81,6 +97,24 @@ static PtWidget_t *rawwidget;
 
 static int ph_coid;
 static int ph_chid;
+
+static char ph_cursor_img_data[] = {
+ 0, 0, 2, 2, 2, 2, 2, 2, 2, 2,
+ 0,15, 0, 2, 2, 2, 2, 2, 2, 2,
+ 0,15,15, 0, 2, 2, 2, 2, 2, 2,
+ 0,15,15,15, 0, 2, 2, 2, 2, 2,
+ 0,15,15,15,15, 0, 2, 2, 2, 2,
+ 0,15,15,15,15,15, 0, 2, 2, 2,
+ 0,15,15,15,15,15,15, 0, 2, 2,
+ 0,15,15,15,15,15,15,15, 0, 2,
+ 0,15,15,15,15,15,15,15,15, 0,
+ 0,15,15,15,15,15, 0, 0, 0, 0,
+ 0,15,15, 0,15,15, 0, 2, 2, 2,
+ 0,15, 0, 2, 0,15,15, 0, 2, 2,
+ 0, 0, 2, 2, 0,15,15, 0, 2, 2,
+ 0, 2, 2, 2, 2, 0,15,15, 0, 2,
+ 2, 2, 2, 2, 2, 0,15,15, 0, 2,
+ 2, 2, 2, 2, 2, 2, 0, 0, 2, 2 };
 
 static struct gfx_driver GFX_ph = {
 	init_vidmode,
@@ -138,8 +172,15 @@ static int init_vidmode (void)
 static int deinit_vidmode ()
 {
 	fprintf (stderr, "ph: deiniting video mode\n");
-	pthread_cancel (ph_tid);
+
+	PtEnter(0);
+
+	pthread_mutex_lock (&mut_image);
+
 	PhReleaseImage(phimage);
+	phimage = NULL;
+
+	pthread_mutex_unlock (&mut_image);
 
 	if (opt.fullscreen)
 	{
@@ -148,6 +189,8 @@ static int deinit_vidmode ()
 		PgSetVideoMode (&oldvidmode);
 	}
 
+	PtLeave(0);
+	
 	return err_OK;
 }
 
@@ -188,6 +231,9 @@ static void ph_put_pixels (int x, int y, int w, UINT8 *p)
 	register int i, j;
 
 	pthread_mutex_lock (&mut_image);
+
+	if (!phimage)
+		return;
 
 	switch (scale) {
 	case 1:
@@ -276,7 +322,7 @@ static void ph_update_mouse(void)
 {
 	pthread_mutex_lock (&mut_mouse);
 
-	mouse = ph_mouse;
+	mouse = ph_mouse.sarien_mouse;
 
 	pthread_mutex_unlock (&mut_mouse);
 }
@@ -374,6 +420,11 @@ void *photon_thread (void *pidarg)
 
 	if (opt.fullscreen)
 	{
+		ph_setup_mouse_image();
+
+		/* Move cursor offscreen */
+		PhMoveCursorAbs (PhInputGroup(NULL), dim.w + 1, dim.h + 1);
+
 		olddc = PhDCGetCurrent();
 		PdGetDevices(&rid, 1);
 		PdSetTargetDevice (olddc, rid);
@@ -425,6 +476,9 @@ static void ph_draw_image (PhRect_t *area)
 	PgSetPalette( ph_pal, 0, 0, 32, Pg_PALSET_SOFT, 0);
 
 	pthread_mutex_lock (&mut_image);
+
+	if (!phimage)
+		return;
 	
 	PgDrawPhImageRectmx (&(area->ul), phimage, area, 0);
 	
@@ -467,7 +521,8 @@ static int ph_keypress_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 	key_event = PhGetData(cb->event);
 	if (key_event->key_flags & Pk_KF_Key_Down)
 	{	
-		switch (key = key_event->key_cap) 
+//		switch (key = key_event->key_cap) 
+		switch (key = key_event->key_sym) 
 		{
 			case Pk_Shift_L:
 			case Pk_Shift_R:
@@ -627,7 +682,7 @@ static int ph_mouse_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 
 	if (cb->event->type == Ph_EV_BUT_PRESS)
 	{
-		ph_mouse.button = TRUE;
+		ph_mouse.sarien_mouse.button = TRUE;
 		pthread_sleepon_lock();
 
 		key_enqueue ((mouse_event->buttons == Ph_BUTTON_SELECT) 
@@ -638,14 +693,21 @@ static int ph_mouse_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 
         /* If all buttons released */
 	if (cb->event->type == Ph_EV_BUT_RELEASE)
-		ph_mouse.button = FALSE;
+		ph_mouse.sarien_mouse.button = FALSE;
 
-	ph_mouse.x = PhGetRects(cb->event)->ul.x / opt.scale;
-	ph_mouse.y = PhGetRects(cb->event)->ul.y / opt.scale;
+	ph_mouse.sarien_mouse.x = PhGetRects(cb->event)->ul.x / opt.scale;
+	ph_mouse.sarien_mouse.y = PhGetRects(cb->event)->ul.y / opt.scale;
+
+	if (opt.fullscreen)
+	{
+		// XXX: Actually buffer it.
+		ph_mouse.pos = PhGetRects(cb->event)->ul;
+		PgDrawPhImage (&(ph_mouse.pos), ph_mouse.img, Ph_USE_TRANSPARENCY);
+	}
 #if 0
 	/* FIXME: Photon driver doesn't support this flag yet */
         if (opt.fixratio)
-		ph_mouse.y = ph_mouse.y * 5 / 6;
+		ph_mouse.sarien_mouse.y = ph_mouse.sarien_mouse.y * 5 / 6;
 #endif
 
 	pthread_mutex_unlock (&mut_mouse);
@@ -655,9 +717,9 @@ static int ph_mouse_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 
 static int ph_close_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 {
-	fprintf (stderr, "In ph_close_cb!\n");
-	game.quit_prog_now = TRUE;
-	/* FIXME: It'd be fun to pop up a message box. */
+	deinit_machine();
+	deinit_vidmode();
+	PtExit(0);
 
 	return (Pt_CONTINUE);
 }
@@ -677,3 +739,26 @@ static int ph_cause_damage (void *data, int rcvid, void *message, size_t mbsize)
 	return (Pt_CONTINUE);
 }
 
+static void ph_setup_mouse_image(void)
+{
+	PhDim_t imgsize = { PH_MOUSE_CURSOR_W, PH_MOUSE_CURSOR_H };
+	PhPoint_t pos = { 0, 0 };
+	int i, j;
+
+	ph_mouse.img = PhCreateImage (NULL, imgsize.w, imgsize.h,
+		Pg_IMAGE_PALETTE_BYTE, ph_pal, 32, 1);
+
+	ph_mouse.behind_img = PhCreateImage (NULL, imgsize.w, imgsize.h,
+		Pg_IMAGE_PALETTE_BYTE, ph_pal, 32, 1);
+
+
+	/* Copy the image from phmouse.h into the mouse image in a
+	   completely device-independant manner */
+
+	for (i = 0; i < PH_MOUSE_CURSOR_W; i ++)
+		for (j = 0; j < PH_MOUSE_CURSOR_H; j ++)
+			PiSetPixel (ph_mouse.img, i, j,
+				ph_cursor_img_data[i + (j * PH_MOUSE_CURSOR_W)]);
+
+	PhMakeTransBitmap (ph_mouse.img, PH_MOUSE_TRANS_COL | Pg_INDEX_COLOR);
+}
