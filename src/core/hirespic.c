@@ -14,6 +14,9 @@ static void fix_pixel_bothsides (int x, int y)
 {
 	UINT8 *p, *s;
 
+	if (x >= (_WIDTH * 2) - 2)
+		return;
+
 	/* Sometimes a solid color area in the lo-res pic is made
 	 * with lines, and we want to keep this  effect in the
 	 * hi-res pic.
