@@ -156,6 +156,7 @@ struct agi_game {
 #define INPUT_MENU	0x03
 #define INPUT_NONE	0x04
 	int input_mode;		/**< keyboard input mode */
+	int input_enabled;	/**< keyboard input enabled */
 	int lognum;		/**< current logic number */
 
 	/* internal flags */

@@ -125,8 +125,6 @@ cmd(show_obj)		{ show_obj (p0); }
 cmd(show_obj_v)		{ show_obj (_v[p0]); }
 cmd(sound)		{ start_sound (p0, p1); }
 cmd(stop_sound)		{ stop_sound (); }
-cmd(accept_input)	{ new_input_mode (INPUT_NORMAL); }
-cmd(prevent_input)	{ new_input_mode (INPUT_NONE); }
 cmd(menu_input)		{ new_input_mode (INPUT_MENU); }
 cmd(enable_item)	{ menu_set_item (p0, TRUE); }
 cmd(disable_item)	{ menu_set_item (p0, FALSE); }
@@ -623,6 +621,16 @@ cmd(distance) {
 		d = 0xff;
 	}
 	_v[p2] = (unsigned char)d;
+}
+
+cmd(accept_input) {
+	new_input_mode (INPUT_NORMAL);
+	game.input_enabled = TRUE;
+}
+
+cmd(prevent_input) {
+	new_input_mode (INPUT_NONE);
+	game.input_enabled = FALSE;
 }
 
 cmd(get_string) {

@@ -145,6 +145,9 @@ static void interpret_cycle ()
  */
 static void print_line_prompt ()
 {
+	if (!game.input_enabled)
+		return;
+
 	_D (_D_WARN "input mode = %d", game.input_mode);
 	if (game.input_mode == INPUT_NORMAL) {
 		_D (_D_WARN "prompt = '%s'", agi_sprintf (game.strings[0]));
@@ -265,7 +268,7 @@ int main_cycle ()
 		switch (game.input_mode) {
 		case INPUT_NORMAL:
 			if (!handle_controller (key)) {
-				if (key == 0)
+				if (key == 0 || !game.input_enabled)
 					break;
 				handle_keys (key);
 				/* commented out to close bug #438872
@@ -382,6 +385,7 @@ int run_game ()
 		setvar (V_monitor, 0x3);		/* EGA monitor */
 		setvar (V_max_input_chars, 38);
 		game.input_mode = INPUT_NONE;
+		game.input_enabled = 0;
 		game.has_prompt = 0;
 
 		game.state = STATE_RUNNING;
