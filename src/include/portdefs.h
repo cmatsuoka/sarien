@@ -67,6 +67,7 @@
 #  include <Memory.h>
 #  define malloc(x)	((void *)NewPtr (x))
 #  define calloc(x,s)	((void *)NewPtrClear ((x) * (s)))
+#  define realloc(x,s)	/* FIXME */
 #  define free(x)	DisposePtr ((Ptr)(x))
 #  undef USE_HIRES
 #  undef USE_COMMAND_LINE

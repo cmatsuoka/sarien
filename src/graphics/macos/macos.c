@@ -197,7 +197,6 @@ _putpixels_fixratio_scale1 (16);
 _putpixels_fixratio_scale1 (32);
 
 #if 0
-/* Don't need these for MacOS */
 _putpixels_fixratio_scale2 (8);
 _putpixels_fixratio_scale2 (16);
 _putpixels_fixratio_scale2 (32);
@@ -219,15 +218,10 @@ static int set_palette (UINT8 *pal, int scol, int numcols)
 			break;
 #endif
 		case 15:
+		case 16:
 			rgb_palette[i] =
 				((int)(pal[i * 3] & 0x3e) << 9) |
 				((int)(pal[i * 3 + 1] & 0x3e) << 4) |
-				((int)(pal[i * 3 + 2] & 0x3e) >> 1);
-			break;
-		case 16:
-			rgb_palette[i] =
-				((int)(pal[i * 3] & 0x3e) << 10) |
-				((int)(pal[i * 3 + 1] & 0x3f) << 5) |
 				((int)(pal[i * 3 + 2] & 0x3e) >> 1);
 			break;
 		case 24:
