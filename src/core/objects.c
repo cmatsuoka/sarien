@@ -17,6 +17,7 @@
 #include "console.h"
 
 extern struct agi_game game;
+extern int decode_objects(UINT8* mem, UINT32 flen);
 
 struct agi_object {
         int location;
@@ -25,22 +26,76 @@ struct agi_object {
 
 static struct agi_object *objects;		/* objects in the game */
 
+int decode_objects(UINT8* mem, UINT32 flen)
+{
+#ifndef PALMOS
+	int i, so, padsize;
+
+	padsize = game.game_flags & ID_AMIGA ? 4 : 3;
+
+	game.num_objects = 0;
+	objects = NULL;
+	
+	/* check if first pointer exceeds file size
+	 * if so, its encrypted, else it is not
+	 */
+
+	if (lohi_getword (mem) > flen) {
+		report ("Decrypting objects... ");
+		decrypt (mem, flen);
+		report ("done.\n");
+	}
+
+	/* alloc memory for object list
+	 * byte 3 = number of animated objects. this is ignored.. ??
+	 */
+	if (lohi_getword(mem) / padsize >= 256)
+	{
+#ifdef AGDS_SUPPORT
+    		/* die with no error! AGDS game needs not to die to work!! :( */
+		return err_OK;
+#else
+		/* no AGDS support, die with error */
+		return err_BadResource;
+#endif
+	}
+
+	game.num_objects = lohi_getword(mem) / padsize;
+	_D ("num_objects = %d", game.num_objects);
+
+    	if ((objects = calloc (game.num_objects, sizeof(struct agi_object))) == NULL) {
+    		return err_NotEnoughMemory;
+	}
+
+    	/* build the object list */
+    	for (i = 0, so = padsize; i < game.num_objects; i++, so += padsize) {
+		(objects + i)->location = lohi_getbyte (mem + so + 2);
+    		if ((lohi_getword (mem + so) + padsize) < flen) {
+			(objects+i)->name = strdup (mem +
+				(lohi_getword (mem + so) + padsize));
+	    	} else {
+	    		printf ("ERROR: object %i name beyond object filesize! "
+				"(%04x)\n", i, (lohi_getword (mem + so) + 3));
+	    		(objects+i)->name = strdup ("");
+	    	}
+    	}
+#endif
+	return err_OK;
+
+}
 
 int load_objects (char *fname)
 {
 #ifndef PALMOS
-	int i, so, padsize;
 	FILE *fp;
 	UINT32 flen;
 	UINT8 *mem;
 	char *path;
 
+	objects=NULL;
+	game.num_objects=0;
+
 	_D ("(fname = %s)", fname);
-	padsize = game.game_flags & ID_AMIGA ? 4 : 3;
-
-	game.num_objects = 0;
-	objects = NULL;
-
 	path = fixpath (NO_GAMEDIR, fname);
 	report ("Loading objects: %s\n", path);
 
@@ -57,58 +112,11 @@ int load_objects (char *fname)
 	}
 
 	fread (mem, 1, flen, fp);
+	fclose(fp);
 
-	/* check if first pointer exceeds file size
-	 * if so, its encrypted, else it is not
-	 */
-
-	if (lohi_getword (mem) > flen) {
-		report ("Decrypting objects... ");
-		decrypt (mem, flen);
-		report ("done.\n");
-	}
-
-	/* alloc memory for object list
-	 * byte 3 = number of animated objects. this is ignored.. ??
-	 */
-	if (lohi_getword(mem) / padsize >= 256) {
-		fclose (fp);
-		free (mem);
-#ifdef AGDS_SUPPORT
-    		/* die with no error! AGDS game needs not to die to work!! :( */
-		return err_OK;
-#else
-		/* no AGDS support, die with error */
-		return err_BadResource;
+	decode_objects(mem, flen);
+	free(mem);
 #endif
-	}
-
-	game.num_objects = lohi_getword(mem) / padsize;
-	_D ("num_objects = %d", game.num_objects);
-
-    	if ((objects = calloc (game.num_objects, sizeof(struct agi_object))) == NULL) {
-		fclose (fp);
-		free (mem);
-    		return err_NotEnoughMemory;
-	}
-
-    	/* build the object list */
-    	for (i = 0, so = padsize; i < game.num_objects; i++, so += padsize) {
-		(objects + i)->location = lohi_getbyte (mem + so + 2);
-    		if ((lohi_getword (mem + so) + padsize) < flen) {
-			(objects+i)->name = strdup (mem +
-				(lohi_getword (mem + so) + padsize));
-	    	} else {
-	    		printf ("ERROR: object %i name beyond object filesize! "
-				"(%04x)\n", i, (lohi_getword (mem + so) + 3));
-	    		(objects+i)->name = strdup ("");
-	    	}
-    	}
-
-    	free(mem);
-	fclose (fp);
-#endif
-
 	return err_OK;
 }
 

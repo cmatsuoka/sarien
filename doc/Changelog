@@ -23,6 +23,7 @@ Revision History
 	- case-insensitive matching to load AGI resource files in UNIX
 	- portability fixes
 	- added agi2pdb to the utilities set
+	- added preliminary v4 driver (to directly load PalmOS DB files)
 
 0.5.2 (20000512) *DEVELOPMENT*
 	- Fixed speach bubbles bug for going outside of screen (draw_obj)

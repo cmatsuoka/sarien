@@ -101,6 +101,10 @@ SOURCE=..\src\core\agi_v3.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\SRC\CORE\AGI_V4.C
+# End Source File
+# Begin Source File
+
 SOURCE=..\src\core\cli.c
 # End Source File
 # Begin Source File

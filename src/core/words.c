@@ -16,40 +16,19 @@
 #include "console.h"
 
 static struct agi_word *words;			/* words in the game */
+extern int decode_words(UINT8* mem, UINT32 flen);
 
 static int num_words, num_syns;
 
-
-int load_words (char *fname)
+int decode_words (UINT8* mem, UINT32 flen)
 {
 #ifndef PALMOS
 	int sc, wc, woff, wid;
-	FILE *fp;
-	UINT32 flen;
-	UINT8 *mem, x[128], c;
-	char *path;
+	UINT8 c, x[128];
 
 	num_words = 0;
 	num_syns = 0;
 	words = NULL;
-
-	path = fixpath (NO_GAMEDIR, fname);
-	report ("Loading dictionary: %s\n", path);
-
-	if ((fp = fopen(path, "rb")) == NULL)
-		return err_BadFileOpen;
-
-	fseek (fp, 0, SEEK_END);
-	flen = ftell (fp);
-	fseek (fp, 0, SEEK_SET);
-
-	if ((mem = (UINT8*)calloc(1, flen+32)) == NULL) {
-		fclose (fp);
-		return err_NotEnoughMemory;
-	}
-
-	fread(mem, 1, flen, fp);
-	fclose (fp);
 
 	/* scan for first entry with words */
 	for (wc = woff = 0; woff == 0 && woff < flen; wc += 2)
@@ -82,9 +61,7 @@ int load_words (char *fname)
 		woff = hilo_getword(mem+wc);
 
 	/* alloc word memory */
-
 	if ((words = calloc (num_words, sizeof(struct agi_word))) == NULL) {
-		free(mem);
 		return err_NotEnoughMemory;
 	}
 
@@ -103,6 +80,45 @@ int load_words (char *fname)
 	}
 
 	return err_OK;
+#endif
+}
+
+
+int load_words (char *fname)
+{
+#ifndef PALMOS
+	FILE *fp;
+	UINT32 flen;
+	UINT8 *mem;
+	char *path;
+	int	ec=err_OK;
+
+	num_words = 0;
+	num_syns = 0;
+	words = NULL;
+
+	path = fixpath (NO_GAMEDIR, fname);
+	report ("Loading dictionary: %s\n", path);
+
+	if ((fp = fopen(path, "rb")) == NULL)
+		return err_BadFileOpen;
+
+	fseek (fp, 0, SEEK_END);
+	flen = ftell (fp);
+	fseek (fp, 0, SEEK_SET);
+
+	if ((mem = (UINT8*)calloc(1, flen+32)) == NULL) {
+		fclose (fp);
+		return err_NotEnoughMemory;
+	}
+
+	fread(mem, 1, flen, fp);
+	fclose (fp);
+
+	ec=decode_words(mem, flen);
+	free(mem);
+
+	return ec;
 #endif
 }
 

@@ -32,6 +32,7 @@ volatile UINT32	msg_box_secs2;		/* message box timeout in sec/2 */
 
 extern struct agi_loader agi_v2;
 extern struct agi_loader agi_v3;
+extern struct agi_loader agi_v4;
 
 extern struct agi_picture pictures[];
 extern struct agi_logic logics[];
@@ -110,11 +111,11 @@ int agi_init ()
 	ec = loader->init ();		/* load vol files, etc */
 
 	if (ec == err_OK)
-		ec = load_objects (OBJECTS);
+		ec = loader->load_objects(OBJECTS);
 
 	/* CM: ec= commented out, demogs has no words.tok */
 	if(ec == err_OK)
-		/*ec =*/ load_words(WORDS);
+		/*ec =*/ loader->load_words(WORDS);
 
 	/* FIXME: load IIgs instruments and samples */
 	/* load_instruments("kq.sys16"); */
@@ -215,6 +216,12 @@ int agi_detect_game (char *gn)
 	if (ec != err_OK) {
 		loader = &agi_v3;
 		ec = loader->detect_game (gn);
+	}
+
+	if(ec!=err_OK)
+	{
+		loader = &agi_v4;
+		ec=loader->detect_game(gn);
 	}
 
 	return ec;

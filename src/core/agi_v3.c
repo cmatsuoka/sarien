@@ -26,6 +26,8 @@ static int agi_v3_deinit (void);
 static int agi_v3_detect_game (char *);
 static int agi_v3_load_resource (int, int);
 static int agi_v3_unload_resource (int, int);
+static int agi_v3_load_objects(char *);
+static int agi_v3_load_words(char *);
 
 extern struct agi_picture pictures[];
 extern struct agi_logic logics[];
@@ -39,7 +41,9 @@ struct agi_loader agi_v3 = {
 	agi_v3_deinit,
 	agi_v3_detect_game,
 	agi_v3_load_resource,
-	agi_v3_unload_resource
+	agi_v3_unload_resource,
+	agi_v3_load_objects,
+	agi_v3_load_words
 };
 
 
@@ -383,3 +387,12 @@ int agi_v3_load_resource (int restype, int resnum)
 	return ec;
 }
 
+static int agi_v3_load_objects(char *fname)
+{
+	return load_objects(fname);
+}
+
+static int agi_v3_load_words(char *fname)
+{
+	return load_words(fname);
+}

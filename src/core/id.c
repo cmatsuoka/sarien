@@ -26,6 +26,10 @@
  */
 
 
+int setup_v2_game(int ver, UINT32 crc);
+int setup_v3_game(int ver, UINT32 crc);
+int v4id_game (UINT32 crc);
+
 void list_games ()
 {
 }
@@ -97,16 +101,21 @@ static UINT32 match_crc (UINT32 crc, char *path)
  */
 static UINT32 match_version (UINT32 crc)
 {
-#ifndef _M_MSDOS
+
+#ifdef WIN32
 	char buf[256];
 	int ver;
+	char *q;
 
-	snprintf (buf, 256, "%s/.sarienrc", getenv ("HOME"));
+	strcpy(buf, "./");
 
-	if (!(ver = match_crc (crc, buf)))
-		ver = match_crc (crc, "/etc/sarien.conf");
-#endif
-
+	if(getenv("SARIEN")!=NULL)
+	{
+		sprintf(buf, "%s/%s", getenv("SARIEN"), "sarien.ini");
+	}
+	strcat(buf, "/sarien.ini");
+	ver = match_crc (crc, buf);
+#else
 #ifdef _M_MSDOS
 	char buf[256];
 	int ver;
@@ -130,8 +139,16 @@ static UINT32 match_version (UINT32 crc)
 
 	_D("sarien conf : (%s)", buf);
 	ver = match_crc (crc, buf);
-#endif
+#else
+	char buf[256];
+	int ver;
 
+	snprintf (buf, 256, "%s/.sarienrc", getenv ("HOME"));
+
+	if (!(ver = match_crc (crc, buf)))
+		ver = match_crc (crc, "/etc/sarien.conf");
+#endif
+#endif
 	return ver;
 }
 
@@ -163,40 +180,8 @@ int v2id_game ()
 
 	ver = match_version (crc);
 	agi_set_release (ver);
-
-	if (ver == 0) {
-		printf("Unknown Sierra Game Version: %08lx\n", crc);
-		agi_set_release (0x2917);
-	}
-
-	/* setup the differences in the opcodes and other bits in the
-	 * AGI v2 specs
-	 */
-	if (opt.emuversion)
-		agi_set_release (opt.emuversion);
-
-	if (opt.agds)
-		agi_set_release (0x2440);/* ALL AGDS games built for 2.440 */
-
-	switch(agi_get_release ()) {
-	case 0x2089:
-		logic_names_cmd[0x86].num_args=0;	/* quit: 0 args */
-	case 0x2272:
-		logic_names_cmd[0x97].num_args=3;	/* print.at: 3 args */
-		logic_names_cmd[0x98].num_args=3;	/* print.at.v: 3 args */
-		break;
-	case 0x2440:
-		break;
-	case 0x2917:
-		break;
-	case 0x2936:
-		break;
-	default:
-		printf("** Cannot setup for unknown version\n");
-		ec=err_UnknownAGIVersion;
-		break;
-	}
-
+	ec=setup_v2_game(ver, crc);
+	
 	return ec;
 }
 
@@ -251,6 +236,72 @@ int v3id_game ()
 	ver = match_version (crc);
 	agi_set_release (ver);
 
+	ec=setup_v3_game(ver, crc);
+
+	
+	return ec;
+}
+
+int v4id_game (UINT32 crc)
+{
+	int ec = err_OK, y, ver;	
+
+	ver = match_version (crc);
+	agi_set_release (ver);
+	
+	switch((ver>>12)&0xFF)
+	{
+		case 2: ec=setup_v2_game(ver, crc); break;
+		case 3: ec=setup_v3_game(ver, crc); break;
+	}
+			
+	return ec;
+}
+
+int setup_v2_game(int ver, UINT32 crc)
+{
+	int ec=err_OK;
+	
+	if (ver == 0) {
+		printf("Unknown Sierra Game Version: %08lx\n", crc);
+		agi_set_release (0x2917);
+	}
+
+	/* setup the differences in the opcodes and other bits in the
+	 * AGI v2 specs
+	 */
+	if (opt.emuversion)
+		agi_set_release (opt.emuversion);
+
+	if (opt.agds)
+		agi_set_release (0x2440);/* ALL AGDS games built for 2.440 */
+
+	switch(agi_get_release ()) {
+	case 0x2089:
+		logic_names_cmd[0x86].num_args=0;	/* quit: 0 args */
+	case 0x2272:
+		logic_names_cmd[0x97].num_args=3;	/* print.at: 3 args */
+		logic_names_cmd[0x98].num_args=3;	/* print.at.v: 3 args */
+		break;
+	case 0x2440:
+		break;
+	case 0x2917:
+		break;
+	case 0x2936:
+		break;
+	default:
+		printf("** Cannot setup for unknown version\n");
+		ec=err_UnknownAGIVersion;
+		break;
+	}
+
+	return ec;
+}
+
+int setup_v3_game(int ver, UINT32 crc)
+{
+	int ec=err_OK;
+	
 	if (ver == 0) {
 		printf("Unknown Sierra game version: %08lx\n", crc);
 		agi_set_release (ver = 0x3149);
@@ -271,7 +322,6 @@ int v3id_game ()
 		ec = err_UnknownAGIVersion;
 		break;
 	}
-
+	
 	return ec;
 }
-

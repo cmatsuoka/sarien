@@ -14,6 +14,10 @@ Things noted to be fixed
  - Fix the......
  - Nicer save/load functions
 
+SGEO:
+ - PalmDB v4 driver needs to be cleaned up. Right now its an amalgen of agi_v2 + agi_v3.c
+   source code. Its quite ugly. agi2pdb should do this kind of conversion for us.
+ - AGI2PDB needs to convert a v3 game 'down' to v2 (ie: decompress it all)
 
 Sound:
 	- add the noise channel

@@ -116,6 +116,8 @@ struct agi_loader {
 	int (*detect_game)(char *);
 	int (*load_resource)(int, int);
 	int (*unload_resource)(int, int);
+	int (*load_objects)(char *);
+	int (*load_words)(char *);
 };
 
 
