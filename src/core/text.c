@@ -213,8 +213,15 @@ void print_text_console (char *msg, int x, int y, int len, int fg, int bg)
  */
 char* word_wrap_string (char *mesg, int *len)
 {
+	/* If the message has a long word (longer than 31 character) then
+	 * loop in line 239 (for (; *v != ' '; v--, c--);) can wrap
+	 * around 0 and write large number in c. This causes returned
+	 * length to be negative (!) and eventually crashes in calling
+	 * code. The fix is simple -- remove unsigned in maxc, c, l
+	 * declaration.  --Vasyl
+	 */
 	char *msg, *v, *e;
-	unsigned int maxc, c, l = *len;
+	int maxc, c, l = *len;
 
 	v = msg = strdup (mesg);
 	e = msg + strlen (msg);
@@ -235,8 +242,23 @@ char* word_wrap_string (char *mesg, int *len)
 		c = l;
 		if ((v += l) >= e)
 			break;
+
+		/* The same line that caused that bug I mentioned
+		 * should also do another check:
+		 * for (; *v != ' ' && *v != '\n'; v--, c--);
+	 	 * While this does not matter in most cases, in the case of
+		 * long words it caused extra \n inserted in the line
+		 * preceding long word. This one is definitely non-critical;
+		 * one might argue that the function is not supposed to deal
+		 * with long words. BTW, that condition at the beginning of
+		 * the while loop that checks word length does not make much
+		 * sense -- it verifies the length of the first word but for
+		 * the rest it does something odd. Overall, even with these
+		 * changes the function is still not completely robust.
+		 * --Vasyl
+		 */
 		if (*v != ' ')
-			for (; *v != ' '; v--, c--);
+			for (; *v != ' ' && *v != '\n'; v--, c--);
 		if (c > maxc)
 			maxc = c;
 		*v++ = '\n';

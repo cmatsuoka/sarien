@@ -461,7 +461,9 @@ void put_pixels_hires (int x, int y, int n, UINT8 *p)
 	/* y += CHAR_LINES; */
 	for (; n--; p++, x++) {
 		UINT8 q = *p;
+#ifdef USE_CONSOLE
 		if (debug.priority) q >>= 4;
+#endif
 		sarien_screen[x + y * GFX_WIDTH] = q & 0x0f;
 	}
 }

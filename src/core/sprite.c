@@ -348,6 +348,7 @@ static void free_list (struct list_head *head)
 {
 	struct list_head *h;
 	struct sprite *s;
+	struct sprite *doomed = NULL;
 
 	list_for_each (h, head, next) {
 		s = list_entry (h, struct sprite, list);
@@ -356,9 +357,25 @@ static void free_list (struct list_head *head)
 #ifdef USE_HIRES
 		free (s->hires);
 #endif
-		if (h->prev != head)
-			free (list_entry (h->prev, struct sprite, list));
+		/*    
+		 * if (h->prev != head)
+     		 *     free (list_entry (h->prev, struct sprite, list));
+		 *
+		 * Why not just "free(s);"? The problem is that sprite
+		 * structure contains list iterator so it cannot be deleted
+		 * during iteration (typical mistake of C++ beginners
+		 * trying to use STL). So, marked lines have some reasoning.
+		 * The idea is that previous element gets free'ed, not the
+		 * current one. Now, the bug is obvious -- who kills the
+		 * last element? My proposed fix is:
+		 */
+
+		if (doomed)
+			free(doomed);
+		doomed = s;
 	}
+	if (doomed)
+		free (doomed);
 }
 
 /**
@@ -674,6 +691,11 @@ void show_obj (n)
 	commit_block (x1, y1, x2, y2);
 
 	free (s.buffer);
+
+	/* Added to fix a memory leak --Vasyl */
+#ifdef USE_HIRES
+	free(s.hires);
+#endif
 }
 
 void commit_block (int x1, int y1, int x2, int y2)
