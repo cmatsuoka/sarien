@@ -120,6 +120,7 @@ void save_screen ()
 }
 
 
+/* FIXME!! can't call gfx_agi functions from here!! */
 void restore_screen ()
 {
 	memcpy (layer1_data, back_buffer, 320 * 200);

@@ -160,13 +160,13 @@ void inventory ()
 			case KEY_ENTER:
 				message_box ("Selected item %i", intObjects[fsel]);
 				//setvar(V_sel_item, intObjects[fsel]);
-				report("show_obj() -> %i\n", intObjects[fsel]);
+				//report("show_obj() -> %i\n", intObjects[fsel]);
 				setvar(25, intObjects[fsel]);
 				flag = FALSE;
 				break;
 			case KEY_ESCAPE:
 				//setvar(V_sel_item, 0xFF);
-				report("show_obj() -> %i\n", intObjects[fsel]);
+				//report("show_obj() -> %i\n", intObjects[fsel]);
 				setvar(25, 0xFF);
 				flag = FALSE;
 				break;

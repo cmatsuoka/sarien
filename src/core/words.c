@@ -177,11 +177,11 @@ static void fix_users_words (char *msg)
 
 	_D ((": p = msg = \"%s\"", msg));
 
-	for (p=(UINT8*)msg; p && *p && getvar(V_word_not_found)==0; ) {
-		if(*p==0x20)
+	for (p = msg; p && *p && getvar(V_word_not_found)==0; ) {
+		if (*p == 0x20)
 			p++;
 
-		if(*p==0)
+		if(*p == 0)
 			break;
 
  		wc1 = find_word(p);

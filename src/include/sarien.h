@@ -117,9 +117,9 @@ int	getvar		(int);
 void	setvar		(int, int);
 
 void	decrypt		(UINT8 *mem, int len);
-void	unload_resources(void);
+//void	unload_resources(void);
 void	release_sprites	(void);
-void	new_room_resources(void);
+//void	new_room_resources(void);
 void	update_status_line(int);
 
 void main_cycle (int);

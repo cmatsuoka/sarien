@@ -44,13 +44,13 @@ void 	put_text_character(int, int, int, int, int, int);
 void	do_blit		(void);
 int	init_video	(void);
 int	deinit_video	(void);
-void	put_pixel_buffer(int, int, int);
 void	shake_screen	(int);
 void	save_screen	(void);
 void	restore_screen	(void);
 void	restore_screen_area	(void);
 void	put_screen	(void);
 void	clear_buffer	(void);
+void	set_block	(int, int, int, int);
 
 void	put_pixel	(int, int, int);	/* driver wrapper */
 void	flush_block	(int, int, int, int);

@@ -1,20 +1,11 @@
-/*
- *  Sarien AGI :: Copyright (C) 1999 Dark Fiber
- *
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
 #include "sarien.h"
@@ -547,5 +538,5 @@ UINT8 font_russian[]= {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x42, 0x7E, 0x00
 };
 
-#endif
+#endif /* AGDS_SUPPORT */
 

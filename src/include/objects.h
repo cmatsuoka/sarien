@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -8,8 +8,8 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#ifndef __AGI_OBJECT
-#define __AGI_OBJCET
+#ifndef __AGI_OBJECTS_H
+#define __AGI_OBJECTS_H
 
 #ifdef __cplusplus
 extern "C"{
@@ -28,4 +28,5 @@ void	unload_objects	(void);
 #ifdef __cplusplus
 };
 #endif
-#endif
+
+#endif /* __AGI_OBJECTS_H */

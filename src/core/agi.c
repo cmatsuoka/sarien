@@ -164,6 +164,27 @@ int agi_init ()
 }
 
 
+/* unload all resources */
+static void unload_resources ()
+{
+	int i;
+
+	for(i = 0; i < MAX_DIRS; i++) {
+		game.dir_view[i].flags &= ~RES_CACHED;	/* clear cache flag */
+		loader->unload_resource (rVIEW, i);	/* free view */
+
+		game.dir_pic[i].flags &= ~RES_CACHED;	/* clear cache flag */
+		loader->unload_resource (rPICTURE, i);	/* free resource */
+
+		game.dir_logic[i].flags &= ~RES_CACHED;	/* clear cache flag */
+		loader->unload_resource (rLOGIC, i);	/* free resource */
+
+		game.dir_sound[i].flags &= ~RES_CACHED;	/* clear cache flag */
+		loader->unload_resource (rSOUND, i);	/* free resource */
+	}
+}
+
+
 int agi_deinit ()
 {
 	int ec;
@@ -190,5 +211,6 @@ int agi_deinit ()
 
 	return ec;
 }
+
 
 

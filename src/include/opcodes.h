@@ -204,6 +204,4 @@ void	break_copy_protection (int);
 };
 #endif
 
-
-#endif
-
+#endif /* __AGI_OPCODES_H */

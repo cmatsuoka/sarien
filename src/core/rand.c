@@ -26,7 +26,7 @@ SINT32 get_rnd_seed(void)
 
 void set_xrnd_seed(SINT32 seedval)
 {
-	rnd_seed=(seedval%(RNG_M-1))+1;
+	rnd_seed = (seedval % (RNG_M-1)) + 1;
 }
 
 SINT32 xrnd(void)

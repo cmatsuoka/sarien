@@ -8,8 +8,8 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#ifndef __AGI_LOGIC
-#define __AGI_LOGIC
+#ifndef __AGI_LOGIC_H
+#define __AGI_LOGIC_H
 
 #ifdef __cplusplus
 extern "C"{

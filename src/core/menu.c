@@ -17,7 +17,7 @@
 #include "gfx_agi.h"
 #include "gfx_base.h"
 #include "keyboard.h"
-#include "console.h"
+//#include "console.h"
 #include "menu.h"
 #include "text.h"
 
@@ -203,9 +203,11 @@ void do_menus ()
 	clock_val = game.clock_enabled;
 	game.clock_enabled = FALSE;
 
+	release_sprites ();
 	save_screen ();
 	redraw_sprites ();
-	gfx->put_block (0, 0, 319, console.y);
+	//gfx->put_block (0, 0, 319, console.y);
+	put_screen ();
 
 	/* calc size of horizontal menu */
 	for (men = master_menu->next; men; h_max_menu++, men=men->next);
@@ -253,7 +255,9 @@ void do_menus ()
 			release_sprites ();
 			restore_screen_area ();
 			redraw_sprites ();
-			gfx->put_block (0, 0, 319, console.y);
+			//gfx->put_block (0, 0, 319, console.y);
+			put_screen ();
+
 			/* calc size of vertical menus */
 			for(x = 0, men = master_menu->next; x<h_cur_menu; x++)
 				men=men->next;
@@ -269,7 +273,9 @@ void do_menus ()
 			release_sprites ();
 			restore_screen_area ();
 			redraw_sprites ();
-			gfx->put_block (0, 0, 319, console.y);
+			//gfx->put_block (0, 0, 319, console.y);
+			put_screen ();
+
 			/* calc size of vertical menus */
 			for (x = 0, men = master_menu->next; x<h_cur_menu; x++)
 				men=men->next;
@@ -284,6 +290,7 @@ exit_menu:
 
 	release_sprites ();
 	restore_screen ();
+	redraw_sprites ();
 
 	setvar (V_key, 0);
 	game.clock_enabled = clock_val;

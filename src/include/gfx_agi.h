@@ -15,18 +15,7 @@
 extern "C"{
 #endif
 
-#if 0
-extern	UINT8		screen_mode;
-extern	UINT8		txt_fg;
-extern	UINT8		txt_bg;
-extern	UINT8		txt_char;
-
-
-/* Transparent layer */
-extern UINT8	layer1_data[];
-extern UINT8	layer2_data[];
-#endif
-
+void	put_pixel_buffer(int, int, int);
 void	get_bitmap	(UINT8 *, UINT8 *, int, int, int, int);
 void	agi_put_bitmap	(UINT8 *, int, int, int, int, int, int);
 void	agi_put_sprite	(UINT8 *, int, int, int, int, int, int);

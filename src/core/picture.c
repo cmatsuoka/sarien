@@ -54,7 +54,6 @@ UINT8	pic_clear_flag = TRUE;
 extern UINT8 old_prio;		/* Used in add_to_pic() */
 
 extern struct sarien_options opt;
-//extern struct gfx_driver *gfx;
 
 
 void dump_screen (int resnum)
@@ -68,6 +67,14 @@ void dump_screen2 ()
 {
 	put_block_buffer (screen_data, 0, 0, _WIDTH, _HEIGHT);
 	put_screen();
+}
+
+
+void dump_screenX ()
+{
+	memmove (screen_data, screen2, _WIDTH*_HEIGHT);
+	put_block_buffer (screen_data, 0, 0, _WIDTH, _HEIGHT);
+	put_screen ();
 }
 
 
@@ -90,15 +97,6 @@ void dump_x (int resnum)
 	put_block_buffer (pictures[resnum].xdata, 0, 0, _WIDTH, _HEIGHT);
 	put_screen ();
 }
-
-
-void dump_screenX ()
-{
-	memmove (screen_data, screen2, _WIDTH*_HEIGHT);
-	put_block_buffer (screen_data, 0, 0, _WIDTH, _HEIGHT);
-	put_screen ();
-}
-
 
 void dump_screen3 ()
 {

@@ -333,13 +333,8 @@ void handle_keys ()
 		break;
 	case KEY_ESCAPE:
 		_D (("KEY_ESCAPE"));
-
-		if (getflag (F_menus_work)) {
-			release_sprites ();
+		if (getflag (F_menus_work))
 			do_menus ();
-			redraw_sprites ();
-		}
-
 		break;
 	case 0x08:
 		if (!bufindex)

@@ -31,5 +31,5 @@ void	dictionary_words(char *);
 };
 #endif
 
-#endif
+#endif /* __AGI_WORDS_H */
 

@@ -37,6 +37,7 @@ extern UINT8	pic_clear_flag;
 int	decode_picture (int);
 int	unload_picture (int);
 
+/* FIXME: too many dump_ functions!! */
 void	dump_screen (int);
 void	dump_pri (int);
 void	dump_con (int);

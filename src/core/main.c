@@ -36,7 +36,6 @@ volatile UINT32 clock_count;
 
 extern struct sarien_console console;
 extern int optind;
-extern UINT8 o_status;
 extern UINT8 *font, font_english[];
 
 extern struct agi_loader agi_v2;
@@ -310,7 +309,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 
     				game.horizon = HORIZON;
     				game.control_mode = CONTROL_PROGRAM;
-    				o_status = 5;	/* FIXME */
+    				//o_status = 5;	/* FIXME */
 
     				ec = run_game();
     			}

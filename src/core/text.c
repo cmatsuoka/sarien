@@ -185,6 +185,7 @@ void textbox (char *message, int x, int y, int len)
 	free (msg);
 }
 
+
 void message_box (char *message, ...)
 {
 	char x[512];
@@ -313,5 +314,45 @@ char *agi_printf (char *msg, int lognum)
 	}
 
 	return p;
+}
+
+
+void update_status_line (int force)
+{
+	static int o_score = 255, o_max_score = 0, o_sound = FALSE,
+		o_status = -2;
+
+	/* If it's already there and we're not forcing, don't write */
+   	if (!force && o_status == game.status_line &&
+		o_score == getvar (V_score) && 
+		o_max_score == getvar (V_max_score) &&
+		o_sound == getflag (F_sound_on))
+		return;
+
+	o_score = getvar (V_score);
+	o_max_score = getvar (V_max_score);
+   	o_sound = getflag (F_sound_on);
+
+	/* Jump out here if the status line is invisible and was invisible
+	 * the last time. If the score or sound has changed, there is no
+         * reason to re-erase the status line here. Allow force, though...
+         */
+
+	if (!force && o_status == game.status_line && !game.status_line)
+		return;
+
+   	o_status = game.status_line;
+
+	if (game.line_min_print == 0)
+		return;
+
+	if (!game.status_line) {
+		//print_status ("                                        ");
+	} else {
+		char x[64];
+		sprintf (x, " Score:%i of %03i", o_score, getvar(V_max_score));
+		print_status ("%-17s             Sound:%s ", x,
+			o_sound ? "On " : "Off");
+	}
 }
 
