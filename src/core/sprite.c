@@ -90,8 +90,10 @@ static void pool_release (void *s)
 
 
 /*
- * Blit one pixel considering the priorities
+ * Blitter functions
  */
+
+/* Blit one pixel considering the priorities */
 
 static void blit_pixel (UINT8 *p, UINT8 col, int spr, int width, int *hidden)
 {
@@ -122,13 +124,38 @@ static void blit_pixel (UINT8 *p, UINT8 col, int spr, int width, int *hidden)
 
 }
 
-/*
- * Blitter functions
- */
-
 #ifdef USE_HIRES
 
 #define X_FACT 2		/* Horizontal hires factor */
+
+static void blit_hires_pixel (UINT8 *p, UINT8 col, int spr, int width, int *hidden)
+{
+	int epr, pr;		/* effective and real priorities */
+
+	/* Check if we're on a control line */
+	if ((pr = *p & 0xf0) < 0x30) {
+		UINT8 *p1;
+		/* Yes, get effective priority going down */
+		for (p1 = p; (epr = *p1 & 0xf0) < 0x30; p1 += width) {
+			if (p1 >= game.hires + _WIDTH * X_FACT * _HEIGHT) {
+				epr = 0x40;
+				break;
+			}
+		}
+	} else {
+		epr = pr;
+	}
+
+	if (spr >= epr) {
+		/* Keep control line information visible,
+		 * but put our priority over water (0x30)
+		 * surface
+		 */
+		*p = (pr < 0x30 ? pr : spr) | col;
+		*hidden = FALSE;
+	}
+
+}
 
 static int blit_hires_cel (int x, int y, int spr, struct view_cel *c)
 {
@@ -149,8 +176,8 @@ static int blit_hires_cel (int x, int y, int spr, struct view_cel *c)
 			col = (*q & 0xf0) >> 4;
 			for (j = *q & 0x0f; j; j--, h += X_FACT * (1 - 2 * m)) {
 				if (col != t) {
-					blit_pixel (h, col, spr, _WIDTH * X_FACT, &hidden);
-					blit_pixel (h + 1, col, spr, _WIDTH * X_FACT, &hidden);
+					blit_hires_pixel (h, col, spr, _WIDTH * X_FACT, &hidden);
+					blit_hires_pixel (h + 1, col, spr, _WIDTH * X_FACT, &hidden);
 				}
 			}
 			q++;
