@@ -214,7 +214,7 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
 	HDC          hDC;
 	PAINTSTRUCT  ps;
-	int          h, w, key = 0;
+	int          h, w, key = 0, shift;
 	xyxy         *p = (xyxy *)lParam;
 
 	switch (nMsg) {
@@ -286,7 +286,10 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
 		/*  report ("%02x\n", (int)wParam); */
-		switch (key = (int)wParam) {
+		key = (int)wParam;
+		shift = GetAsyncKeyState (VK_SHIFT) & 0x8000;
+
+		switch (key) {
 		case VK_SHIFT:
 			key = 0;
 			break;
@@ -397,37 +400,37 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			key = 0x1b;
 			break;
 		case 0xba:
-			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? ':' : ';';
+			key = shift ? ':' : ';';
 			break;
 		case 0xbb:
-			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '+' : '=';
+			key = shift ? '+' : '=';
 			break;
 		case 0xbc:
-			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '<' : ',';
+			key = shift ? '<' : ',';
 			break;
 		case 0xbd:
-			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '_' : '-';
+			key = shift ? '_' : '-';
 			break;
 		case 0xbe:
-			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '>' : '.';
+			key = shift ? '>' : '.';
 			break;
 		case 0xbf:
-			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '?' : '/';
+			key = shift ? '?' : '/';
 			break;
 		case 0xdb:
-			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '{' : '[';
+			key = shift ? '{' : '[';
 			break;
 		case 0xdc:
-			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '|' : '\\';
+			key = shift ? '|' : '\\';
 			break;
 		case 0xdd:
-			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '}' : ']';
+			key = shift ? '}' : ']';
 			break;
 		case 0xde:
-			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '"' : '\'';
+			key = shift ? '"' : '\'';
 			break;
 		case 192:
-			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '~' : '`';
+			key = shift ? '~' : '`';
 			break;
 		default:
 			if (!isalpha (key))
