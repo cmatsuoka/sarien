@@ -5,13 +5,13 @@ OBJS	=
 DFILES	= Makefile AUTHORS BUGS Changelog COPYING README.agi README.sdl \
 	  README.svgalib README.unix README.win32 README.ports README.macos \
 	  README.turboc README.pocketpc README.djgpp TODO sarien.doxygen \
-	  roadmap.txt
+	  roadmap.txt sarien.1 manpage.sgml
 CFILES	=
 DDIRS	=
 XDFILES =
 LIB	=
 
-all:
+all: sarien.1
 
 include ../Rules
 
@@ -22,6 +22,8 @@ dox:
 flowchart.ps: flowchart.dot
 	dot -Tps -o$@ $+
 
+sarien.1: manpage.sgml
+	docbook-to-man $+ > $@
 
 specs: flowchart.ps
 	@if [ -x /usr/bin/docbook2html ]; then		\
