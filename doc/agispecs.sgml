@@ -860,178 +860,73 @@ draw (smoke);
 -->
 
 
-<sect2><title>String</title>
+<sect2>
+<title>String</title>
 <para>
-   According to another source, there are only 12 strings available. I
-   don't know if this is true, but it agrees with the minimum amout of
-   space set aside for strings that I have seen in examining memory usage
-   during a game. However, the majority of AGI games have enough room for
-   exactly 24 strings: AGI interpreter versions 2.089, 2.411, 3.002.107
-   and 3.002.149 have room for 12 strings, the remaining versions have
-   room for 24 strings.
-</para><para>
-   Whether the versions that have enough space for 24 strings do infact
-   support 24 strings is not known. Strings are 40 characters long which
-   includes the zero terminator. String number zero is usually the input
-   prompt (e.g. <prompt/">"/ or <prompt/"]"/).
+  Strings are 40 characters long, including the zero terminator.
+  String number zero is the input prompt (e.g. <prompt/">"/ or <prompt/"]"/).
+  The majority of AGI interpreters have enough room for exactly 24 strings:
+  AGI interpreter versions 2.089, 2.411, 3.002.107 and 3.002.149 have room
+  for 12 strings, the remaining versions have room for 24 strings.
+  Whether the versions that have enough space for 24 strings do infact
+  support 24 strings is not known.
 </para>
 
-<sect2><title>Word</title>
+<sect2>
+<title>Word</title>
 <para>
-   Words are the words that the user types in. An input sentence is
-   composed of a number of words. The important words (e.g. for the
-   sentence ``look at the tree'', ``look'' and ``tree'' are important) are
-   assigned to the words variables corresponding to their place in the
-   sentence once unimportant words and punctuation has been taken out.
-   For example, in the earlier example <literal/word(1)/ would be ``look'' and
-   <literal/word(2)/ would be ``tree''. Words can be converted to strings.
+  Words are the words that the user types in. An input sentence is
+  composed of a number of words. The important words (e.g. for the
+  sentence ``look at the tree'', ``look'' and ``tree'' are important) are
+  assigned to the words variables corresponding to their place in the
+  sentence once unimportant words and punctuation has been taken out.
+  Words can be converted to strings.
 </para>
 
-<sect2><title>Inventory Item</title>
+<sect2>
+<title>Inventory item</title>
 <para>
-   There are a number of AGI commands that refer to inventory members (e.g.
-   <function/get/, <function/drop/). One of the arguments to these commands will
-   represent an inventory member number. In the original script source text,
-   the programmer would have written things like <function/get(dagger)/ but the
-   interpreter knows them only as an index into the OBJECT table.
+  There are a number of AGI commands that refer to inventory items (e.g.
+  <function/get/, <function/drop/). One of the arguments to these commands will
+  represent an inventory member number.
 </para>
 
-<sect2><title>Object</title>
+<sect2>
+<title>Object</title>
 <para>
-   There can be a bit of confusion between this type and the inventory
-   member because of the name of the <filename/object/ file. The
-   <filename/object/ file has almost nothing to do with what the
-   interpreter generally calls objects. There are a large number of
-   AGI commands that deal with objects. For example,
+  Objects are instances of View resources in use in a given room,
+  and essentially an entry in the view table. Many objects can use
+  the same view resource for its appearance (e.g. in KQ1 with the
+  crocodile filled moat). View table entries have positional and
+  sequential attributes that only make sense for a on-screen
+  sprite.
+</para><para<
+  There can be a bit of confusion between this type and the inventory
+  member because of the name of the <filename/object/ file. The
+  <filename/object/ file has almost nothing to do with what the
+  interpreter generally calls objects. There are a large number of
+  AGI commands that deal with objects, such as <function/move.obj/,
+  <function/animate.obj/, <function/set.view/, <function/set.cel/,
+  <function/set.loop/ and <function/draw/.
 </para><para>
-<programlisting>
-move.obj
-animate.obj
-set.view
-set.cel
-set.loop
-draw
-</programlisting>
-</para><para>
-   In fact the interpreter calls its usage of the VIEW resource
-   ``objects''. An object is one usage of a VIEW resource. It is
-   essentially an entry in the object table (or VIEW table/VIEW list).
-   Many objects can use the same VIEW resource for its appearance which
-   can be seen in KQ1 and BC with the crocodile filled moats.
-</para><para>
-   So when an AGI command has an object as a parameter to it, the value
-   of the parameter is an index number into a table of objects that the
-   interpreter is currently controlling.
+  When an AGI command has an object as a parameter to it, the value
+  of the parameter is an index number into a table of objects that the
+  interpreter is currently controlling.
 </para>
 
-<sect2><title>Message</title>
+<sect2>
+<title>Message</title>
 <para>
-   At the end of every LOGIC file is a message section. There need not be
-   any messages in it, but it will still exist. Messages in <filename/logic.0/
-   are global messages whereas all other messages can only be accessed from
-   their own LOGIC code. AGI commands that have messages as parameters
-   refer to a message number in their own LOGIC file. I say that those in
-   <filename/logic.0/ are global because messages and strings can contain format
-   codes one of which is used to display messages from <filename/logic.0/.
+  At the end of every Logic resource is a message section. There need not be
+  any messages in it, but it will still exist. Messages each logic resource
+  can only be accessed from their own script. AGI commands that have messages
+  as parameters refer to a message number in their own logic script.
 </para><para>
    Example:
 
 <programlisting>
 print ("Message 34 in logic.0 is %g34.");
 </programlisting>
-
-</para><para>
-   Therefore messages in <filename/logic.0/ can be displayed by any
-   script in this way.
-</para>
-</sect1>
-
-<sect1 id="memory"><title>Memory organization</title>
-<para>
-
-   The following information gives a rough guide as to how Sierra's AGI
-   interpreter uses its memory. You can view this in operation in MS-DOS
-   by using a memory resident program like Game Wizard.
-</para><para>
-   <informaltable>
-    <tgroup cols="2">
-     <thead> 
-      <row>
-       <entry>Size (bytes)</entry>
-       <entry>Description</entry>
-      </row>
-     </thead> 
-     <tbody>
-      <row>
-       <entry>2</entry>
-       <entry>Length of first data area</entry>
-      </row>
-      <row>
-       <entry>2</entry>
-       <entry>Game signature</entry>
-      </row>
-      <row>
-       <entry>256</entry>
-       <entry>Variables</entry>
-      </row>
-      <row>
-       <entry>32</entry>
-       <entry>Flags (256 bits)</entry>
-      </row>
-      <row>
-       <entry></entry>
-       <entry>Timers, blocks, and other special AGI variables</entry>
-      </row>
-      <row>
-       <entry>12*40 or 24*40</entry>
-       <entry>Strings</entry>
-      </row>
-      <row>
-       <entry></entry>
-       <entry>unknown</entry>
-      </row>
-      <row>
-       <entry></entry>
-       <entry>"Press ENTER to quit", etc</entry>
-      </row>
-      <row>
-       <entry></entry>
-       <entry>Script command jump table</entry>
-      </row>
-      <row>
-       <entry></entry>
-       <entry>"Avis Durgan" encryption string</entry>
-      </row>
-      <row>
-       <entry></entry>
-       <entry>Rest of <filename/agidata.ovl/
-      </row>
-      <row>
-       <entry></entry>
-       <entry>unknown</entry>
-      </row>
-      <row>
-       <entry></entry>
-       <entry><filename/words.tok/ file</entry>
-      </row>
-      <row>
-       <entry></entry>
-       <entry>object file</entry>
-      </row>
-      <row>
-       <entry></entry>
-       <entry>view object table</entry>
-      </row>
-      <row>
-       <entry></entry>
-       <entry><filename/logic.0/</entry>
-      </row>
-      <row>
-       <entry></entry>
-       <entry>Other loaded resources</entry>
-     </tbody>
-    </tgroup>
-   </informaltable>
 
 </para>
 </sect1>
