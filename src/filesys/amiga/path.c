@@ -21,6 +21,7 @@ int get_app_dir (char *app_dir, unsigned int size)
 
 char* get_config_file (void)
 {
-	return "agi:sarien.conf";
+	/* Look in the Sarien executable directory by default */
+	return "PROGDIR:sarien.conf";
 }
 
