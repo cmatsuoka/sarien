@@ -740,10 +740,16 @@ void cmd_get_string (UINT8 logic, UINT8 str, UINT8 msg, UINT8 y, UINT8 x, UINT8 
 	 * Changed here
 	 */
 	if (logics[logic].texts!=NULL && (msg-1)<=logics[logic].num_texts) {
+
+		/* FIXME : hack to stop input line on a getstring command */
+    	open_dialogue=1;
+
 		p=agi_printf (logics[logic].texts[msg-1], logic);
-		print_text (p, 0, x * 8, y * 8, strlen (p), txt_fg, txt_bg); 
+		print_text (p, 0, x * 8, y * 8, strlen (p), txt_fg, txt_bg);
 		p = get_string ((x * 8) + (8 * (strlen (p) - 1)), y*8, len);
 		strcpy (game.strings[str], p );
+
+		open_dialogue=0;
 	}
 }
 
@@ -971,18 +977,12 @@ void cmd_close_window ()
 void cmd_close_dialogue ()
 {
 	/* FIXME see open_dialogue */
-	open_dialogue=0;
 	report ("Not implemented: close.dialogue ()\n");
 }
 
 
 void cmd_open_dialogue ()
 {
-	/* FIXME
-	Cludge. Stops text input cursor from being show in the wrong
-	spot.
-	*/
-	open_dialogue=1;
 	report ("Not implemented: open.dialogue ()\n");
 }
 
