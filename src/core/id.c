@@ -323,9 +323,11 @@ int setup_v2_game (int ver, UINT32 crc)
 	switch(agi_get_release ()) {
 	case 0x2089:
 		logic_names_cmd[0x86].num_args = 0;	/* quit: 0 args */
-	case 0x2272:
 		logic_names_cmd[0x97].num_args = 3;	/* print.at: 3 args */
 		logic_names_cmd[0x98].num_args = 3;	/* print.at.v: 3 args*/
+		break;
+	case 0x2272:
+		/* KQ3 0x88673 (2.272) requires print.at with 4 arguments */
 		break;
 	case 0x2440:
 		break;
