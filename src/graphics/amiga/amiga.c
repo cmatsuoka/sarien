@@ -217,7 +217,7 @@ static void amiga_put_block (int x1, int y1, int x2, int y2)
 	w = x2 - x1 + 1;
 
 	WritePixelArray8 (rp, win->BorderLeft + x1, win->BorderTop + y1,
-		w, h, vscreen, &temprp);
+		2, 2, vscreen, &temprp);
 }
 
 

@@ -15,13 +15,6 @@
 extern "C"{
 #endif
 
-#define SOUND_PLAYING	0x01
-#define BUFFER_SIZE	410
-#define WAVEFORM_SIZE	64
-#define ENV_DECAY	800
-#define ENV_SUSTAIN	160
-#define NUM_CHANNELS	16
-
 #define SOUND_EMU_NONE	0
 #define SOUND_EMU_PC	1
 #define SOUND_EMU_TANDY	2

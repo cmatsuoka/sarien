@@ -21,9 +21,9 @@
 #define SOUND_PLAYING   0x01
 #define BUFFER_SIZE     410
 #define WAVEFORM_SIZE   64
-#define ENV_DECAY       800
-#define ENV_SUSTAIN     160
-#define NUM_CHANNELS    16
+#define ENV_DECAY       1000		/**< envelope decay rate */
+#define ENV_SUSTAIN     100		/**< envelope sustain level */
+#define NUM_CHANNELS    16		/**< number of sound channels */
 
 #define USE_INTERPOLATION
 

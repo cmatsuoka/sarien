@@ -4,7 +4,7 @@ XCFLAGS =
 OBJS	=
 DFILES	= Makefile README
 CFILES	=
-DDIRS	= showlog xv3 volx agi2pdb
+DDIRS	= showlog xv3 volx agi2pdb agic agiglue
 XDFILES =
 LIB	=
 

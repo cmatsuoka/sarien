@@ -296,7 +296,7 @@ int main(int argc, char *argv[])
 	DumpCore(output);
 	DumpStrings(output);
 	fclose(output);
-	printf("Produced file %s successfully.\n", strupr(szOutputFile));
+	printf("Produced file %s successfully.\n", szOutputFile);
 	ErrorLevel = 0;
     }
     FreeCore();

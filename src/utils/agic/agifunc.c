@@ -271,7 +271,7 @@ BYTE FindTestCommand(char *sz)
     return 0;
 }
 
-/* #define min(a,b)	( ((a)<(b)) ? (a) : (b) ) */
+#define min(a,b)	( ((a)<(b)) ? (a) : (b) )
 
 void TypeCheckList( const agiCommandType* list, BYTE bCommand, int nArgs, int nArgType )
 	{
