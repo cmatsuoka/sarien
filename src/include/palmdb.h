@@ -42,6 +42,7 @@
 #endif
 
 #define sarienCreatorID 'FAGI'
+#define MAKE_TYPE(a,b,c,d) ((UINT32)(a)<<24 |(UINT32)(b)<<16 |(UINT32)(c)<<8 |(UINT32)(d))
 
 #ifdef PALMOS
 	typedef DmOpenRef PalmDBRef;
