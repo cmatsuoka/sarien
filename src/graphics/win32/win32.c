@@ -134,8 +134,8 @@ static void _putpixels_scale2 (int x, int y, int w, BYTE *p)
 
 	EnterCriticalSection(&g_screen.cs);
 
-        y = GFX_HEIGHT - y - 1;
 	x <<= 1; y <<= 1;
+        y = (GFX_HEIGHT * 2) - y - 1;
 	if (y < ((GFX_WIDTH - 1) << 2) &&
 		ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2)) 
 	{
@@ -144,8 +144,8 @@ static void _putpixels_scale2 (int x, int y, int w, BYTE *p)
 
 	y = ASPECT_RATIO(y);
 
-	p0 += x + y * GFX_WIDTH;
-	p1 = p0 + GFX_WIDTH * scale;
+	p0 += x + y * GFX_WIDTH * 2;
+	p1 = p0 + GFX_WIDTH * 2;
 	while (w--) {
 		*p0++ = *p1++ = *p;
 		*p0++ = *p1++ = *p++;
@@ -173,8 +173,8 @@ static void _putpixels_fixratio_scale2 (int x, int y, int w, BYTE *p)
 
 	EnterCriticalSection(&g_screen.cs);
 
-        y = GFX_HEIGHT - y - 1;
 	x <<= 1; y <<= 1;
+        y = (GFX_HEIGHT * 2) - y - 1;
 	if (y < ((GFX_WIDTH - 1) << 2) &&
 		ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2))
 	{
@@ -183,18 +183,21 @@ static void _putpixels_fixratio_scale2 (int x, int y, int w, BYTE *p)
 
 	y = ASPECT_RATIO(y);
 
-	p0 += x + y * GFX_WIDTH;
-	p1 = p0 + GFX_WIDTH * scale;
-	p2 = p1 + GFX_WIDTH * scale;
+	p0 += x + y * GFX_WIDTH * 2;
+	p1 = p0 + GFX_WIDTH * 2;
+	p2 = p1 + GFX_WIDTH * 2;
 
 	for (_p = p; w--; p++) {
 		*p0++ = *p1++ = *p;
 		*p0++ = *p1++ = *p;
 	}
 
-	for (p = _p; extra--;) { *p2++ = *p++; }
+	for (p = _p; extra--; p++) {
+		*p2++ = *p;
+		*p2++ = *p;
+	}
 
-	LeaveCriticalSection(&g_screen.cs);
+	LeaveCriticalSection (&g_screen.cs);
 }
 
 /* ====================================================================*/
@@ -723,4 +726,5 @@ static int set_palette (UINT8 *pal, int scol, int numcols)
 
 	return err_OK;
 }
+
 
