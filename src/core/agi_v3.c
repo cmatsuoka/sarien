@@ -219,6 +219,7 @@ int agi_v3_unload_resource (int restype, int resnum)
 
 UINT8* agi_v3_load_vol_res (struct agi_dir *agid)
 {
+#ifndef PALMOS
 	UINT8 x[MAX_PATH], *data = NULL, *comp_buffer, *path;
 	FILE *fp;
 
@@ -273,6 +274,7 @@ UINT8* agi_v3_load_vol_res (struct agi_dir *agid)
 	}
 
 	return data;
+#endif
 }
 
 

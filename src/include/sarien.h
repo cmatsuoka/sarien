@@ -12,7 +12,7 @@
 #define __SARIEN_H
 
 #ifdef PALMOS
-#include <Pilot.h>
+#include <PalmOS.h>
 #else
 #include <stdlib.h>
 #ifndef FAKE_PALMOS
@@ -30,6 +30,20 @@
 #define INLINE
 #endif
 
+#ifdef PALMOS
+
+typedef UInt8	UINT8;
+typedef UInt16	UINT16;
+typedef UInt32	UINT32;
+typedef Int8	SINT8;
+typedef Int16	SINT16;
+typedef Int32	SINT32;
+
+#define malloc(x) MemPtrNew(x)
+#define free(x) MemPtrFree(x)
+
+#else
+
 typedef unsigned char	UINT8;
 typedef unsigned short	UINT16;
 #ifndef WIN32
@@ -38,6 +52,8 @@ typedef unsigned long	UINT32;
 typedef signed char	SINT8;
 typedef signed short	SINT16;
 typedef signed long	SINT32;
+
+#endif	/* PALMOS */
 
 #ifndef FALSE
 #define FALSE		0

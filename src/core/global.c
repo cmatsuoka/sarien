@@ -24,19 +24,20 @@ UINT8 hilo_getbyte (UINT8 *mem)
 
 UINT16 hilo_getword (UINT8 *mem)
 {
-	return (mem[0]<<8) + (mem[1]);
+	return ((UINT16)mem[0] << 8) + (mem[1]);
 }
 
 
 UINT32 hilo_getpword (UINT8 *mem)
 {
-	return (mem[0]<<16) + (mem[1]<<8) + (mem[2]);
+	return ((UINT32)mem[0] << 16) + ((UINT32)mem[1] << 8) + (mem[2]);
 }
 
 
 UINT32 hilo_getdword (UINT8 *mem)
 {
-	return (mem[0]<<24) + (mem[1]<<16) + (mem[2]<<8) + (mem[3]);
+	return ((UINT32)mem[0] << 24) + ((UINT32)mem[1] << 16) +
+		((UINT32)mem[2] << 8) + (mem[3]);
 }
 
 
@@ -48,19 +49,20 @@ UINT8 lohi_getbyte (UINT8 *mem)
 
 UINT16 lohi_getword (UINT8 *mem)
 {
-	return (mem[1]<<8) + (mem[0]);
+	return ((UINT16)mem[1] << 8) + (mem[0]);
 }
 
 
 UINT32 lohi_getpword (UINT8 *mem)
 {
-	return (mem[2]<<16) + (mem[1]<<8) + (mem[0]);
+	return ((UINT32)mem[2] << 16) + ((UINT32)mem[1] << 8) + (mem[0]);
 }
 
 
 UINT32 lohi_getdword (UINT8 *mem)
 {
-	return (mem[3]<<24) + (mem[2]<<16) + (mem[1]<<8) + (mem[0]);
+	return ((UINT32)mem[3] << 24) + ((UINT32)mem[2] << 16) +
+		((UINT32)mem[1] << 8) + (mem[0]);
 
 }
 

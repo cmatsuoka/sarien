@@ -79,17 +79,38 @@ static void put_virt_pixel (UINT16 x, UINT16 y)
 /* For the flood fill routines */
 
 #define STACK_SEG_SIZE 0x1000
-#define MAX_STACK_SEGS 16
 
 struct point {
 	struct point *next;
 	int x, y;
 };
 
+static int stack_ptr;
+
+#ifdef PALMOS
+
+static struct point stack[STACK_SEG_SIZE];
+
+static INLINE void _PUSH (struct point *c)
+{
+	stack[stack_ptr].x = c->x;
+	stack[stack_ptr].y = c->y;
+	stack_ptr++;
+}
+
+static INLINE void _POP (struct point *c)
+{
+	stack_ptr--;
+	c->x = stack[stack_ptr].x;
+	c->y = stack[stack_ptr].y;
+}
+
+#else
+
+#define MAX_STACK_SEGS 16
 static struct point *stack[MAX_STACK_SEGS];
 static int stack_num_segs;
 static int stack_seg;
-static int stack_ptr;
 
 static INLINE void _PUSH (struct point *c)
 {
@@ -128,6 +149,7 @@ static INLINE void _POP (struct point *c)
 	c->x = stack[stack_seg][stack_ptr].x;
 	c->y = stack[stack_seg][stack_ptr].y;
 }
+#endif /* PALMOS */
 
 
 /**************************************************************************
@@ -350,7 +372,9 @@ static void agiFill (int x, int y)
 	}
 
 	stack_ptr = 0;
+#ifndef PALMOS
 	stack_seg = 0;
+#endif
 }
 
 /**************************************************************************
@@ -659,9 +683,11 @@ static void draw_picture ()
 
 	drawing = 1;
 
+#ifndef PALMOS
 	stack[0] = calloc (sizeof (struct point), STACK_SEG_SIZE);
 	stack_ptr = stack_seg = 0;
 	stack_num_segs = 1;
+#endif
 
 	_D (_D_WARN "Drawing picture");
 	for (drawing = 1; drawing && foffs < flen; ) {
@@ -712,8 +738,10 @@ static void draw_picture ()
 		}
 	}
 
+#ifndef PALMOS
 	for (i = 0; i < stack_num_segs; i++)
 		free (stack[i]);
+#endif
 }
 
 

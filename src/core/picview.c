@@ -10,7 +10,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 #include "sarien.h"
 #include "agi.h"
 #include "gfx_base.h"

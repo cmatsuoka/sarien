@@ -10,7 +10,6 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 
 #include "sarien.h"
 #include "agi.h"
@@ -23,6 +22,7 @@ static int num_words, num_syns;
 
 int load_words (char *fname)
 {
+#ifndef PALMOS
 	int sc, wc, woff, wid;
 	FILE *fp;
 	UINT32 flen;
@@ -103,6 +103,7 @@ int load_words (char *fname)
 	}
 
 	return err_OK;
+#endif
 }
 
 

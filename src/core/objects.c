@@ -28,6 +28,7 @@ static struct agi_object *objects;		/* objects in the game */
 
 int load_objects (char *fname)
 {
+#ifndef PALMOS
 	int i, so, padsize;
 	FILE *fp;
 	UINT32 flen;
@@ -106,6 +107,7 @@ int load_objects (char *fname)
 
     	free(mem);
 	fclose (fp);
+#endif
 
 	return err_OK;
 }

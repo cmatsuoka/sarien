@@ -61,6 +61,7 @@ static int agi_v2_detect_game (char *gn)
 
 static int agi_v2_load_dir (struct agi_dir *agid, char *fname)
 {
+#ifndef PALMOS
 	FILE *fp;
 	UINT8 *mem;
 	UINT32 flen;
@@ -98,6 +99,7 @@ static int agi_v2_load_dir (struct agi_dir *agid, char *fname)
 	}
 
 	free (mem);
+#endif
 
 	return err_OK;
 }
@@ -192,6 +194,7 @@ static int agi_v2_unload_resource (int restype, int resnum)
 
 UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 {
+#ifndef PALMOS
 	UINT8 *data = NULL;
 	char x[MAX_PATH], *path;
 	FILE *fp;
@@ -226,6 +229,7 @@ UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 	}
 
 	return data;
+#endif
 }
 
 

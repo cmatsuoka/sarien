@@ -8,10 +8,10 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
+#ifndef PALMOS		/* We'll use a different main file for PalmOS */
+
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
-//#include <time.h>
 #include "sarien.h"
 #include "agi.h"
 #include "gfx_base.h"
@@ -212,3 +212,4 @@ bail_out:
 	return ec;
 }
 
+#endif /* PALMOS */

@@ -37,7 +37,7 @@ void iff_register (char *id, void (*loader) ())
 {
 	struct iff_info *f;
 
-	f = (struct iff_info*)malloc (sizeof (struct iff_info));
+	f = malloc (sizeof (struct iff_info));
 	strcpy (f->id, id);
 	f->loader = loader;
 	if (!iff_head) {
@@ -73,7 +73,7 @@ int iff_process (char *id, long size, FILE * f)
 	char *buffer;
 	struct iff_info *i;
 
-	if ((buffer = (char*)(struct iff_info *)malloc (size)) == NULL)
+	if ((buffer = malloc (size)) == NULL)
 		return -1;
 	fread (buffer, 1, size, f);
 	for (i = iff_head; i; i = i->next) {

@@ -307,7 +307,7 @@ int init_sound ()
 {
 	int r = -1;
 
-	snd_buffer = (SINT16*)calloc (2, BUFFER_SIZE);
+	snd_buffer = calloc (2, BUFFER_SIZE);
 	__init_sound ();
 
 	env = FALSE;
@@ -526,7 +526,7 @@ UINT32 mix_sound (void)
 #endif
 			snd_buffer[i] += (b * m) >> 8;
 
-			p += 11860 * 4 / chn[c].freq;
+			p += (UINT32)11860 * 4 / chn[c].freq;
 
 			/* FIXME */
 			if (chn[c].flags & AGI_SOUND_LOOP) {
