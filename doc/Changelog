@@ -22,7 +22,12 @@ Revision History
 	- selectable Amiga-ish or EGA palettes
 	- merged Brian Peek's SarienDC Dreamcast port
 	- added Mike Montague's DirectX driver
-	- added runtime options settings to MacOS port
+	- added runtime option settings to MacOS port
+	- emulating AGI 2.440 animated sprites behaviour (closes: #546562)
+	- correctly ordering sprites in the blit list (closes: #539394)
+	- input prompt and user input fixes (closes: #518734, #540840,
+	  #540734, #540843, #540736)
+	- fixed object position test in cmd_reposition (closes: #518731)
 
 0.7.0 (20011122)
 	- added QNX4 native sound driver (untested)

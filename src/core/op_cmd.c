@@ -328,12 +328,12 @@ cmd(reposition) {
 	_D ("dx=%d, dy=%d", dx, dy);
 	vt.flags |= UPDATE_POS;
 
-	if (dx < 0 && vt.x_pos < dx)
+	if (dx < 0 && vt.x_pos < -dx)
 		vt.x_pos = 0;
 	else
 		vt.x_pos += dx;
 
-	if (dy < 0 && vt.y_pos < dy)
+	if (dy < 0 && vt.y_pos < -dy)
 		vt.y_pos = 0;
 	else
 		vt.y_pos += dy;
