@@ -28,18 +28,11 @@
 
 #include "win32.h"
 
-#define TICK_SECONDS	18
-#define TICK_IN_MSEC	(1000 / (TICK_SECONDS))
-#define REPEATED_KEYMASK  (1<<30)
-#define EXTENDED_KEYMASK  (1<<24)
-#define KEY_QUEUE_SIZE    16
-
-static struct{
-	int start;
-	int end;
-	int queue[KEY_QUEUE_SIZE];
-	CRITICAL_SECTION cs;
-} g_key_queue = {0, 0};
+#define TICK_SECONDS		18
+#define TICK_IN_MSEC		(1000 / (TICK_SECONDS))
+#define REPEATED_KEYMASK	(1<<30)
+#define EXTENDED_KEYMASK	(1<<24)
+#define KEY_QUEUE_SIZE		16
 
 #define key_enqueue(k) do {				\
 	EnterCriticalSection(&g_key_queue.cs);		\
@@ -55,19 +48,21 @@ static struct{
 	LeaveCriticalSection(&g_key_queue.cs);		\
 } while (0)
 
-enum {
-	WM_PUT_BLOCK = WM_USER + 1,
-};
-
-
 typedef struct {
 	UINT16 x1, y1;
 	UINT16 x2, y2;
 } xyxy;
 
-static HANDLE	  g_hThread;
+enum {
+	WM_PUT_BLOCK = WM_USER + 1,
+};
+
+static HANDLE g_hThread;
 static UINT16 g_err = err_OK;
 static HANDLE g_hExchEvent = NULL;
+static HPALETTE g_hPalette = NULL;
+static const char* g_szMainWndClass = "SarienWin";
+static int  scale = 1;
 
 static struct{
 	HBITMAP    screen_bmp;
@@ -75,13 +70,16 @@ static struct{
 	BITMAPINFO *binfo;
 	void       *screen_pixels;
 } g_screen;
-static HPALETTE   g_hPalette = NULL;
-static const char*      g_szMainWndClass = "SarienWin";
 
-static int  scale = 1;
+static struct{
+	int start;
+	int end;
+	int queue[KEY_QUEUE_SIZE];
+	CRITICAL_SECTION cs;
+} g_key_queue = { 0, 0 };
+
 
 //static LONGLONG g_update_freq, g_counts_per_msec; /* counts in tick */
-
 
 volatile UINT32 c_ticks;
 volatile UINT32 c_count;
@@ -94,8 +92,8 @@ static int	keypress	(void);
 static int	get_key		(void);
 static void	new_timer	(void);
 static void	gui_put_block	(int, int, int, int);
-
 static int	set_palette	(UINT8 *, int, int);
+
 
 static unsigned int __stdcall GuiThreadProc(void *);
 
@@ -120,170 +118,164 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 	PAINTSTRUCT  ps;
 	int          key = 0;
 
-	switch (nMsg)
-	{
-		case WM_PUT_BLOCK:
-			{
-				xyxy *p = (xyxy *)lParam;
-				gui_put_block(p->x1, p->y1, p->x2, p->y2);
-				free(p);
+	switch (nMsg) {
+	case WM_PUT_BLOCK: {
+		xyxy *p = (xyxy *)lParam;
+		gui_put_block(p->x1, p->y1, p->x2, p->y2);
+		free(p);
+		} break;
+	case WM_DESTROY:
+		fprintf (stderr, "Fatal: message WM_DESTROY caught\n" );
+		deinit_vidmode ();
+		exit (-1);
+		return 0;
+	case WM_PAINT:
+		hDC = BeginPaint( hwndMain, &ps );
+		EnterCriticalSection(&g_screen.cs);
+		StretchDIBits(
+			hDC,
+			0,
+			0,
+			GFX_WIDTH * scale,
+			GFX_HEIGHT * scale,
+			0,
+			0,
+			GFX_WIDTH * scale,
+			GFX_HEIGHT * scale,
+			g_screen.screen_pixels,
+			g_screen.binfo,
+			DIB_RGB_COLORS,
+			SRCCOPY);
+
+		EndPaint( hwndMain, &ps );
+		LeaveCriticalSection(&g_screen.cs);
+		return 0;
+
+	/* Multimedia functions
+	 * (Damn! The CALLBACK_FUNCTION parameter doesn't work!)
+	 */
+	case MM_WOM_DONE:
+		felipes_kludge ((PWAVEHDR) lParam);
+		return 0;
+
+	case WM_SYSKEYDOWN:
+	case WM_KEYDOWN:
+		if (lParam & REPEATED_KEYMASK)
+			return 0;
+
+		switch ( key = (int) wParam ) {
+		case VK_SHIFT:
+			key = 0;
+			break;
+		case VK_UP:
+			key = KEY_UP;
+			break;
+		case VK_LEFT:
+			key = KEY_LEFT;
+			break;
+		case VK_DOWN:
+			key = KEY_DOWN;
+			break;
+		case VK_RIGHT:
+			key = KEY_RIGHT;
+			break;
+		case VK_HOME:
+			key = KEY_UP_LEFT;
+			break;
+		case VK_PRIOR:
+			key = KEY_UP_RIGHT;
+			break;
+		case VK_NEXT:
+			key = KEY_DOWN_RIGHT;
+			break;
+		case VK_END:
+			key = KEY_DOWN_LEFT;
+			break;
+		case VK_RETURN:
+			key = KEY_ENTER;
+			break;
+		case VK_ADD:
+			key = '+';
+			break;
+		case VK_SUBTRACT:
+			key = '-';
+			break;
+		case VK_F1:
+			key = 0x3b00;
+			break;
+		case VK_F2:
+			key = 0x3c00;
+			break;
+		case VK_F3:
+			key = 0x3d00;
+			break;
+		case VK_F4:
+			key = 0x3e00;
+			break;
+		case VK_F5:
+			key = 0x3f00;
+			break;
+		case VK_F6:
+			key = 0x4000;
+			break;
+		case VK_F7:
+			key = 0x4100;
+			break;
+		case VK_F8:
+			key = 0x4200;
+			break;
+		case VK_F9:
+			key = 0x4300;
+			break;
+		case VK_F10:
+			key = 0x4400;
+			break;
+		case VK_ESCAPE:
+			key = 0x1b;
+			break;
+		case 192:
+			key = CONSOLE_ACTIVATE_KEY;
+			break;
+//		case 193:
+//			key = CONSOLE_SWITCH_KEY;
+//			break;
+		default:
+			if (!isalpha (key))
+				break;
+
+			/* Must exist a better way to do that! */
+			if (GetKeyState (VK_CAPITAL) & 0x1) {
+				if (GetAsyncKeyState (VK_SHIFT) & 0x8000)
+					key = key + 32;
+			} else {
+				if (!(GetAsyncKeyState (VK_SHIFT) & 0x8000))
+					key = key + 32;
 			}
+
+			/* Control and Alt modifier */
+			if (GetAsyncKeyState (VK_CONTROL) & 0x8000)
+				key = (key & ~0x20) - 0x40;
+			else 
+				if (GetAsyncKeyState (VK_MENU) & 0x8000)
+					key = scancode_table[(key & ~0x20) - 0x41] << 8;
+
 			break;
-		case WM_DESTROY:
-			fprintf (stderr, "Fatal: message WM_DESTROY caught\n" );
-			deinit_vidmode ();
-			exit (-1);
-			return 0;
 
-		case WM_PAINT:
-			hDC = BeginPaint( hwndMain, &ps );
-			EnterCriticalSection(&g_screen.cs);
-			StretchDIBits(
-					hDC,
-					0,
-					0,
-					GFX_WIDTH * scale,
-					GFX_HEIGHT * scale,
-					0,
-					0,
-					GFX_WIDTH * scale,
-					GFX_HEIGHT * scale,
-					g_screen.screen_pixels,
-					g_screen.binfo,
-					DIB_RGB_COLORS,
-					SRCCOPY);
+		};
 
-			EndPaint( hwndMain, &ps );
-			LeaveCriticalSection(&g_screen.cs);
-			return 0;
-
-		/* Multimedia functions (Damn! The CALLBACK_FUNCTION parameter don't work...) */
-		case MM_WOM_DONE:
-			felipes_kludge ((PWAVEHDR) lParam);
-			return 0;
-
-		case WM_SYSKEYDOWN:
-		case WM_KEYDOWN:
-			if (lParam & REPEATED_KEYMASK )
-				return(0);
-
-			switch ( key = (int) wParam )
-			{
-				case VK_SHIFT:
-					key = 0;
-					break;
-				case VK_UP:
-					key = KEY_UP;
-					break;
-				case VK_LEFT:
-					key = KEY_LEFT;
-					break;
-				case VK_DOWN:
-					key = KEY_DOWN;
-					break;
-				case VK_RIGHT:
-					key = KEY_RIGHT;
-					break;
-				case VK_HOME:
-					key = KEY_UP_LEFT;
-					break;
-				case VK_PRIOR:
-					key = KEY_UP_RIGHT;
-					break;
-				case VK_NEXT:
-					key = KEY_DOWN_RIGHT;
-					break;
-				case VK_END:
-					key = KEY_DOWN_LEFT;
-					break;
-				case VK_RETURN:
-					key = KEY_ENTER;
-					break;
-				case VK_ADD:
-					key = '+';
-					break;
-				case VK_SUBTRACT:
-					key = '-';
-					break;
-				case VK_F1:
-					key = 0x3b00;
-					break;
-				case VK_F2:
-					key = 0x3c00;
-					break;
-				case VK_F3:
-					key = 0x3d00;
-					break;
-				case VK_F4:
-					key = 0x3e00;
-					break;
-				case VK_F5:
-					key = 0x3f00;
-					break;
-				case VK_F6:
-					key = 0x4000;
-					break;
-				case VK_F7:
-					key = 0x4100;
-					break;
-				case VK_F8:
-					key = 0x4200;
-					break;
-				case VK_F9:
-					key = 0x4300;
-					break;
-				case VK_F10:
-					key = 0x4400;
-					break;
-				case VK_ESCAPE:
-					key = 0x1b;
-					break;
-				case 192:
-					key = CONSOLE_ACTIVATE_KEY;
-					break;
-//				case 193:
-//					key = CONSOLE_SWITCH_KEY;
-//					break;
-				default:
-					if (!isalpha (key))
-						break;
-
-					//Must exist a better way to do that!
-					if ( GetKeyState( VK_CAPITAL  ) & 0x1 ) 
-					{
-						if ( GetAsyncKeyState( VK_SHIFT ) & 0x8000 )
-							key = key + 32;
-					}
-					else
-					{
-						if ( (GetAsyncKeyState( VK_SHIFT ) & 0x8000 ) == 0 )
-							key = key + 32;
-					}
-
-					//Control and Alt modifier
-					if ( GetAsyncKeyState( VK_CONTROL ) & 0x8000 )
-						key = (key & ~0x20) - 0x40;
-					else 
-						if ( GetAsyncKeyState( VK_MENU ) &0x8000 )
-							key = scancode_table[(key & ~0x20) - 0x41] << 8;
-
-					break;
-
-			};
-
-			_D (": key = 0x%02x ('%c')", key, isprint(key) ? key : '?');
-			break;
+		_D (": key = 0x%02x ('%c')", key, isprint(key) ? key : '?');
+		break;
 	};
 			
 	/* Keyboard message handled */
-	if (key)
-	{
+	if (key) {
 		key_enqueue (key);
 		return 0;
 	}
 
 	return DefWindowProc (hwnd, nMsg, wParam, lParam);
 }
+
 
 int init_machine (int argc, char **argv)
 {
@@ -296,16 +288,18 @@ int init_machine (int argc, char **argv)
 
 	c_ticks = 0;
 	c_count = 0;
-/*
-	if ( !QueryPerformanceFrequency((LARGE_INTEGER*)&g_update_freq) ) {
+
+#if 0
+	if (!QueryPerformanceFrequency((LARGE_INTEGER*)&g_update_freq)) {
 		fprintf (stderr, "win32: high resoultion timer needed\n");
 		return err_Unk;
 	}
-*/
-//        update_freq = 45 * (update_freq / 1000);   /* X11 speed 
-//	g_update_freq = g_update_freq / TICK_SECONDS; /* Sierra speed 
+#endif
+
+//      update_freq = 45 * (update_freq / 1000);	/* X11 speed  */
+//	g_update_freq = g_update_freq / TICK_SECONDS;	/* Sierra speed */
 //	g_counts_per_msec = g_update_freq / 1000;
-//	g_update_freq /= TICK_SECONDS; /* Original speed */
+//	g_update_freq /= TICK_SECONDS;			/* Original speed */
 	
 	return err_OK;
 }
@@ -360,8 +354,9 @@ static unsigned int __stdcall GuiThreadProc(void *param)
 		WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		(GFX_WIDTH*scale) + 2*GetSystemMetrics(SM_CXFRAME),
-		(GFX_HEIGHT*scale) + GetSystemMetrics(SM_CYCAPTION) + 2*GetSystemMetrics(SM_CYFRAME),
+		(GFX_WIDTH*scale) + 2*GetSystemMetrics (SM_CXFRAME),
+		(GFX_HEIGHT*scale) + GetSystemMetrics (SM_CYCAPTION) +
+			2 * GetSystemMetrics (SM_CYFRAME),
 		NULL,
 		NULL,
 		NULL,
@@ -372,12 +367,13 @@ static unsigned int __stdcall GuiThreadProc(void *param)
 	set_palette (palette, 0, 16); 
 
 	/* Fill in the bitmap info header */
-	g_screen.binfo = (BITMAPINFO *)malloc( sizeof(*g_screen.binfo) + 256*sizeof(RGBQUAD) );
+	g_screen.binfo = (BITMAPINFO *)malloc(sizeof(*g_screen.binfo) +
+		256 * sizeof(RGBQUAD));
 
-	if ( g_screen.binfo == NULL ) {
-                fprintf (stderr, "win32: can't create DIB section\n");
-                g_err =  err_Unk;
-				goto exx;
+	if (g_screen.binfo == NULL) {
+		fprintf (stderr, "win32: can't create DIB section\n");
+		g_err =  err_Unk;
+		goto exx;
 	}
 
 	g_screen.binfo->bmiHeader.biSize          = sizeof(BITMAPINFOHEADER);
@@ -393,31 +389,30 @@ static unsigned int __stdcall GuiThreadProc(void *param)
 	g_screen.binfo->bmiHeader.biClrImportant  = 0;
 
 	for (i = 0; i < 32; i ++) {
-		g_screen.binfo->bmiColors[i].rgbRed      = (palette[i*3    ]) << 2;
-		g_screen.binfo->bmiColors[i].rgbGreen    = (palette[i*3 + 1]) << 2;
-		g_screen.binfo->bmiColors[i].rgbBlue     = (palette[i*3 + 2]) << 2;
+		g_screen.binfo->bmiColors[i].rgbRed   = (palette[i*3    ]) << 2;
+		g_screen.binfo->bmiColors[i].rgbGreen = (palette[i*3 + 1]) << 2;
+		g_screen.binfo->bmiColors[i].rgbBlue  = (palette[i*3 + 2]) << 2;
 		g_screen.binfo->bmiColors[i].rgbReserved = 0;
 	}
 
 	/* Create the offscreen bitmap buffer */
 	hDC = GetDC( hwndMain );
-	g_screen.screen_bmp = CreateDIBSection(hDC, g_screen.binfo, DIB_RGB_COLORS, (void **)(&g_screen.screen_pixels), NULL, 0);
+	g_screen.screen_bmp = CreateDIBSection (hDC, g_screen.binfo,
+		DIB_RGB_COLORS, (void **)(&g_screen.screen_pixels), NULL, 0);
 	ReleaseDC( hwndMain, hDC );
 
-	if ( (g_screen.screen_bmp == NULL) || (g_screen.screen_pixels == NULL) ) 
-	{
+	if (g_screen.screen_bmp == NULL || g_screen.screen_pixels == NULL) {
 		fprintf( stderr, "win32: can't create DIB section\n");
 		g_err = err_Unk;
-	}else{
+	} else {
 		ShowWindow (hwndMain, TRUE);
 		UpdateWindow (hwndMain);
-
 		screen_mode = GFX_MODE;      
 		g_err = err_OK;
 	}
 
 exx:
-	SetEvent(g_hExchEvent); // notify main thread to continue
+	SetEvent(g_hExchEvent);		/* notify main thread to continue */
 
 	while ( GetMessage( &msg, NULL, 0, 0) ) {
 		TranslateMessage (&msg);
