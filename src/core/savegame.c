@@ -254,7 +254,7 @@ int save_game (char *s, char *d)
 	return err_OK;
 }
 
-#define read_num(x) hilo_getdword ((UINT8 *)(UINT32*)(x)++)
+#define read_num(x) hilo_getdword ((UINT8 *)((UINT32*)(x))++)
 
 static void get_apic (int size, UINT8 *b)
 {
@@ -496,7 +496,19 @@ int loadgame_dialog ()
 		home, game.id, slot);
 	if ((rc = load_game (path)) == err_OK) {
 		message_box ("Gamed loaded.");
-		/* show pic, etc */
+		/* FIXME: restore at correct point instead of using the
+		 *	  new.room hack
+		 */
+#if 0
+		show_pic ();
+		flush_screen ();
+		do_update ();
+#else
+		{
+			game.vars[V_border_touch_ego] = 0;
+			new_room (game.vars[0]);
+		}
+#endif
 	} else {
 		message_box ("Error loading game.");
 	}
