@@ -16,6 +16,9 @@
  *
  * Wed Dec 22 15:51:22 EDT 1999
  * Compile errors fixed by Ryan Gordon <ryan_gordon@hotmail.com>
+ *
+ * Sun, 5 Aug 2001 14:05:04 -0700 (PDT)
+ * Mouse support added by Ryan C. Gordon <icculus@clutteredmind.org>
  */
 
 #include <stdio.h>
@@ -267,8 +270,23 @@ static void process_events ()
 	int key;
 
 	while (SDL_PollEvent (&event) > 0) {
-		switch (event.key.type) {
-		case SDL_KEYDOWN:
+		switch (event.type) {
+		case SDL_MOUSEBUTTONDOWN:
+			key = (event.button.button == 1) ?
+				BUTTON_LEFT : BUTTON_RIGHT;
+			mouse.button = TRUE;
+			mouse.x = event.button.x / opt.scale;
+			mouse.y = event.button.y / opt.scale;
+			if (opt.fixratio)
+				mouse.y = mouse.y * 5 / 6;
+			_D (_D_WARN "ButtonPress %04x @ %d,%d",
+				key, mouse.x, mouse.y);
+			key_enqueue (key);
+			break;
+		case SDL_MOUSEBUTTONUP:
+			mouse.button = FALSE;
+			break;
+ 		case SDL_KEYDOWN:
 			switch (key = event.key.keysym.sym) {
 			case SDLK_LSHIFT:
 			case SDLK_RSHIFT:
