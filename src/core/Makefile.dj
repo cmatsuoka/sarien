@@ -1,0 +1,23 @@
+#
+# Makefile for DJGPP v2
+#
+
+include $(HOME)/src/graphics/msdos/djgpp.dep
+
+OBJS =	main.o global.o agi_v2.o agi_v3.o agi.o	\
+		cli.o words.o objects.o picture.o id.o	\
+		view.o logic.o gfx.o keyboard.o rand.o	\
+		menu.o lzw.o getopt.o getopt1.o sound.o	\
+		font.o op_test.o op_misc.o op_dbg.o		\
+		op_cmd.o savegame.o silent.o iff.o cycle.o \
+		console.o inv.o
+
+all: agi_core.a
+
+agi_core.a: $(OBJS)
+	ar rsv agi_core.a $(OBJS)
+
+clean:
+	@if exist *.bak @del *.bak
+	@if exist *.o @del *.o
+	@if exist *.a @del *.a
