@@ -2,7 +2,8 @@ Source: sarien
 Section: contrib/games
 Priority: extra
 Maintainer: Peter Makholm <peter@makholm.net>
-Standards-Version: 3.0.1
+Build-Depends: debhelper (>> 3.0.0), xlibs-dev
+Standards-Version: 3.5.2
 
 Package: sarien
 Architecture: any
@@ -17,3 +18,4 @@ Description: An interprenter for AGI resources
    * Leisure Suit Larry
  .
  You need the files from the original games.
+

@@ -1,10 +1,11 @@
-This package was debianized by Peter Makholm peter@makholm.net on
-Mon, 26 Apr 1999 18:49:24 +0200.
+This package was re-debianized by Peter Makholm <peter@makholm.net> on
+Thu,  5 Jul 2001 21:31:49 +0200.
 
-It was downloaded from http://homepages.ihug.com.au/~entropy/agi/
+It was downloaded from http://sarien.sourceforge.net
 
 Upstream Author(s): Dark Fiber <entropy@ihug.com.au>
                     Claudio Matsuoka <claudio@helllabs.com>
+                    and others (check the sourceforge project page)
 
 Copyright:
 This program is free software; you can redistribute it and/or modify it
@@ -13,4 +14,4 @@ Free Software Foundation; either version 2, or (at your option) any
 later version.
 
 On Debian GNU/Linux systems, the complete text of the GNU General
-Public License can be found in `/usr/doc/copyright/GPL'.
+Public License can be found in `/usr/share/common-licenses/GPL'.
