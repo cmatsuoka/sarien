@@ -74,13 +74,17 @@ int get_app_dir (char *app_dir, unsigned int size)
 	char *x;
 
 	x = getenv (HOMEDIR);
+	_D ("HOMEDIR = %s", x);
 	if (x) {
 		strncpy (app_dir, x, size);
 	} else {
 		x = getenv ("SARIEN");
+		_D ("SARIEN = %s", x);
 		if (x)
 			strncpy (app_dir, x, size);
 	}
+
+	_D ("app_dir = %s", app_dir);
 	
 	return x ? 0 : -1;
 }
@@ -131,9 +135,8 @@ static void iff_chunk_pad (UINT32 i, FILE *f)
 int save_game (char *s, char *d)
 {
 	FILE *f;
-	UINT8 b;
 	UINT32 i, s_agid, s_gcrc, s_form, s_desc, s_objs;
-	UINT32 s_flag, s_vars, s_stri, s_view;
+	UINT32 s_flag, s_vars, s_stri, s_view, s_spic, s_apic;
 	UINT32 crc = 0x12345678;	/* FIXME */
 
 	_D ("(\"%s\", \"%s\")", s, d);
@@ -149,11 +152,13 @@ int save_game (char *s, char *d)
 	s_objs = game.num_objects + 4;	/* 1 byte / object */
 	s_stri = 4;
 	for (i = 0; i < MAX_WORDS1; s_stri += strlen (game.strings[i++]) + 1);
-	s_view = 28;
+	s_view = 26 * 4;
+	s_apic = WORD_ALIGN (_WIDTH * _HEIGHT);
+	s_spic = WORD_ALIGN (GFX_WIDTH * GFX_HEIGHT);
 	s_form = s_agid + s_gcrc + s_desc + s_vars + s_flag + s_stri +
-		/* s_vtbl + */ MAX_VIEWTABLE * (8 + s_view) + s_objs;
+		MAX_VIEWTABLE * (8 + s_view) + s_objs + s_apic + s_spic;
 
-	iff_newgroup ("FORM", s_form, "IAGI", f);
+	iff_newgroup ("FORM", s_form, "FAGI", f);
 
 	/* Game ID */
 	if (s_agid) {
@@ -176,20 +181,16 @@ int save_game (char *s, char *d)
 	iff_newchunk ("VARS", s_vars, f);
 	write_num (MAX_VARS, f);
 	s_vars -= 4;
-	for (i = 0; i < MAX_VARS; i++, s_vars--) {
-		b = getvar (i);
-		write_num (b, f);
-	}
+	fwrite (&game.vars, 1, MAX_VARS, f);
+	s_vars -= MAX_VARS;
 	iff_chunk_pad (s_vars, f);
 
 	/* Flags */
 	iff_newchunk ("FLAG", s_flag, f);
 	write_num (MAX_FLAGS, f);
 	s_flag -= 4;
-	for (i = 0; i < MAX_FLAGS; i++, s_flag--) {
-		b = getflag (i);
-		write_num (b, f);
-	}
+	fwrite (&game.flags, 1, MAX_FLAGS, f);
+	s_flag -= MAX_FLAGS;
 	iff_chunk_pad (s_flag, f);
 
 	/* Strings */
@@ -207,13 +208,13 @@ int save_game (char *s, char *d)
 
 	write_num (game.num_objects, f);
 	for (i = 0; i < game.num_objects; i++) {
-		write_num (object_get_location (i), f);
+		UINT8 x = object_get_location (i);
+		fwrite (&x, 1, 1, f);
 	}
 
 	for (i = 0; i < MAX_VIEWTABLE; i++) {
 		struct vt_entry *v = &game.view_table[i];
 		iff_newchunk ("VIEW", s_view, f);
-		write_num (i, f);
 		write_num (v->entry, f);
 		write_num (v->step_time, f);
 		write_num (v->step_time_count, f);
@@ -242,14 +243,12 @@ int save_game (char *s, char *d)
 		write_num (v->parm4, f);
 	}
 
-	iff_newchunk ("SPIC", GFX_WIDTH * GFX_HEIGHT, f);
-	/* fwrite (sarien_screen, GFX_WIDTH, GFX_HEIGHT, 1); */
+	iff_newchunk ("SPIC", s_spic, f);
+	fwrite (get_sarien_screen (), GFX_WIDTH, GFX_HEIGHT, f);
 
-	iff_newchunk ("APIC", _WIDTH * _HEIGHT, f);
+	iff_newchunk ("APIC", s_apic, f);
 	fwrite (game.sbuf, _WIDTH, _HEIGHT, f);
 
-	iff_newchunk ("SPRL", _WIDTH * _HEIGHT, f);
-	
 	fclose (f);
 
 	return err_OK;
@@ -257,23 +256,32 @@ int save_game (char *s, char *d)
 
 #define read_num(x) hilo_getdword ((UINT8 *)(UINT32*)(x)++)
 
+static void get_apic (int size, UINT8 *b)
+{
+	memcpy (game.sbuf, b, _WIDTH * _HEIGHT);
+}
+
+static void get_spic (int size, UINT8 *b)
+{
+	memcpy (get_sarien_screen (), b, GFX_WIDTH * GFX_HEIGHT);
+}
+
 static void get_view (int size, UINT8 *b)
 {
 	UINT32 i;
 	struct vt_entry *v;
 
-	_D ("(%d, %p)", size, b);
-
 	i = read_num (b);
+	_D ("(%d, %p) entry = %d", size, b, i);
 
 	if (i > MAX_VIEWTABLE)
 		return;
 
 	v = &game.view_table[i];
 
+	v->entry		= i;
 	v->step_time		= read_num (b);
 	v->step_time_count	= read_num (b);
-	v->entry		= read_num (b);
 	v->x_pos		= read_num (b);
 	v->y_pos		= read_num (b);
 	v->current_view		= read_num (b);
@@ -298,7 +306,7 @@ static void get_view (int size, UINT8 *b)
 	v->parm3		= read_num (b);
 	v->parm4		= read_num (b);
 
-	set_loop (v, v->current_loop);
+	set_view (v, v->current_view);
 }
 
 
@@ -323,35 +331,28 @@ static void get_stri (int size, UINT8 *buffer)
 
 static void get_flag (int size, UINT8 *buffer)
 {
-	UINT32 i, n;
-	UINT8 b;
+	int n;
 
 	_D ("(%d, %p)", size, buffer);
 
 	n = hilo_getdword (buffer);
 	buffer += 4;
 
-	for (i = 0; i < n; i++) {
-		b = hilo_getbyte (buffer++);
-		setflag (i, b);
-	}
+	memcpy (game.flags, buffer, n);
 }
 
 
 static void get_vars (int size, UINT8 *buffer)
 {
-	UINT32 i, n;
-	UINT8 b;
-
-	_D ("(%d, %p)", size, buffer);
+	int n;
 
 	n = hilo_getdword (buffer);
+	_D ("(%d, %p) get %d vars", size, buffer, n);
 	buffer += 4;
 
-	for (i = 0; i < n; i++) {
-		b = hilo_getbyte (buffer++);
-		setvar (i, b);
-	}
+	memcpy (game.vars, buffer, n);
+
+	_D ("done");
 }
 
 
@@ -401,11 +402,13 @@ int load_game (char *s)
 
 	fread (&h, 1, sizeof (struct iff_header), f);
 	if (h.form[0] != 'F' || h.form[1] != 'O' || h.form[2] != 'R' ||
-		h.form[3] != 'M' || h.id[0] != 'I' || h.id[1] != 'A' ||
+		h.form[3] != 'M' || h.id[0] != 'F' || h.id[1] != 'A' ||
 		h.id[2] != 'G' || h.id[3] != 'I') {
 		fclose (f);
 		return err_BadFileOpen;
 	}
+
+	_D ("registering IFF chunks");
 
 	/* IFF chunk IDs */
 	iff_register ("AGID", get_agid);
@@ -414,8 +417,9 @@ int load_game (char *s)
 	iff_register ("VARS", get_vars);
 	iff_register ("STRI", get_stri);
 	iff_register ("OBJS", get_objs);
-	/* iff_register ("VTBL", get_vtbl); */
 	iff_register ("VIEW", get_view);
+	iff_register ("APIC", get_apic);
+	iff_register ("SPIC", get_spic);
 
 	loading_ok = 1;
 
@@ -433,7 +437,9 @@ int load_game (char *s)
 	game.exit_all_logics = TRUE;
 #endif
 
-	return loading_ok ? err_OK : err_BadFileOpen;
+	setflag (F_restore_just_ran, TRUE);
+
+	return err_OK;
 }
 
 
@@ -450,7 +456,6 @@ int savegame_dialog ()
 
 	message_box ("Multi-slot savegames are under development and"
 		"will be available in future versions of Sarien.");
-	wait_key ();
  	desc = "Save game test";
 
 	snprintf (path, MAX_PATH, "%s/" DATADIR "/", home);

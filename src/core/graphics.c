@@ -499,4 +499,10 @@ void restore_block (int x1, int y1, int x2, int y2, UINT8 *b)
 	flush_block (x1, y1, x2, y2);
 }
 
+
+UINT8 *get_sarien_screen ()
+{
+	return &sarien_screen;
+}
+
 /* end: graphics.c */

@@ -75,6 +75,7 @@ int	get_key		(void);
 void	print_character	(int, int, char, int, int);
 
 void	poll_timer	(void);
+UINT8	*get_sarien_screen (void);
 
 #ifdef __cplusplus
 };

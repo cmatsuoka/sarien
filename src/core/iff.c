@@ -28,7 +28,7 @@ void iff_chunk (FILE *f)
 	size = ((UINT32)s[0] << 24) | ((UINT32)s[1] << 16) |
 		((UINT32)s[2] << 8) | s[3];
 
-	_D (_D_WARN "%c%c%c%c %ld", id[0], id[1], id[2], id[3], size);
+	_D (_D_WARN "%c%c%c%c %d", id[0], id[1], id[2], id[3], size);
 	iff_process (id, size, f);
 }
 
@@ -72,6 +72,9 @@ int iff_process (char *id, long size, FILE * f)
 {
 	char *buffer;
 	struct iff_info *i;
+
+	if (size == 0)
+		return 0;
 
 	if ((buffer = malloc (size)) == NULL)
 		return -1;
