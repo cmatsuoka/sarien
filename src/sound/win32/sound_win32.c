@@ -127,6 +127,9 @@ static void win32_close_sound (void)
 {
 	int nCount;
 	
+	if( hSoundDevice )
+		waveOutReset( hSoundDevice );
+
 	/* Free the sound buffer */
 	for (nCount = 0; nCount < BUFFER; nCount ++) {
 		waveOutUnprepareHeader (hSoundDevice,
