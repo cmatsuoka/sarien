@@ -212,14 +212,13 @@ void message_box (char *message, ...)
 
 void print_status (char *message, ...)
 {
-	char x[40];
+	char x[42];
 	va_list	args;
 
-	_D (("(message, ...)"));
 	va_start (args, message);
 
 #ifdef HAVE_VSNPRINTF
-	vsnprintf (x, 32, message, args);
+	vsnprintf (x, 41, message, args);
 #else
 	vsprintf (x, message, args);
 #endif
