@@ -1,0 +1,229 @@
+<!DOCTYPE Book PUBLIC "-//Davenport//DTD DocBook V3.0//EN" [
+        <!ENTITY lt "<">
+        <!ENTITY gt ">">
+        <!ENTITY amp "&">
+]>
+
+<book>
+  <title>Sarien Hacker's Guide</title>
+  <titleabbrev>Hacker's Guide</titleabbrev>
+
+  <bookinfo>
+    <authorgroup>
+      <author>
+        <firstname>Claudio</firstname>
+        <surname>Matsuoka</surname>
+        <authorblurb><para>
+        </para></authorblurb>
+      </author>
+    </authorgroup>
+
+    <abstract><para>
+    </para></abstract>
+
+    <releaseinfo>$Id$</releaseinfo>
+  </bookinfo>
+
+<chapter id="intro">
+<title>Introduction</title>
+
+<sect1 id="intro-base">
+<title>Basic concepts</title>
+<para>
+</para>
+</sect1>
+
+<sect1 id="intro-portability">
+<title>Portability issues</title>
+<para>
+</para>
+</sect1>
+
+<sect1 id="intro-style">
+<title>Coding style</title>
+<para>
+</para>
+</sect1>
+
+<sect1 id="intro-organization">
+<title>Organization</title>
+<para>
+</para>
+</sect1>
+
+
+<chapter id="arch">
+<title>Architectural overview</title>
+
+<sect1 id="arch-system">
+<title>Interpreter subsystems</title>
+<para>
+</para>
+</sect1>
+
+<sect1 id="arch-data">
+<title>Data structures</title>
+<para>
+</para>
+</sect1>
+
+<sect1 id="arch-resource">
+<title>Resource management</title>
+<para>
+</para>
+</sect1>
+
+<sect1 id="arch-console">
+<title>The interpreter console</title>
+<para>
+</para>
+</sect1>
+
+</chapter>
+
+<chapter id="input">
+<title>Input subsystem</title>
+
+<sect1 id="input-keyboard">
+<title>Keyboard input handling</title>
+<para>
+  The keystroke is routed to different subsystems according to the value
+  of <parameter/game.input-mode/. This variable can assume one of the
+  following values:
+</para><para>
+  <variablelist>
+    <varlistentry>
+      <term><parameter/INPUT_NORMAL/</term>
+      <listitem><para>
+        In this mode regular keystrokes are routed to the input parser.
+        Directional keys are handled to move ego, and special key events
+        are tested for controller actions.
+      </para></listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><parameter/INPUT_GETSTRING/</term>
+      <listitem><para>
+        This mode is used when <function/get.string/ is issued, and
+        key events are routed to the input string. Directional keys are
+        handled to move ego, and special key events are tested for
+        controller actions.
+      </para></listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><parameter/INPUT_MENU/</term>
+      <listitem><para>
+        In this mode only <keycap>ENTER</keycap>, <keycap>ESC</keycap> and
+        directional keys are handled and used for menu navigation. Controller
+        tests are disabled.
+      </para></listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><parameter/INPUT_NONE/</term>
+      <listitem><para>
+        When mode is set to <parameter/INPUT_NONE/, <keycap>ENTER</keycap>
+        and <keycap>ESC</keycap> are handled for message boxes, and special
+        key events are tested for controller actions. 
+      </para></listitem>
+    </varlistentry>
+  </variablelist>
+
+</para><para>
+  The interpreter architecture doesn't allow key handling to be implemented
+  in a interrupt handler for portability reasons. Instead, keyboard events
+  are polled in the main loop and retrieved from a queue prepared by the
+  architecture-specific driver. Currently message box, the menu system and
+  <function/get.string/ have their own loops, ideally we should have a
+  single key event handler in the main loop checking the input mode
+  dispatching events according to the input mode.
+</para>
+</sect1>
+
+<sect1 id="input-mouse">
+<title>Mouse</title>
+<para>
+</para>
+</sect1>
+
+<sect1 id="input-grafitti">
+<title>Grafitti</title>
+<para>
+</para>
+</sect1>
+
+</chapter>
+
+<chapter id="gfx">
+<title>Graphic subsystem</title>
+
+<sect1 id="gfx-lowlevel">
+<title>Lowlevel graphic subsystem</title>
+<para>
+</para>
+</sect1>
+
+<sect1 id="gfx-hilevel">
+<title>High-level graphic subsystem</title>
+<para>
+</para>
+</sect1>
+
+<sect1 id="gfx-fonts">
+<title>Fonts</title>
+<para>
+</para>
+</sect1>
+
+</chapter>
+
+
+<chapter id="sound">
+<title>Sound subsystem</title>
+
+<sect1 id="sound-play">
+<title>Sound playing</title>
+<para>
+</para>
+</sect1>
+
+<sect1 id="sound-iigs">
+<title>PCM and MIDI sound</title>
+<para>
+</para>
+</sect1>
+
+</chapter>
+
+
+<chapter id="driver">
+<title>Drivers</title>
+
+<sect1 id="driver-intro">
+<title>The need of abstraction layers</title>
+<para>
+</para>
+</sect1>
+
+<sect1 id="driver-graphics">
+<title>Graphic drivers</title>
+<para>
+</para>
+</sect1>
+
+<sect1 id="driver-sound">
+<title>Sound drivers</title>
+<para>
+</para>
+</sect1>
+
+<sect1 id="driver-fs">
+<title>Filesystem access</title>
+<para>
+</para>
+</sect1>
+
+</chapter>
+
+</book>
