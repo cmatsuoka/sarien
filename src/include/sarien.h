@@ -47,7 +47,7 @@ extern "C"{
 #define	MAX_DIRS	256
 #define	MAX_VARS	256
 #define	MAX_FLAGS	(256 >> 3)
-#define MAX_VIEWTABLE	256		/* KQ3 uses o255! */
+#define MAX_VIEWTABLE	64		/* KQ3 uses o255! */
 #define MAX_WORDS	20
 #define	MAX_STRINGS	24		/* MAX_STRINGS + 1 used for get.num */
 #define MAX_STRINGLEN	40

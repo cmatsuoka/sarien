@@ -792,6 +792,7 @@ cmd(print_f) {
 
 cmd(print_at) {
 	int n = p0 < 1 ? 1 : p0;
+	_D ("%d %d %d %d", p0, p1, p2, p3);
 	print (cur_logic->texts[n - 1], p1, p2, p3);
 }
 

@@ -821,6 +821,7 @@ void show_pic ()
 	int i, y;
 	int offset;
 
+	_D (_D_WARN "Show picture!");
 #ifdef USE_HIRES
 	if (opt.hires) {
 		show_hires_pic ();

@@ -570,7 +570,7 @@ int load_game(char* s)
 
 	setflag(F_restore_just_ran, TRUE);
 
-	game.has_prompt = 0; /* force input line repaint if necessary*/
+	game.has_prompt = 0;	/* force input line repaint if necessary*/
 	clean_input();
 	
 	erase_both();
