@@ -113,7 +113,7 @@ int do_poll_keyboard ()
 	int key = 0;
 
 	/* If a key is ready, rip it */
-	while (keypress ()) {
+	if (keypress ()) {
 		key = get_key ();
 		_D ("key %02x pressed", key);
 	}

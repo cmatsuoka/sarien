@@ -202,6 +202,8 @@ static void update_mouse_pos(int x, int y)
 		mouse.x /= opt.scale;
 		mouse.y /= opt.scale;
 	}
+
+	/* for mouse we make the inverse transform of ASPECT_RATIO */
 	if (opt.fixratio)
 		mouse.y = mouse.y * 5 / 6;
 }
@@ -283,9 +285,6 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
-		if (lParam & REPEATED_KEYMASK)
-			return 0;
-
 		/* Keycode debug:
 		 * report ("%02x\n", (int)wParam);
 		 */
@@ -615,7 +614,7 @@ static int win32_keypress (void)
 
 	process_events ();
 	EnterCriticalSection(&g_key_queue.cs);
-	b = g_key_queue.start != g_key_queue.end;
+	b = (g_key_queue.start != g_key_queue.end);
 	LeaveCriticalSection(&g_key_queue.cs);
 
 	return b;

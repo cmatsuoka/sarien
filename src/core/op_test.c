@@ -172,12 +172,13 @@ static UINT8 test_said (UINT8 nwords, UINT8 *cc)
 
 int test_if_code (int lognum)
 {
-	int ec = TRUE, retval = TRUE;
-	UINT8	op;
-	UINT8	not_test = FALSE;
-	UINT8	or_test = FALSE;
-	UINT16	last_ip = ip;
-	UINT8	p[16];
+	int ec			= TRUE;
+	int retval		= TRUE;
+	UINT8	op		= 0;
+	UINT8	not_test	= FALSE;
+	UINT8	or_test		= FALSE;
+	UINT16	last_ip		= ip;
+	UINT8	p[16]		= {0};
 
 	while (retval && !game.quit_prog_now) {
 #ifdef USE_CONSOLE
