@@ -138,10 +138,14 @@ extern "C"{
 
 #ifdef _TRACE
 #  include <stdio.h>
+#ifdef __GNUC__
 #  define _D(args...) do { \
         printf("\x1b[33m" __PRETTY_FUNCTION__ " \x1b[37m[" __FILE__ \
         ":%d] " _D_INFO, __LINE__); printf (args); printf ("\x1b[0m\n"); \
         } while (0)
+#else
+#  define _D printf ("\n%s:%d: ", __FILE__, __LINE__); printf
+#endif /* __GNUC__ */
 #else
 #  ifdef _D
 #    undef _D

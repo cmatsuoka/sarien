@@ -226,6 +226,7 @@ sarien.cfg: makefile.tc
 -DVERSION="0.7.0"
 -D__interrupt=interrupt
 -D__far=far
+-D_TRACE
 -L$(LIBPATH)
 -Ff
 | sarien.cfg

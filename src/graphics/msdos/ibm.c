@@ -72,7 +72,7 @@ static void pc_timer ()
 {
 	static UINT32 cticks = 0;
 
-	while (cticks == clock_ticks);
+	//while (cticks == clock_ticks);
 	cticks = clock_ticks;
 }
 
@@ -81,13 +81,13 @@ int init_machine (int argc, char **argv)
 {
 	gfx = &GFX_ibm;
 
-	screen_buffer = (UINT8*)malloc (GFX_WIDTH * GFX_HEIGHT);
+	screen_buffer = malloc (GFX_WIDTH * GFX_HEIGHT);
 
 	clock_count = 0;
 	clock_ticks = 0;
 
 	prev_08 = _dos_getvect (0x08);
-	_dos_setvect (0x08, tick_increment);
+	//_dos_setvect (0x08, tick_increment);
 
 	return err_OK;
 }
@@ -149,29 +149,29 @@ static int pc_deinit_vidmode ()
 /* blit a block onto the screen */
 static void pc_put_block (int x1, int y1, int x2, int y2)
 {
-	int i, h;
+	unsigned int h, w, p;
+	UINT8 far *vmem = 0xa0000;
 
-	if (x1 >= GFX_WIDTH)
-		x1 = GFX_WIDTH - 1;
-	if (y1 >= GFX_HEIGHT)
-		y1 = GFX_HEIGHT - 1;
-	if (x2 >= GFX_WIDTH)
-		x2 = GFX_WIDTH - 1;
-	if (y2 >= GFX_HEIGHT)
-		y2 = GFX_HEIGHT - 1;
+	if (x1 >= GFX_WIDTH)  x1 = GFX_WIDTH  - 1;
+	if (y1 >= GFX_HEIGHT) y1 = GFX_HEIGHT - 1;
+	if (x2 >= GFX_WIDTH)  x2 = GFX_WIDTH  - 1;
+	if (y2 >= GFX_HEIGHT) y2 = GFX_HEIGHT - 1;
 
 	h = y2 - y1 + 1;
-	for (i = 0; i < h; i++) {
-		memcpy ((UINT8*)0xa0000 + 320 * (y1 + i) + x1,
-			screen_buffer + 320 * (y1 + i) + x1, x2 - x1 + 1);
+	w = x2 - x1 + 1;
+	p = GFX_WIDTH * y1 + x1;
+
+	while (h--) {
+		_fmemcpy (vmem + p, screen_buffer + p, w);
+		p += 320;
 	}
 }
 
 
 static void pc_put_pixels(int x, int y, int w, UINT8 *p)
 {
-	UINT8 *s = &screen_buffer[y * 320 + x];
-	while (w--) *s++ = *p++;
+	UINT8 *s;
+ 	for (s = &screen_buffer[y * 320 + x]; w--; *s++ = *p++);
 }
 
 
@@ -222,3 +222,4 @@ void __interrupt __far tick_increment (void)
 	clock_ticks++;
 	_chain_intr(prev_08);
 }
+

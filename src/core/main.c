@@ -81,6 +81,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 	if (!opt.gfxhacks)
 		report ("Graphics driver hacks disabled (if any)\n");
 
+	_D ("Detect game");
 	if (agi_detect_game (argc > 1 ? argv[optind] :
 		get_current_directory ()) == err_OK)
 	{
@@ -89,6 +90,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 		report ("Could not open AGI game \"%s\".\n\n", argv[optind]);
 	}
 
+	_D ("Init sound");
 	init_sound ();
 
 	report (" \nSarien " VERSION " is ready.\n");

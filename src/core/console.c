@@ -82,7 +82,7 @@ static UINT8 console_parse (char *b)
 	/* get or set flag/var values */
 	if ((b[0] == 'f' || b[0] == 'v') && isdigit (b[1])) {
 		char *e;
-		int f = strtoul (&b[1], &e, 10);
+		int f = (int)strtoul (&b[1], &e, 10);
 		if (*e == 0) {
 			if (f >= 0 && f <= 255) {
 				switch (b[0]) { 
@@ -98,7 +98,7 @@ static UINT8 console_parse (char *b)
 			}
 			return -1;
 		} else if (*e == '=') {
-			int n = strtoul (e + 1, NULL, 0);
+			int n = (int)strtoul (e + 1, NULL, 0);
 			switch (b[0]) {
 			case 'f':
 				setflag (f, !!n);
@@ -580,13 +580,12 @@ void console_cycle ()
 
 	/* console shading animation */
 	if (old_y != console.y) {
-		int y1 = old_y, y2 = console.y;
+		int y = console.y;
 		if (old_y > console.y) {
 			/* going up */
-			y1 = console.y;
-			y2 = old_y;
+			y = old_y;
 		} 
-		flush_block (0, 0, GFX_WIDTH - 1, y2);
+		flush_block (0, 0, GFX_WIDTH - 1, y);
 		old_y = console.y;
 	}
 
