@@ -64,6 +64,13 @@ static void decode_cel (struct view_cel *vc, UINT8 *data)
 static void _set_cel (struct vt_entry *v, int n)
 {
 	v->current_cel = n;
+
+	/* Added by Amit Vainsencher <amitv@subdimension.com> to prevent
+	 * crash in KQ1 -- not in the Sierra interpreter
+	 */
+	if(v->loop_data->num_cels == 0)
+		return;
+
 	v->cel_data = &v->loop_data->cel[n];
 	v->x_size = v->cel_data->width;
 	v->y_size = v->cel_data->height;
