@@ -10,7 +10,7 @@ AC_INIT(src/core/agi.c)
 AC_CONFIG_AUX_DIR(./scripts)
 AC_CANONICAL_HOST
 
-if test "x${target}" = "x"; then
+if test "${target}" = NONE -o "x${target}" = "x"; then
 	target=${host}
 	target_cpu=${host_cpu}
 	target_vendor=${host_vendor}
