@@ -71,7 +71,8 @@ static int key_queue_end = 0;
 static int	init_vidmode	(void);
 static int	deinit_vidmode	(void);
 static void	x11_put_block	(int, int, int, int);
-static void	x11_put_pixels	(int, int, int, UINT8 *);
+static void	_putpixels_anybits_scaleany
+				(int, int, int, UINT8 *);
 static int	x11_keypress	(void);
 static int	x11_get_key	(void);
 static void	x11_timer	(void);
@@ -80,7 +81,7 @@ static struct gfx_driver gfx_x11 = {
 	init_vidmode,
 	deinit_vidmode,
 	x11_put_block,
-	x11_put_pixels,
+	_putpixels_anybits_scaleany,
 	x11_timer,
 	x11_keypress,
 	x11_get_key
@@ -90,6 +91,8 @@ static struct gfx_driver gfx_x11 = {
 #include "dga.c"
 #endif
 
+
+#define ASPECT_RATIO(x) ((x + 1) * 6 / 5 - 1)
 
 
 /* ===================================================================== */
@@ -196,8 +199,25 @@ static void _putpixels_32bits_scale2 (int x, int y, int w, UINT8 *p)
 
 /* ===================================================================== */
 
+#define _putpixels_fixratio(b,s) static void \
+_putpixels_fixratio_##b##bits_scale##s## (int x, int y, int w, UINT8 *p) { \
+	if (y > 0 && ASPECT_RATIO (y) - 1 != ASPECT_RATIO (y - 1)) \
+		_putpixels_##b##bits_scale##s## (x, ASPECT_RATIO(y) - 1, w, p);\
+	_putpixels_##b##bits_scale##s## (x, ASPECT_RATIO(y), w, p); \
+}
 
-static void x11_put_pixels (int x, int y, int w, UINT8 *p)
+_putpixels_fixratio (8,1);
+_putpixels_fixratio (16,1);
+_putpixels_fixratio (32,1);
+_putpixels_fixratio (8,2);
+_putpixels_fixratio (16,2);
+_putpixels_fixratio (32,2);
+_putpixels_fixratio (any,any);
+
+/* ===================================================================== */
+
+
+static void _putpixels_anybits_scaleany (int x, int y, int w, UINT8 *p)
 {
 	register int cp;
 	register int i, j;
@@ -517,9 +537,12 @@ static int init_vidmode ()
 
 	attribute_mask = CWEventMask;
 	attributes.event_mask |= ExposureMask | KeyPressMask | KeyReleaseMask;
+
 	window = XCreateWindow (
-		display, root, 0, 0, GFX_WIDTH * scale, GFX_HEIGHT * scale, 1,
-		depth, InputOutput, CopyFromParent, attribute_mask, &attributes);
+		display, root, 0, 0, GFX_WIDTH * scale,
+		(opt.fixratio ? ASPECT_RATIO(GFX_HEIGHT) : GFX_HEIGHT) * scale,
+		1, depth, InputOutput, CopyFromParent,
+		attribute_mask,&attributes);
 
 	if (!window) {
 		fprintf (stderr, "x11: can't create window\n");
@@ -532,7 +555,8 @@ static int init_vidmode ()
 	XStringListToTextProperty (&icontext, 1, &iconname);
 	sizehints.flags = PSize | PMinSize | PMaxSize;
 	sizehints.min_width = sizehints.max_width = GFX_WIDTH * scale;
-	sizehints.min_height = sizehints.max_height = GFX_HEIGHT * scale;
+	sizehints.min_height = sizehints.max_height =
+		(opt.fixratio ? ASPECT_RATIO(GFX_HEIGHT) : GFX_HEIGHT) * scale;
 	/*hints.icon_pixmap=icon; */
 	hints.flags = StateHint | IconPixmapHint | InputHint;
 	hints.initial_state = NormalState;
@@ -565,7 +589,8 @@ static int init_vidmode ()
 		fprintf (stderr, "x11: using shared memory extension "
 			"(version %d.%d)\n", maj, min);
 		ximage = XShmCreateImage (display, visual, depth, ZPixmap, NULL,
-			&shminfo, GFX_WIDTH * scale, GFX_HEIGHT * scale);
+			&shminfo, GFX_WIDTH * scale, (opt.fixratio ?
+			ASPECT_RATIO(GFX_HEIGHT) : GFX_HEIGHT) * scale);
 
 		shminfo.shmid = shmget (IPC_PRIVATE, ximage->bytes_per_line *
 			ximage->height, IPC_CREAT | 0600);                              
@@ -584,7 +609,8 @@ static int init_vidmode ()
 #endif
 	{
 		ximage = XCreateImage (display, visual, depth, ZPixmap, 0,
-			NULL, GFX_WIDTH * scale, GFX_HEIGHT * scale, 8, 0);
+			NULL, GFX_WIDTH * scale, (opt.fixratio ?
+			ASPECT_RATIO(GFX_HEIGHT) : GFX_HEIGHT) * scale, 8, 0);
 
 		if (ximage == NULL) {
 			fprintf (stderr, "x11: can't create image\n");
@@ -598,6 +624,27 @@ static int init_vidmode ()
 		return err_Unk;
 	}
 
+if (opt.fixratio) {
+	gfx_x11.put_pixels = _putpixels_fixratio_anybits_scaleany;
+	if (opt.gfxhacks) switch (scale) {
+	case 1:
+		switch (depth) {
+		case 8:  gfx_x11.put_pixels = _putpixels_fixratio_8bits_scale1; break;
+		case 16: gfx_x11.put_pixels = _putpixels_fixratio_16bits_scale1; break;
+		case 24: /* fall-through */
+		case 32: gfx_x11.put_pixels = _putpixels_fixratio_32bits_scale1; break;
+		}
+		break;
+	case 2:
+		switch (depth) {
+		case 8:  gfx_x11.put_pixels = _putpixels_fixratio_8bits_scale2; break;
+		case 16: gfx_x11.put_pixels = _putpixels_fixratio_16bits_scale2; break;
+		case 24: /* fall-through */
+		case 32: gfx_x11.put_pixels = _putpixels_fixratio_32bits_scale2; break;
+		}
+		break;
+	}
+} else {
 	if (opt.gfxhacks) switch (scale) {
 	case 1:
 		switch (depth) {
@@ -616,6 +663,7 @@ static int init_vidmode ()
 		}
 		break;
 	}
+}
 
 	XMapWindow (display, window);
 	XSetWindowBackground (display, window, BlackPixel (display, screen));
@@ -675,19 +723,30 @@ static void x11_put_block (int x1, int y1, int x2, int y2)
 
 #ifdef MITSHM
 	if (opt.mitshm) {
-		XShmPutImage (display, window, gc, ximage, x1, y1, x1, y1,
-			x2 - x1 + scale - 1, y2 - y1 + 1, 0);
+		if (opt.fixratio) {
+			XShmPutImage (display, window, gc, ximage, x1,
+				ASPECT_RATIO(y1), x1, ASPECT_RATIO(y1), x2 -
+				x1 + scale - 1, ASPECT_RATIO(y2 - y1 + 1), 0);
+		} else {
+			XShmPutImage (display, window, gc, ximage, x1, y1,
+				x1, y1, x2 - x1 + scale - 1, y2 - y1 + 1, 0);
+		}
 	}
 	else
 #endif
 	{
-		XPutImage (display, window, gc, ximage, x1, y1, x1, y1,
-			x2 - x1 + scale - 1, y2 - y1 + 1);
+		if (opt.fixratio) {
+			XPutImage (display, window, gc, ximage, x1,
+				ASPECT_RATIO(y1), x1, ASPECT_RATIO(y1),
+				x2 - x1 + scale - 1, ASPECT_RATIO(y2 - y1 + 1));
+		} else {
+			XPutImage (display, window, gc, ximage, x1, y1,
+				x1, y1, x2 - x1 + scale - 1, y2 - y1 + 1);
+		}
 	}
 	
 	XSync (display, False);
 }
-
 
 
 static int x11_keypress ()

@@ -305,7 +305,7 @@ int keypress ()
  */
 
 /**
- * Initialize output device
+ * Initialize graphics device.
  *
  * @see deinit_video()
  */
@@ -318,7 +318,7 @@ int init_video ()
 }
 
 /**
- * Deinitialize output device
+ * Deinitialize graphics device.
  *
  * @see init_video()
  */
@@ -396,6 +396,8 @@ void do_update ()
  * @param y1 y coordinate of the upper left corner of the block
  * @param x2 x coordinate of the lower right corner of the block
  * @param y2 y coordinate of the lower right corner of the block
+ *
+ * @see flush_block_a()
  */
 void flush_block (int x1, int y1, int x2, int y2)
 {
@@ -413,6 +415,15 @@ void flush_block (int x1, int y1, int x2, int y2)
 	}
 }
 
+/**
+ * Updates a block of the framebuffer receiving AGI picture coordinates.
+ * @param x1 x AGI picture coordinate of the upper left corner of the block
+ * @param y1 y AGI picture coordinate of the upper left corner of the block
+ * @param x2 x AGI picture coordinate of the lower right corner of the block
+ * @param y2 y AGI picture coordinate of the lower right corner of the block
+ *
+ * @see flush_block()
+ */
 void flush_block_a (int x1, int y1, int x2, int y2)
 {
 	y1 += 8;
@@ -446,13 +457,17 @@ void clear_screen (int c)
 
 /**
  * Clear the console screen.
+ * This function clears the top n lines of the console screen.
+ * @param n number of lines to clear (in pixels)
  */
 void clear_console_screen (int n)
 {
-	memset (console_screen + (200 - n * 10) * GFX_WIDTH, 0,
-		n * 10 * GFX_WIDTH);
+	memset (console_screen + n * GFX_WIDTH, 0, (200 - n) * GFX_WIDTH);
 }
 
+/**
+ * Save a block of the Sarien screen
+ */
 void save_block (int x1, int y1, int x2, int y2, UINT8 *b)
 {
 	UINT8 *p0;
@@ -468,6 +483,9 @@ void save_block (int x1, int y1, int x2, int y2, UINT8 *b)
 	}
 }
 
+/**
+ * Restore a block of the Sarien screen
+ */
 void restore_block (int x1, int y1, int x2, int y2, UINT8 *b)
 {
 	UINT8 *p0;

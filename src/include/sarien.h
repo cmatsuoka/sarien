@@ -308,6 +308,7 @@ struct sarien_options {
 	int debug;
 #endif
 	int scale;		/**< window scale factor */
+	int fixratio;		/**< fix aspect ratio */
 	int agds;		/**< enable AGDS mode */
 	int amiga;		/**< enable Amiga mode */
 	int fullscreen;		/**< use full screen mode if available */

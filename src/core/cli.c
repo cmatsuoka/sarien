@@ -61,6 +61,8 @@ static void help (int argc, char **argv)
 #endif
 #ifndef _M_MSDOS
 "  -S --scale {num}   Window size scale (only for windowed graphics).\n"
+"  -r --fix-aspect-ratio\n"
+"                     Adjust aspect ratio to match the PC EGA 320x200 screen.\n"
 #endif
 "  -v --emulate-version {version}\n"
 "                     Force version to emulate. Valid v2 game versions are:\n"
@@ -96,7 +98,7 @@ int parse_cli (int argc, char **argv)
 		{0x0, (UINT8*)""}
 	};
 	int o, optidx = 0;
-#define OPTIONS "AaCDdE:FghLlnopskS:Vv:x"
+#define OPTIONS "AaCDdE:FghLlnoprskS:Vv:x"
 	static struct option lopt[] = {
 		{ "version",		0, 0, 'V' },
 		{ "help",		0, 0, 'h' },
@@ -123,6 +125,7 @@ int parse_cli (int argc, char **argv)
 		{ "emulate-sound",	1, 0, 'E' },
 		{ "wait-key",		0, 0, 'k' },
 		{ "no-x-shm",		0, 0, 'x' },
+		{ "fix-aspect-ratio",   0, 0, 'r' },
 		{ "scale",		1, 0, 'S' },
 		{ "no-gfx-optimizations",0,0, 'g' }
 	};
@@ -239,6 +242,9 @@ int parse_cli (int argc, char **argv)
 			opt.cache = TRUE;
 			break;
 #ifndef _M_MSDOS
+		case 'r':
+			opt.fixratio = TRUE;
+			break;
 		case 'S':
 			opt.scale = strtoul (optarg, NULL, 0);
 			if (opt.scale < 1)
