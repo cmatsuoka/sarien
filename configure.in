@@ -17,7 +17,7 @@ AC_SUBST(MAIN_FILE)
 AC_ARG_WITH(sdl,    [  --with-sdl              use the Simple DirectMedia Layer])
 AC_ARG_WITH(svgalib,[  --with-svgalib          use SVGAlib for graphics])
 AC_ARG_WITH(alsa,   [  --with-alsa             use ALSA for sound output])
-AC_ARG_WITH(alsa,   [  --with-win32            use Win32 console/sound drivers])
+AC_ARG_WITH(win32,  [  --with-win32            use Win32 console/sound drivers])
 
 if test "${target}" = NONE; then
 	target=${host}
