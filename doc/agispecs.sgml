@@ -387,6 +387,16 @@ draw (smoke);
 <sect1 id="bands">
 <title>The priority screen</title>
 
+  <figure id="fig-visible-screen" float="1">
+    <title>AGI visible screen</title>
+    <graphic fileref="images/specs/visible_screen.png" format="png">
+  </figure>
+
+  <figure id="fig-priority-screen" float="1">
+    <title>AGI priority screen</title>
+    <graphic fileref="images/specs/priority_screen.png" format="png">
+  </figure>
+
 <sect2>
 <title>Priority data</title>
 <para>
@@ -486,7 +496,7 @@ draw (smoke);
 </para>
 
 <sect2>
-<title>Control lines and priority information</title>
+<title>Priority behind control lines</title>
 <para>
   In the AGI interpreter, the priority data and control lines are drawn
   on the same screen. This can lead to problems when the interpreter
