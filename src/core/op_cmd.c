@@ -690,6 +690,12 @@ cmd(clear_text_rect) {
 	x2 = (p3 + 1) * CHAR_COLS - 1;
 	y2 = (p2 + 1) * CHAR_LINES - 1;
 
+	/* Added to prevent crash with x2 = 40 in the iigs demo */
+	if (x1 > GFX_WIDTH) x1 = GFX_WIDTH - 1; 
+	if (x2 > GFX_WIDTH) x2 = GFX_WIDTH - 1; 
+	if (y1 > GFX_HEIGHT) y1 = GFX_HEIGHT - 1;
+	if (y2 > GFX_HEIGHT) y2 = GFX_HEIGHT - 1;
+
 	draw_rectangle (x1, y1, x2, y2, c);
 	flush_block (x1, y1, x2, y2);
 }
