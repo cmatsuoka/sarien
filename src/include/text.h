@@ -15,7 +15,7 @@
 extern "C"{
 #endif
 
-void	message_box	(char *, int, int, int);
+int	message_box	(char *, int, int, int);
 void	close_window	(void);
 void	print_status	(char *, ...);
 void	print_text	(char *, int, int, int, int, int, int);

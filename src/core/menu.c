@@ -262,15 +262,7 @@ int menu_keyhandler (int key)
 			break;
     		h_cur_menu++;
 
-		erase_both ();
 		show_pic ();
-		blit_both ();
-#if 0
-		release_sprites ();
-		restore_screen_area ();
-		redraw_sprites ();
-		update_screen ();
-#endif
 
 		/* calc size of vertical menus */
 		for(i = 0, men = master_menu->next; i < h_cur_menu; i++)
@@ -285,15 +277,7 @@ int menu_keyhandler (int key)
 			break;
     		h_cur_menu--;
 
-		erase_both ();
 		show_pic ();
-		blit_both ();
-#if 0
-		release_sprites ();
-		restore_screen_area ();
-		redraw_sprites ();
-		update_screen ();
-#endif
 
 		/* calc size of vertical menus */
 		for (i = 0, men = master_menu->next; i < h_cur_menu; i++)
@@ -308,9 +292,7 @@ int menu_keyhandler (int key)
 	return TRUE;
 
 exit_menu:
-	erase_both ();
 	show_pic ();
-	blit_both ();
 	write_status ();
 
 	setvar (V_key, 0);

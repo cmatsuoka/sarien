@@ -159,7 +159,7 @@ end:
 void close_window ()
 {
 	if (game.window.active)
-		show_pic ();		/* remove window */
+		restore_window_area ();		/* remove window */
 	game.has_window = FALSE;
 	game.window.active = FALSE;
 }
@@ -207,6 +207,11 @@ static void textbox (char *p, int y, int x, int len)
 		yoff = (GFX_HEIGHT - 2 * CHAR_LINES - h) / 2;
 
 	game.window.active = 1;
+	game.window.x1 = xoff / 2;
+	game.window.y1 = yoff - 8;
+	game.window.x2 = (xoff + w - 1) / 2;
+	game.window.y2 = (yoff + h - 1) - 8;
+
 	draw_box (xoff, yoff, xoff + w - 1, yoff + h - 1,
 		MSG_BOX_COLOUR, MSG_BOX_LINE, LINES);
 
@@ -219,12 +224,15 @@ static void textbox (char *p, int y, int x, int len)
 	do_update ();
 }
 
-void message_box (char *p, int y, int x, int len)
+int message_box (char *p, int y, int x, int len)
 {
+	int k;
+
 	textbox (p, y, x, len);
-	wait_key ();
-	show_pic ();
-	flush_screen ();
+	k = wait_key ();
+	close_window ();
+
+	return k;
 }
 
 /**
@@ -422,7 +430,9 @@ void clear_lines (int l1, int l2, int c)
 	draw_rectangle (0, l1, GFX_WIDTH - 1, l2, c);
 }
 
-
+/**
+ *
+ */
 void flush_lines (int l1, int l2)
 {
 	l1 *= CHAR_LINES;
@@ -433,3 +443,4 @@ void flush_lines (int l1, int l2)
 }
 
 /* end: text.c */
+

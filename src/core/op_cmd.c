@@ -96,7 +96,7 @@ cmd(set_view)		{ set_view (&vt, p1); }
 cmd(set_view_v)		{ set_view (&vt, _v[p1]); }
 cmd(set_loop)		{ set_loop (&vt, p1); }
 cmd(set_loop_v)		{ set_loop (&vt, _v[p1]); }
-cmd(set_num_loops)	{ vt.num_loops = p1; }
+cmd(number_of_loops)	{ _v[p1] = vt.num_loops; }
 cmd(fix_loop)		{ vt.flags |= FIX_LOOP; }
 cmd(release_loop)	{ vt.flags &= ~FIX_LOOP; }
 cmd(step_size)		{ vt.step_size = _v[p1]; }
@@ -270,7 +270,6 @@ cmd(draw) {
 		erase_upd_sprites ();
 		vt.flags |= DRAWN;
 		blit_upd_sprites ();
-		//adjustpos_putblock (&vt);
 		vt.flags &= ~DONTUPDATE;
 		_D ("vt entry #%d flags = %02x", p0, vt.flags);
 	}
@@ -287,7 +286,6 @@ cmd(erase) {
 			blit_nonupd_sprites ();
 		}
 		blit_upd_sprites ();
-		//adjustpos_putblock (&vt);
 	}
 }
 
@@ -544,10 +542,8 @@ cmd(quit) {
 	if (p0) {
 		game.quit_prog_now = TRUE;
 	} else {
-		message_box ("   Press ENTER to quit.\n"
-			"Press ESC to keep playing.", CENTER);
-
-		switch (KEY_ASCII (game.keypress)) {
+		switch (message_box ("   Press ENTER to quit.\n"
+			"Press ESC to keep playing.", CENTER)) {
 		case 'Y':
 		case 'y':
 		case 0x0d:
@@ -559,9 +555,8 @@ cmd(quit) {
 }
 
 cmd(restart_game) {
-	message_box ("Press ENTER to restart the game.\n"
-		"Press ESC to continue this game.", -1, -1, 24);
-	switch (wait_key ()) {
+	switch (message_box ("Press ENTER to restart the game.\n"
+		"Press ESC to continue this game.", -1, -1, 24)) {
 	case 0x0a:
 	case 0x0d:
 		game.quit_prog_now = 0xFF;
@@ -737,7 +732,7 @@ static void (*agi_command[182])(UINT8 *) = {
 	cmd_cur_cel,
 	cmd_cur_loop,
 	cmd_cur_view,
-	cmd_set_num_loops,
+	cmd_number_of_loops,
 	cmd_set_priority,
 	cmd_set_priority_v,
 	cmd_release_priority,		/* 0x38 */
@@ -846,7 +841,7 @@ static void (*agi_command[182])(UINT8 *) = {
 	cmd_enable_item,
 	cmd_disable_item,		/* 0xa0 */
 	cmd_menu_input,	
-	cmd_show_obj /*_v*/,	/* *** FIXME *** */
+	cmd_show_obj_v,
 	cmd_open_dialogue,
 	cmd_close_dialogue,
 	cmd_mul,

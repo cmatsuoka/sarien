@@ -80,6 +80,54 @@ static void _set_loop (struct vt_entry *v, int n)
 		v->current_cel = 0;
 }
 
+static void update_view (struct vt_entry *v)
+{
+	int cel, last_cel;
+
+	if (v->flags & DONTUPDATE) {
+		v->flags &= ~DONTUPDATE;
+		return;
+	}
+
+	cel = v->current_cel;
+	last_cel = v->num_cels - 1;
+
+	switch (v->cycle) {
+	case CYCLE_NORMAL:
+		if (++cel > last_cel)
+			cel = 0;
+		break;
+	case CYCLE_END_OF_LOOP:
+		if (cel < last_cel) {
+			if (++cel != last_cel)
+				break;
+			setflag (v->parm1, TRUE);
+			v->flags &= ~CYCLING;
+			v->direction = 0;
+			v->cycle = CYCLE_NORMAL;
+		}
+		break;
+	case CYCLE_REV_LOOP:
+		if (cel == 0) {
+			setflag (v->parm1, TRUE);
+			v->flags &= ~CYCLING;
+			v->direction = 0;
+			v->cycle = CYCLE_NORMAL;
+		} else {
+			cel--;
+		}
+		break;
+	case CYCLE_REVERSE:
+		if (cel == 0) {
+			cel = last_cel;
+		} else {
+			cel--;
+		}
+		break;
+	}
+
+	set_cel (v, cel);
+}
 
 /*
  * Public functions
@@ -272,6 +320,80 @@ void stop_update (struct vt_entry *v)
 		erase_both ();
 		v->flags &= ~UPDATE;
 		blit_both ();
+	}
+}
+
+
+/* loops to use according to direction and number of loops in
+ * the view resource
+ */
+static int loop_table_2[] = {
+	0x04, 0x04, 0x00, 0x00, 0x00, 0x04, 0x01, 0x01, 0x01
+};
+
+static int loop_table_4[] = {
+	0x04, 0x03, 0x00, 0x00, 0x00, 0x02, 0x01, 0x01, 0x01
+};
+
+/**
+ * Update view table entries.
+ * This function is called at the end of each interpreter cycle
+ * to update the view table entries and blit the sprites.
+ */
+void update_viewtable ()
+{
+	struct vt_entry *v;
+	int i, loop;
+
+	i = 0;
+	for_each_vt_entry(v) {
+		if ((v->flags & (ANIMATED|UPDATE|DRAWN)) !=
+			(ANIMATED|UPDATE|DRAWN))
+		{
+			continue;
+		}
+			
+		i++;
+
+		loop = 4;
+		if (~v->flags & FIX_LOOP) {
+if (v->entry == 2) printf ("dir = %d (num = %d)\n", v->direction, v->num_loops);
+			switch (v->num_loops) {
+			case 2:
+			case 3:
+				loop = loop_table_2[v->direction];
+				break;
+			case 4:
+				loop = loop_table_4[v->direction];
+				break;
+			}
+		}
+
+		if (v->step_time_count == 1 &&
+			loop != 4 &&
+			loop != v->current_loop)
+		{
+			set_loop (v, loop);
+		}
+			
+		if (~v->flags & CYCLING)
+			continue;
+
+		if (v->cycle_time_count == 0)
+			continue;
+
+		if (--v->cycle_time_count == 0) {
+			update_view (v);
+			v->cycle_time_count = v->cycle_time;
+		}
+	}
+
+	if (i) {
+		erase_upd_sprites ();
+		update_position ();
+		blit_upd_sprites ();
+		checkmove_upd_sprites ();
+		game.view_table[0].flags &= ~(ON_WATER|ON_LAND);
 	}
 }
 

@@ -122,6 +122,7 @@ void	set_loop	(struct vt_entry *, int);
 void	set_view	(struct vt_entry *, int);
 void	start_update	(struct vt_entry *);
 void	stop_update	(struct vt_entry *);
+void	update_viewtable(void);
 
 void	unload_view	(int);
 int	decode_view	(int);

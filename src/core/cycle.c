@@ -120,8 +120,10 @@ static void interpret_cycle ()
 	setflag (F_restart_game, FALSE);
 	setflag (F_restore_just_ran, FALSE);
 
-	if (game.gfx_mode)
-		update_graf ();
+	if (game.gfx_mode) {
+		update_viewtable ();
+		do_update ();
+	}
 }
 
 

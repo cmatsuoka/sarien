@@ -284,3 +284,4 @@ void fix_position (int n)
 }
 
 /* end: checks.c */
+

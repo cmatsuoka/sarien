@@ -704,4 +704,19 @@ void show_pic ()
 	flush_screen ();
 }
 
+void restore_window_area ()
+{
+	int i, y, w;
+
+	i = game.window.x1 + game.window.y1 * _WIDTH;
+	w = game.window.x2 - game.window.x1 + 1;
+	for (y = game.window.y1; y <= game.window.y2; y++) {
+		put_pixels_a (game.window.x1, y, w, &game.sbuf[i]);
+		i += _WIDTH;
+	}
+
+	flush_block_a (game.window.x1, game.window.y1, game.window.x2,
+		game.window.y2);
+}
+
 /* end: picture.c */

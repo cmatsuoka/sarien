@@ -17,9 +17,9 @@ void	erase_both		(void);
 void	blit_upd_sprites	(void);
 void	blit_nonupd_sprites	(void);
 void	blit_both		(void);
+void	checkmove_upd_sprites	(void);
+void	checkmove_nonupd_sprites(void);
 void	checkmove_both		(void);
-void	update_graf		(void);
-void	adjustpos_putblock	(struct vt_entry *v);
 void	add_to_pic		(int, int, int, int, int, int, int);
 void	show_obj		(int);
 

@@ -130,20 +130,6 @@ static LIST_HEAD(spr_upd_head);
 static LIST_HEAD(spr_nonupd_head);
 
 
-/* loops to use according to direction and number of loops in
- * the view resource
- */
-static int loop_table_2[] = {
-	0x04, 0x04, 0x00, 0x00, 0x00,
-	0x04, 0x01, 0x01, 0x01, 0x00
-};
-
-static int loop_table_4[] = {
-	0x04, 0x03, 0x00, 0x00, 0x00,
-	0x02, 0x01, 0x01, 0x01, 0x00
-};
-
-
 /* condition to determine whether a sprite will be in the
  * 'updating' list
  */
@@ -271,7 +257,7 @@ static void free_list (struct list_head *head)
 
 /* check if sprites of the given list have moved
  */
-static void check_move (struct list_head *head)
+static void checkmove_sprites (struct list_head *head)
 {
 	struct list_head *h;
 
@@ -318,65 +304,27 @@ static void blit_sprites (struct list_head *head)
 	}
 }
 
-static void update_view (struct vt_entry *v)
-{
-	int cel, last_cel;
-
-	if (v->flags & DONTUPDATE) {
-		v->flags &= ~DONTUPDATE;
-		return;
-	}
-
-	cel = v->current_cel;
-	last_cel = v->num_cels - 1;
-
-	switch (v->cycle) {
-	case CYCLE_NORMAL:
-		if (++cel > last_cel)
-			cel = 0;
-		break;
-	case CYCLE_END_OF_LOOP:
-		if (cel < last_cel) {
-			if (++cel != last_cel)
-				break;
-			setflag (v->parm1, TRUE);
-			v->flags &= ~CYCLING;
-			v->direction = 0;
-			v->cycle = CYCLE_NORMAL;
-		}
-		break;
-	case CYCLE_REV_LOOP:
-		if (cel == 0) {
-			setflag (v->parm1, TRUE);
-			v->flags &= ~CYCLING;
-			v->direction = 0;
-			v->cycle = CYCLE_NORMAL;
-		} else {
-			cel--;
-		}
-		break;
-	case CYCLE_REVERSE:
-		if (cel == 0) {
-			cel = last_cel;
-		} else {
-			cel--;
-		}
-		break;
-	}
-
-	set_cel (v, cel);
-}
-
 
 /*
  * Public functions
  */
 
+
+void checkmove_upd_sprites ()
+{
+	checkmove_sprites (&spr_upd_head);
+}
+
+void checkmove_nonupd_sprites ()
+{
+	checkmove_sprites (&spr_nonupd_head);
+}
+
 /* check moves in both lists */
 void checkmove_both ()
 {
-	check_move (&spr_nonupd_head);
-	check_move (&spr_upd_head);
+	checkmove_upd_sprites ();
+	checkmove_nonupd_sprites ();
 }
 
 /**
@@ -460,68 +408,6 @@ void blit_both ()
 {
 	blit_nonupd_sprites ();
 	blit_upd_sprites ();
-}
-
-/**
- * Update view table entries.
- * This function is called at the end of each interpreter cycle
- * to update the view table entries and blit the sprites.
- */
-void update_graf ()
-{
-	struct vt_entry *v;
-	int i, loop;
-
-	i = 0;
-	for_each_vt_entry(v) {
-		if ((v->flags & (ANIMATED|UPDATE|DRAWN)) !=
-			(ANIMATED|UPDATE|DRAWN))
-		{
-			continue;
-		}
-			
-		i++;
-
-		loop = 4;
-		if (~v->flags & FIX_LOOP) {
-			switch (v->num_loops) {
-			case 2:
-			case 3:
-				loop = loop_table_2[v->direction];
-				break;
-			case 4:
-				loop = loop_table_4[v->direction];
-				break;
-			}
-		}
-
-		if (v->step_time_count == 1 &&
-			loop != 4 &&
-			loop != v->current_loop)
-		{
-			set_loop (v, loop);
-		}
-			
-		if (~v->flags & CYCLING)
-			continue;
-
-		if (v->cycle_time_count == 0)
-			continue;
-
-		if (--v->cycle_time_count == 0) {
-			update_view (v);
-			v->cycle_time_count = v->cycle_time;
-		}
-	}
-
-	if (i) {
-		erase_upd_sprites ();
-		update_position ();
-		blit_upd_sprites ();
-		check_move (&spr_upd_head);
-		game.view_table[0].flags &= ~(ON_WATER|ON_LAND);
-		do_update ();
-	}
 }
 
 /**

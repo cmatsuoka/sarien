@@ -80,6 +80,8 @@ int decode_objects(UINT8* mem, UINT32 flen)
 	    		(objects+i)->name = strdup ("");
 	    	}
     	}
+	report ("Reading objects: %d objects read.\n", game.num_objects);
+
 #endif
 	return err_OK;
 
@@ -94,7 +96,7 @@ int load_objects (char *fname)
 	char *path;
 
 	objects=NULL;
-	game.num_objects=0;
+	game.num_objects = 0;
 
 	_D ("(fname = %s)", fname);
 	path = fixpath (NO_GAMEDIR, fname);
@@ -149,15 +151,27 @@ int show_objects ()
 
 void object_set_location (int n, int i)
 {
+	if (n >= game.num_objects) {
+		report ("Error: Can't access object %d.", n);
+		return;
+	}
 	objects[n].location = i;
 }
 
 int object_get_location (int n)
 {
+	if (n >= game.num_objects) {
+		report ("Error: Can't access object %d.", n);
+		return 0;
+	}
 	return objects[n].location;
 }
 
 char *object_name (int n)
 {
+	if (n >= game.num_objects) {
+		report ("Error: Can't access object %d.", n);
+		return "";
+	}
 	return objects[n].name;
 }
