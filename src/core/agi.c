@@ -30,9 +30,12 @@ struct agi_game game;
 
 volatile UINT32	msg_box_secs2;		/* message box timeout in sec/2 */
 
+#if !defined PALMOS && !defined FAKE_PALMOS
 extern struct agi_loader agi_v2;
 extern struct agi_loader agi_v3;
+#else
 extern struct agi_loader agi_v4;
+#endif
 
 extern struct agi_picture pictures[];
 extern struct agi_logic logics[];
@@ -213,6 +216,7 @@ int agi_detect_game (char *gn)
 	if (gn == NULL)		/* assume current directory */
 		gn = get_current_directory ();
 
+#if !defined PALMOS && !defined FAKE_PALMOS
 	loader = &agi_v2;
 	ec = loader->detect_game (gn);
 
@@ -221,11 +225,10 @@ int agi_detect_game (char *gn)
 		ec = loader->detect_game (gn);
 	}
 
-	if(ec!=err_OK)
-	{
-		loader = &agi_v4;
-		ec=loader->detect_game(gn);
-	}
+#else
+	loader = &agi_v4;
+	ec = loader->detect_game(gn);
+#endif
 
 	return ec;
 }

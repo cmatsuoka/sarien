@@ -8,6 +8,8 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
+#ifndef PALMOS
+
 #include <stdio.h>
 #include <string.h>
 
@@ -120,7 +122,6 @@ struct agi3vol {
 int agi_v3_init (void)
 {
 	int ec = err_OK;
-#ifndef PALMOS
 	struct agi3vol agi_vol3[4];
 	int i;
 	UINT16 xd[4];
@@ -170,7 +171,6 @@ int agi_v3_init (void)
 		printf ("Failed to open \"%s\"\n", path);
 		ec = err_BadFileOpen;
 	}
-#endif /* !PALMOS */
 
 	return ec;
 }
@@ -223,7 +223,6 @@ int agi_v3_unload_resource (int restype, int resnum)
 
 UINT8* agi_v3_load_vol_res (struct agi_dir *agid)
 {
-#ifndef PALMOS
 	UINT8 x[MAX_PATH], *data = NULL, *comp_buffer, *path;
 	FILE *fp;
 
@@ -278,7 +277,6 @@ UINT8* agi_v3_load_vol_res (struct agi_dir *agid)
 	}
 
 	return data;
-#endif
 }
 
 
@@ -396,3 +394,5 @@ static int agi_v3_load_words(char *fname)
 {
 	return load_words(fname);
 }
+
+#endif /* PALMOS */
