@@ -112,8 +112,11 @@ static int check_priority (struct vt_entry *v)
 
 		water = 0;
 
-		//if (v->entry != 0)	/* test if ego */
-		//	break;
+		/* This test fixes oprecon but breaks the Gold Rush! demo.
+		 * I'll leave it here because AGI 2.917 also implements it.
+		 */
+		if (v->entry != 0)	/* test if ego */
+			break;
 
 		if (pri == 1) {		/* conditional blue */
 			if (v->flags & IGNORE_BLOCKS)
