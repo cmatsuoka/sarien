@@ -476,6 +476,12 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 	}
 }
 
+/**
+ * Show object and description
+ * This function shows an object from the player's inventory, displaying
+ * a message box with the object's description.
+ * @param n  Number of the object to show
+ */
 void show_obj (n)
 {
 	struct view_cel *c;

@@ -160,13 +160,6 @@ static UINT8 test_said (UINT8 nwords, UINT8 *cc)
 
 	setflag (F_said_accepted_input, TRUE);
 
-#if 0
-	/* FR :
-	 * Hack  (Fixes some bugs in larry 1)
-	 */
-	setflag (F_entered_cli, FALSE);
-#endif
-
 	return TRUE;
 }
 

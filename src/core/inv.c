@@ -207,9 +207,8 @@ void inventory ()
 	print_line_prompt ();
 	flush_lines (game.line_user_input, 24);
 
-#if 0
-	if (getvar (V_sel_item) != 0xff)
-		show_obj (getvar (V_sel_item));
-#endif
+	if (getvar (V_sel_item) != 0xff) {
+		/* do something to display the selected object */
+	}
 }
 
