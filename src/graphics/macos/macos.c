@@ -22,6 +22,7 @@
 #include <Timer.h>
 #include "sarien.h"
 #include "graphics.h"
+#include "keyboard.h"
 
 
 extern struct gfx_driver *gfx;
@@ -71,6 +72,161 @@ static int key_queue_end = 0;
 	key_queue_start %= KEY_QUEUE_SIZE; } while (0)
 
 #define ASPECT_RATIO(x) ((x) * 6 / 5)
+
+
+/*
+ * Toolbox & menu functions
+ */
+
+static void init_toolbox ()
+{
+	InitGraf (&qd.thePort);
+	InitFonts ();
+	InitWindows ();
+	InitMenus ();
+	TEInit ();
+	InitDialogs (nil);
+	InitCursor ();
+}
+
+#define mApple 128
+#define		iAbout 1
+#define mFile  129
+#define		iQuit  1
+
+static void init_menu ()
+{
+	Handle menuBar;
+	MenuHandle menu;
+
+	menuBar = GetNewMBar (128);
+	etMenuBar (menuBar);
+
+	menu = GetMenuHandle (mApple);
+	AppendResMenu (menu, 'DRVR');
+ 
+	menu = NewMenu (mFile, "\pFile");
+	AppendMenu (menu, "\pQuit/Q");
+	InsertMenu (menu, 0);
+
+	DrawMenuBar();
+}
+
+static void process_menu (int mc)
+{
+	int id;
+	int item;
+	MenuHandle menu;
+	Str255 name;
+ 
+	id = HiWord (mc);
+	item = LoWord (mc);
+ 
+	switch (id) {
+	case mApple:
+		switch (item) {
+		case iAbout:
+			break;
+		default:
+			menu = GetMenuHandle (mApple);
+			GetMenuItemText (menu, item, name);
+			/* OpenDeskAcc (name); */
+			break;
+		}
+		break;
+	case mFile:
+		switch (item) {
+		case iQuit:
+			ExitToShell ();
+			break;
+		}
+		break;
+	}
+
+	HiliteMenu (0);
+}
+
+static void process_events ()
+{
+	WindowPtr win;
+	EventRecord event;
+	Rect drag_rect;
+
+	SystemTask();
+
+	if (WaitNextEvent (everyEvent, &event, 3, NULL)) {
+		switch (event.what) {
+		case mouseDown:
+			switch (FindWindow (event.where, &win)) {
+			case inSysWindow:
+				/* desk accessory window: call Desk Manager
+				 * to handle it
+				 */
+				SystemClick (&event, win);
+				break;
+			case inMenuBar:
+				/* Menu bar: learn which command, then
+				 * execute it.
+				 */
+				process_menu (MenuSelect (event.where));
+				break;
+			case inDrag:
+				/* title bar: call Window Manager to drag */
+				DragWindow (win, event.where, &drag_rect);
+				break;
+			case inContent:
+				/* body of application window:
+				 * make it active if not
+				 */
+				if (win != FrontWindow())
+					SelectWindow (win);
+				break;
+			}
+			break;
+		case updateEvt:		/* Update window. */
+			if ((WindowPtr) event.message == window) {
+				BeginUpdate((WindowPtr) event.message);
+				/* repaint */
+				gfx->put_block (0, 0, GFX_WIDTH - 1,
+						GFX_HEIGHT - 1);
+				EndUpdate((WindowPtr) event.message);
+			}
+			break;
+		case keyDown:
+		case autoKey:	/* key pressed once or held down to repeat */
+			if (window == FrontWindow()) {
+				int c = (event.message & charCodeMask);
+				if (event.modifiers & cmdKey) {
+					process_menu (MenuKey (c));
+					break;
+				}
+				report ("%02x %02x\n", c, event.message);
+				switch (c) {
+				case 0xa4:	/* Backquote in BasiliskII */
+					c = 0x60;
+					break;
+				case 0xb1:	/* Tilde in BasiliskII */
+					c = 0x7e;
+					break;		
+				case 0x1c:
+					c = KEY_LEFT;
+					break;
+				case 0x1d:
+					c = KEY_RIGHT;
+					break;
+				case 0x1e:
+					c = KEY_UP;
+					break;
+				case 0x1f:
+					c = KEY_DOWN;
+					break;
+				}
+				key_enqueue (c);
+			}
+			break;
+		}
+	}
+}
 
 
 int init_machine (int argc, char **argv)
@@ -224,63 +380,6 @@ static int set_palette (UINT8 *pal, int scol, int numcols)
 }
 
 
-static void process_events ()
-{
-	WindowPtr win;
-	EventRecord event;
-	Rect drag_rect;
-
-	SystemTask();
-
-	if (WaitNextEvent (everyEvent, &event, 5L, NULL)) {
-		switch (event.what) {
-		case mouseDown:
-			switch (FindWindow(event.where, &win)) {
-			case inSysWindow:
-				/* desk accessory window: call Desk Manager
-				 * to handle it
-				 */
-				SystemClick (&event, win);
-				break;
-			case inMenuBar:
-				/* Menu bar: learn which command, then
-				 * execute it.
-				 */
-				/*DoCommand(MenuSelect(event.where));*/
-				break;
-			case inDrag:
-				/* title bar: call Window Manager to drag */
-				DragWindow (win, event.where,
-					&drag_rect);
-				break;
-			case inContent:
-				/* body of application window:
-				 * make it active if not
-				 */
-				if (win != FrontWindow())
-					SelectWindow (win);
-				break;
-			}
-			break;
-		case updateEvt:		/* Update window. */
-			if ((WindowPtr) event.message == window) {
-				BeginUpdate((WindowPtr) event.message);
-				/* repaint */
-				EndUpdate((WindowPtr) event.message);
-			}
-			break;
-		case keyDown:
-		case autoKey:	/* key pressed once or held down to repeat */
-			if (window == FrontWindow()) {
-				int c = (event.message & charCodeMask);
-				key_enqueue (c);
-			}
-			break;
-		}
-	}
-}
-
-
 static unsigned long delta ()
 { 
 	unsigned long dt;
@@ -309,38 +408,6 @@ static void macos_timer ()
 	}
 
 	process_events ();
-}
-
-static void init_toolbox ()
-{
-	InitGraf (&qd.thePort);
-	InitFonts ();
-	InitWindows ();
-	InitMenus ();
-	TEInit ();
-	InitDialogs (nil);
-	InitCursor ();
-}
-
-#define mApple 128
-#define mFile  129
-
-static void init_menu ()
-{
-	Handle menuBar;
-	MenuHandle menu;
-
-	menuBar = GetNewMBar (128);
-	etMenuBar (menuBar);
-
-	menu = GetMenuHandle (mApple);
-	AppendResMenu (menu, 'DRVR');
- 
-	menu = NewMenu (mFile, "\pFile");
-	AppendMenu (menu, "\pQuit/Q");
-	InsertMenu (menu, 0);
-
-	DrawMenuBar();
 }
 
 static int macos_init_vidmode ()

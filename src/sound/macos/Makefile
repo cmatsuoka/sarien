@@ -2,7 +2,7 @@
 
 XCFLAGS	= -I../../include
 OBJS	=
-DFILES	= Makefile macos.c
+DFILES	= Makefile sound_macos.c
 CFILES	=
 DDIRS	=
 LIB	=
