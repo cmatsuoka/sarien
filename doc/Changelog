@@ -17,6 +17,7 @@ Revision History
 	- added AGI specs SGML documentation; currently converting from
 	  linuxdoc to DocBook
 	- added Lance Ewing's AGI utilities to the bundle
+	- Added Demo Pack 5 to the game ID list
 
 0.5.2 (20000512) *DEVELOPMENT*
 	- Fixed speach bubbles bug for going outside of screen (draw_obj)
