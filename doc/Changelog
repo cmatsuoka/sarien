@@ -12,13 +12,13 @@ Revision History
 	- reduced memory allocation in shake.screen
 	- added many options to the configuration script
 	- widgets set to classic Sierra, MUMG wants white message boxes
-	- checking null pointers when parsing AGI strings (closes: #491334)
-	- fixed game restart issues (closes: #457622)
 	- implemented multi-slot savegames
 	- selectable Amiga-ish or EGA palettes
 	- merged Brian Peek's SarienDC Dreamcast port
 	- added Mike Montague's DirectX driver
 	- added runtime option settings to MacOS port
+	- checking null pointers when parsing AGI strings (closes: #491334)
+	- fixed game restart issues (closes: #457622)
 	- emulating AGI 2.440 animated sprites behaviour (closes: #546562)
 	- emulating AGI 2.272 move.obj and move.obj.v (closes: #542692)
 	- correctly ordering sprites in the blit list (closes: #539394)
@@ -29,6 +29,7 @@ Revision History
 	- fixed left screen border detection for KQ4 (closes: #590462)
 	- fixed auto-centering of message box in KQ4 (closes: #590641)
 	- fixed error in fixed-priority sprite ordering (closes: #590910)
+	- fixed handling of CTRL and ALT keys in win32 (closes: #540852)
 	- extra checks in check_position() now AGI v3 only (closes: #590644)
 	- fixed old position setting in AGI commands position, position.v
 	- added CGA palette emulation
