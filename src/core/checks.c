@@ -46,14 +46,17 @@ static int check_clutter (struct vt_entry *v)
 {
 	struct vt_entry *u;
 
-	if (v->flags & IGNORE_OBJECTS)
+	/* CM: Views with priority 15 automatically ignore objects.
+	 *     (Not in Sierra AGI, but needed to fix bug #451768.)
+	 */
+	if (v->flags & IGNORE_OBJECTS || v->priority == 15)
 		return 0;
 
 	for_each_vt_entry (u) {
 		if ((u->flags & (ANIMATED|DRAWN)) != (ANIMATED|DRAWN))
 			continue;
 
-		if (u->flags & IGNORE_OBJECTS)
+		if (u->flags & IGNORE_OBJECTS || u->priority == 15)
 			continue;
 
 		if (v->entry == u->entry)
