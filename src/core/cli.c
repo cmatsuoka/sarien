@@ -95,19 +95,21 @@ static void help (int argc, char **argv)
 
 int parse_cli (int argc, char **argv)
 {
-	struct vstrings {
-		UINT16	vers;
-		UINT8	*string;
-	} cmp_versions[]= {
-		{0x2089, (UINT8*)"2.089"},
-		{0x2272, (UINT8*)"2.272"},
-		{0x2440, (UINT8*)"2.440"},
-		{0x2917, (UINT8*)"2.917"},
-		{0x2936, (UINT8*)"2.936"},
+	int i;
+	int ec = err_OK;
 
-		{0x3086, (UINT8*)"3.002.086"},
-		{0x3149, (UINT8*)"3.002.149"},
-		{0x0, (UINT8*)""}
+	struct {
+		UINT16 vers;
+		char *string;
+	} cmp_versions[]= {
+		{ 0x2089, "2.089" },
+		{ 0x2272, "2.272" },
+		{ 0x2440, "2.440" },
+		{ 0x2917, "2.917" },
+		{ 0x2936, "2.936" },
+		{ 0x3086, "3.002.086" },
+		{ 0x3149, "3.002.149" },
+		{ 0x0, "" }
 	};
 	int o, optidx = 0;
 #define OPTIONS "AaCcDdE:eFgH:hLlmnopr:skS:Vv:x"
@@ -153,9 +155,6 @@ int parse_cli (int argc, char **argv)
 #endif
 		{ "no-gfx-optimizations",0,0, 'g' }
 	};
-
-	UINT16 xc;
-	UINT16 ec=err_OK;
 
 	/* FIXME: Add support for a rc file for UNIX */
 
@@ -284,10 +283,10 @@ int parse_cli (int argc, char **argv)
 			break;
 #endif
 		case 'v':
-			for (xc = 0; xc != 0xfff0 && cmp_versions[xc].vers; xc++) {
-				if (!strcmp ((char*)optarg, cmp_versions[xc].string)) {
-					opt.emuversion = cmp_versions[xc].vers;
-					xc = 0xfff0 - 1;
+			for (i = 0; cmp_versions[i].vers; i++) {
+				if (!strcmp (optarg, cmp_versions[i].string)) {
+					opt.emuversion = cmp_versions[i].vers;
+					break;
 				}
 			}
 			if (!opt.emuversion) {
