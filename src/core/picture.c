@@ -529,9 +529,6 @@ static void draw_picture ()
  	scr_colour = 0xf;
  	pri_colour = 0x4;
 
-	if (opt.showscreendraw == 3)
-		opt.showscreendraw = TRUE;
-
 	drawing = 1;
 
 	stack[0] = calloc (sizeof (struct point_xy), STACK_SEG_SIZE);

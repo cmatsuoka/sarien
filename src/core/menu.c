@@ -114,8 +114,7 @@ static void draw_menu_option (int h_menu)
 
 	draw_box (m->wincol * CHAR_COLS, 1 * CHAR_LINES,
 		(m->wincol + m->width + 2) * CHAR_COLS,
-		(1 + m->height + 2) * CHAR_LINES,
-		MENU_BG, MENU_LINE, LINES);
+		(1 + m->height + 2) * CHAR_LINES, MENU_BG, MENU_LINE);
 
 	list_for_each (h, &m->down, next) {
 		d = list_entry (h, struct menu_option, list);

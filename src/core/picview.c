@@ -79,7 +79,7 @@ int view_pictures ()
 		
 update_statusline:
 		sprintf (x, "Picture:%3i                    Show: %3s",
-			pic, opt.showscreendraw ? " on" : "off");
+			pic, 0 /*opt.showscreendraw*/ ? " on" : "off");
 		print_text (x, 0, 0, 0, strlen (x) + 1, 0, 15);
 		sprintf (x, "V:Visible    P:Priority    +:Next -:Prev");
 		print_text (x, 0, 0, 23, strlen (x) + 1, 15, 0);
@@ -102,7 +102,7 @@ update_statusline:
 				put_screen ();
     				break;
 			case 'd':
-				opt.showscreendraw = !opt.showscreendraw;
+				/*opt.showscreendraw = !opt.showscreendraw;*/
 				goto update_statusline;
 			case 'r':
 				goto next_pic;

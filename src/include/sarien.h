@@ -345,15 +345,6 @@ enum {
 	TXT_MODE
 };
 
-enum {
-	SAVE = 1,
-	NO_SAVE
-};
-
-enum {
-	LINES = 1,
-	NO_LINES
-};
 
 struct game_id_list {
 	struct game_id_list *next;
@@ -376,10 +367,7 @@ struct sarien_options {
 #define GAMERUN_GAMES	4
 #define GAMERUN_CRC	5
 	int gamerun;		/**< game run mode*/
-	int pcjrgfx;		/**< PCJr graphics */
-	int showscreendraw;	/**< show screen drawing */
-	int showkeypress;
-	int emuversion;
+	int emuversion;		/**< AGI version to emulate */
 	int scale;		/**< window scale factor */
 	int fixratio;		/**< fix aspect ratio */
 	int agds;		/**< enable AGDS mode */

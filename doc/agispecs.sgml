@@ -1016,14 +1016,13 @@ print ("Message 34 in logic.0 is %g34.");
 <para>
   Many AGI files are encrypted. This
   was probably to give some protection to their product which was quite
-  unique at the time. You can tell the difference between an encrypted
-  AGI file and a non-encrypted AGI file by the first two characters. If
-  they are ``MZ'' (the MS-DOS executable file header), then it not encrypted.
-</para><para>
-  The AGI file is decrypted by the loader program. This is usually
-  called <filename/sierra.com/ in MS-DOS but can also be named after the game
-  (eg. <filename/kq1.com/). In AGI version 1, the loader was called
-  <filename/load/.
+  unique at the time.<footnote><para>You can tell the difference between
+  an encrypted and a non-encrypted MS-DOS AGI file by the first two
+  characters. If they are ``MZ'' (the MS-DOS executable file header),
+  then it not encrypted.</para></footnote>. The AGI file is decrypted by
+  the loader program, usually called <filename/sierra.com/ in MS-DOS but
+  can also be named after the game (eg. <filename/kq1.com/). In AGI
+  version 1, the loader was called <filename/load/.
   If an AGI game doesn't have a loader, then it shouldn't be encrypted.
   If an AGI game does have a loader, it does not necessarily mean that
   the AGI file is encrypted.
@@ -1031,35 +1030,33 @@ print ("Message 34 in logic.0 is %g34.");
   The decryption key was not originally embedded in the loader file. If
   you find a game where the key is embedded in the loader, it is because
   that game has had copy protection removed. There are several utilities
-  to do that. Anders M. Olsson's <emphasis>SUP</emphasis> is one of them.
+  to do that. Anders M. Olsson's <application/SUP/ is one of them.
   The CD re-releases have been unprotected by Sierra in exactly the same
   fashion.
 </para><para>
   The loader would read the decryption key from track 6 of the disk,
   load the executable file, decrypt and run it. Track 6 had a special
   format that was supposedly impossible to exactly reproduce by a
-  standard PC floppy disk controller.
-</para><para>
-  An interesting note is that when a copy-protected Sierra game asked
-  for the original disk one, you could insert disk one from
-  <emphasis>any</emphasis> protected Sierra game. The contents of
-  track 6 were always the same.
+  standard PC floppy disk controller. An interesting note is that
+  when a copy-protected Sierra game asked for the original disk one,
+  you could insert disk one from <emphasis/any/ protected Sierra game.
+  The contents of track 6 were always the same.
 </para><para>
   But even though track 6 was the same, all games didn't use exactly the
   same encryption key. The two bytes in the loader, immediately
   following the string <literal/"keyOfs"/, gave an offset on track 6
   from where the key would be loaded.
-</para><para>
-  So, if the decryption string consists of 128 `k' characters, it can
-  actually mean one of two things: Either the AGI file is not encrypted,
-  or the game is still copy-protected.
 </para>
 
-<sect2><title>How does the encryption work?</title>
+<sect2>
+<title>How does the encryption work?</title>
 <para>
-   The loader contains a 128 byte string called the decryption key.
-   Here's the process of decryption:
-   <orderedlist>
+  The loader contains a 128 byte string called the decryption key.
+  Here's the process of decryption:
+</para>
+
+<para>
+  <orderedlist>
     <listitem><para>
       The carry bit is zeroed.
     </para></listitem>
@@ -1082,49 +1079,53 @@ print ("Message 34 in logic.0 is %g34.");
       The next 128 bytes of the AGI file are XORed with the new key. If
       the end of the AGI file has not been reached, then go back to 3.
     </para></listitem>
-   </orderedlist>
+  </orderedlist>
 </para>
 
-<sect2><title>Where in the loader is the decryption key?</title>
+<sect2>
+<title>Where in the loader is the decryption key?</title>
 <para>
-   The start of a loader will look something like this:
+  The start of a loader will look something like this:
 </para><para>
 <programlisting>
 LOADER v3.0 (c) Copyright Sierra On-Line, Inc. 1987 keyOfs
 </programlisting>
 </para><para>
-   There are two bytes in between the <literal/"keyOfs"/ string and the start of
-   the description string. If the decryption key consists of 128 `k'
-   characters, then the AGI file is not encrypted (or the game is still
-   copy-protected). If it consists of a whole lot of random looking
-   characters, then it is encrypted.
+  There are two bytes in between the <literal/"keyOfs"/ string and the start
+  of the description string. If the decryption key consists of 128 `k'
+  characters, then the AGI file is not encrypted (or the game is still
+  copy-protected). If it consists of a whole lot of random looking
+  characters, then it is encrypted.
 </para><para>
-   As an aside, the decryption string is followed immediately by the
-   stack and is usually marked with a whole string of `s' characters.
-   Thus we have `k' for key and `s' for stack. The stack is usually 256
-   bytes long.
+  As an aside, the decryption string is followed immediately by the
+  stack and is usually marked with a whole string of `s' characters.
+  Thus we have `k' for key and `s' for stack. The stack is usually 256
+  bytes long.
 </para>
 
-<sect2><title>Decrypting the AGI file</title>
+<sect2>
+<title>Decrypting the AGI file</title>
 <para>
-   Decrypting the AGI file is simply a matter of writing a program to
-   read the loader to get the decryption string, and then applying the
-   process mentioned above to the AGI file. Once this has been done, the
-   game ID can be located.
+  Decrypting the AGI file is simply a matter of writing a program to
+  read the loader to get the decryption string, and then applying the
+  process mentioned above to the AGI file. Once this has been done, the
+  game ID can be located.
 </para>
 </sect1>
 
-<sect1 id="parsing"><title>Player input parsing</title>
+<sect1 id="parsing">
+<title>Player input parsing</title>
 <para>
-From the AGDS documentation, translated by Vassili Bykov.
+  Note: This section is an excerpt from the description of the
+  <function/said/ command from <xref linkend="cmdref">.
 </para><para>
-   Note: This section is an excerpt from the description of the
-   <function/said/ command from <xref linkend="cmdref">.
-</para><para>
-   Here is how the input is matched. After the player types a message and
-   presses <keycap/ENTER/, the input line is processed by the interpreter in
-   the following way:
-   <orderedlist>
+  Here is how the input is matched. After the player types a message and
+  presses <keycap/ENTER/, the input line is processed by the interpreter in
+  the following way:
+</para>
+
+<para>
+  <orderedlist>
     <listitem><para>
       The interpreter removes all punctuation marks.
     </para></listitem>
@@ -1132,26 +1133,29 @@ From the AGDS documentation, translated by Vassili Bykov.
       All characters are converted to lowercase.
     </para></listitem>
     <listitem><para>
-      All sequences of more than one space are replaced with a single
-      space.
+      All sequences of more than one space are replaced with a single space.
     </para></listitem>
     <listitem><para>
-       Starting with the first word of the input, the interpreter looks
-       up the vocabulary, trying to find the longest character sequence
-       matching the input line.
+      Starting with the first word of the input, the interpreter looks
+      up the vocabulary, trying to find the longest character sequence
+      matching the input line.
     </para></listitem>
-   </orderedlist>
+  </orderedlist>
+</para>
+
+<para>
+  If the search is unsuccessful, <parameter/v9/ is assigned the number
+  of the word in the message that failed to match and the processing
+  ends. If all the words have been assigned some codes:
 </para><para>
-   If the search is unsuccessful, <parameter/v9/ is assigned the number
-   of the word in the message that failed to match and the processing
-   ends. If all the words have been assigned some codes:
-</para><para>
-   <simplelist>
-    <member>The Interpreter removes from the sequence of codes all zeros (that
-       means all vocabulary words with zero codes are ignored).
-    <member><literal/f2/ (the user has entered an input line) is set to 1
-    <member><literal/f4/ (<function/said/ command accepted the user input) is set to 0.
-   </simplelist>
+  <simplelist>
+  <member>The Interpreter removes from the sequence of codes all zeros (that
+     means all vocabulary words with zero codes are ignored).
+  <member><literal/f2/ (the user has entered an input line) is set to 1
+  <member><literal/f4/ (<function/said/ command accepted the user input)
+     is set to 0.
+  </simplelist>
+
 </para><para>
    If the sequence of code produced by the interpreter is
 </para><para>
@@ -1278,12 +1282,14 @@ XM86	?.??	AGI	2.272		Unknown
    </itemizedlist>
 </para>
 
-<sect2><title>Command argument number descrepancies</title>
+<sect2>
+<title>Command argument number descrepancies</title>
 <para>
-   There are four commands that have changed the number of arguments that
-   are passed to them. All this information is based on observations made
-   of the above interpreter versions.
-   <itemizedlist>
+  There are four commands that have changed the number of arguments that
+  are passed to them. All this information is based on observations made
+  of the above interpreter versions.
+
+  <itemizedlist>
     <listitem><para>
       The <function/quit/ command had no arguments for version
       2.089 whereas all the others above have one argument.
@@ -1298,58 +1304,64 @@ XM86	?.??	AGI	2.272		Unknown
       Unknown command number 176 had one argument for version
       3.002.086 but later versions had no arguments for this command.
     </para></listitem>
-   </itemizedlist>
+  </itemizedlist>
 </para>
 
-<sect2><title>Number of strings</title>
+<sect2>
+<title>Number of strings</title>
 <para>
-   There may be some differences in the number of strings supported by
-   some interpreters as well. All interpreters have at least 12 strings.
-   Most interpreters have space for 24 strings but I don't know if the
-   extra space is used for strings or not.
+  There may be some differences in the number of strings supported by
+  some interpreters as well. All interpreters have at least 12 strings.
+  Most interpreters have space for 24 strings but it is not known if the
+  extra space is used for strings or not.
 </para>
 </sect1>
 
 </chapter>
 
 
-<chapter id="logic"><title>The LOGIC language</title>
-<sect1 id="syntax"><title>LOGIC syntax</title>
-<para>
+<chapter id="logic">
+<title>The AGI script language</title>
 
-   This is the ``official'' LOGIC syntax that has been decided on. It is
-   not the same syntax as Sierra used. All LOGIC decoders and compilers
-   should comply with this syntax, so that programmers can be sure that
-   code they produce can be used properly with any program.
+<sect1 id="syntax">
+<title>Source code conventions</title>
+
+<para>
+  This section lists conventions that will be adopted in the AGI script
+  language description in this document. They may differ from Sierra's
+  original syntax, but the resulting bytecode is strictly the same.
 </para>
 
-<sect2><title>Action Commands</title>
+<sect2>
+<title>Commands and operators</title>
+
 <para>
+  Normal commands are specified by the command name followed by
+  brackets which contain the arguments, separated by commas. A semicolon
+  is placed after the brackets. The brackets are required even if there
+  are no arguments. The arguments given must have the correct prefix for
+  that type of argument as explained later in this document (this is to
+  make sure the programmer does not use a var, for example, when they
+  think they are using a flag).
+</para>
 
-   Normal action commands are specified by the command name followed by
-   brackets which contain the arguments, separated by commas. A semicolon
-   is placed after the brackets. The brackets are required even if there
-   are no arguments. The arguments given must have the correct prefix for
-   that type of argument as explained later in this document (this is to
-   make sure the programmer does not use a var, for example, when they
-   think they are using a flag).
-
-</para><para>
 <programlisting>
 assign.v(v50,0);
 program.control();
 </programlisting>
-</para><para>
-   Multiple commands may be placed on the one line:
 
-</para><para>
+<para>
+  Multiple commands may be placed on the one line:
+</para>
+
 <programlisting>
 reset(f6); reset(f7);
 </programlisting>
-</para><para>
-   Substitutions for the following action commands are available:
 
-</para><para>
+<para>
+  Substitutions for the following action commands are available:
+</para>
+
 <programlisting>
 increment(v30);       v30++;
 decrement(v30);       v30--;
@@ -1367,9 +1379,9 @@ lindirectn(v30,4);    *v30 = 4;
 lindirectv(v30,v32);  *v30 = v32;
 rindirect(v30,v32);   v30 = *v32;
 </programlisting>
-</para>
 
-<sect2><title><literal/if/ structures and test commands</title>
+<sect2>
+<title>Conditionals and tests</title>
 
 <para>
    An <literal/if/ structure looks like this:
@@ -1583,190 +1595,193 @@ goto(Label1);
 
 </sect1>
 
-<sect1 id="cmdref"><title>Reference of the LOGIC commands</title>
-<para>
-From the AGDS documentation translated by Vassili Bykov,
-</para>
+<sect1 id="cmdref">
+<title>Commands reference</title>
 
 <sect2><title>Arithmetic commands</title>
 <para>
-   Commands that operate on variables:
-   <variablelist>
-    <varlistentry>
-      <term><function id="increment">increment(n)</function></term>
-      <listitem><para>
-       The value of the variable <parameter/n/ is incremented by one,
-       i.e. <parameter/vn/ = <parameter/vn/+1. If the value is already
-       255, it is left unchanged.
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function id="decrement">decrement(n)</function></term>
-      <listitem><para>
-       The value of the variable <parameter/vn/ is decremented by one,
-       i.e. <parameter/vn/ = <parameter/vn/-1. If the value is 0, it
-       is left unchanged.
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function id="assign">assign(n,m)</function></term>
-      <listitem><para>
-       Variable <parameter/vn/ is assigned the value m, i.e.
-       <parameter/vn/ = <parameter/m/.
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function id="assignv">assignv(n,m)</function></term>
-      <listitem><para>
-       Variable <parameter/vn/ is assigned the value of <parameter/vm/,
-       i.e. <parameter/vn/ = <parameter/vm/.
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function id="addn">addn(n,m)</function>, <function id="addv">addv(n,m)</function></term>
-      <listitem><para>
-       The value of variable <parameter/vn/ is incremented by <parameter/m/
-       (<parameter/vm/), i.e. <parameter/vn/ = <parameter/vn/ + <parameter/m/
-       (<parameter/vm/).
-      </para><para>
-       If the value is greater than 255 the result wraps over 0
-       (so 250 + 10 == 4).
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function id="subn">subn(n,m)</function>, <function id="subv">subv(n,m)</function></term>
-      <listitem><para>
-       The value of <parameter/vn/ is decremented by <parameter/m/
-       (<parameter/vm/), i.e. <parameter/vn/ = <parameter/vn/ - <parameter/m/
-       (<parameter/vm/).
-       If the value is lesser than 0 the result wraps (so 1 - 2 == 255).
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function id="lindirectn">lindirectn(n,m)</function></term>
-      <listitem><para>
-       Variable <parameter/vi/ where <emphasis/i/ is the value of
-       <parameter/vn/ is assigned a value <parameter/m/, i.e.
-       Var(<parameter/vn/) = <parameter/m/.
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function id="lindirectv">lindirectv(n,m)</function></term>
-      <listitem><para>
-       Variable <parameter/vi/ where <emphasis/i/ is the value of
-       <parameter/vn/ is assigned the value of <parameter/vm/, i.e.
-       Var(<parameter/vn/) = <parameter/vm/.
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function id="rindirect">rindirect(n,m)</function></term>
-      <listitem><para>
-       Variable <parameter/vn/ is assigned the value of <parameter/vi/
-       where <emphasis/i/ is the value of <parameter/vm/, i.e.
-       <parameter/vn/ = Var(<parameter/vm/).
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function>muln(n,m)</function></term>
-      <listitem><para>
-       Variable <parameter/vn/ is multiplied by <parameter/m/, i.e.
-       <parameter/vn/ = <parameter/vn/ * <parameter/m/.
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function>mulv(n,m)</function></term>
-      <listitem><para>
-       Variable <parameter/vn/ is multiplied by the value of <parameter/vm/,
-       i.e. <parameter/vn/ = <parameter/vn/ * <parameter/vm/.
-      </para><para>
-       <emphasis>(What happens on overflow? --VB)</emphasis>
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function>divn(n,m)</function></term>
-      <listitem><para>
-       Variable <parameter/vn/ is divided by <parameter/m/, i.e.
-       <parameter/vn/ = <parameter/vn/ / <parameter/m/.
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function>divv(n,m)</function></term>
-      <listitem><para>
-       Variable <parameter/vn/ is divided by the value of <parameter/vm/,
-       i.e. <parameter/vn/ = <parameter/vn/ / <parameter/vm/.
-      </para><para>
-       <emphasis>(What happens on division by 0? --VB)</emphasis>
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function id="random">random(n,m,k)</function></term>
-      <listitem><para>
-       Variable <parameter/vk/ is assigned a random value in the range
-       between <parameter/n/ and <parameter/m/.
-       Now let us consider the commands changing flag values. Remember that a
-       flag can only have a value 0 or 1.
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function id="set">set(n)</function></term>
-      <listitem><para>
-       <literal/f/<emphasis/n/ is set to 1.
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function id="set.v">set.v(n)</function></term>
-      <listitem><para>
-       <literal/f/<emphasis/i/, where <emphasis/i/ is the value of
-       <parameter/vn/, is set to 1. i.e.  flag(<parameter/vn/) = 1.
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function id="reset">reset(n)</function></term>
-      <listitem><para>
-       <literal/f/<emphasis/n/ is set to 0.
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function id="reset.v">reset.v(n)</function></term>
-      <listitem><para>
-       <literal/f/<emphasis/i/, where <emphasis/i/ is the value of
-       <parameter/vn/, is set to 0, i.e. flag(<parameter/vn/) = 0.
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function id="toggle">toggle(n)</function></term>
-      <listitem><para>
-       <literal/f/<emphasis/n/ toggles its value.
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term><function id="toggle.v">toggle.v(n)</function></term>
-      <listitem><para>
-       <literal/f/<emphasis/i/, where <emphasis/i/ is the value of
-       <parameter/vn/, i.e. flag(<parameter/vn/), toggles is value.
-      </para></listitem>
-    </varlistentry>
-   </variablelist>
+  This section lists the commands that operate on variables:
 </para>
+
+<variablelist>
+  <varlistentry>
+    <term><function id="increment"/increment(n)/</term>
+    <listitem><para>
+      The value of the variable <parameter/n/ is incremented by one,
+      i.e. <parameter/vn/ = <parameter/vn/+1. If the value is already
+      255, it is left unchanged.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><function id="decrement"/decrement(n)/</term>
+    <listitem><para>
+      The value of the variable <parameter/vn/ is decremented by one,
+      i.e. <parameter/vn/ = <parameter/vn/-1. If the value is 0, it
+      is left unchanged.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><function id="assignn"/assignn(n,m)/</term>
+    <listitem><para>
+      Variable <parameter/vn/ is assigned the value <parameter/m/, i.e.
+      <parameter/vn/ = <parameter/m/.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><function id="assignv"/assignv(n,m)/</term>
+    <listitem><para>
+      Variable <parameter/vn/ is assigned the value of <parameter/vm/,
+      i.e. <parameter/vn/ = <parameter/vm/.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><function id="addn"/addn(n,m)/, <function id="addv"/addv(n,m)/</term>
+    <listitem><para>
+      The value of variable <parameter/vn/ is incremented by <parameter/m/
+      (<parameter/vm/), i.e. <parameter/vn/ = <parameter/vn/ + <parameter/m/
+      (<parameter/vm/). If the value is greater than 255 the result wraps
+      over 0 (so 250 + 10 == 4).
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><function id="subn"/subn(n,m)/, <function id="subv"/subv(n,m)/</term>
+    <listitem><para>
+      The value of <parameter/vn/ is decremented by <parameter/m/
+      (<parameter/vm/), i.e. <parameter/vn/ = <parameter/vn/ - <parameter/m/
+      (<parameter/vm/). If the value is lesser than 0 the result wraps
+      (so 1 - 2 == 255).
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><function id="lindirectn"/lindirectn(n,m)/</term>
+    <listitem><para>
+      Variable <parameter/vi/ where <emphasis/i/ is the value of
+      <parameter/vn/ is assigned a value <parameter/m/, i.e.
+      Var(<parameter/vn/) = <parameter/m/.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><function id="lindirectv"/lindirectv(n,m)/</term>
+    <listitem><para>
+      Variable <parameter/vi/ where <emphasis/i/ is the value of
+      <parameter/vn/ is assigned the value of <parameter/vm/, i.e.
+      Var(<parameter/vn/) = <parameter/vm/.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><function id="rindirect"/rindirect(n,m)/</term>
+    <listitem><para>
+      Variable <parameter/vn/ is assigned the value of <parameter/vi/
+      where <emphasis/i/ is the value of <parameter/vm/, i.e.
+      <parameter/vn/ = Var(<parameter/vm/).
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><function/muln(n,m)/</term>
+    <listitem><para>
+      Variable <parameter/vn/ is multiplied by <parameter/m/, i.e.
+      <parameter/vn/ = <parameter/vn/ * <parameter/m/.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><function/mulv(n,m)/</term>
+    <listitem><para>
+      Variable <parameter/vn/ is multiplied by the value of <parameter/vm/,
+      i.e. <parameter/vn/ = <parameter/vn/ * <parameter/vm/.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><function/divn(n,m)/</term>
+    <listitem><para>
+      Variable <parameter/vn/ is divided by <parameter/m/, i.e.
+      <parameter/vn/ = <parameter/vn/ / <parameter/m/.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><function/divv(n,m)/</term>
+    <listitem><para>
+      Variable <parameter/vn/ is divided by the value of <parameter/vm/,
+      i.e. <parameter/vn/ = <parameter/vn/ / <parameter/vm/.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><function id="random">random(n,m,k)</function></term>
+    <listitem><para>
+      Variable <parameter/vk/ is assigned a random value in the range
+      between <parameter/n/ and <parameter/m/.
+    </para></listitem>
+  </varlistentry>
+</variablelist>
+
+</sect2>
+
+
+<sect2><title>Arithmetic commands</title>
+<para>
+  Now let us consider the commands changing flag values. Remember that a
+  flag can only have a value 0 (false) or 1 (true).
+</para>
+
+<variablelist>
+  <varlistentry>
+    <term><function id="set"/set(n)/</term>
+    <listitem><para>
+       <literal/f/<emphasis/n/ is set to 1.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><function id="set.v"/set.v(n)/</term>
+    <listitem><para>
+      <literal/f/<emphasis/i/, where <emphasis/i/ is the value of
+      <parameter/vn/, is set to 1. i.e.  flag(<parameter/vn/) = 1.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><function id="reset"/reset(n)/</term>
+    <listitem><para>
+      <literal/f/<emphasis/n/ is set to 0.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><function id="reset.v"/reset.v(n)/</term>
+    <listitem><para>
+      <literal/f/<emphasis/i/, where <emphasis/i/ is the value of
+      <parameter/vn/, is set to 0, i.e. flag(<parameter/vn/) = 0.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><function id="toggle"/toggle(n)/</term>
+    <listitem><para>
+      <literal/f/<emphasis/n/ toggles its value.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term><function id="toggle.v"/toggle.v(n)/</term>
+    <listitem><para>
+      <literal/f/<emphasis/i/, where <emphasis/i/ is the value of
+      <parameter/vn/, i.e. flag(<parameter/vn/), toggles is value.
+    </para></listitem>
+  </varlistentry>
+</variablelist>
+
 </sect2>
 
 <sect2><title>Commands to load and unload resources</title>
@@ -3727,6 +3742,11 @@ if (said(BANG||KNOCK||RAP||TAP) ||
 </programlisting>
 </para>
 
+<figure id="fig-fall-rocks" float="1">
+  <title>King's Quest IV fall rocks</title>
+  <graphic fileref="images/specs/kq4_fall_rocks.png" format="png">
+</figure>
+
 <sect2><title>Fall rocks</title>
 <para>
 From the book:
@@ -4060,25 +4080,6 @@ Compressed picture code: F0 6F 81 24 5F 07 F2 5F 81 46 7 ...
 
 </sect1>
 
-<sect1 id="rescode"><title>Sample code</title>
-<para>
-   <simplelist>
-    <member><filename/agifiles.c/ by Lance Ewing:
-      routines to handle loading of resources
-    <member><filename/agifiles.h/ by Lance Ewing:
-      header file for <filename/agifiles.c/
-    <member><filename/general.h/ by Lance Ewing:
-      general definitions
-    <member><filename/volx2.c/ by Lance Ewing, Joakim Möller and
-      Martin Tillenius: program to extract resources from AGI version 2 games
-    <member><filename/xv3.pas/ by Lance Ewing: program to extract
-      resources from AGI version 3 games
-    <member><filename/agiver.pas/ by Jeremy Hayes:
-      displays version number of game and interpreter
-   </simplelist>
-</para>
-
-</sect1>
 </chapter>
 
 
@@ -4986,23 +4987,6 @@ do {
    command sets the entry point back to the start of the LOGIC.
 </para>
 
-
-<sect1 id="logiccode"><title>Sample code</title>
-<para>
-   <simplelist>
-    <member><filename/logic.c/
-      by Lance Ewing: loads LOGIC resources into LOGICFile structure
-    <member><filename/logic.h/
-      by Lance Ewing: header file for <filename/logic.c/
-    <member><filename/agifiles.c/
-      by Lance Ewing: routines to handle loading of resources
-    <member><filename/agifiles.h/
-      by Lance Ewing: header file for <filename/agifiles.c/
-    <member><filename/agicommands.pas/
-      by Peter Kelly: Delphi/Pascal unit with a list of all commands and
-      argument types
-   </simplelist>
-</para>
 </sect1>
 
 </chapter>
@@ -5605,18 +5589,6 @@ Tool:Line V:A P:o C:o X=199 Y=55 Pri:2
    keystroke puts them back. When the fills have been removed, they are
    represented as a tiny cross. Apparently removing the solid colours
    makes it easier to add small details like flowers.
-</para>
-</sect1>
-
-<sect1 id="piccode"><title>Sample code</title>
-<para>
-
-   <simplelist>
-    <member><filename/picv3-v2.c/
-       by Lance Ewing: converts version 3 pictures to version 2 pictures
-    <member><filename/showpic.c/
-       by Lance Ewing: displays pictures
-   </simplelist>
 </para>
 </sect1>
 
@@ -6800,22 +6772,6 @@ f = 111860 / (((Byte2 & 0x3F) << 4) + (Byte3 & 0x0F))
    control on todays sound cards is uncertain at this stage.
 </para>
 
-<sect1 id="soundcode"><title>Sample code</title>
-<para>
-
-</para><para>
-   <simplelist>
-    <member><filename/adlib.c/ by Kevin A. Lee: low level adlib routines
-    <member><filename/adlib.h/ by Kevin A. Lee: header for <filename/adlib.c/
-    <member><filename/oldplay.c/ by Lance Ewing: old program to play AGI sounds
-    <member><filename/play.c/ by Jens Christian Restemeier:
-      new program for playing AGI sounds (plays as a MIDI file)
-    <member><filename/agiplay.c/ by Claudio Matsuoka: program to play PCjr
-      AGI sound resources in Linux using software mixing and
-      <filename>/dev/dsp</filename>.
-   </simplelist>
-
-</para>
 </chapter>
 
 
@@ -6974,20 +6930,6 @@ if (said(take, anyword)) {
 </programlisting>
 </para>
 </sect1>
-
-<sect1 id="othercode"><title>Sample code</title>
-<para>
-
-   <simplelist>
-    <member><filename/object.pas/
-      by Peter Kelly: displays contents of the <filename/object/ file
-    <member><filename/words.pas/
-      by Peter Kelly: displays contents of the <filename/words.tok/ file
-   </simplelist>
-</chapter>
-
-
-
 
 </book>
 
