@@ -3,33 +3,35 @@ $Id$
 Tested ports:
 
                   Graphics   Sound    Windowed  Fullscreen
-         Compiler  Driver    Driver   Graphics  Graphics    Sound
----------+-------+---------+---------+---------+---------+---------+
- MS-DOS  |Watcom |   Raw   |  dummy  |    no   |   yes   |    no   |
- MS-DOS  |Turbo C|   Raw   |  dummy  |    no   |   yes   |    no   |
----------+-------+---------+---------+---------+---------+---------+
- Linux   |  gcc  |   X11   |OSS,ALSA |   yes   |    no   |   yes   |
- Linux   |  gcc  | SVGAlib |OSS,ALSA |    no   |   yes   |   yes   |
- Linux   |  gcc  |   SDL   |   SDL   |   yes   |   yes   |   yes   |
- FreeBSD |  gcc  |   X11   | freebsd |   yes   |    no   |   yes   |
- NetBSD  |  gcc  |   X11   |   BSD   |   yes   |    no   |    no   |
- Solaris |  gcc  |   X11   | solaris |   yes   |    no   |   yes   |
- AIX 4   |  gcc  |   X11   |  dummy  |   yes   |    no   |    no   |
- IRIX    |MIPSpro|   X11   |   sgi   |   yes   |    no   |   yes   |
----------+-------+---------+---------+---------+---------+---------+
- BeOS 5  |  gcc  |   SDL   |   SDL   |   yes   |   yes   |   yes   |
----------+-------+---------+---------+---------+---------+---------+
- MacOS X |   ?   |  Cocoa  |  dummy  |   yes   |    ?    |    no   |
----------+-------+---------+---------+---------+---------+---------+
- QNX	 |   ?   |  Photon |    ?    |    ?    |    ?    |    ?    |
----------+-------+---------+---------+---------+---------+---------+
- Windows |Mingw32|   DIB   |  dummy  |   yes   |    no   |    no   |
- Windows*|Mingw32|   SDL   |   SDL   |   yes   |   yes   |   yes   |
- Windows |  VC++ |   DIB   |  WinMM  |   yes   |    no   |   yes   |
- Windows |Cygwin |   DIB   |  WinMM  |   yes   |    no   |   yes   |
----------+-------+---------+---------+---------+---------+---------+
- OS/2    |  gcc  |   X11   |  dummy  |   yes   |    no   |    no   |
----------+-------+---------+---------+---------+---------+---------+
+         Compiler  Driver    Driver   Graphics  Graphics    Sound   Aut/Maint.
+---------+-------+---------+---------+---------+---------+---------+---------+
+ MS-DOS  |Watcom |   Raw   |  dummy  |    no   |   yes   |    no   | Stuart  |
+ MS-DOS  |Turbo C|   Raw   |  dummy  |    no   |   yes   |    no   | claudio |
+---------+-------+---------+---------+---------+---------+---------+---------+
+ Linux   |  gcc  |   X11   |OSS,ALSA |   yes   |    no   |   yes   | claudio |
+ Linux   |  gcc  | SVGAlib |OSS,ALSA |    no   |   yes   |   yes   | XoXus   |
+ Linux   |  gcc  |   SDL   |   SDL   |   yes   |   yes   |   yes   | Ryan    |
+ FreeBSD |  gcc  |   X11   | freebsd |   yes   |    no   |   yes   | Joep    |
+ NetBSD  |  gcc  |   X11   |   BSD   |   yes   |    no   |    no   |         |
+ Solaris |  gcc  |   X11   | solaris |   yes   |    no   |   yes   |         |
+ AIX 4   |  gcc  |   X11   |  dummy  |   yes   |    no   |    no   |         |
+ IRIX    |MIPSpro|   X11   |   sgi   |   yes   |    no   |   yes   | aheikin |
+---------+-------+---------+---------+---------+---------+---------+---------+
+ BeOS 5  |  gcc  |   SDL   |   SDL   |   yes   |   yes   |   yes   | claudio |
+---------+-------+---------+---------+---------+---------+---------+---------+
+ MacOS X |   ?   |  Cocoa  |  dummy  |   yes   |    ?    |    no   |drzoltan |
+---------+-------+---------+---------+---------+---------+---------+---------+
+ QNX	 |   ?   |  Photon |    ?    |    ?    |    ?    |    ?    | jpenner |
+---------+-------+---------+---------+---------+---------+---------+---------+
+ Windows |Mingw32|   DIB   |  dummy  |   yes   |    no   |    no   |rosinha, |
+ Windows*|Mingw32|   SDL   |   SDL   |   yes   |   yes   |   yes   |igor,matt|
+ Windows |  VC++ |   DIB   |  WinMM  |   yes   |    no   |   yes   |justin,  |
+ Windows |Cygwin |   DIB   |  WinMM  |   yes   |    no   |   yes   |ryan&more|
+---------+-------+---------+---------+---------+---------+---------+---------+
+ OS/2    |  gcc  |   X11   |  dummy  |   yes   |    no   |    no   |         |
+---------+-------+---------+---------+---------+---------+---------+---------+
+ Amiga   |  gcc  |  amiga  |   AHI   |   yes   |   yes   |   yes   |Paul Hill|
+---------+-------+---------+---------+---------+---------+---------+---------+
 
 The Linux/X11 driver is known to work in the following architectures:
 IA32 (i386), PowerPC, IA64, S/390. The NetBSD, FreeBSD and BeOS ports
@@ -70,8 +72,6 @@ In progress:
  MacOS   |  MPW  |  macos  |  macos  |   yes   |    no   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
  Amiga   | DICE  |  amiga  |  dummy  |   yes   |    ?    |    no   |
----------+-------+---------+---------+---------+---------+---------+
- Amiga   |  gcc  |    ?    |   AHI   |    ?    |   yes   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
 
 

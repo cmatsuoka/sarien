@@ -230,3 +230,4 @@ void ahi_close_sound()
 	Delay(10);
 	CloseAHI();
 }
+

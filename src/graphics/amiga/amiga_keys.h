@@ -100,11 +100,6 @@
 
 #define XK_Help (0x5F)
 
-//#define XK_bracketright -1
-//#define XK_bracketleft -2
-//#define XK_Page_Up -4
-//#define XK_Page_Down -5
-
 #define XK_KP_Home 71
 #define XK_KP_Page_Up 72
 #define XK_KP_Page_Down 777

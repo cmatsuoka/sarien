@@ -1,5 +1,8 @@
 /* Sarien - A Sierra AGI resource interpreter engine
+ * Amiga files Copyright (C) 1999-2001 Paul Hill
  *  
+ * $Id$
+ *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; see docs/COPYING for further details.
@@ -16,13 +19,14 @@
 #include <proto/dos.h>
 #include <proto/gadtools.h>
 #include <graphics/gfxbase.h>
+#include <graphics/rastport.h>
 #include "amiga_keys.h"
 
 #include "sarien.h"
 #include "graphics.h"
 #include "keyboard.h"
-#define DEPTH 6
 
+#define DEPTH 6
 
 extern struct sarien_options opt;
 extern struct gfx_driver *gfx;
@@ -32,7 +36,10 @@ struct Window *window;
 static UBYTE *ximage;
 
 static struct RastPort video_temprp;
-static struct BitMap video_tmp_bm = { 0, 0, 0, 0, 0, {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL} };
+static struct BitMap video_tmp_bm = {
+	0, 0, 0, 0, 0,
+	{ NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL }
+};
 APTR VisualInfo = NULL;
 
 static int scale = 1;
@@ -58,7 +65,6 @@ static int Amiga_deinit_vidmode (void);
 static UINT16 set_palette (UINT8 *, UINT16, UINT16);
 static void Amiga_blit_block (int, int, int, int);
 static void Amiga_put_pixel (int x, int y, int w, UINT8 *p);
-//static void Amiga_put_pixel (int, int, int);
 static int Amiga_keypress (void);
 static int Amiga_get_key (void);
 static void Amiga_new_timer (void);
@@ -99,8 +105,7 @@ static void process_events ()
 	int goingup;
 	int key = 0;
 
-	while ((imsg = (struct IntuiMessage *) GT_GetIMsg(window->UserPort)))
-	{
+	while ((imsg = (struct IntuiMessage *)GT_GetIMsg(window->UserPort))) {
 		Class = imsg->Class;
 		Code = imsg->Code;
 		Qualifier = imsg->Qualifier;
@@ -110,188 +115,184 @@ static void process_events ()
 
 		switch (Class)
 		{
-			case IDCMP_MOUSEBUTTONS:
+		case IDCMP_MOUSEBUTTONS:
+			switch (Code)
+			{
+				case IECODE_RBUTTON:
+				case IECODE_LBUTTON:
+					key = Code == IECODE_LBUTTON ?
+						BUTTON_LEFT : BUTTON_RIGHT;
+					mouse.button = TRUE;
+					mouse.x = (imsg->MouseX - window->BorderLeft) / opt.scale;
+					mouse.y = (imsg->MouseY - window->BorderTop) / opt.scale;
+					break;
+				case IECODE_LBUTTON | IECODE_UP_PREFIX:
+				case IECODE_RBUTTON | IECODE_UP_PREFIX:
+					mouse.button = FALSE;
+					break;
+			}
+			break;
+
+		case IDCMP_CLOSEWINDOW:
+			die_die_die();
+			break;
+
+		case IDCMP_VANILLAKEY:
+//			printf("IDCMP_VANILLAKEY %d %X  [%d,%d]\n",Code,Qualifier,Code & 0x07f,goingup);
+			if ((Code == 13) && (Qualifier == 0x8010))
+			{
+				// [alt + enter] = switch between fullscreen and window mode
+				Amiga_deinit_vidmode();
+				opt.fullscreen = !opt.fullscreen;
+				Amiga_init_vidmode();
+				// re-draw the screen
+printf("..................................................\n");
+				Amiga_blit_block(0,0, GFX_WIDTH,GFX_HEIGHT);
+printf("..................................................\n");
+			} else {
+				key = Code;
+			}
+			break;
+
+		case IDCMP_RAWKEY:
+			goingup = Code & 0x080;
+			Code = (Code & 0x07F);
+
+			if(!goingup)
+			{
 				switch (Code)
 				{
-					case IECODE_RBUTTON:
-					case IECODE_LBUTTON:
-						key = Code == IECODE_LBUTTON ? BUTTON_LEFT : BUTTON_RIGHT;
-						mouse.button = TRUE;
-						mouse.x = (imsg->MouseX - window->BorderLeft) / opt.scale;
-						mouse.y = (imsg->MouseY - window->BorderTop) / opt.scale;
-						break;
-					case IECODE_LBUTTON | IECODE_UP_PREFIX:
-					case IECODE_RBUTTON | IECODE_UP_PREFIX:
-						mouse.button = FALSE;
-						break;
-				}
-				break;
+				/* Key press */
+				case XK_Up:
+					key = KEY_UP;
+					break;
+				case XK_Left:
+					key = KEY_LEFT;
+					break;
+				case XK_Down:
+					key = KEY_DOWN;
+					break;
+				case XK_Right:
+					key = KEY_RIGHT;
+					break;
 
-			case IDCMP_CLOSEWINDOW:
-				die_die_die();
-				break;
+				case XK_F1:
+					key = 0x3b00;
+					break;
+				case XK_F2:
+					key = 0x3c00;
+					break;
+				case XK_F3:
+					key = 0x3d00;
+					break;
+				case XK_F4:
+					key = 0x3e00;
+					break;
+				case XK_F5:
+					key = 0x3f00;
+					break;
+				case XK_F6:
+					key = 0x4000;
+					break;
+				case XK_F7:
+					key = 0x4100;
+					break;
+				case XK_F8:
+					key = 0x4200;
+					break;
+				case XK_F9:
+					key = 0x4300;
+					break;
+				case XK_F10:
+					key = 0x4400;
+					break;
+				case XK_Return:
+					key = 0x0d;
+					break;
+				case XK_Escape:
+					key = 0x1b;
+					break;
 
-			case IDCMP_VANILLAKEY:
-//				printf("IDCMP_VANILLAKEY %d %X  [%d,%d]\n",Code,Qualifier,Code & 0x07f,goingup);
-				if ((Code == 13) && (Qualifier == 0x8010))
-				{
-					// [alt + enter] = switch between fullscreen and window mode
-					Amiga_deinit_vidmode();
-					if (opt.fullscreen) opt.fullscreen = FALSE; else opt.fullscreen = TRUE;
-					Amiga_init_vidmode();
-					// re-draw the screen
-printf("..................................................\n");
-					Amiga_blit_block(0,0, GFX_WIDTH,GFX_HEIGHT);
-printf("..................................................\n");
-				} else {
-					key = Code;
-				}
-				break;
-
-			case IDCMP_RAWKEY:
-				goingup = Code & 0x080;
-				Code = (Code & 0x07F);
-
-				if(!goingup)
-				{
-					switch (Code)
-					{
-						/* Key press */
-						case XK_Up:
-//						case XK_KP_Up:
-							key = KEY_UP;
-							break;
-
-						case XK_Left:
-//						case XK_KP_Left:
-							key = KEY_LEFT;
-							break;
-
-						case XK_Down:
-//						case XK_KP_Down:
-							key = KEY_DOWN;
-							break;
-
-						case XK_Right:
-//						case XK_KP_Right:
-							key = KEY_RIGHT;
-							break;
-	
-						case XK_F1:
-							key = 0x3b00;
-							break;
-						case XK_F2:
-							key = 0x3c00;
-							break;
-						case XK_F3:
-							key = 0x3d00;
-							break;
-						case XK_F4:
-							key = 0x3e00;
-							break;
-						case XK_F5:
-							key = 0x3f00;
-							break;
-						case XK_F6:
-							key = 0x4000;
-							break;
-						case XK_F7:
-							key = 0x4100;
-							break;
-						case XK_F8:
-							key = 0x4200;
-							break;
-						case XK_F9:
-							key = 0x4300;
-							break;
-						case XK_F10:
-							key = 0x4400;
-							break;
-						case XK_Return:
-							key = 0x0d;
-							break;
-						case XK_Escape:
-							key = 0x1b;
-							break;
-
-						case XK_Control_L:
-							key_control |= 1;
-							key = 0;
-							break;
-//						case XK_Control_R:
-//							key_control |= 2;
-//							key = 0;
-//							break;
-						case XK_Shift_L:
-						case XK_Shift_R:
-							key = 0;
-							break;
-						case XK_Alt_L:
-							key_alt |= 1;
-							key = 0;
-							break;
-						case XK_Alt_R:
-							key_alt |= 2;
-							key = 0;
-							break;
+				case XK_Control_L:
+					key_control |= 1;
+					key = 0;
+					break;
+//				case XK_Control_R:
+//					key_control |= 2;
+//					key = 0;
+//					break;
+				case XK_Shift_L:
+				case XK_Shift_R:
+					key = 0;
+					break;
+				case XK_Alt_L:
+					key_alt |= 1;
+					key = 0;
+					break;
+				case XK_Alt_R:
+					key_alt |= 2;
+					key = 0;
+					break;
 #if 0
-						/* Amiga numpad doesn't return rawkeys... */
-						/* We'll have to make up with joystick support */
-						case XK_KP_Home:
-							key = KEY_UP_LEFT;
-							break;
-						case XK_KP_Page_Up:
-							key = KEY_UP_RIGHT;
-							break;
-						case XK_KP_Page_Down:
-							key = KEY_DOWN_RIGHT;
-							break;
-						case XK_KP_End:
-							key = KEY_DOWN_LEFT;
-							break;
-						case XK_KP_Enter:
-							key = KEY_ENTER;
-							break;
-						case XK_KP_Add:
-							key = '+';
-							break;
-						case XK_KP_Subtract:
-							key = '-';
-							break;
+				/* Amiga numpad doesn't return rawkeys... */
+				/* We'll have to make up with joystick support */
+				case XK_KP_Home:
+					key = KEY_UP_LEFT;
+					break;
+				case XK_KP_Page_Up:
+					key = KEY_UP_RIGHT;
+					break;
+				case XK_KP_Page_Down:
+					key = KEY_DOWN_RIGHT;
+					break;
+				case XK_KP_End:
+					key = KEY_DOWN_LEFT;
+					break;
+				case XK_KP_Enter:
+					key = KEY_ENTER;
+					break;
+				case XK_KP_Add:
+					key = '+';
+					break;
+				case XK_KP_Subtract:
+					key = '-';
+					break;
 #endif
 
 #ifdef USE_CONSOLE
-//		case XK_Help:
-//			key = CONSOLE_ACTIVATE_KEY;
-//			break;
-//		case XK_Help:
-//			key = CONSOLE_SWITCH_KEY;
-//			break;
+//case XK_Help:
+//	key = CONSOLE_ACTIVATE_KEY;
+//	break;
+//case XK_Help:
+//	key = CONSOLE_SWITCH_KEY;
+//	break;
 #endif
-					}
-				} else
-				{
-					/* Key Release */
-					switch (Code)
-					{
-						case XK_Control_L:
-							key_control &= ~1;
-							break;
-//						case XK_Control_R:
-//							key_control &= ~2;
-//							break;
-						case XK_Alt_L:
-							key_alt &= ~1;
-							break;
-						case XK_Alt_R:
-							key_alt &= ~2;
-							break;
-						default:
-							key = 0;
-					}
 				}
+			} else
+			{
+				/* Key Release */
+				switch (Code)
+				{
+				case XK_Control_L:
+					key_control &= ~1;
+					break;
+#if 0
+				case XK_Control_R:
+					key_control &= ~2;
+					break;
+#endif
+				case XK_Alt_L:
+					key_alt &= ~1;
+					break;
+				case XK_Alt_R:
+					key_alt &= ~2;
+					break;
+				default:
+					key = 0;
+				}
+			}
 
-				break;
+			break;
 		}
 		if (key)
 			key_enqueue (key);
@@ -341,7 +342,10 @@ static UINT16 set_palette (UINT8 *pal, UINT16 scol, UINT16 numcols)
 		if (opt.fullscreen)
 		{
 			rgb_palette[i] = i;
-			SetRGB4(&screen->ViewPort, i, pal[i * 3] >> 2, pal[i * 3 + 1] >> 2, pal[i * 3 + 2] >> 2);		// 0-15
+			SetRGB4 (&screen->ViewPort, i,
+				pal[i * 3] >> 2,
+				pal[i * 3 + 1] >> 2,
+				pal[i * 3 + 2] >> 2);
 		}
 		else
 		{
@@ -363,38 +367,43 @@ static int Amiga_init_vidmode (void)
 	{
 		ULONG AmigaModeID=-1;	/* Amiga screen ID    */
 		/* Running full screen */
-		AmigaModeID = BestModeID(	BIDTAG_DesiredWidth, GFX_WIDTH * scale,
-											BIDTAG_DesiredHeight, GFX_HEIGHT * scale,
-											BIDTAG_NominalWidth, GFX_WIDTH * scale,
-											BIDTAG_NominalHeight, GFX_HEIGHT * scale,
-											BIDTAG_Depth, DEPTH,
-											TAG_END);
+		AmigaModeID = BestModeID (
+			BIDTAG_DesiredWidth,	GFX_WIDTH * scale,
+			BIDTAG_DesiredHeight,	GFX_HEIGHT * scale,
+			BIDTAG_NominalWidth,	GFX_WIDTH * scale,
+			BIDTAG_NominalHeight,	GFX_HEIGHT * scale,
+			BIDTAG_Depth,		DEPTH,
+			TAG_END);
 		if (AmigaModeID==INVALID_ID) AmigaModeID=0;
 
 		screen = OpenScreenTags(NULL,
-										SA_Left,			0,
-										SA_Top,			0,
-										SA_Width,		GFX_WIDTH * scale,
-										SA_Height,		GFX_HEIGHT * scale,
-										SA_Depth,		DEPTH,
-										SA_Title,		(ULONG) "Amiga Sarien v" VERSION,
-										SA_DisplayID,	AmigaModeID,
-										TAG_DONE);
-		if (screen)
-		{
+			SA_Left,	0,
+			SA_Top,		0,
+			SA_Width,	GFX_WIDTH * scale,
+			SA_Height,	GFX_HEIGHT * scale,
+			SA_Depth,	DEPTH,
+			SA_Title,	(ULONG) "Amiga Sarien v" VERSION,
+			SA_DisplayID,	AmigaModeID,
+			TAG_DONE);
+
+		if (screen) {
 			window = OpenWindowTags(NULL,
-											WA_Width,			GFX_WIDTH * scale,
-											WA_Height,			GFX_HEIGHT * scale,
-											WA_CloseGadget,	FALSE,
-											WA_DepthGadget,	FALSE,
-											WA_DragBar,			FALSE,
-											WA_SizeGadget,		FALSE,
-											WA_Activate,		TRUE,
-											WA_Borderless,		TRUE,
-											WA_IDCMP,			IDCMP_CLOSEWINDOW | IDCMP_RAWKEY | IDCMP_VANILLAKEY | IDCMP_MOUSEBUTTONS | WFLG_RMBTRAP,
-											WA_Activate,		TRUE,
-											WA_CustomScreen,	(ULONG) screen,
-											TAG_END);
+				WA_Width,	GFX_WIDTH * scale,
+				WA_Height,	GFX_HEIGHT * scale,
+				WA_CloseGadget,	FALSE,
+				WA_DepthGadget,	FALSE,
+				WA_DragBar,	FALSE,
+				WA_SizeGadget,	FALSE,
+				WA_Activate,	TRUE,
+				WA_Borderless,	TRUE,
+				WA_IDCMP,	IDCMP_CLOSEWINDOW |
+						IDCMP_RAWKEY |
+						IDCMP_VANILLAKEY |
+						IDCMP_MOUSEBUTTONS |
+						WFLG_RMBTRAP,
+				WA_Activate,	TRUE,
+				WA_CustomScreen,(ULONG) screen,
+				TAG_END);
 		}
 	}
 	else
@@ -405,18 +414,21 @@ static int Amiga_init_vidmode (void)
 		if (screen)
 		{
 			window = OpenWindowTags(NULL,
-											WA_InnerWidth,		GFX_WIDTH * scale,
-											WA_InnerHeight,	GFX_HEIGHT * scale,
-											WA_Title,			(ULONG) "Amiga Sarien v" TITLE " " VERSION,
-											WA_CloseGadget,	TRUE,
-											WA_DepthGadget,	TRUE,
-											WA_DragBar,			TRUE,
-											WA_SizeGadget,		FALSE,
-											WA_Activate,		TRUE,
-											WA_RMBTrap,			TRUE,
-											WA_PubScreenName,	(ULONG) PubScreen,
-											WA_IDCMP,			IDCMP_CLOSEWINDOW | IDCMP_RAWKEY  | IDCMP_VANILLAKEY | IDCMP_MOUSEBUTTONS,
-											TAG_END);
+				WA_InnerWidth,	GFX_WIDTH * scale,
+				WA_InnerHeight,	GFX_HEIGHT * scale,
+				WA_Title,	(ULONG) "Amiga Sarien v" TITLE " " VERSION,
+				WA_CloseGadget,	TRUE,
+				WA_DepthGadget,	TRUE,
+				WA_DragBar,	TRUE,
+				WA_SizeGadget,	FALSE,
+				WA_Activate,	TRUE,
+				WA_RMBTrap,	TRUE,
+				WA_PubScreenName,(ULONG) PubScreen,
+				WA_IDCMP,	IDCMP_CLOSEWINDOW |
+						IDCMP_RAWKEY |
+						IDCMP_VANILLAKEY |
+						IDCMP_MOUSEBUTTONS,
+				TAG_END);
 		}
 	}
 
@@ -431,7 +443,10 @@ static int Amiga_init_vidmode (void)
 		fprintf(stderr, "Error opening window\n");
 		if (screen)
 		{
-			if (opt.fullscreen) CloseScreen(screen); else UnlockPubScreen(NULL,screen);
+			if (opt.fullscreen)
+				CloseScreen(screen);
+			else
+				UnlockPubScreen(NULL,screen);
 			screen = NULL;
 		}
 		return err_Unk;
@@ -457,10 +472,9 @@ static int Amiga_init_vidmode (void)
 		video_temprp.BitMap = &video_tmp_bm;
 	}
 
-//	clear_buffer();
+	/* clear_buffer(); */
 
-	for (i=0;i<16;i++)
-	{
+	for (i=0;i<16;i++) {
 		rgb_palette[i] = -1;
 	}
 
@@ -481,7 +495,8 @@ static int Amiga_deinit_vidmode (void)
 		{
 			if (video_tmp_bm.Planes[depth] != NULL)
 			{
-				FreeRaster (video_tmp_bm.Planes[depth], (GFX_WIDTH * scale), 1);
+				FreeRaster (video_tmp_bm.Planes[depth],
+					(GFX_WIDTH * scale), 1);
 				video_tmp_bm.Planes[depth] = NULL;
 			}
 		}
@@ -503,14 +518,18 @@ static int Amiga_deinit_vidmode (void)
 
 	if (window)
 	{
-		if (VisualInfo) FreeVisualInfo(VisualInfo);
+		if (VisualInfo)
+			FreeVisualInfo(VisualInfo);
 		CloseWindow(window);
 		window = NULL;
 	}
 
 	if (screen)
 	{
-		if (opt.fullscreen) CloseScreen(screen); else UnlockPubScreen(NULL,screen);
+		if (opt.fullscreen)
+			CloseScreen(screen);
+		else
+			UnlockPubScreen(NULL,screen);
 		screen = NULL;
 	}
 
@@ -550,13 +569,12 @@ static void Amiga_blit_block(int x1, int y1, int x2, int y2)
 			image = ximage + (x1 + (y1 * (GFX_WIDTH * scale)));
 		}
 		WriteChunkyPixels(window->RPort,
-								x1 + window->BorderLeft,
-								y1 + window->BorderTop,
-								x2 + window->BorderLeft,
-								y2 + window->BorderTop,
-								(UBYTE *) image,
-								GFX_WIDTH * scale);
-
+			x1 + window->BorderLeft,
+			y1 + window->BorderTop,
+			x2 + window->BorderLeft,
+			y2 + window->BorderTop,
+			(UBYTE *) image,
+			GFX_WIDTH * scale);
 	}
 	else
 	{
@@ -647,3 +665,4 @@ static void Amiga_new_timer ()
 
 	process_events ();
 }
+
