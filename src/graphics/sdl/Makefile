@@ -12,4 +12,3 @@ all: $(LIB)
 
 include ../../../Version
 include ../../../Rules
-

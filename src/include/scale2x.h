@@ -19,6 +19,17 @@
  */
 
 /*
+ * Modifications for Sarien by Claudio Matsuoka, Sun Jul 13 16:33:48 BRT 2003
+ * (while listening to The Utterly Fantastic and Totally Unbelievable Sounds of
+ * Los Straitjackets)
+ *
+ * - added scale2x_*_map() functions
+ * - source is always (uint8 *)
+ * - handle count < 2 instead of assert
+ * - mmx functions commented out
+ */
+
+/*
  * This file contains a C and MMX implentation of the Scale2x effect.
  *
  * You can found an high level description of the effect at :
@@ -291,11 +302,12 @@ static INLINE void scale2x_16_map(scale2x_uint16* dst0, scale2x_uint16* dst1, co
  * \param dst0 First destination row, double length in pixels.
  * \param dst1 Second destination row, double length in pixels.
  */
-#define scale2x_32_map(d1,d2,s1,s2,s3,m,c) scale2x_32_def(d1,d2,s1,s2,s3,c)
 
 static INLINE void scale2x_32_def(scale2x_uint32* dst0, scale2x_uint32* dst1, const scale2x_uint32* src0, const scale2x_uint32* src1, const scale2x_uint32* src2, unsigned count)
 {
-	assert(count >= 2);
+	/* assert(count >= 2); */
+	if (count < 1)
+		return;
 
 	/* first pixel */
 	dst0[0] = src1[0];
@@ -308,6 +320,10 @@ static INLINE void scale2x_32_def(scale2x_uint32* dst0, scale2x_uint32* dst1, co
 		dst1[1] = src2[0];
 	else
 		dst1[1] = src1[0];
+
+	if (count < 2)
+		return;
+
 	++src0;
 	++src1;
 	++src2;
@@ -354,6 +370,75 @@ static INLINE void scale2x_32_def(scale2x_uint32* dst0, scale2x_uint32* dst1, co
 		dst1[0] = src1[0];
 	dst0[1] = src1[0];
 	dst1[1] = src1[0];
+}
+
+static INLINE void scale2x_32_map(scale2x_uint32* dst0, scale2x_uint32* dst1, const scale2x_uint8* src0, const scale2x_uint8* src1, const scale2x_uint8* src2, const scale2x_uint32* map, unsigned count)
+{
+	/* assert(count >= 2); */
+	if (count < 1)
+		return;
+
+	/* first pixel */
+	dst0[0] = map[src1[0]];
+	dst1[0] = map[src1[0]];
+	if (src1[1] == src0[0] && src2[0] != src0[0])
+		dst0[1] = map[src0[0]];
+	else
+		dst0[1] = map[src1[0]];
+	if (src1[1] == src2[0] && src0[0] != src2[0])
+		dst1[1] = map[src2[0]];
+	else
+		dst1[1] = map[src1[0]];
+
+	if (count < 2)
+		return;
+
+	++src0;
+	++src1;
+	++src2;
+	dst0 += 2;
+	dst1 += 2;
+
+	/* central pixels */
+	count -= 2;
+	while (count) {
+		if (src1[-1] == src0[0] && src2[0] != src0[0] && src1[1] != src0[0])
+			dst0[0] = map[src0[0]];
+		else
+			dst0[0] = map[src1[0]];
+		if (src1[1] == src0[0] && src2[0] != src0[0] && src1[-1] != src0[0])
+			dst0[1] = map[src0[0]];
+		else
+			dst0[1] = map[src1[0]];
+
+		if (src1[-1] == src2[0] && src0[0] != src2[0] && src1[1] != src2[0])
+			dst1[0] = map[src2[0]];
+		else
+			dst1[0] = map[src1[0]];
+		if (src1[1] == src2[0] && src0[0] != src2[0] && src1[-1] != src2[0])
+			dst1[1] = map[src2[0]];
+		else
+			dst1[1] = map[src1[0]];
+
+		++src0;
+		++src1;
+		++src2;
+		dst0 += 2;
+		dst1 += 2;
+		--count;
+	}
+
+	/* last pixel */
+	if (src1[-1] == src0[0] && src2[0] != src0[0])
+		dst0[0] = map[src0[0]];
+	else
+		dst0[0] = map[src1[0]];
+	if (src1[-1] == src2[0] && src0[0] != src2[0])
+		dst1[0] = map[src2[0]];
+	else
+		dst1[0] = map[src1[0]];
+	dst0[1] = map[src1[0]];
+	dst1[1] = map[src1[0]];
 }
 
 #if 0

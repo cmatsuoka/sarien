@@ -8,10 +8,12 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-/* SDL support written by Claudio Matsuoka <claudio@helllabs.org>
+/*
+ * SDL support written by Claudio Matsuoka <claudio@helllabs.org>
  */
 
-/* Sat, 31 Jul 1999 10:32:01 +0200 (MET DST)
+/*
+ * Sat, 31 Jul 1999 10:32:01 +0200 (MET DST)
  * SDL full screen mode added by Robert Bihlmeyer <robbe@orcus.priv.at>
  *
  * Wed Dec 22 15:51:22 EDT 1999
@@ -19,6 +21,10 @@
  *
  * Sun, 5 Aug 2001 14:05:04 -0700 (PDT)
  * Mouse support added by Ryan C. Gordon <icculus@clutteredmind.org>
+ */
+
+/*
+ * Scale2x Copyright (C) 2001-2002 Andrea Mazzoleni
  */
 
 #include <stdio.h>
@@ -111,7 +117,7 @@ _putpixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) {		\
 		if (SDL_LockSurface (screen) < 0)			\
 			return;						\
 	}								\
-	if (y == 0 || y >= ((GFX_HEIGHT - 1) * 2)) {			\
+	if (!opt.hires || y == 0 || y >= ((GFX_HEIGHT - 1) << 1)) {	\
 		while (w--) {						\
               		int c = mapped_color[*p];			\
                		*s++ = c; *s++ = c; *t++ = c; *t++ = c; p++;	\
@@ -155,7 +161,7 @@ _putpixels_fixratio_##d##bits_scale2 (int x, int y, int w, Uint8 *p0) {	\
 		if (SDL_LockSurface (screen) < 0)			\
 			return;						\
 	}								\
-	if (y == 0 || y >= (ASPECT_RATIO(GFX_HEIGHT - 1) * 2)) {	\
+	if (!opt.hires || y == 0 || y >= (ASPECT_RATIO(GFX_HEIGHT - 1) << 1)) {	\
 		for (p = p0; w--; p++) {				\
               		int c = mapped_color[*p];			\
                		*s++ = c; *s++ = c; *t++ = c; *t++ = c;		\
@@ -165,7 +171,7 @@ _putpixels_fixratio_##d##bits_scale2 (int x, int y, int w, Uint8 *p0) {	\
                		*u++ = c; *u++ = c;				\
 		}							\
 	} else {							\
-		p = p0;							\
+		p = p0;
 		scale2x_##d##_map(s, t, p - GFX_WIDTH, p, p + GFX_WIDTH,\
 			 mapped_color, w);				\
 		scale2x_##d##_map(t, u, p - GFX_WIDTH, p, p + GFX_WIDTH,\

@@ -8,6 +8,10 @@
  * the Free Software Foundation; see docs/COPYING for further details.
  */
 
+/*
+ * Scale2x Copyright (C) 2001-2002 Andrea Mazzoleni
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -87,6 +91,7 @@ static struct gfx_driver gfx_x11 = {
 #include "dga.c"
 #endif
 
+#include <scale2x.h>
 
 #define ASPECT_RATIO(x) ((x) * 6 / 5)
 
@@ -128,17 +133,22 @@ _putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
 
 #define _putpixels_scale2(d) static void \
 _putpixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) { \
-	register int c; if (w == 0) return; \
+	register int c, z; if (w == 0) return; \
 	if (w <= 0) return; \
 	x <<= 1; y <<= 1; \
 	x += y * (GFX_WIDTH << 1); \
-	y = x + (GFX_WIDTH << 1); \
-	while (w--) { \
-		c = rgb_palette[*p++]; \
-		putpixel_##d (ximage, x++, c); \
-		putpixel_##d (ximage, x++, c); \
-		putpixel_##d (ximage, y++, c); \
-		putpixel_##d (ximage, y++, c); \
+	z = x + (GFX_WIDTH << 1); \
+	if (!opt.hires || y == 0 || y >= ((GFX_HEIGHT - 1) << 1)) { \
+		while (w--) { \
+			c = rgb_palette[*p++]; \
+			putpixel_##d (ximage, x++, c); \
+			putpixel_##d (ximage, x++, c); \
+			putpixel_##d (ximage, z++, c); \
+			putpixel_##d (ximage, z++, c); \
+		} \
+	} else { \
+		scale2x_##d##_map((UINT##d *)ximage->data + x, (UINT##d *)ximage->data + z, \
+			p - GFX_WIDTH, p, p + GFX_WIDTH, rgb_palette, w); \
 	} \
 }
 
@@ -163,25 +173,33 @@ _putpixels_fixratio_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
 
 #define _putpixels_fixratio_scale2(d) static void \
 _putpixels_fixratio_##d##bits_scale2 (int x, int y, int w, UINT8 *p0) { \
-	register int c; int extra = 0, z; UINT8 *p; \
+	register int c, z; int extra = 0, t; UINT8 *p; \
 	if (w <= 0) return; \
 	x <<= 1; y <<= 1; \
 	if (y < ((GFX_WIDTH - 1) << 2) && ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2)) extra = w; \
 	y = ASPECT_RATIO(y); \
 	x += y * (GFX_WIDTH << 1); \
-	y = x + (GFX_WIDTH << 1); \
-	z = x + (GFX_WIDTH << 2); \
-	for (p = p0; w--; ) { \
-		c = rgb_palette[*p++]; \
-		putpixel_##d (ximage, x++, c); \
-		putpixel_##d (ximage, x++, c); \
-		putpixel_##d (ximage, y++, c); \
-		putpixel_##d (ximage, y++, c); \
-	} \
-	for (p = p0; extra--; ) { \
-		c = rgb_palette[*p++]; \
-		putpixel_##d (ximage, z++, c); \
-		putpixel_##d (ximage, z++, c); \
+	z = x + (GFX_WIDTH << 1); \
+	t = x + (GFX_WIDTH << 2); \
+	if (!opt.hires || y == 0 || y >= (ASPECT_RATIO(GFX_HEIGHT - 1) << 1)) { \
+		for (p = p0; w--; ) { \
+			c = rgb_palette[*p++]; \
+			putpixel_##d (ximage, x++, c); \
+			putpixel_##d (ximage, x++, c); \
+			putpixel_##d (ximage, z++, c); \
+			putpixel_##d (ximage, z++, c); \
+		} \
+		for (p = p0; extra--; ) { \
+			c = rgb_palette[*p++]; \
+			putpixel_##d (ximage, t++, c); \
+			putpixel_##d (ximage, t++, c); \
+		} \
+	} else { \
+		p = p0; \
+		scale2x_##d##_map((UINT##d *)ximage->data + x, (UINT##d *)ximage->data + z, \
+			p - GFX_WIDTH, p, p + GFX_WIDTH, rgb_palette, w); \
+		scale2x_##d##_map((UINT##d *)ximage->data + z, (UINT##d *)ximage->data + t, \
+			p - GFX_WIDTH, p, p + GFX_WIDTH, rgb_palette, extra); \
 	} \
 }
 
