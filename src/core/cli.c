@@ -53,7 +53,7 @@ static void help (int argc, char **argv)
 "  -g --no-gfx-optimizations\n"
 "                     Disable optimized graphic driver hacks (if available).\n"
 #ifdef USE_HIRES
-"  -H --hires {0|1}   Enable/disable experimental hi-res mode.\n"
+"  -H --hires {0|1}   Enable/disable hi-res mode.\n"
 #endif
 "  -h --help          Display this help screen.\n"
 #ifdef USE_MOUSE
