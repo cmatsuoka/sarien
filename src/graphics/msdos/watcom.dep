@@ -32,4 +32,3 @@ O = obj
 .asm.obj : .AUTODEPEND
 		@echo	Compiling $^&
         $(asm) $(aflags) $^&
-
