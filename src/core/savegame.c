@@ -90,7 +90,7 @@ int save_game (char *s, char *d)
 
 	_D ("(\"%s\", \"%s\")", s, d);
 
-	f = fopen (s, "w");
+	f = fopen (s, "wb");
 
 	/* IFF chunk sizes */
 	s_agid = strlen (game.id) + 1;
@@ -358,7 +358,7 @@ int load_game (char *s)
 	struct iff_header h;
 
 	_D ("(\"%s\")", s);
-	if ((f = fopen (s, "r")) == NULL)
+	if ((f = fopen (s, "rb")) == NULL)
 		return err_BadFileOpen;
 
 	fread (&h, 1, sizeof (struct iff_header), f);
