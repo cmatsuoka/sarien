@@ -88,7 +88,7 @@ static void	win32_new_timer		(void);
 static int	set_palette		(UINT8 *, int, int);
 
 
-static struct gfx_driver gfx_win32 = {
+struct gfx_driver gfx_win32 = {
 	init_vidmode,
 	deinit_vidmode,
 	win32_put_block,
@@ -471,25 +471,6 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 	return DefWindowProc (hwnd, nMsg, wParam, lParam);
 }
 
-
-int init_machine (int argc, char **argv)
-{
-	InitializeCriticalSection (&g_screen.cs);
-	InitializeCriticalSection (&g_key_queue.cs);
-
-	gfx = &gfx_win32;
-	scale = opt.scale;
-
-	return err_OK;
-}
-
-int deinit_machine ()
-{
-	DeleteCriticalSection(&g_key_queue.cs);
-	DeleteCriticalSection(&g_screen.cs);
-	return err_OK;
-}
-
 static int init_vidmode ()
 {
 	int i;
@@ -499,6 +480,11 @@ static int init_vidmode ()
 	fprintf (stderr,
 	"win32: Win32 DIB support by rosinha@dexter.damec.cefetpr.br\n");
 #endif
+
+	InitializeCriticalSection (&g_screen.cs);
+	InitializeCriticalSection (&g_key_queue.cs);
+
+	scale = opt.scale;
 
 	xsize = GFX_WIDTH * scale;
 	ysize = (opt.fixratio ? ASPECT_RATIO(GFX_HEIGHT) : GFX_HEIGHT) * scale;
@@ -626,6 +612,9 @@ static void INLINE process_events ()
 
 static int deinit_vidmode (void)
 {
+	DeleteCriticalSection(&g_key_queue.cs);
+	DeleteCriticalSection(&g_screen.cs);
+	
 	PostMessage (hwndMain, WM_QUIT, 0, 0);
 	DeleteObject (g_screen.screen_bmp);
 
