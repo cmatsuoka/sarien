@@ -86,7 +86,7 @@ static char g_vmu_port[2];
 
 /* Environment variable containing the path name for the users's
  * private files ($HOME in Unix, %USERPROFILE% in Win32)
- * DATADIR conflicts with ObjIdl.h in win32 SDK, renamed to DATA_DIR 
+ * DATADIR conflicts with ObjIdl.h in win32 SDK, renamed to DATA_DIR
  */
 #if defined (WIN32) || defined (__MSDOS__)
 #  define HOMEDIR "USERPROFILE"
@@ -117,6 +117,7 @@ static char g_vmu_port[2];
      typedef unsigned int	UINT32;
      typedef signed int		SINT32;
 #  endif
+   //typedef unsigned int 	Err;
 #endif
 
 #ifdef NATIVE_WIN32
