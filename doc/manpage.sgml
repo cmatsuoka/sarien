@@ -18,7 +18,7 @@
 
 <refsynopsisdiv>
   <cmdsynopsis><command>
-<application/sarien/ <optional/<parameter/-A|--amiga// <optional/<parameter/-a|--agds// <optional/<parameter/-C|--crc// <optional/<parameter/-d|--list-dictionary// <optional/<parameter/-E|--emulate-sound/ <optional/<parameter/-F|--full-screen// <replaceable/type// <optional/<parameter/-g|--no-gfx-optimizations// <optional/<parameter/-H|--hires/ <property/0|1// <optional/<parameter/-h|--help// <optional/<parameter/-L|--list-games// <optional/<parameter/-n|--no-sound// <optional/<parameter/-p|--picture-viewer// <optional/<parameter/-o|--list-objects// <optional/<parameter/-S|--scale/ <replaceable/num// <optional/<parameter/-r|--aspect-ratio/ <property/0|1// <optional/<parameter/-v|--emulate-version/ <replaceable/version// <optional/<parameter/-V|--version// <optional/<parameter/-x|--no-x-shm// <optional/<replaceable/gamedir//
+<application/sarien/ <optional/<parameter/-A|--amiga// <optional/<parameter/-a|--agds// <optional/<parameter/-C|--crc// <optional/<parameter/-d|--list-dictionary// <optional/<parameter/-E|--emulate-sound/ <optional/<parameter/-F|--full-screen// <replaceable/type// <optional/<parameter/-g|--no-gfx-optimizations// <optional/<parameter/-H|--hires/ <property/0|1// <optional/<parameter/-h|--help// <optional/<parameter/-L|--list-games// <optional/<parameter/-m|--agimouse// <optional/<parameter/-n|--no-sound// <optional/<parameter/-p|--picture-viewer// <optional/<parameter/-o|--list-objects// <optional/<parameter/-S|--scale/ <replaceable/num// <optional/<parameter/-r|--aspect-ratio/ <property/0|1// <optional/<parameter/-v|--emulate-version/ <replaceable/version// <optional/<parameter/-V|--version// <optional/<parameter/-x|--no-x-shm// <optional/<replaceable/gamedir//
   </command></cmdsynopsis>
 </refsynopsisdiv>
 
@@ -113,6 +113,15 @@
     <term/<parameter/-L, --list-games//
     <listitem><para>
       List recognized games and versions.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/-m, --agimouse//
+    <listitem><para>
+      Enable AGI Mouse 1.0 protocol emulation. Use this option only with
+      AGI Mouse games, since it interferes with normal AGI commands and
+      regular mouse operation.
     </para></listitem>
   </listentry>
 

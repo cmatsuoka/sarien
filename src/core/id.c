@@ -129,6 +129,9 @@ static UINT32 match_crc (UINT32 crc, char *path)
 					case 'a':
 						opt.agds = TRUE;
 						break;
+					case 'm':
+						opt.agimouse = TRUE;
+						break;
 					}
 				}
 				t++;

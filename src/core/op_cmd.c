@@ -144,7 +144,6 @@ cmd(log)		{ /* do nothing */ }
 cmd(trace_on)		{ /* do nothing */ }
 cmd(trace_info)		{ /* do nothing */ }
 cmd(show_mem)		{ message_box ("Enough memory"); }
-cmd(toggle_monitor)	{ /* do nothing */; }
 cmd(init_joy)		{ /* do nothing */; }
 cmd(script_size)	{ report ("script.size(%d)\n", p0); }
 cmd(cancel_line)	{ report ("cancel.line\n"); }
@@ -699,6 +698,14 @@ cmd(clear_text_rect) {
 
 	draw_rectangle (x1, y1, x2, y2, c);
 	flush_block (x1, y1, x2, y2);
+}
+
+cmd(toggle_monitor)
+{
+	opt.hires = !opt.hires;
+	erase_both();
+	show_pic ();
+	blit_both ();
 }
 
 cmd(echo_line) {

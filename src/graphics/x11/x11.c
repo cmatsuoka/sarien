@@ -280,10 +280,14 @@ static void process_events ()
 			key = event.xbutton.button == Button1 ?
 				BUTTON_LEFT : BUTTON_RIGHT;
 			mouse.button = TRUE;
-			/* fall through */
-		case MotionNotify:
 			mouse.x = event.xbutton.x / opt.scale;
 			mouse.y = event.xbutton.y / opt.scale;
+			if (opt.fixratio)
+				mouse.y = mouse.y * 5 / 6;
+			break;
+		case MotionNotify:
+			mouse.x = event.xmotion.x / opt.scale;
+			mouse.y = event.xmotion.y / opt.scale;
 			if (opt.fixratio)
 				mouse.y = mouse.y * 5 / 6;
 			break;
@@ -567,7 +571,7 @@ static int init_vidmode ()
 	attribute_mask = CWEventMask;
 	attributes.event_mask |= ExposureMask | KeyPressMask | KeyReleaseMask;
 	attributes.event_mask |= ButtonPressMask | ButtonReleaseMask |
-		ButtonMotionMask;
+		ButtonMotionMask | PointerMotionMask;
 
 	window = XCreateWindow (
 		display, root, 0, 0, GFX_WIDTH * scale,

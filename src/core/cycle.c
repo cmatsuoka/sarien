@@ -194,6 +194,14 @@ int main_cycle ()
 
 	key = do_poll_keyboard ();
 
+	/* In AGI Mouse emulation mode we must update the mouse-related
+	 * vars in every interpreter cycle.
+	 */
+	if (opt.agimouse) {
+		game.vars[28] = mouse.x / 2;
+		game.vars[29] = mouse.y;
+	}
+
 #ifdef USE_CONSOLE
 	if (key == KEY_PRIORITY) {
 		erase_both ();
@@ -272,6 +280,9 @@ int run_game ()
 	game.clock_enabled = TRUE;
 	game.input_mode = INPUT_NONE;
 	game.line_user_input = 22;
+
+	if (opt.agimouse)
+		report ("Using AGI Mouse 1.0 protocol\n");
 
 	report ("Running AGI script.\n");
 

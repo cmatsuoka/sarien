@@ -374,6 +374,7 @@ int menu_keyhandler (int key)
 		}
 	} else if (button_used) {
 		/* Button released */
+		button_used = 0;
 
 		_D (_D_WARN "button released!");
 

@@ -261,7 +261,7 @@ int parse_cli (int argc, char **argv)
 #endif
 #ifndef __MSDOS__
 		case 'r':
-			opt.fixratio = TRUE;
+			opt.fixratio = strtoul (optarg, NULL, 0);
 			break;
 		case 'S':
 			opt.scale = strtoul (optarg, NULL, 0);

@@ -25,9 +25,10 @@ Revision History
 	- added debug info on status line (activated with key F11)
 	- implemented click-to-walk mouse interface
 	- menu system rewritten to allow mouse operation
-	- added experimental hi-res picture mode
+	- added experimental hi-res picture mode (switch with toggle.monitor)
 	- added mouse support in the picture viewer
 	- added SGML man page (use docbook-to-man to create the roff file)
+	- added AGI Mouse 1.0 protocol emulation
 
 0.6.1 (20010722)
 	- fixed QNX build and Photon driver
