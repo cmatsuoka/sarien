@@ -41,6 +41,9 @@ cygwin*)
 	AC_CHECK_HEADERS(wingdi.h)
 	with_win32="yes"
 	;;
+palmos*)
+	CFLAGS="$CFLAGS -DPALMOS"
+	;;
 esac
 
 
@@ -232,6 +235,7 @@ AC_MSG_RESULT([----------------------------------------------------------])
 AC_MSG_RESULT([using console driver: ${CONSOLE_DRIVER}])
 AC_MSG_RESULT([using sound driver: ${SOUND_DRIVER}])
 AC_MSG_RESULT([using file globbing method: ${FILEIO_DRIVER}])
+AC_MSG_RESULT([cflags: ${CFLAGS}])
 AC_MSG_RESULT([----------------------------------------------------------])
 
 AC_OUTPUT(Rules)

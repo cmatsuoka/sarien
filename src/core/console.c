@@ -401,8 +401,8 @@ static void build_console_lines (int n)
 {
 	int i, j, y1;
 
-	memset (layer2_data + (200 - n * 10) * 320, 0,
-		n * 10 * 320);
+	memset (layer2_data + (200 - n * 10) * GFX_WIDTH, 0,
+		n * 10 * GFX_WIDTH);
 
 	for (j = CONSOLE_LINES_ONSCREEN - n; j < CONSOLE_LINES_ONSCREEN; j++) {
 		i = console.first_line + j;
@@ -423,7 +423,7 @@ static void build_console_lines (int n)
 	 * keeping a control flag in redraw/release to not do the
 	 * actions twice, but I don't want to do that -- not yet.
 	 */
-	flush_block (0, y1, 319, console.y);
+	flush_block (0, y1, GFX_WIDTH - 1, console.y);
 }
 
 
@@ -601,7 +601,7 @@ void console_cycle ()
 			y1 = console.y;
 			y2 = old_y;
 		} 
-		flush_block (0, 0, 319, y2);
+		flush_block (0, 0, GFX_WIDTH - 1, y2);
 		old_y = console.y;
 	}
 

@@ -44,8 +44,8 @@ UINT8	priority_data[_WIDTH * _HEIGHT];
 UINT8	control_data[_WIDTH * _HEIGHT];
 UINT8	xdata_data[_WIDTH * _HEIGHT];
 
-UINT8	layer1_data[320 * 200];
-UINT8	layer2_data[320 * 200];
+UINT8	layer1_data[GFX_WIDTH * GFX_HEIGHT];
+UINT8	layer2_data[GFX_WIDTH * GFX_HEIGHT];
 
 UINT8	pic_clear_flag = TRUE;
 

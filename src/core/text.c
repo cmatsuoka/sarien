@@ -48,7 +48,7 @@ static void print_text2 (int l, char *msg, int foff, int xoff, int yoff,
 		y1 = 0;		/* Check this */
 	} else {
 		maxx  = 0;
-		minx  = 320;
+		minx  = GFX_WIDTH;
 		ofoff = foff;
 		for (m = msg, x1 = y1 = 0; *m; m++) {
 			if (*m >= 0x20 || *m == 1 || *m == 2 || *m == 3) {
@@ -83,6 +83,7 @@ static void print_text2 (int l, char *msg, int foff, int xoff, int yoff,
 	maxx <<= 3;
 	minx <<= 3;
 
+	/* FIXME: move to gfx_base.c and create wrapper function */
 	if (update)
 		put_block (foff+xoff+minx, yoff, ofoff+xoff+maxx+7, yoff+y1*8+9);
 }

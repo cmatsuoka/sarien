@@ -50,7 +50,7 @@ UINT8		txt_char;		/* input character */
 
 
 /* for the blitter routine */
-static int x_min = 320, x_max = 0, y_min = 200, y_max = 0;
+static int x_min = GFX_WIDTH, x_max = 0, y_min = GFX_HEIGHT, y_max = 0;
  
 
 
@@ -67,7 +67,7 @@ static void INLINE put_pixel2 (int x, int y, int c)
 		return;
 	}
 
-	if ((k = layer2_data[(y + 199 - console.y) * 320 + x]))
+	if ((k = layer2_data[(y + 199 - console.y) * GFX_WIDTH + x]))
 		c = k;
 	else
 		c += 16;	/* transparency */
@@ -82,7 +82,7 @@ static void INLINE put_pixel2 (int x, int y, int c)
  */
 void put_pixel (int x, int y, int c)
 {
-	layer1_data[y * 320 + x] = c;
+	layer1_data[y * GFX_WIDTH + x] = c;
 	put_pixel2 (x, y, c);
 }
 
@@ -96,7 +96,7 @@ void flush_block (int x1, int y1, int x2, int y2)
 
 	for (y = y1; y <= y2; y++)
 		for (x = x1; x <= x2; x++)
-			put_pixel2 (x, y, layer1_data[y * 320 + x]);
+			put_pixel2 (x, y, layer1_data[y * GFX_WIDTH + x]);
 
 	gfx->put_block (x1, y1, x2, y2);
 }
@@ -104,8 +104,8 @@ void flush_block (int x1, int y1, int x2, int y2)
 
 void clear_buffer ()
 {
-	memset (layer1_data, 0, 320 * 200);
-	flush_block (0, 0, 319, 199);
+	memset (layer1_data, 0, GFX_WIDTH * GFX_HEIGHT);
+	flush_block (0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
 }
 
 
@@ -115,24 +115,24 @@ void clear_buffer ()
  * instead
  */
 
-static UINT8 back_buffer[320 * 200];
+static UINT8 back_buffer[GFX_WIDTH * GFX_HEIGHT];
 
 /* Kludge for nonblocking windows */
 static int k_x1, k_y1, k_x2, k_y2;
 
 void _save_screen ()
 {
-	memcpy (back_buffer, layer1_data, 320 * 200);
+	memcpy (back_buffer, layer1_data, GFX_WIDTH * GFX_HEIGHT);
 }
 
 void _restore_screen ()
 {
-	memcpy (layer1_data, back_buffer, 320 * 200);
+	memcpy (layer1_data, back_buffer, GFX_WIDTH * GFX_HEIGHT);
 }
 
 void _flush_screen ()
 {
-	flush_block (0, 0, 319, 199);
+	flush_block (0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
 }
 
 void _restore_screen_area ()	/* Yuck! */
@@ -143,8 +143,8 @@ void _restore_screen_area ()	/* Yuck! */
 		k_x1, k_y1, k_x2, k_y2);
 
 	for (i = k_y1; i <= k_y2; i++)
-		memcpy (&layer1_data[320 * i + k_x1],
-			&back_buffer[320 * i + k_x1],
+		memcpy (&layer1_data[GFX_WIDTH * i + k_x1],
+			&back_buffer[GFX_WIDTH * i + k_x1],
 			k_x2 - k_x1 + 1);
 }
 
@@ -161,20 +161,21 @@ void shake_screen (int n)
 {
 #define MAG 3
 	int i;
-	UINT8 b[320 * 200], c[320 * 200];
+	UINT8 b[GFX_WIDTH * GFX_HEIGHT], c[GFX_WIDTH * GFX_HEIGHT];
 	
-	memset (c, 0, 320 * 200);
-	memcpy (b, layer1_data, 320 * 200);
+	memset (c, 0, GFX_WIDTH * GFX_HEIGHT);
+	memcpy (b, layer1_data, GFX_WIDTH * GFX_HEIGHT);
 	for (i = 0; i < (200 - MAG); i++)
-		memcpy (&c[320 * (i + MAG) + MAG], &b[320 * i], 320 - MAG);
+		memcpy (&c[GFX_WIDTH * (i + MAG) + MAG],
+			&b[GFX_WIDTH * i], GFX_WIDTH - MAG);
 
 	for (i = 0; i < (2 * n); i++) {
 		main_cycle (TRUE);
-		memcpy (layer1_data, c, 320 * 200);
-		flush_block (0, 0, 319, 199);
+		memcpy (layer1_data, c, GFX_WIDTH * GFX_HEIGHT);
+		flush_block (0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
 		main_cycle (TRUE);
-		memcpy (layer1_data, b, 320 * 200);
-		flush_block (0, 0, 319, 199);
+		memcpy (layer1_data, b, GFX_WIDTH * GFX_HEIGHT);
+		flush_block (0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
 	}
 #undef MAG
 }
@@ -234,7 +235,7 @@ void put_text_character (int l, int x, int y, int c, int fg, int bg)
 			yy = y + y1;
 			cc = (*p & (1 << (7 - x1))) ? fg : bg;
 			if (l) {
-				layer2_data[yy * 320 + xx] = cc;
+				layer2_data[yy * GFX_WIDTH + xx] = cc;
 			} else {
 				put_pixel (xx, yy, cc);
 			}
@@ -249,14 +250,14 @@ void draw_box (int x1, int y1, int x2, int y2, int colour1, int colour2, int f, 
 {
 	int x, y;
 
-	if (x1 > 319)
-		x1 = 319;
-	if (y1 > 199)
-		y1 = 199;
-	if (x2 > 319)
-		x2 = 319;
-	if (y2 > 199)
-		y2 = 199;
+	if (x1 >= GFX_WIDTH)
+		x1 = GFX_WIDTH - 1;
+	if (y1 >= GFX_HEIGHT)
+		y1 = GFX_HEIGHT - 1;
+	if (x2 >= GFX_WIDTH)
+		x2 = GFX_WIDTH - 1;
+	if (y2 >= GFX_HEIGHT)
+		y2 = GFX_HEIGHT - 1;
 
 	k_x1 = x1; k_y1 = y1;	/* Yuck! Someone fix this */
 	k_x2 = x2; k_y2 = y2;
@@ -291,9 +292,9 @@ void do_blit ()
 	}
 	
 	/* reset block variables */
-	x_min = 320;
+	x_min = GFX_WIDTH;
 	x_max = 0;
-	y_min = 200;
+	y_min = GFX_HEIGHT;
 	y_max = 0;
 }
 
@@ -309,7 +310,7 @@ void print_character (int x, int y, char c, int fg, int bg)
 /* put_screen is a lower level function, not console-aware */
 void put_screen ()
 {
-	gfx->put_block (0, 0, 319, 199);
+	gfx->put_block (0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
 }
 
 

@@ -15,8 +15,13 @@
 extern "C"{
 #endif
 
+#ifdef PALMOS
+#define GFX_WIDTH	160
+#define GFX_HEIGHT	160
+#else
 #define GFX_WIDTH	320
 #define GFX_HEIGHT	200
+#endif
 
 struct gfx_driver {
 	int	(*init_video_mode)(void);
