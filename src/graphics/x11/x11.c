@@ -124,7 +124,7 @@ static INLINE void putpixel_8 (XImage *img, int idx, int p)
 
 #define _putpixels_scale1(d) static void \
 _putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
-	if (w == 0) return; \
+	if (w <= 0) return; \
 	x += y * GFX_WIDTH; \
 	while (w--) { putpixel_##d (ximage, x++, rgb_palette[*p++]); } \
 }
@@ -132,6 +132,7 @@ _putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
 #define _putpixels_scale2(d) static void \
 _putpixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) { \
 	register int c; if (w == 0) return; \
+	if (w <= 0) return; \
 	x <<= 1; y <<= 1; \
 	x += y * (GFX_WIDTH << 1); \
 	y = x + (GFX_WIDTH << 1); \
@@ -157,6 +158,7 @@ _putpixels_scale2(32)
 
 #define _putpixels_fixratio_scale1(d) static void \
 _putpixels_fixratio_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
+	if (w <= 0) return; \
 	if (y > 0 && ASPECT_RATIO (y) - 1 != ASPECT_RATIO (y - 1)) \
 		_putpixels_##d##bits_scale1 (x, ASPECT_RATIO(y) - 1, w, p);\
 	_putpixels_##d##bits_scale1 (x, ASPECT_RATIO(y), w, p); \
@@ -165,7 +167,7 @@ _putpixels_fixratio_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
 #define _putpixels_fixratio_scale2(d) static void \
 _putpixels_fixratio_##d##bits_scale2 (int x, int y, int w, UINT8 *p0) { \
 	register int c; int extra = 0, z; UINT8 *p; \
-	if (w == 0) return; \
+	if (w <= 0) return; \
 	x <<= 1; y <<= 1; \
 	if (y < ((GFX_WIDTH - 1) << 2) && ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2)) extra = w; \
 	y = ASPECT_RATIO(y); \

@@ -46,16 +46,29 @@ static void print_text2 (int l, char *msg, int foff, int xoff, int yoff, int len
 		maxx  = 0;
 		minx  = GFX_WIDTH;
 		ofoff = foff;
+
 		for (m = (unsigned char*)msg, x1 = y1 = 0; *m; m++) {
+
 			if (*m >= 0x20 || *m == 1 || *m == 2 || *m == 3) {
 				/* FIXME */
+				int ypos;
 
-				if((x1!=(len-1) || x1==39) && ((y1*CHAR_LINES)+yoff <= (GFX_HEIGHT - CHAR_LINES))) {
-					put_text_character (l, (x1 * CHAR_COLS) + xoff + foff,
-						(y1 * CHAR_LINES) + yoff, *m, fg, bg);
-					if (x1>maxx)
+				ypos = (y1 * CHAR_LINES) + yoff;
+
+				if((x1!=(len-1) || x1==39) && (ypos <= (GFX_HEIGHT - CHAR_LINES))) {
+					int xpos;
+
+					xpos = (x1 * CHAR_COLS) + xoff + foff;
+
+					if (xpos >= GFX_WIDTH)
+						continue;
+
+					put_text_character (l, xpos, ypos,
+						*m, fg, bg);
+
+					if (x1 > maxx)
 						maxx=x1;
-					if (x1<minx)
+					if (x1 < minx)
 						minx=x1;
 				}
 
