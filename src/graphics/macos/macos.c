@@ -19,6 +19,7 @@
 #include <Dialogs.h>
 #include <ToolUtils.h>
 #include <Processes.h>
+#include <Timer.h>
 #include "sarien.h"
 #include "graphics.h"
 
@@ -133,36 +134,42 @@ static void process_events ()
 				EndUpdate((WindowPtr) myEvent.message);
 			}
 			break;
-							
 		case keyDown:
 		case autoKey:	/* key pressed once or held down to repeat */
 			if (myWindow == FrontWindow())
 				theChar = (myEvent.message & charCodeMask);
 			break;
-
 		}
 	}
 }
 
 
+static unsigned long delta ()
+{ 
+	unsigned long dt;
+	UnsignedWide a;
+	static UnsignedWide b;
+ 
+	Microseconds (&a);
+
+	if (a.hi > b.hi) {
+		dt = (0xffffffff - (b.lo - a.lo)) / 1000;
+	} else {
+		dt = (a.lo - b.lo) / 1000;
+	}
+ 
+	b.lo = a.lo;
+	b.hi = a.hi;
+
+	return dt;
+}
+
+
 static void macos_timer ()
 {
-#if 0
-	struct timeval tv;
-	struct timezone tz;
-	static double msec = 0.0;
-	double m;
-	
-	gettimeofday (&tv, &tz);
-	m = 1000.0 * tv.tv_sec + tv.tv_usec / 1000.0;
-
-	while (m - msec < 42) {
-		usleep (5000);
-		gettimeofday (&tv, &tz);
-		m = 1000.0 * tv.tv_sec + tv.tv_usec / 1000.0;
+	while (delta () < 42) {
+		/* usleep (5000); */
 	}
-	msec = m; 
-#endif
 
 	process_events ();
 }
@@ -195,18 +202,20 @@ static int macos_init_vidmode ()
 	}
 
 	windRect = qd.screenBits.bounds;
-	InsetRect (&windRect, 50, 50);
-	myWindow = NewCWindow(nil, &windRect, "Sarien", true, documentProc, 
+	InsetRect (&windRect, 10, 10);
+	myWindow = NewCWindow (nil, &windRect, "Sarien", true, documentProc, 
 		(WindowPtr) -1, false, 0);
 		
 	SetPort (myWindow);	/* set window to current graf port */
+
+	return err_OK;
 }
 
 
 static int macos_deinit_vidmode ()
 {
 	DisposeWindow (myWindow);
-	return 0;
+	return err_OK;
 }
 
 
