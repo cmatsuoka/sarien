@@ -1,6 +1,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include "orat.h"
 #include "test.h"
 
 
@@ -45,9 +46,10 @@ static int load_pic (char *p)
 }
 
 
-static int pic (char *res, char *raw)
+static test_result pic (char *res, char *raw)
 {
-	int i, result = TEST_OK;
+	int i;
+	test_result result = TEST_OK;
 
 	if (load_pic (res) == TEST_FAIL)
 		return TEST_FAIL;
@@ -66,7 +68,7 @@ static int pic (char *res, char *raw)
 }
 
 
-TEST_SUITE(test_picture)
+TEST_MODULE(test_picture)
 {
 	TEST("picture #1 (test pic)",
 		pic("data/picture1.res", "data/picture1.raw"));

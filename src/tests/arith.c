@@ -1,7 +1,8 @@
+#include "orat.h"
 #include "test.h"
 
 
-static int c (int cmd, char *test, char *res, int expected, UINT8 *p)
+static test_result c (int cmd, char *test, char *res, int expected, UINT8 *p)
 {
 	char result[MAX_LEN];
 	int numres;
@@ -22,7 +23,7 @@ static int c (int cmd, char *test, char *res, int expected, UINT8 *p)
 	return match ? TEST_OK : TEST_FAIL;
 }
 
-TEST_SUITE(test_arith)
+TEST_MODULE(test_arith)
 {
 	UINT8 p[10];
 

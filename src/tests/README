@@ -1,0 +1,48 @@
+
+ORAT
+----
+ORAT stands for "Ordinary Regression Tests" with an "A" thrown in
+because ORAT sounds much better than ORT. It's a simple and portable
+framework used for Sarien regression tests and is expected to run in every
+platform where Sarien runs.
+
+ORAT is organized on "test suites" comprised of "test modules" which
+contains the actual tests.
+
+
+Creating a test suite
+---------------------
+
+
+Writing test modules
+--------------------
+A test module is a collection of tests grouped by category or functionality
+such as arithmetic commands, drawing or resource decoding. The module main
+function is declared as TEST_MODULE(module_name) and contains declarations
+in the form TEST(name, result). "name" is a free-form string and "result"
+is an enumeration test_result, which contains TEST_OK, TEST_FAIL and
+TEST_SKIP. 
+
+A simple test module:
+
+	#include "test.h"
+
+	TEST_MODULE(example)
+	{
+		TEST("name", TEST_OK));
+	}
+
+Test modules are registered in a suite using the test_register_module
+function.
+
+
+
+Executing tests
+---------------
+
+
+
+Summarizing
+-----------
+
+

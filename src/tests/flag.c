@@ -1,7 +1,8 @@
+#include "orat.h"
 #include "test.h"
 
 
-static int c (int cmd, int expected)
+static test_result c (int cmd, int expected)
 {
 	int i;
 	UINT8 p[10];
@@ -21,7 +22,7 @@ static int c (int cmd, int expected)
 	return TEST_OK;
 }
 
-static int d (int cmd, int expected)
+static test_result d (int cmd, int expected)
 {
 	int i;
 	UINT8 p[10];
@@ -42,7 +43,7 @@ static int d (int cmd, int expected)
 	return TEST_OK;
 }
 
-TEST_SUITE(test_flag)
+TEST_MODULE(test_flag)
 {
 	TEST ("set", c(12, TRUE));
 	TEST ("reset", c(13, FALSE));

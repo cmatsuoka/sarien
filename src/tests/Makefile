@@ -3,15 +3,14 @@
 XCFLAGS	= -I../include
 XLDFLAGS=
 OBJS	= format.o arith.o flag.o picture.o
-DFILES	= Makefile $(TESTS:.=.c)
+DFILES	= Makefile $(TESTS:.=.c) orat.c orat.h test.c test.h
 CFILES	=
 DDIRS	= data
 XLIBS	= -L../../lib -lagi -lsarien
-LIB	=
 
 all: test
 
-test: test.o $(OBJS)
+test: test.o orat.o $(OBJS)
 	$(LD) $(LDFLAGS) $(XLDFLAGS) $+ $(XLIBS) $(X11LIBS) $(LIBS)
 
 include ../../Version

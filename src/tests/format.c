@@ -1,7 +1,8 @@
+#include "orat.h"
 #include "test.h"
 
 
-static int c (char *test, char *expected)
+static test_result c (char *test, char *expected)
 {
 	char result[MAX_LEN];
 	int match;
@@ -16,7 +17,7 @@ static int c (char *test, char *expected)
 }
 
 
-TEST_SUITE(test_format)
+TEST_MODULE(test_format)
 {
 	setvar (2,2);
 	setvar (42,42);
@@ -30,11 +31,11 @@ TEST_SUITE(test_format)
 	/*
 	 * load template game resources
 	 */
-	if (test_load_game ("template")) {
-		test_say ("look at this test");
+	if (st_load_game ("template")) {
+		st_say ("look at this test");
 		strcpy (game.strings[1], "a 100% %01 string test");
 	} else {
-		test_disable (suite, "needs template game");
+		test_disable (module, "needs template game");
 	}
 
 	setvar (13,13);
