@@ -308,7 +308,11 @@ static void get_view (int size, UINT8 *b)
 	v->parm3		= read_num (b);
 	v->parm4		= read_num (b);
 
+#if 0
+	/* commented to prevent crash with uninitalized entries! */
 	set_view (v, v->current_view);
+	set_loop (v, v->current_loop);
+#endif
 }
 
 

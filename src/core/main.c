@@ -101,10 +101,10 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 
 	/* Execute the game */
     	do {
-		if (game.state < STATE_RUNNING) {
-    			ec = agi_init ();
-			game.state = STATE_RUNNING;
-		}
+		_D(_D_WARN "game loop");
+
+    		ec = agi_init ();
+		game.state = STATE_RUNNING;
 
 		if (ec == err_OK) {
    			/* setup machine specific AGI flags, etc */
@@ -119,8 +119,10 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
     		}
 
     		/* deinit our resources */
+		game.state = STATE_LOADED;
     		agi_deinit ();
-    	} while (ec == err_RestartGame || game.state == STATE_RUNNING);
+
+    	} while (ec == err_RestartGame);
 
 	deinit_sound ();
 	deinit_video ();

@@ -566,7 +566,7 @@ cmd(restart_game) {
 		"Press ESC to continue this game.")) {
 	case 0x0a:
 	case 0x0d:
-		game.quit_prog_now = 0xFF;
+		game.quit_prog_now = 0xff;
 		setflag (F_restart_game, TRUE);
 		break;
 	default:
