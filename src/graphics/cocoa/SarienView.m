@@ -16,6 +16,9 @@
 #include "keyboard.h"
 #include "cocoa.h"
 
+#if !defined(__BIG_ENDIAN__) && !defined(__LITTLE_ENDIAN__)
+#error You must compile with either __LITTLE_ENDIAN__ or __BIG_ENDIAN__ flag.
+#endif
 
 @implementation SarienView
 
@@ -36,12 +39,10 @@
     
 	c = screen;
 	for (i = 0; i < (GFX_WIDTH * GFX_HEIGHT); i++) {
-#if defined(__BIG_ENDIAN__)
+#ifdef __BIG_ENDIAN__
 		*c++ = 0xff000000; // ARGB -> 100% Opaque pixel entirely black.
-#elif defined(__LITTLE_ENDIAN__)
-		*c++ = 0x000000ff; // BGRA -> 100% Opaque pixel entirely black.
 #else
-#error You must compile with either __LITTLE_ENDIAN__ or __BIG_ENDIAN__ flag.
+		*c++ = 0x000000ff; // BGRA -> 100% Opaque pixel entirely black.
 #endif
 	}
     
@@ -194,7 +195,7 @@
 	key_queue_start %= KEY_QUEUE_SIZE;
 	[mutex unlock];
 		
-	/* FIXME: check NSAlternateKeyMask to handle Alt+key */
+	/* FIXME: use NSAlternateKeyMask/NSControlKeyMask to handle modifiers */
 
 	switch (k) {
 		case NSUpArrowFunctionKey:	return KEY_UP;
