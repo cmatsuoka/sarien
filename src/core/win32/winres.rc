@@ -8,14 +8,14 @@ ICON_MAIN ICON "sarien.ico"
 
 MENU_MAIN MENU
 BEGIN
-	POPUP "File"
+	POPUP "&File"
 	BEGIN
 		MENUITEM "&Open...", ITEM_FILE_OPEN
 		MENUITEM SEPARATOR
 		MENUITEM "E&xit", ITEM_FILE_EXIT
 	END
 
-	POPUP "Options"
+	POPUP "&Options"
 	BEGIN
 		POPUP "Window &size"
 		BEGIN
@@ -43,9 +43,9 @@ BEGIN
 		END
 	END
 
-	POPUP "Help"
+	POPUP "&Help"
 	BEGIN
-		MENUITEM "A&bout Sarien...", ITEM_HELP_ABOUT
+		MENUITEM "&About Sarien...", ITEM_HELP_ABOUT
 	END
 END
 
@@ -55,22 +55,19 @@ STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About Sarien"
 FONT 8, "Helv"
 BEGIN
-	CTEXT "\
-Sarien - A Sierra AGI Resource Interpreter Engine\r\n\
-Version 0.8.0 (Sep 2002)\r\n\
-\r\n\
-Written by Stuart George, Lance Ewing, Felipe Rosinha, \
+	CTEXT "Sarien - A Sierra AGI Resource Interpreter Engine\r\n\
+Version 0.8.0 (Sep 2002)", -1, 5, 5, 240, 20
+
+    CTEXT "Written by Stuart George, Lance Ewing, Felipe Rosinha, \
 Claudio Matsuoka, Igor Nesterov, Vasyl Tsvirkunov and Thomas Akesson. \
-See the AUTHORS file for a complete list of contributors.\r\n\
-\r\n\
-Win32 port written by Felipe Rosinha. Fixes and improvements by \
+See the AUTHORS file for a complete list of contributors.",-1, 5, 25, 240, 55
+    CTEXT "Win32 port written by Felipe Rosinha. Fixes and improvements by \
 Igor Nesterov, Ryan Gordon, Matt Hargett, Ian Hanschen, Michel Montague, \
-Justin the Almighty and Claudio Matsuoka.\r\n\
-\r\n\
-This program is free software, you can redistribute and/or modify it \
+Justin the Almighty and Claudio Matsuoka.", -1, 5, 60, 240, 90
+    CTEXT "This program is free software, you can redistribute and/or modify it \
 under the terms of the GNU General Public License, version 2 or later, \
 as published by the Free Software Foundation.",
-		-1, 5, 5, 240, 120
+		-1, 5, 95, 240, 125
 
 	DEFPUSHBUTTON "&OK", IDOK, 100, 130, 50, 14
 END
