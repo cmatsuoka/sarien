@@ -70,7 +70,7 @@ enum {
 	F_joy_sensitivity,
 	F_sound_on,
 	F_debugger_on,			/* 10 */
-	F_logic_zeron_firsttime,
+	F_logic_zero_firsttime,
 	F_restore_just_ran,
 	F_status_selects_items,
 	F_menus_work,			/* 14 */

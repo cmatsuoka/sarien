@@ -231,10 +231,9 @@ int run_game2 ()
 
 	_D (_D_WARN "initializing...");
 	stop_sound ();
-	//clear_screen ();
 
-	//setflag(F_logic_zeron_firsttime, TRUE);
-	//setflag (F_new_room_exec, TRUE);
+	setflag (F_logic_zero_firsttime, TRUE);	/* not in 2.917 */
+	setflag (F_new_room_exec, TRUE);	/* needed for MUMG and SQ2! */
 	setflag (F_restart_game, FALSE);
 	setflag (F_sound_on, TRUE);		/* enable sound */
 	setvar (V_time_delay, 2);		/* "normal" speed */
@@ -275,7 +274,6 @@ int run_game2 ()
 	} while (game.quit_prog_now == 0);
 
 	stop_sound ();
-	//clear_screen ();
 
 	return ec;
 }

@@ -103,7 +103,7 @@ void print_text (char *msg, int f, int x, int y, int len, int fg, int bg)
 	x *= CHAR_COLS;
 	y *= CHAR_LINES;
 
-	print_text2 (0, msg, f, x, y, len, fg, bg);
+	print_text2 (0, agi_sprintf (msg, 0), f, x, y, len, fg, bg);
 }
 
 
@@ -292,7 +292,7 @@ void print_status (char *message, ...)
 
 	va_end (args);
 
-        print_text (agi_sprintf (x, 0), 0, game.line_status, 0, 40,
+        print_text (x, 0, game.line_status, 0, 40,
 		STATUS_FG, STATUS_BG);
 	flush_lines (game.line_status, game.line_status);
 }

@@ -87,7 +87,7 @@ cmd(set_upper_left)	{ /* do nothing (AGI 2.917) */ }
 cmd(start_update)	{ start_update (&vt); }
 cmd(stop_update)	{ stop_update (&vt); }
 cmd(cur_view)		{ _v[p1] = vt.current_view; }
-cmd(cur_cel)		{ _v[p1] = vt.current_cel; }
+cmd(cur_cel)		{ _v[p1] = vt.current_cel; _D ("v%d=%d", p1, _v[p1]); }
 cmd(last_cel)		{ _v[p1] = vt.loop_data->num_cels - 1; }
 cmd(set_cel)		{ set_cel (&vt, p1); vt.flags &= ~DONTUPDATE; }
 cmd(set_cel_v)		{ set_cel (&vt, _v[p1]); vt.flags &= ~DONTUPDATE; }
