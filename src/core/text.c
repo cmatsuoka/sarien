@@ -297,48 +297,35 @@ int message_box (char *s)
  */
 int selection_box (char *m, char **b)
 {
-	erase_both ();
-	blit_textbox (m, -1, -1, -1);
-
-	return selection_buttons (b, NULL, NULL);
-}
-
-
-int selection_buttons (char **b, int *xx, int *yy)
-{
 	int x, y, i, s;
 	int key, active = 0;
 	int rc = -1;
-	int bx[20], by[20];
+	int bx[5], by[5];
+
+	erase_both ();
+	blit_textbox (m, -1, -1, -1);
 
 	x = game.window.x1 + 5 * CHAR_COLS / 2;
 	y = game.window.y2 - 5 * CHAR_LINES / 2;
 	s = game.window.x2 - game.window.x1 + 1 - 5 * CHAR_COLS;
 	_D ("s = %d", s);
 
-	if (xx == NULL) {
-		/* Automatically position buttons */
-		for (i = 0; b[i]; i++) {
-			s -= CHAR_COLS * strlen (b[i]);
-		}
+	/* Automatically position buttons */
+	for (i = 0; b[i]; i++) {
+		s -= CHAR_COLS * strlen (b[i]);
+	}
 	
-		if (i > 1) {
-			_D ("s / %d = %d", i - 1, s / (i - 1));
-			s /= (i - 1);
-		} else {
-			x += s / 2;
-		}
-	
-		for (i = 0; b[i]; i++) {
-			bx[i] = x;
-			by[i] = y;
-			x += CHAR_COLS * strlen (b[i]) + s;
-		}
+	if (i > 1) {
+		_D ("s / %d = %d", i - 1, s / (i - 1));
+		s /= (i - 1);
 	} else {
-		for (i = 0; b[i]; i++) {
-			bx[i] = xx[i];
-			by[i] = yy[i];
-		}
+		x += s / 2;
+	}
+	
+	for (i = 0; b[i]; i++) {
+		bx[i] = x;
+		by[i] = y;
+		x += CHAR_COLS * strlen (b[i]) + s;
 	}
 
 	blit_both ();

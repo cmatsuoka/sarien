@@ -34,6 +34,7 @@
 #include "sprite.h"
 #include "text.h"
 #include "savegame.h"
+#include "keyboard.h"
 
 #if defined(__DICE__) || defined(WIN32)
 #  define MKDIR(a,b) mkdir(a)
@@ -551,26 +552,74 @@ int load_game(char* s)
 	return err_OK;
 }
 
+#define NUM_SLOTS 12
+
+static int select_slot ()
+{
+	int key, active = 0;
+	int rc = -1;
+
+	while (42) {
+		poll_timer ();		/* msdos driver -> does nothing */
+		key = do_poll_keyboard ();
+		if (!console_keyhandler (key)) {
+			switch (key) {
+			case KEY_ENTER:
+				rc = active;
+				goto press;
+			case KEY_ESCAPE:
+				rc = -1;
+				goto getout;
+#ifdef USE_MOUSE
+			case BUTTON_LEFT:
+				break;
+#endif
+			case KEY_DOWN:
+				active++;
+				active %= NUM_SLOTS;
+				break;
+			case KEY_UP:
+				active--;
+				active %= NUM_SLOTS;
+				break;
+			}
+		}
+		console_cycle ();
+	}
+
+press:
+	_D (_D_WARN "Button pressed: %d", rc);
+
+getout:
+	close_window ();
+
+	return rc;
+}
+
 int savegame_dialog ()
 {
 	char home[MAX_PATH], path[MAX_PATH];
 	char *desc;
+	char *buttons[] = { "Do as I say!", "Cancel", NULL }; 
 	int rc, slot = 0;
-	char *buttons[] = { "Save", "Cancel", NULL };
-	int m = 4 * CHAR_COLS;	/* box margin */
+	int m = 3 * CHAR_COLS;	/* box margin */
 
 	if (get_app_dir (home, MAX_PATH) < 0) {
 		message_box ("Couldn't save game.");
 		return err_BadFileOpen;
 	}
 
-	draw_window (m, m, GFX_WIDTH - m, GFX_HEIGHT - m);
-	draw_text ("Select a slot to save the game",
-		0, m + CHAR_COLS, m + CHAR_COLS,
-		(GFX_WIDTH - 2 * m) / CHAR_COLS,
-		MSG_BOX_TEXT, MSG_BOX_COLOUR);
-	rc = selection_buttons (buttons, NULL, NULL);
 	erase_both ();
+	draw_window (m, m, GFX_WIDTH - m, GFX_HEIGHT - m);
+	draw_text ("Select a slot in which you wish  to save the game:",
+		0, m + CHAR_COLS, m + CHAR_COLS,
+		(GFX_WIDTH - 2 * m) / CHAR_COLS - 1,
+		MSG_BOX_TEXT, MSG_BOX_COLOUR);
+
+	slot = select_slot ();
+
+	rc = selection_box ("Are you sure you want to save the game "
+		"described as:\n\nbla\n\nin slot 5?\n\n\n", buttons);
 
 	if (rc > 0) {
 		message_box ("Game NOT saved.");
