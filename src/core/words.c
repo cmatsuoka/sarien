@@ -215,13 +215,13 @@ void dictionary_words (char *msg)
  		} else {
  			/* unknown word */
  			_D (_D_WARN "unknown word");
-			strcpy ((char*)bad_word, (char*)p);
+			strcpy (bad_word, p);
  			game.ego_words[game.num_ego_words].word = bad_word;
 			q = game.ego_words[game.num_ego_words].word;
  			game.ego_words[game.num_ego_words].id = 19999;
  			setvar (V_word_not_found, 1 + game.num_ego_words);
  			game.num_ego_words++;
- 			p=(UINT8*)strchr((char*)p, 0x20);
+ 			p = strchr (p, 0x20);
  		}
 
  		if (p != NULL && *p) {

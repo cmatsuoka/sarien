@@ -285,8 +285,9 @@ void poll_keyboard ()
 #endif
 	{
 		/* If you comment this out all keystrokes will be echoed */
-		if (!game.allow_kyb_input && KEY_ASCII (key) != 0x0d) 
+		if (!game.allow_kyb_input && KEY_ASCII (key) != 0x0d) {
 			return;
+		}
 
 		setvar (V_key, KEY_ASCII (key));
 	}

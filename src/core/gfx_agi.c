@@ -218,8 +218,8 @@ static void _draw_sprites (int all)
 		/* Calculate priority bands */
 		if (~view_table[i].flags & FIXED_PRIORITY) {
 			view_table[i].priority = 
-				view_table[i].y_pos < 48 ? 4 :
-				view_table[i].y_pos / 12 + 1;
+				(view_table[i].y_pos + 1) < 48 ? 4 :
+				(view_table[i].y_pos + 1) / 12 + 1;
 		}
 	}
 
