@@ -15,6 +15,7 @@
 #include <ctype.h>
 
 #include "sarien.h"
+#include "agi.h"
 #include "keyboard.h"
 #include "opcodes.h"
 #include "objects.h"
@@ -22,12 +23,12 @@
 #include "logic.h"
 
 extern struct sarien_debug debug;
+extern struct agi_game game;
 extern struct agi_logic logics[];
+extern struct agi_view views[];
 extern struct agi_view_table view_table[];
 extern struct agi_object *objects;
 extern struct agi_event events[];
-extern struct agi_view views[];
-extern UINT8 quit_prog_now;
 
 //UINT16	test_if_code	(UINT16);
 static UINT8	test_obj_right	(UINT8, UINT8, UINT8, UINT8, UINT8);
@@ -87,7 +88,7 @@ static UINT8 test_obj_in_box (UINT8 obj, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 {
 	return view_table[obj].x_pos >= x1 &&
 		view_table[obj].y_pos >= y1 &&
-		(view_table[obj].x_pos + view_table[obj].x_size - 1) <= x2 &&
+		(view_table[obj].x_pos + VT_WIDTH(view_table[obj]) - 1) <= x2 &&
 		view_table[obj].y_pos <= y2;
 }
 
@@ -95,8 +96,8 @@ static UINT8 test_obj_in_box (UINT8 obj, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 /* if obj is in centre of box */
 static UINT8 test_obj_centre (UINT8 obj, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 {
-	return (view_table[obj].x_pos + view_table[obj].x_size / 2) >= x1 &&
-		(view_table[obj].x_pos + view_table[obj].x_size / 2) <= x2 &&
+	return (view_table[obj].x_pos + VT_WIDTH(view_table[obj]) / 2) >= x1 &&
+		(view_table[obj].x_pos + VT_WIDTH(view_table[obj]) / 2) <= x2 &&
 		view_table[obj].y_pos >= y1 &&
 		view_table[obj].y_pos <= y2;
 }
@@ -105,8 +106,8 @@ static UINT8 test_obj_centre (UINT8 obj, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 /* if object N is in right corner */
 static UINT8 test_obj_right(UINT8 obj, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 {
-	return (view_table[obj].x_pos + view_table[obj].x_size - 1) >= x1 &&
-		(view_table[obj].x_pos + view_table[obj].x_size - 1) <= x2 &&
+	return (view_table[obj].x_pos + VT_WIDTH(view_table[obj]) - 1) >= x1 &&
+		(view_table[obj].x_pos + VT_WIDTH(view_table[obj]) - 1) <= x2 &&
 		view_table[obj].y_pos >= y1 &&
 		view_table[obj].y_pos <= y2;
 }
@@ -185,7 +186,7 @@ int test_if_code (int lognum)
 	UINT16	last_ip = ip;
 	UINT8	p[16];
 
-	while (retval && !quit_prog_now) {
+	while (retval && !game.quit_prog_now) {
 		if (debug.enabled && (debug.logic0 || lognum))
 			debug_console (lognum, lTEST_MODE, NULL);
 

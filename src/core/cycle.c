@@ -136,8 +136,13 @@ static void normal_motion (int em, int x, int y)
 {
 	int dir, v, i, e, w;
 	struct agi_view_table *vt_obj;
+	int cel_width;
+
+	if (VT_VIEW(view_table[em]).loop == NULL)
+		return;
 
 	vt_obj = &view_table[em];
+	cel_width = VT_WIDTH(view_table[em]);
 
 	x += vt_obj->x_pos;
 	y += vt_obj->y_pos;
@@ -153,7 +158,7 @@ static void normal_motion (int em, int x, int y)
 		return;
 	}
 
-	if (x > _WIDTH - vt_obj->x_size && (dir == 2 || dir == 3 || dir == 4)) {
+	if (x > _WIDTH - cel_width && (dir == 2 || dir == 3 || dir == 4)) {
 		if (!e)
 			setvar (V_border_code, em);
 		setvar (v, 2);
@@ -182,7 +187,7 @@ static void normal_motion (int em, int x, int y)
 	/* do control lines n shit in here */
 
 	w = 0;
-	for (i = x + vt_obj->x_size - 1; i >= x; i--) {
+	for (i = x + cel_width - 1; i >= x; i--) {
 		switch (control_data[y * _WIDTH + i]) {
 		case 0:	/* unconditional black. no go at all! */
 			return;
@@ -207,7 +212,7 @@ static void normal_motion (int em, int x, int y)
 
 	if (e) {
 		/* Check if ego is completely on water */
-		if (w == vt_obj->x_size) {
+		if (w == cel_width) {
 			vt_obj->x_pos = x;
 			vt_obj->y_pos = y;
 			setflag (F_ego_water, TRUE);
@@ -215,7 +220,7 @@ static void normal_motion (int em, int x, int y)
 		}
 	}
 
-	for (i = x + vt_obj->x_size - 1; i >= x; i--) {
+	for (i = x + cel_width - 1; i >= x; i--) {
 		int z;
 
 		if (y < game.horizon || y >= _HEIGHT || i < 0 || i >= _WIDTH)

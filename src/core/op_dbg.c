@@ -1,20 +1,11 @@
-/*
- *  Sarien AGI :: Copyright (C) 1999 Dark Fiber 
- *
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
 #include <stdio.h>
@@ -77,8 +68,8 @@ struct agi_logicnames logic_names_if[]= {
 
 struct agi_logicnames logic_names_cmd[]= {
         _L("return",		0, 0x00),	/* 00 */
-        _L("increment",	1, 0x80),       /* 01 */
-        _L("decrement",	1, 0x80),       /* 02 */
+        _L("increment",		1, 0x80),       /* 01 */
+        _L("decrement",		1, 0x80),       /* 02 */
         _L("assignn",		2, 0x80),       /* 03 */
         _L("assignv",		2, 0xC0),       /* 04 */
         _L("addn",		2, 0x80),       /* 05 */
@@ -86,7 +77,7 @@ struct agi_logicnames logic_names_cmd[]= {
         _L("subn",		2, 0x80),       /* 07 */
         _L("subv",		2, 0xC0),       /* 08 */
         _L("lindirectv",	2, 0xC0),       /* 09 */
-        _L("rindirect",	2, 0xC0),       /* 0A */
+        _L("rindirect",		2, 0xC0),       /* 0A */
         _L("lindirectn",	2, 0x80),       /* 0B */
         _L("set",		1, 0x00),       /* 0C */
         _L("reset",		1, 0x00),       /* 0D */
@@ -106,7 +97,7 @@ struct agi_logicnames logic_names_cmd[]= {
 	_L("discard.pic",	1, 0x80),	/* 1B */
 	_L("overlay.pic",	1, 0x80),	/* 1C */
 	_L("show.pri.screen",	0, 0x00),	/* 1D */
-	_L("load.view",	1, 0x00),	/* 1E */
+	_L("load.view",		1, 0x00),	/* 1E */
 	_L("load.view.v",	1, 0x80),	/* 1F */
 	_L("discard.view",	1, 0x00),	/* 20 */
 	_L("animate.obj",	1, 0x00),	/* 21 */
@@ -124,7 +115,7 @@ struct agi_logicnames logic_names_cmd[]= {
 	_L("fix.loop",		1, 0x00),	/* 2D */
 	_L("release.loop",	1, 0x00),	/* 2E */
 	_L("set.cel",		2, 0x00),	/* 2F */
-	_L("set.cel.v",	2, 0x40),	/* 30 */
+	_L("set.cel.v",		2, 0x40),	/* 30 */
 	_L("last.cel",		2, 0x40),	/* 31 */
 	_L("current.cel",	2, 0x40),	/* 32 */
 	_L("current.loop",	2, 0x40),	/* 33 */
@@ -155,8 +146,8 @@ struct agi_logicnames logic_names_cmd[]= {
 	_L("cycle.time",	2, 0x40),	/* 4C */
 	_L("stop.motion",	1, 0x00),	/* 4D */
 	_L("start.motion",	1, 0x00),	/* 4E */
-	_L("step.size",	2, 0x40),	/* 4F */
-	_L("step.time",	2, 0x40),	/* 50 */
+	_L("step.size",		2, 0x40),	/* 4F */
+	_L("step.time",		2, 0x40),	/* 50 */
 	_L("move.obj",		5, 0x00),	/* 51 */
 	_L("move.obj.v",	5, 0x70),	/* 52 */
 	_L("follow.ego",	3, 0x00),	/* 53 */
@@ -180,7 +171,7 @@ struct agi_logicnames logic_names_cmd[]= {
 	_L("print",		1, 0x00),	/* 65 */
 	_L("print.v",		1, 0x80),	/* 66 */
 	_L("display",		3, 0x00),	/* 67 */
-	_L("display.v",	3, 0xE0),	/* 68 */
+	_L("display.v",		3, 0xE0),	/* 68 */
 	_L("clear.lines",	3, 0x00),	/* 69 */
 	_L("text.screen",	0, 0x00),	/* 6A */
 	_L("graphics",		0, 0x00),	/* 6B */
@@ -201,9 +192,9 @@ struct agi_logicnames logic_names_cmd[]= {
 	_L("add.to.pic",	7, 0x00),	/* 7A */
 	_L("add.to.pic.v",	7, 0xFE),	/* 7B */
 	_L("status",		0, 0x00),	/* 7C */
-	_L("save.game",	0, 0x00),	/* 7D */
+	_L("save.game",		0, 0x00),	/* 7D */
 	_L("restore.game",	0, 0x00),	/* 7E */
-	_L("init.disk",	0, 0x00),	/* 7F */
+	_L("init.disk",		0, 0x00),	/* 7F */
 	_L("restart.game",	0, 0x00),	/* 80 */
 	_L("show.obj",		1, 0x00),	/* 81 */
 	_L("random",		3, 0x20),	/* 82 */
@@ -215,7 +206,7 @@ struct agi_logicnames logic_names_cmd[]= {
 
 	_L("show.mem",		0, 0x00),	/* 87 */
 	_L("pause",		0, 0x00),	/* 88 */
-	_L("echo.line",	0, 0x00),	/* 89 */
+	_L("echo.line",		0, 0x00),	/* 89 */
 	_L("cancel.line",	0, 0x00),	/* 8A */
 	_L("init.joy",		0, 0x00),	/* 8B */
 	_L("toggle.monitor",	0, 0x00),	/* 8C */
@@ -326,8 +317,7 @@ void debug_console (int lognum, int mode, char *str)
 		}
 		report ("%s ", (x + *(code + ip))->name);
 
-    		for (z = 1; a > 0; )
-    		{
+    		for (z = 1; a > 0; ) {
     			if (~c & 0x80) {
     				report ("%d", *(code+(ip+z)));
     			} else {

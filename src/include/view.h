@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -40,11 +40,6 @@ struct agi_view_table {
 	UINT8		x_pos;
 	UINT8		y_pos;
 
-//#define VT_WIDTH(x) VT_CEL(x).width
-//#define VT_HEIGHT(x) VT_CEL(x).height
-	UINT16		x_size;
-	UINT16		y_size;
-
 	UINT8		*bg_scr;
 	UINT8		*bg_pri;
 	UINT16		bg_x;
@@ -64,9 +59,12 @@ struct agi_view_table {
 	UINT8		cycle_status;
 	UINT8		cycle_time_count;
 
-#define VT_VIEW(x) views[(x).current_view]  
-#define VT_LOOP(x) VT_VIEW(x).loop[(x).current_loop]
-#define VT_CEL(x)  VT_LOOP(x).cel[(x).current_cel]
+#define VT_VIEW(x)   views[(x).current_view]  
+#define VT_LOOP(x)   VT_VIEW(x).loop[(x).current_loop]
+#define VT_CEL(x)    VT_LOOP(x).cel[(x).current_cel]
+#define VT_WIDTH(x)  VT_CEL(x).width
+#define VT_HEIGHT(x) VT_CEL(x).height
+
 	UINT8		current_view;
 	UINT8		current_loop;
 	UINT8		current_cel;

@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -71,7 +71,7 @@ struct agi_sound {
 
 extern	struct sound_driver	*snd;
 //extern  struct sound_driver	sound_dummy;
-//extern	struct agi_sound	sounds[];
+//externstruct agi_sound	sounds[];
 
 void	decode_sound		(int);
 void	unload_sound		(int);

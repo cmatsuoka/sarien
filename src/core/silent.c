@@ -10,11 +10,11 @@
 
 #include <stdio.h>
 #include "sarien.h"
+#include "console.h"
 #include "sound.h"
 
-int dummy_init_sound (SINT16 *buffer);
-void dummy_close_sound (void);
-void dummy_dump_buffer (void);
+static int dummy_init_sound (SINT16 *);
+static void dummy_close_sound (void);
 
 struct sound_driver sound_dummy = {
 	"Dummy sound driver",
@@ -33,4 +33,5 @@ static int dummy_init_sound (SINT16 *buffer)
 static void dummy_close_sound ()
 {
 }
+
 

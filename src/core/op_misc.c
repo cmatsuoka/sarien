@@ -61,7 +61,7 @@ void new_room (int r)
 		break; /* horizon + 1*/
 	case 4:
 		view_table[EGO_VIEW_TABLE].x_pos = _WIDTH -
-			view_table[EGO_VIEW_TABLE].x_size;
+			VT_WIDTH(view_table[EGO_VIEW_TABLE]);
 		break;
 	}
 
@@ -159,25 +159,23 @@ void break_copy_protection (int lognum)
 				memmove ((code+ip), lsl1data_fix, 9);
 		}
 		break;
-
 	case 125:
 		/* gold rush code break */
 		if (!strcmp (game.id, "GR")) {
 			if (!memcmp (grdata_find, (code+ip), 30))
-				memmove((code+ip), grdata_fix, 12);
+				memmove ((code+ip), grdata_fix, 12);
 		}
 		break;
-
 	case 140:
 		/* kings quest 4 code break */
 		if (!strcmp (game.id, "KQ4")) {
-			if(memcmp(kq4data_find, (code+ip),  29)==0)
-				memmove((code+ip), kq4data_fix, 6);
+			if(memcmp (kq4data_find, (code+ip),  29)==0)
+				memmove ((code+ip), kq4data_fix, 6);
 		}
 		break;
 	case 159:
 		/* manhunter 1 amiga */
-		if(!memcmp(mh1data_find, (code+ip), 30)) {
+		if(!memcmp (mh1data_find, (code+ip), 30)) {
 			memmove ((code+ip), mh1data_fix, 6);
 		}
 		break;  

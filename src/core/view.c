@@ -270,8 +270,8 @@ void set_cel (int entry, int c)
 	}
 
 	view_table[entry].current_cel = c;
-	view_table[entry].x_size = VT_CEL(view_table[entry]).width;
-	view_table[entry].y_size = VT_CEL(view_table[entry]).height;
+	//view_table[entry].x_size = VT_CEL(view_table[entry]).width;
+	//view_table[entry].y_size = VT_CEL(view_table[entry]).height;
 }
 
 
@@ -398,26 +398,28 @@ void calc_direction (int vt)
 void draw_obj (int vt)
 {
 	struct agi_view_table *v = &view_table[vt];
+	int cel_width = VT_WIDTH(view_table[vt]);
+	int cel_height = VT_HEIGHT(view_table[vt]);
 
 	/* DF: CLIPPING (FIXES OP:RECON BUG !! (speach bubbles) */
 
-	if (v->x_pos + v->x_size > _WIDTH)
-		v->x_pos = _WIDTH - v->x_size;
+	if (v->x_pos + cel_width > _WIDTH)
+		v->x_pos = _WIDTH - cel_width;
 
 #if 0
-	//if(v->y_pos + v->y_size > _HEIGHT)
-	//      v->y_pos=_HEIGHT - v->y_size;
+	//if(v->y_pos + cel_height > _HEIGHT)
+	//      v->y_pos=_HEIGHT - cel_height;
 
 	/* this also breaks kq2 intro etc!! hmmmm */
-	//if(v->y_pos + v->y_size > 200)	// _HEIGHT=168, breaks op:recon
-	//      v->y_pos=200- v->y_size;
+	//if(v->y_pos + cel_height > 200)	// _HEIGHT=168, breaks op:recon
+	//      v->y_pos=200- cel_height;
 #endif
 
 	/* save bg co-ords */
 	v->bg_x = v->x_pos;
-	v->bg_y = (v->y_size > v->y_pos) ?  0 : (v->y_pos - v->y_size);
-	v->bg_x_size = v->x_size;
-	v->bg_y_size = v->y_size;
+	v->bg_y = (cel_height > v->y_pos) ?  0 : (v->y_pos - cel_height);
+	v->bg_x_size = cel_width;
+	v->bg_y_size = cel_height;
 
 	/* copy background (screen) */
 	v->bg_scr = malloc (v->bg_x_size * v->bg_y_size);
@@ -435,7 +437,7 @@ void draw_obj (int vt)
 
 	/* FR:
 	 * Sierra logo didn't appear in demos because 
-	 * (v->y_pos - v->y_size) < 0 and agi_put_bimap receive
+	 * (v->y_pos - cel_height) < 0 and agi_put_bimap receive
 	 * only unsigned values!
 	 * 
 	 * This work-around only create more bugs!
@@ -443,9 +445,9 @@ void draw_obj (int vt)
 
 	agi_put_bitmap (VT_CEL(view_table[vt]).data,
 		v->x_pos,
-		v->y_size > v->y_pos ? 0 : v->y_pos - v->y_size,
-		v->x_size,
-		v->y_size,
+		cel_height > v->y_pos ? 0 : v->y_pos - cel_height,
+		cel_width,
+		cel_height,
 		VT_CEL(view_table[vt]).transparency & 0xf,
 		v->priority);
 }
