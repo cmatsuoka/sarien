@@ -51,12 +51,16 @@ void	_restore_screen_area	(void);
 void	_flush_screen	(void);
 void	_flush_screen_area	(void);
 void	put_screen	(void);
-void	clear_buffer	(void);
+void	put_block	(int, int, int, int);
 void	set_block	(int, int, int, int);
+void	flush_block	(int, int, int, int);
+void	clear_buffer	(void);
 
 void	put_pixel	(int, int, int);	/* driver wrapper */
-void	flush_block	(int, int, int, int);
 void	build_console_layer (void);
+
+int	keypress	(void);
+int	get_key		(void);
 
 void	print_character	(int, int, char, int, int);
 

@@ -21,7 +21,6 @@
 #include "gfx_base.h"
 #include "text.h"
 
-extern struct gfx_driver *gfx;
 extern struct agi_logic logics[];
 
 
@@ -85,7 +84,7 @@ static void print_text2 (int l, char *msg, int foff, int xoff, int yoff,
 	minx <<= 3;
 
 	if (update)
-		gfx->put_block (foff+xoff+minx, yoff, ofoff+xoff+maxx+7, yoff+y1*8+9);
+		put_block (foff+xoff+minx, yoff, ofoff+xoff+maxx+7, yoff+y1*8+9);
 }
 
 
@@ -175,8 +174,7 @@ void textbox (char *message, int x, int y, int len)
 	print_text2 (2, msg, 0, 8 + xoff, 8 + yoff, len + 1,
 		MSG_BOX_TEXT, MSG_BOX_COLOUR);
 
-	gfx->put_block (xoff, yoff, xoff + ((len + 2) * 8),
-		yoff + ((lin + 2) * 8));
+	put_block (xoff, yoff, xoff + ((len + 2) * 8), yoff + ((lin + 2) * 8));
 
 	free (msg);
 }
@@ -235,7 +233,8 @@ void print_status (char *message, ...)
 	va_end (args);
 
         print_text (x, 0, game.line_status, 0, 41, STATUS_FG, STATUS_BG);
-	gfx->put_block (0, 0, 319, 8);
+	/* FIXME: should define put_status() in gfx */
+	put_block (0, 0, 319, 8);
 }
 
 

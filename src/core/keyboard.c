@@ -33,7 +33,6 @@ extern struct sarien_console console;
 extern struct agi_view_table view_table[];
 
 /* FIXME */
-extern struct gfx_driver *gfx;
 extern int open_dialogue;
 
 
@@ -213,8 +212,8 @@ void poll_keyboard (void)
 	}
 
 	/* If a key is ready, rip it */
-	while (gfx->keypress ()) {
-		xkey = gfx->get_key ();
+	while (keypress ()) {
+		xkey = get_key ();
 
 		if (console_keyhandler (xkey))
 			continue;

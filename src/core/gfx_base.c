@@ -313,7 +313,26 @@ void put_screen ()
 }
 
 
+void put_block (int x1, int y1, int x2, int y2)
+{
+	gfx->put_block (x1, y1, x2, y2);
+}
+
+
 void poll_timer ()
 {
 	gfx->poll_timer ();
 }
+
+
+int get_key ()
+{
+	return gfx->get_key ();
+}
+
+
+int keypress ()
+{
+	return gfx->keypress ();
+}
+

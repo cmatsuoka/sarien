@@ -34,7 +34,6 @@ static struct agi_menu *menu;
 
 extern struct sarien_console console;
 extern struct agi_game game;
-extern struct gfx_driver *gfx;
 
 
 static void draw_horizontal_menu_bar (int cur_menu, int max_menu)
@@ -64,7 +63,8 @@ static void draw_horizontal_menu_bar (int cur_menu, int max_menu)
 		}
 	}
 
-	gfx->put_block (0, 0, 320, 8);
+	/* FIXME: call update_status() */
+	put_block (0, 0, 320, 8);
 }
 
 
@@ -122,7 +122,7 @@ static void draw_vertical_menu (int h_menu, int cur_men, int max_men)
 			print_text (menu, 0, x, y, len + 2, MENU_FG, MENU_BG);
 	}
 
-	gfx->put_block (cx, cy, cx + ((2 + len)<<3), (2 + max_men) << 3);
+	put_block (cx, cy, cx + ((2 + len)<<3), (2 + max_men) << 3);
 }
 
 
@@ -214,7 +214,7 @@ void do_menus ()
 	release_sprites ();
 	save_screen ();
 	redraw_sprites ();
-	//gfx->put_block (0, 0, 319, console.y);
+	//put_block (0, 0, 319, console.y);
 	put_screen ();
 
 	/* calc size of horizontal menu */
@@ -263,7 +263,7 @@ void do_menus ()
 			release_sprites ();
 			restore_screen_area ();
 			redraw_sprites ();
-			//gfx->put_block (0, 0, 319, console.y);
+			//put_block (0, 0, 319, console.y);
 			put_screen ();
 
 			/* calc size of vertical menus */
@@ -281,7 +281,7 @@ void do_menus ()
 			release_sprites ();
 			restore_screen_area ();
 			redraw_sprites ();
-			//gfx->put_block (0, 0, 319, console.y);
+			//put_block (0, 0, 319, console.y);
 			put_screen ();
 
 			/* calc size of vertical menus */

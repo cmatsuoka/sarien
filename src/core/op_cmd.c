@@ -80,9 +80,6 @@ extern struct agi_view_table view_table[];
 extern struct sarien_options opt;
 extern struct sarien_debug debug;
 
-/* FIXME: Hmm... should this be here? */
-extern struct gfx_driver *gfx;
-
 
 void cmd_position (UINT8 entry, UINT8 x, UINT8 y)
 {
@@ -764,20 +761,20 @@ void cmd_clear_lines (UINT8 sl, UINT8 el, UINT8 c)
 	UINT16	x, y, z;
 
 	/* do we need to adjust for +8 on topline?
-	   inc for endline so it mateches the correct num
-	   ie, from 22 to 24 is 3 lines, not 2 lines.
-	*/
+	 * inc for endline so it mateches the correct num
+	 * ie, from 22 to 24 is 3 lines, not 2 lines.
+	 */
 
-	if (c!=0)
-		c=15;
+	if (c != 0)
+		c = 15;
 
-	z= (1+el)*8;
+	z = (1+el)*8;
 
-	for (y=sl*8; y<z; y++)
-		for (x=0; x<GFX_WIDTH; x++)
+	for (y = sl * 8; y < z; y++)
+		for (x = 0; x < GFX_WIDTH; x++)
 			put_pixel (x, y, c);
 
-	gfx->put_block (0, sl * 8, GFX_WIDTH - 1, sl * 8 + z - 1);
+	put_block (0, sl * 8, GFX_WIDTH - 1, sl * 8 + z - 1);
 }
 
 
@@ -1066,8 +1063,9 @@ void cmd_clear_text_rect (UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2, UINT8 c)
 	/*y1++;*/
 	x2++;
 	y2++;
-	draw_box (y1*8, x1*8, y2*8, x2*8, c, c, BX_SAVE | NO_LINES, game.line_min_print * 8);
-	gfx->put_block (y1*8, x1*8, y2*8, x2*8);
+	draw_box (y1 * 8, x1 * 8, y2 * 8, x2 * 8, c, c,
+		BX_SAVE | NO_LINES, game.line_min_print * 8);
+	put_block (y1 * 8, x1 * 8, y2 * 8, x2 * 8);
 }
 
 

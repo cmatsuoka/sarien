@@ -37,8 +37,6 @@
 #define SELECT_MSG	"Press ENTER to select, ESC to cancel."
 
 
-extern struct gfx_driver *gfx;
-
 void inventory ()
 {
 	int x, y, cx, cy;
@@ -115,7 +113,7 @@ void inventory ()
 				if (!objcount) {
 					print_text (NOTHING_MSG, 0, NOTHING_X,
 					NOTHING_Y, 40, STATUS_BG, STATUS_FG);
-					gfx->put_block (NOTHING_X, NOTHING_Y,
+					put_block (NOTHING_X, NOTHING_Y,
 					NOTHING_X + strlen (NOTHING_MSG) * 8,
 					NOTHING_Y+8);
 				} else {
@@ -123,8 +121,7 @@ void inventory ()
 						print_text (object_name (intobj[ls-1]),
 						0, lx1, (((ly1/2)+1)<<3),
 						40, STATUS_FG, STATUS_BG);
-						gfx->put_block(lx1, ly1,
-						lx2, cy+8);
+						put_block(lx1, ly1, lx2, cy+8);
 					}
 
 					jlen = strlen (object_name(intobj[fsel]));
@@ -138,15 +135,15 @@ void inventory ()
 					print_text (object_name (intobj[fsel]),
 						0, lx1, (((cy/2)+1)<<3), 40,
 						STATUS_BG, STATUS_FG);
-					gfx->put_block (lx1, ly1, lx2, cy+8);
+					put_block (lx1, ly1, lx2, cy+8);
 				}
 				show = 0;
 			}
 
-			/* DF : FIXME : gfx->get_key() is not console aware */
+			/* DF : FIXME : get_key() is not console aware */
 			//switch(wait_key())
 
-			switch(gfx->get_key()) {
+			switch(get_key()) {
 			case KEY_ENTER:
 				message_box ("Selected item %i", intobj[fsel]);
 				//setvar(V_sel_item, intobj[fsel]);
@@ -199,7 +196,7 @@ void inventory ()
 
 	free (intobj);
 
-	/* use wait_key instead of gfx->get_key() to be console aware */
+	/* use wait_key instead of get_key() to be console aware */
 	if (!getflag (F_status_selects_items))
 		wait_key();
 

@@ -26,7 +26,6 @@
 extern struct sarien_options opt;
 extern struct sarien_console console;
 extern struct agi_view_table view_table[];
-extern struct gfx_driver *gfx;
 
 int greatest_kludge_of_all_time = 0;
 
@@ -296,13 +295,6 @@ void reset_graphics(void)
 
 	memset (layer1_data, 0, 320 * 200);
 	memset (layer2_data, 0, 320 * 200);
-}
-
-
-/* This is strange. Should this be here? */
-int get_key ()
-{
-	return gfx->get_key ();
 }
 
 
