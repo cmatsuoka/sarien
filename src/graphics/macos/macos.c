@@ -23,6 +23,7 @@
 #include "sarien.h"
 #include "graphics.h"
 #include "keyboard.h"
+#include "resource.h"
 
 
 extern struct gfx_driver *gfx;
@@ -89,26 +90,14 @@ static void init_toolbox ()
 	InitCursor ();
 }
 
-#define mApple 128
-#define		iAbout 1
-#define mFile  129
-#define		iQuit  1
-
 static void init_menu ()
 {
-	Handle menuBar;
-	MenuHandle menu;
+	Handle menubar;
 
-	menuBar = GetNewMBar (128);
-	etMenuBar (menuBar);
-
-	menu = GetMenuHandle (mApple);
-	AppendResMenu (menu, 'DRVR');
- 
-	menu = NewMenu (mFile, "\pFile");
-	AppendMenu (menu, "\pQuit/Q");
-	InsertMenu (menu, 0);
-
+	menubar = GetNewMBar (rMenuBar);
+	SetMenuBar (menubar);
+	DisposeHandle (menubar);
+	AppendResMenu (GetMenuHandle (mApple), 'DRVR');
 	DrawMenuBar();
 }
 
@@ -137,6 +126,7 @@ static void process_menu (int mc)
 	case mFile:
 		switch (item) {
 		case iQuit:
+			gfx->deinit_vidmode ();
 			ExitToShell ();
 			break;
 		}
@@ -180,6 +170,13 @@ static void process_events ()
 				 */
 				if (win != FrontWindow())
 					SelectWindow (win);
+				break;
+			case inGoAway:
+				/* quit application */
+				if (TrackGoAway (win, event.where)) {
+					gfx->deinit_vidmode ();
+					ExitToShell ();
+				}
 				break;
 			}
 			break;

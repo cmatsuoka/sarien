@@ -21,6 +21,7 @@ Revision History
 	- fixed game restart issues (closes: #457622)
 	- selectable Amiga-ish or EGA palettes
 	- merged Brian Peek's SarienDC Dreamcast port
+	- added Mike Montague's DirectX driver
 
 0.7.0 (20011122)
 	- added QNX4 native sound driver (untested)

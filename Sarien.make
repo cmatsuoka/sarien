@@ -115,6 +115,8 @@ LibFiles-68K    =  ¶
 
 Resources		= :src:core:macos:sarien.r
 
+RezOptions		= -i :src:core:macos
+
 
 ### Default Rules ###
 
@@ -125,7 +127,7 @@ Resources		= :src:core:macos:sarien.r
 ### Build Rules ###
 
 Sarien  ÄÄ  {ObjFiles-68K} {LibFiles-68K} {Resources} {¥MondoBuild¥}
-	Rez {Resources} -o Sarien
+	Rez {RezOptions} {Resources} -o Sarien
 	ILink ¶
 		-o {Targ} ¶
 		{ObjFiles-68K} ¶
