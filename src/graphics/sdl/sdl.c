@@ -171,7 +171,7 @@ _putpixels_fixratio_##d##bits_scale2 (int x, int y, int w, Uint8 *p0) {	\
                		*u++ = c; *u++ = c;				\
 		}							\
 	} else {							\
-		p = p0;
+		p = p0;							\
 		scale2x_##d##_map(s, t, p - GFX_WIDTH, p, p + GFX_WIDTH,\
 			 mapped_color, w);				\
 		scale2x_##d##_map(t, u, p - GFX_WIDTH, p, p + GFX_WIDTH,\
