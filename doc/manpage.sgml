@@ -150,7 +150,8 @@
     <term/<parameter/-r, --aspect-ratio/ <property/0|1//
     <listitem><para>
       Enable or disable aspect ratio correction for square-pixel graphics
-      modes to match the PC EGA 320x200 display.
+      modes to match the PC EGA 320x200 display. Aspect ratio correction
+      is enabled by default in the drivers that support this feature.
     </para></listitem>
   </listentry>
 
@@ -239,6 +240,10 @@
 <refsect1>
 <title/CONSOLE COMMANDS/
 <para>
+  The interpreter console (activated by the <keycap/`/ key or the
+  right mouse button) can be used to inspect and modify AGI game
+  data at runtime, disassemble AGI bytecode and single-step
+  through logic scripts and instructions.
 </para>
 
 <variablelist>
@@ -283,6 +288,20 @@
   </listentry>
 
   <listentry>
+    <term/<command/f<replaceable/n///
+    <listitem><para>
+      Show the value of the AGI flag <replaceable/n/.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<command/f<replaceable/n/ = 0|1//
+    <listitem><para>
+      Set or reset the AGI flag <replaceable/n/.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
     <term/<command/help//
     <listitem><para>
       Show a summary of the available console commands.
@@ -303,12 +322,64 @@
   <listentry>
     <term/<command/logic0 on|off//
     <listitem><para>
+      In debug mode, enable or disable single stepping on logic script 0.
     </para></listitem>
   </listentry>
 
   <listentry>
-    <term/<command/load//
+    <term/<command/load/ <replaceable/gamedir/
     <listitem><para>
+      Load and execute the AGI game specified by <replaceable/gamedir/.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<command/objs//
+    <listitem><para>
+      List all available objects and their locations.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<command/opcode on|off//
+    <listitem><para>
+      In debug mode, show or hide opcodes of the piece of code being
+      executed.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<command/step/ <replaceable/n//
+    <listitem><para>
+      In debug mode, single-step through <replaceable/n/ AGI instructions.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<command/vars//
+    <listitem><para>
+      List all AGI variables and their values.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<command/v<replaceable/n///
+    <listitem><para>
+      Show the value of the AGI variable <replaceable/n/.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<command/v<replaceable/n/ = <replaceable/m///
+    <listitem><para>
+      Set the value of the AGI flag <replaceable/n/ to <replaceable/m/.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<command/ver//
+    <listitem><para>
+      Show the Sarien interpreter version.
     </para></listitem>
   </listentry>
 </variablelist>
@@ -342,6 +413,7 @@
 <refsect1>
 <title/AUTHORS/
 <para>
+
 </para>
 </refsect1>
 

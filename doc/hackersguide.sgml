@@ -944,37 +944,49 @@ int console_init ()
 <title>Lowlevel graphic subsystem</title>
 <para>
 </para>
+
+<sect2 id="gfx-fonts">
+<title>Fonts</title>
+<para>
+</para>
+</sect2>
+
+<sect2 id="gfx-msgbox">
+<title>Windowing</title>
+<para>
+</para>
+</sect2>
+
 </sect1>
 
 <sect1 id="gfx-hilevel">
 <title>High-level graphic subsystem</title>
 <para>
 </para>
-</sect1>
 
-<sect1 id="gfx-fonts">
-<title>Fonts</title>
-<para>
-</para>
-</sect1>
-
-<sect1 id="gfx-msgbox">
-<title>Windowing</title>
-<para>
-</para>
-</sect1>
-
-<sect1 id="gfx-sprite">
+<sect2 id="gfx-sprite">
 <title>Sprite management</title>
 <para>
 </para>
+</sect2>
+
 </sect1>
 
 <sect1 id="gfx-hires">
 <title>High-res pictures</title>
 <para>
+  High-res pic heuristics include:
 </para>
+<itemizedlist>
+  <listitem><para>
+  </para></listitem>
+  <listitem><para>
+  </para></listitem>
+  <listitem><para>
+  </para></listitem>
+</itemizedlist>
 </sect1>
+
 
 </chapter>
 
