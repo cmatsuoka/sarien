@@ -387,7 +387,8 @@ static struct sprite *new_sprite (struct vt_entry *v)
 	struct sprite *s;
 
 	s = (struct sprite *)pool_alloc (sizeof (struct sprite));
-	assert (s != NULL);
+	if (s == NULL)
+		return NULL;
 
 	s->v = v;	/* link sprite to associated view table entry */
 	s->x_pos = v->x_pos;

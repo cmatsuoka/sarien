@@ -383,7 +383,8 @@ getout:
  */
 int print (char *p, int lin, int col, int len)
 {
-	assert (p != NULL);
+	if (p == NULL)
+		return 0;
 
 	blit_textbox (p, lin, col, len);
 
@@ -483,7 +484,7 @@ char *agi_sprintf (char *s)
 			s++;
 			switch (*s++) {
 			case 'v':
-				xx = atoi(s);
+				xx = strtoul (s, NULL, 10);
 				while (*s >= '0' && *s <= '9')
 					s++;
 				sprintf (z, "%03i", getvar(xx));
@@ -491,7 +492,7 @@ char *agi_sprintf (char *s)
 				xy = 99;
 				if (*s=='|') {
 					s++;
-					xy = atoi (s);
+					xy = strtoul (s, NULL, 10);
 					while (*s >= '0' && *s <= '9')
 						s++;
 				}
@@ -506,19 +507,19 @@ char *agi_sprintf (char *s)
 				safe_strcat(p, z + xx);
 				break;
 			case '0':
-				safe_strcat(p, object_name (atol(s)-1));
+				safe_strcat(p, object_name (strtoul (s, NULL, 10)-1));
 				break;
 			case 'g':
-				safe_strcat(p, game.logics[0].texts[atol(s)-1]);
+				safe_strcat(p, game.logics[0].texts[strtoul (s, NULL, 10)-1]);
 				break;
 			case 'w':
-				safe_strcat(p, game.ego_words[atol(s)-1].word);
+				safe_strcat(p, game.ego_words[strtoul (s, NULL, 10) - 1].word);
 				break;
 			case 's':
-				safe_strcat(p, game.strings[atol(s)]);
+				safe_strcat(p, game.strings[strtoul (s, NULL, 10)]);
 				break;
 			case 'm': {
-				int n = game.lognum, m = atoi(s) - 1;
+				int n = game.lognum, m = strtoul (s, NULL, 10) - 1;
 				if (game.logics[n].num_texts > m)
 					safe_strcat(p, game.logics[n].texts[m]);
 				break;
@@ -530,7 +531,9 @@ char *agi_sprintf (char *s)
 			break;
 
 		default:
+#ifndef PALMOS
 			assert (p < x + MAX_LEN);
+#endif
 			*p++ = *s++;
 			*p = 0;
 			break;

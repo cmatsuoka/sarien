@@ -458,6 +458,7 @@ int keypress ()
  */
 int init_video ()
 {
+#ifndef PALMOS
 #ifndef _WIN32
 	/* XXX: this causes the win32 debug build to crash for some reason */
 	fprintf (stderr, "Initializing graphics: %dx%d (scale = %d)\n",
@@ -471,6 +472,7 @@ int init_video ()
 	}
 
 	init_console ();
+#endif
 	return gfx->init_video_mode ();
 }
 

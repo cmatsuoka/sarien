@@ -10,6 +10,8 @@
 
 #ifndef PALMOS
 #include <time.h>
+#else
+#define time(x) (x)
 #endif
 
 #include "sarien.h"

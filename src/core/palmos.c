@@ -1,3 +1,6 @@
 
-/* The real file is in src/graphics/palmos
- */
+#include "sarien.h"
+#include "agi.h"
+
+struct agi_game game;
+
