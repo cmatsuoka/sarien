@@ -1,9 +1,18 @@
-/* Main code for Sarien */
+/*
+ * $Id$
+ */
 
-#include <Pilot.h>
+#include <PalmOS.h>
+
 #include "callback.h"
-
 #include "sarienRsc.h"
+
+#define FRAME_RATE 2
+#define BPP 8
+
+void mainloop (void);
+static UInt32 timeout, ticks;
+
 
 static Boolean MainFormHandleEvent (EventPtr e)
 {
@@ -33,6 +42,13 @@ static Boolean MainFormHandleEvent (EventPtr e)
 	}
 	break;
 
+    case nilEvent: {
+	UInt32 dt, t0 = TimGetTicks();
+	mainloop ();
+	dt = TimGetTicks() - t0;
+	timeout = (TimGetTicks() - t0 > ticks) ? 0 : ticks - dt;
+	}
+	break;
     default:
         break;
     }
@@ -45,7 +61,7 @@ static Boolean MainFormHandleEvent (EventPtr e)
 static Boolean ApplicationHandleEvent(EventPtr e)
 {
     FormPtr frm;
-    Word    formId;
+    UInt16  formId;
     Boolean handled = false;
 
     if (e->eType == frmLoadEvent) {
@@ -65,7 +81,7 @@ static Boolean ApplicationHandleEvent(EventPtr e)
 }
 
 /* Get preferences, open (or create) app database */
-static Word StartApplication(void)
+static UInt16 StartApplication(void)
 {
     FrmGotoForm(MainForm);
     return 0;
@@ -81,11 +97,11 @@ static void StopApplication(void)
 /* The main event loop */
 static void EventLoop(void)
 {
-    Word err;
+    UInt16 err;
     EventType e;
 
     do {
-	EvtGetEvent(&e, evtWaitForever);
+	EvtGetEvent(&e, timeout);
 	if (! SysHandleEvent (&e))
 	    if (! MenuHandleEvent (NULL, &e, &err))
 		if (! ApplicationHandleEvent (&e))
@@ -93,23 +109,59 @@ static void EventLoop(void)
     } while (e.eType != appStopEvent);
 }
 
+
+
+
+WinHandle buffer;
+
+
+static void clear (UInt8 color)
+{
+	MemSet (BmpGetBits(WinGetBitmap(buffer)), 160 * (160 * BPP / 8), color);
+}
+
+
+
+static void blit ()
+{
+	const RectangleType rect = { {0,0}, {160,160} };
+	WinCopyRectangle (buffer, WinGetDisplayWindow(), &rect, 0, 0, winPaint);
+}
+
+
+void mainloop ()
+{
+	static int i = 0;
+
+	clear (i);
+	blit ();
+
+	i++;
+}
+
+
+
 /* Main entry point; it is unlikely you will need to change this except to
    handle other launch command codes */
-DWord PilotMain(Word cmd, Ptr cmdPBP, Word launchFlags)
+UInt32 PilotMain (UInt16 cmd, MemPtr cmdPBP, UInt16 launchFlags)
 {
-    Word err;
+	UInt16 err;
 
-    if (cmd == sysAppLaunchCmdNormalLaunch) {
+	if (cmd != sysAppLaunchCmdNormalLaunch)
+		return sysErrParamErr;
 
-	err = StartApplication();
-	if (err) return err;
+	if (!(buffer = WinCreateOffscreenWindow (160, 160, screenFormat, &err)))
+		return err;
+
+	if ((err = StartApplication()) != 0)
+		return err;
+
+	ticks = SysTicksPerSecond() / FRAME_RATE;
 
 	EventLoop();
 	StopApplication();
 
-    } else {
-	return sysErrParamErr;
-    }
+	WinDeleteWindow (buffer, false);
 
-    return 0;
+	return 0;
 }

@@ -8,4 +8,4 @@ END
 APPLICATIONICONNAME 1000 "Sarien"
 ICON "sarien.pbm"
 
-VERSION 1 "0.0.1"
+VERSION "0.0.1"
