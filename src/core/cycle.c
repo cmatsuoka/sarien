@@ -8,6 +8,8 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
+#include <stdlib.h>
+
 #include "sarien.h"
 #include "agi.h"
 #include "rand.h"
@@ -25,6 +27,7 @@
 extern struct sarien_options opt;
 extern struct sarien_console console;
 extern struct agi_logic logics[];
+extern struct agi_view views[];
 extern struct agi_view_table view_table[];
 
 extern struct gfx_driver *gfx;
@@ -55,16 +58,16 @@ static void update_objects ()
 			}
 
 			VT.cycle_time_count = 1;
-			ccel = VT.cur_cel;
+			ccel = VT.current_cel;
 
 			switch (VT.cycle_status) {
 			case CYCLE_NORMAL:
-				if(++ccel >= VT.num_cels) 
+				if(++ccel >= VT_LOOP(VT).num_cels) 
 					ccel = 0;
 				set_cel (i, ccel);
 				break;
  			case CYCLE_END_OF_LOOP:		
- 				if(++ccel >= VT.num_cels) {
+ 				if(++ccel >= VT_LOOP(VT).num_cels) {
 					VT.flags &= ~CYCLING;
 					setflag (VT.parm1, TRUE);
   				} else {
@@ -73,7 +76,7 @@ static void update_objects ()
  				break;
 			case CYCLE_REV:			/* reverse cycle */
 				if(--ccel < 0)
-					ccel = VT.num_cels - 1;
+					ccel = VT_LOOP(VT).num_cels - 1;
 
 				set_cel (i, ccel);
 				break;
@@ -86,10 +89,10 @@ static void update_objects ()
  				break;
 			}
 		} else {
-			if ((ccel = VT.cur_cel) >= VT.num_cels)
+			if ((ccel = VT.current_cel) >= VT_LOOP(VT).num_cels)
 				ccel = 0;
 
-			set_cel ( i, ccel );
+			set_cel (i, ccel);
 		}
 	} 
 #undef VT
@@ -150,8 +153,7 @@ static void normal_motion (int em, int x, int y)
 		return;
 	}
 
-	if (x > _WIDTH - vt_obj->x_size &&
-		(dir == 2 || dir == 3 || dir == 4)) {
+	if (x > _WIDTH - vt_obj->x_size && (dir == 2 || dir == 3 || dir == 4)) {
 		if (!e)
 			setvar (V_border_code, em);
 		setvar (v, 2);

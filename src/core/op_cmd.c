@@ -243,7 +243,7 @@ void cmd_force_update (UINT8 entry)
 
 	redraw_sprites ();
 	erase_sprites ();
-	set_cel (entry, vt.cur_cel);
+	set_cel (entry, vt.current_cel);
 	draw_sprites ();
 	release_sprites ();
 
@@ -257,7 +257,7 @@ void cmd_draw (UINT8 entry)
 	redraw_sprites ();	/* KQ4 draws behind non-updating views */
 	erase_sprites ();
 	vt.flags |= DRAWN | UPDATE;
-	set_cel (entry, vt.cur_cel);
+	set_cel (entry, vt.current_cel);
 	draw_sprites ();
 	release_sprites ();
 }
@@ -389,7 +389,7 @@ void cmd_set_num_loops (UINT8 entry, UINT8 l)
 {
 	/*vt.num_loops=l;*/
 	/* setvar (l, vt.num_loops); ******/
-	setvar (l, vt.view->num_loops);
+	setvar (l, VT_VIEW(vt).num_loops);
 }
 
 
@@ -407,13 +407,13 @@ void cmd_cur_loop (UINT8 entry, UINT8 v)
 
 void cmd_cur_cel (UINT8 entry, UINT8 v)
 {
-	setvar (v, vt.cur_cel);
+	setvar (v, vt.current_cel);
 }
 
 
 void cmd_last_cel (UINT8 entry, UINT8 v)
 {
-	setvar (v, vt.loop->num_cels > 0 ? vt.loop->num_cels - 1 : 0);
+	setvar (v, VT_LOOP(vt).num_cels > 0 ? VT_LOOP(vt).num_cels - 1 : 0);
 }
 
 

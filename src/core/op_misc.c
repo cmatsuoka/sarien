@@ -28,6 +28,7 @@
 
 extern struct agi_view_table view_table[];
 extern struct agi_logic logics[];
+extern struct agi_view views[];
 
 
 void new_room (int r)

@@ -85,7 +85,7 @@ void init_view_table ()
 
 	_D (("()"));
 	for (i = 0; i < MAX_VIEWTABLE; i++) {
-		memset (&view_table[i], 0x0, sizeof (struct agi_view_table));
+		memset (&view_table[i], 0, sizeof (struct agi_view_table));
 		view_table[i].step_time = 1;
 		view_table[i].step_time_count = 1;
 		view_table[i].step_size = 1;
@@ -149,7 +149,6 @@ void unload_view (int n)
 			free (views[n].loop[x].cel);
 	}
 
-	/* free the loops */
 	if (views[n].loop != NULL)
 		free(views[n].loop);
 
@@ -183,61 +182,60 @@ void add_view_table (int entry, int vw)
 
 	if (view_table[entry].current_view != vw || getflag(F_new_room_exec)) {	
 		view_table[entry].current_view = vw;
-		view_table[entry].view = &views[vw];
+		//view_table[entry].view = &views[vw];
 
 		view_table[entry].bg_scr = NULL;
 		view_table[entry].bg_pri = NULL;
 		view_table[entry].motion = MOTION_NORMAL;
 		view_table[entry].cycle_status = CYCLE_NORMAL;
-		view_table[entry].num_loops = view_table[entry].view->num_loops;
+		//view_table[entry].num_loops = views[vw].num_loops;
 
 		view_table[entry].current_loop = -1;
 
 		/* Hmm... */
-		if (view_table[entry].num_loops >= 1 && view_table[entry].num_loops <= 3)
-		{
+		if (views[vw].num_loops >= 1 && views[vw].num_loops <= 3) {
 			switch(view_table[entry].direction) {
 			case 0:
 			case 1:
 			case 5:
-				set_loop(entry, 0);
+				set_loop (entry, 0);
 				break;
 			case 2:
 			case 3:
 			case 4:
-				set_loop(entry, 0);
+				set_loop (entry, 0);
 				break;
 			case 6:
 			case 7:
 			case 8:
-				set_loop(entry, 1);
+				set_loop (entry, 1);
 				break;
 			}
 		} else {
-			if (view_table[entry].num_loops == 4) {
+			if (views[vw].num_loops == 4) {
 				switch(view_table[entry].direction) {
 				case 0:
-					set_loop(entry, 0);
+					set_loop (entry, 0);
 					break;
 				case 1:
-					set_loop(entry, 3);
+					set_loop (entry, 3);
 					break;
 				case 2:
 				case 3:
 				case 4:
-					set_loop(entry, 0);
+					set_loop (entry, 0);
 					break;
 				case 5:
-					set_loop(entry, 2);
+					set_loop (entry, 2);
 					break;
 				case 6:
 				case 7:
 				case 8:
-					set_loop(entry, 1);
+					set_loop (entry, 1);
 					break;
 				}
 			} else {
-				set_loop(entry, 0); /* Default loop? */
+				set_loop (entry, 0); /* Default loop? */
 			}
 		}
 
@@ -254,8 +252,8 @@ void add_view_table (int entry, int vw)
 	if (view_table[entry].current_loop >= view_table[entry].view->num_loops)
 		view_table[entry].current_loop = 0;
 
-	if (view_table[entry].cur_cel > view_table[entry].view->loop[view_table[entry].current_loop].num_cels)
-		view_table[entry].cur_cel = 0;
+	if (view_table[entry].current_cel > view_table[entry].view->loop[view_table[entry].current_loop].num_cels)
+		view_table[entry].current_cel = 0;
 
 	set_loop (entry, 0);
 	set_cel  (entry, view_table[entry].cur_cel);
@@ -265,38 +263,40 @@ void add_view_table (int entry, int vw)
 
 void set_cel (int entry, int c)
 {
-	if (c >= view_table[entry].loop->num_cels) {
-		report ("Parachute deployed: attempt to set cel(=%d) > "
-			"num_cels(=%d)\n", c, view_table[entry].loop->num_cels);
+	if (c >= VT_LOOP(view_table[entry]).num_cels) {
+		report ("Oops! attempt to set cel(=%d) > num_cels(=%d)\n",
+			c, VT_LOOP(view_table[entry]).num_cels);
 		c = 0;
 	}
 
-	view_table[entry].cur_cel  = c;
-	view_table[entry].cel      = &view_table[entry].loop->cel[c];
-	view_table[entry].x_size   = view_table[entry].loop->cel[c].width;
-	view_table[entry].y_size   = view_table[entry].loop->cel[c].height;
-	view_table[entry].num_cels = view_table[entry].loop->num_cels;
+	view_table[entry].current_cel = c;
+	view_table[entry].x_size = VT_CEL(view_table[entry]).width;
+	view_table[entry].y_size = VT_CEL(view_table[entry]).height;
 }
 
 
 void set_loop (int entry, int loop)
 {
-	if(loop >= view_table[entry].view->num_loops)
+	if (loop >= VT_VIEW(view_table[entry]).num_loops)
 		loop = 0;
 
 	if (view_table[entry].current_loop != loop || getflag(F_new_room_exec))
 	{
 		view_table[entry].current_loop = loop;
-		view_table[entry].loop = &view_table[entry].view->loop[loop];
-		view_table[entry].num_cels = view_table[entry].loop->num_cels;
 
 		/* FR:
 		 * Adjust for the cell in the loop
+		 * FIXME: overkill
 		 */
-		if ( view_table[entry].cur_cel  < view_table[entry].num_cels )
-			set_cel ( entry, view_table[entry].cur_cel );
-		else
-			set_cel ( entry, 0 );    /* What should I do? */
+		if (view_table[entry].current_cel < VT_LOOP(view_table[entry]).num_cels) {
+			set_cel (entry, view_table[entry].current_cel);
+		} else {
+			report ("Oops. Attempt to set cel %d (max %d)\n",
+				view_table[entry].current_cel,
+				views[view_table[entry].current_view].loop[view_table[entry].current_loop].num_cels);
+
+			set_cel (entry, 0);    /* What should I do? */
+		}
 	}
 
 	/* FR:
@@ -354,8 +354,8 @@ void calc_direction (int vt)
 		return;
 
 	/* FR: Fixed (see agistudio doc) */
-	if (view_table[vt].num_loops < 4) {
-		switch(view_table[vt].direction) {
+	if (views[view_table[vt].current_view].num_loops < 4) {
+		switch (view_table[vt].direction) {
 		case 0:
 		case 1:
 		case 5:
@@ -371,7 +371,7 @@ void calc_direction (int vt)
 			set_loop(vt, 1);
 			break;
 		}
-	} else if (view_table[vt].num_loops == 4) {
+	} else if (views[view_table[vt].current_view].num_loops == 4) {
 		switch(view_table[vt].direction) {
 		case 0:
 			break;
@@ -403,21 +403,24 @@ void draw_obj (int vt)
 
 	if (v->x_pos + v->x_size > _WIDTH)
 		v->x_pos = _WIDTH - v->x_size;
+
+#if 0
 	//if(v->y_pos + v->y_size > _HEIGHT)
 	//      v->y_pos=_HEIGHT - v->y_size;
 
 	/* this also breaks kq2 intro etc!! hmmmm */
 	//if(v->y_pos + v->y_size > 200)	// _HEIGHT=168, breaks op:recon
 	//      v->y_pos=200- v->y_size;
+#endif
 
 	/* save bg co-ords */
-	v->bg_x      = v->x_pos;
-	v->bg_y      = (v->y_size > v->y_pos) ? 0 : (v->y_pos - v->y_size);
+	v->bg_x = v->x_pos;
+	v->bg_y = (v->y_size > v->y_pos) ?  0 : (v->y_pos - v->y_size);
 	v->bg_x_size = v->x_size;
 	v->bg_y_size = v->y_size;
 
 	/* copy background (screen) */
-	v->bg_scr = (UINT8*)malloc (v->bg_x_size * v->bg_y_size);
+	v->bg_scr = malloc (v->bg_x_size * v->bg_y_size);
 
 	/* We can always read from screen2 because agi_put_bitmap always
 	 * draws a copy of the image there
@@ -438,12 +441,12 @@ void draw_obj (int vt)
 	 * This work-around only create more bugs!
 	 */
 
-	agi_put_bitmap (v->cel->data,
+	agi_put_bitmap (VT_CEL(view_table[vt]).data,
 		v->x_pos,
-		(v->y_size > v->y_pos) ? 0 : (v->y_pos - v->y_size),
+		v->y_size > v->y_pos ? 0 : v->y_pos - v->y_size,
 		v->x_size,
 		v->y_size,
-		v->cel->transparency & 0xF,
+		VT_CEL(view_table[vt]).transparency & 0xf,
 		v->priority);
 }
 
