@@ -43,11 +43,7 @@
 #ifdef __TURBOC__
 #  include <alloc.h>
 #  undef USE_PCM_SOUND
-#  undef USE_HIRES
 #  undef USE_MOUSE
-#  undef OPT_LIST_OBJECTS
-#  undef OPT_PICTURE_VIEWER
-#  undef OPT_LIST_DICT
 #endif
 
 /*
@@ -67,7 +63,6 @@
 #  define calloc(x,s)	((void *)NewPtrClear ((x) * (s)))
 #  define realloc(x,s)	(x) /* FIXME */
 #  define free(x)	DisposePtr ((Ptr)(x))
-#  undef USE_HIRES
 #  undef USE_COMMAND_LINE
 #  undef OPT_LIST_OBJECTS
 #  undef OPT_PICTURE_VIEWER
