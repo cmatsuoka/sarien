@@ -219,7 +219,7 @@ static struct sprite *new_sprite (struct vt_entry *v)
 	s->y_size = v->y_size;
 	s->buffer = malloc (s->x_size * s->y_size);
 #ifdef USE_HIRES
-	s->hires = malloc (s->x_size * 2 * s->y_size);
+	s->hires = malloc (s->x_size * s->y_size * 2);
 #endif
 	v->s = s;	/* link view table entry to this sprite */
 
@@ -610,6 +610,9 @@ void show_obj (n)
 	s.x_size = c->width;
 	s.y_size = c->height;
 	s.buffer = malloc (s.x_size * s.y_size);
+#ifdef USE_HIRES
+	s.hires = malloc (s.x_size * s.y_size * 2);
+#endif
 
 	objs_savearea (&s);
 	blit_cel (x1, y1, s.x_size, c);
