@@ -18,6 +18,7 @@ Tested ports:
  AIX 4   |  gcc  |   X11   |  dummy  |   yes   |    no   |         |
  IRIX    |MIPSpro|   X11   |   sgi   |   yes   |    no   | aheikin |
  Tru64   |  gcc  |   X11   |  dummy  |   yes   |    no   |  aakis  |
+ HP-UX   | HP-CC |   X11   |  dummy  |   yes   |    no   | rosinha |
 ---------+-------+---------+---------+---------+---------+---------+
  QNX	 |  gcc  |  Photon |  ALSA   |   yes   |   yes   | jpenner |
 ---------+-------+---------+---------+---------+---------+---------+
