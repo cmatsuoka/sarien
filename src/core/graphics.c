@@ -178,63 +178,71 @@ static void init_console ()
 #endif /* USE_CONSOLE */
 
 
+#define SHAKE_MAG 3
+static UINT8 *shake_h, *shake_v;
 
-/* FIXME:  main_cycle() calls shouldn't be here! */
-void shake_screen (int n)
+void shake_start ()
 {
-#define MAG 3
-	int i, j;
-	UINT8 *h, *v;
+	int i;
 
-	if ((h = malloc (GFX_WIDTH * MAG)) == NULL)
+	if ((shake_h = malloc (GFX_WIDTH * SHAKE_MAG)) == NULL)
 		return;
 
-	if ((v = malloc (MAG * (GFX_HEIGHT - MAG))) == NULL) {
-		free (h);
+	if ((shake_v = malloc (SHAKE_MAG * (GFX_HEIGHT - SHAKE_MAG))) == NULL) {
+		free (shake_h);
 		return;
 	}
 	
-	for (i = 0; i < GFX_HEIGHT - MAG; i++)
-		memcpy (v + i * MAG, sarien_screen + i * GFX_WIDTH, MAG);
+	for (i = 0; i < GFX_HEIGHT - SHAKE_MAG; i++) {
+		memcpy (shake_v + i * SHAKE_MAG,
+			sarien_screen + i * GFX_WIDTH, SHAKE_MAG);
+	}
 
-	for (i = 0; i < MAG; i++) {
-		memcpy (h + i * GFX_WIDTH, sarien_screen + i * GFX_WIDTH,
+	for (i = 0; i < SHAKE_MAG; i++) {
+		memcpy (shake_h + i * GFX_WIDTH, sarien_screen + i * GFX_WIDTH,
 			GFX_WIDTH);
 	}
+}
+
  
-	commit_both ();		/* Fixed SQ1 demo */
+void shake_screen (int n)
+{
+	int i;
 
-	for (j = 0; j < (2 * n); j++) {
-		for (i = 0; i < (GFX_HEIGHT - MAG); i++) {
+	if (n == 0) {
+		for (i = 0; i < (GFX_HEIGHT - SHAKE_MAG); i++) {
 			memmove (&sarien_screen[GFX_WIDTH * i],
-				&sarien_screen[GFX_WIDTH * (i + MAG) + MAG],
-				GFX_WIDTH - MAG);
+				&sarien_screen[GFX_WIDTH * (i + SHAKE_MAG) +
+				SHAKE_MAG], GFX_WIDTH - SHAKE_MAG);
 		}
-
-		flush_block (0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
-		main_cycle ();
-
-		for (i = GFX_HEIGHT - MAG - 1; i >= 0; i--) {
-			memmove (&sarien_screen[GFX_WIDTH * (i + MAG) + MAG],
-				&sarien_screen[GFX_WIDTH * i], GFX_WIDTH - MAG);
+	} else {
+		for (i = GFX_HEIGHT - SHAKE_MAG - 1; i >= 0; i--) {
+			memmove (&sarien_screen[GFX_WIDTH * (i + SHAKE_MAG) +
+				SHAKE_MAG], &sarien_screen[GFX_WIDTH * i],
+				GFX_WIDTH - SHAKE_MAG);
 		}
-
-		flush_block (0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
-		main_cycle ();
 	}
+}
 
-	for (i = 0; i < GFX_HEIGHT - MAG; i++)
-		memcpy (sarien_screen + i * GFX_WIDTH, v + i * MAG, MAG);
 
-	for (i = 0; i < MAG; i++) {
+void shake_end ()
+{
+	int i;
+
+	for (i = 0; i < GFX_HEIGHT - SHAKE_MAG; i++) {
 		memcpy (sarien_screen + i * GFX_WIDTH,
-			h + i * GFX_WIDTH, GFX_WIDTH);
+			shake_v + i * SHAKE_MAG, SHAKE_MAG);
 	}
+
+	for (i = 0; i < SHAKE_MAG; i++) {
+		memcpy (sarien_screen + i * GFX_WIDTH,
+			shake_h + i * GFX_WIDTH, GFX_WIDTH);
+	}
+
 	flush_block (0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
 
-	free (v);
-	free (h);
-#undef MAG
+	free (shake_v);
+	free (shake_h);
 }
 
 

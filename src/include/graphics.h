@@ -52,6 +52,8 @@ extern UINT8	layer2_data[];
 
 void 	put_text_character(int, int, int, unsigned int, int, int);
 void	shake_screen	(int);
+void	shake_start	(void);
+void	shake_end	(void);
 void	save_screen	(void);
 void	restore_screen	(void);
 

@@ -801,22 +801,27 @@ cmd(mouse_posn)	{
 }
 
 cmd(shake_screen) {
-	/*
-	 * AGI Mouse 1.1 uses shake.screen values between 100 and 109 to
+	int i;
+
+#ifdef USE_MOUSE
+	/* AGI Mouse 1.1 uses shake.screen values between 100 and 109 to
 	 * set the palette.
 	 */
-#ifdef USE_MOUSE
-	if (opt.agimouse) {
-		if (p0 < 100 && p0 > 109 ) {
-			shake_screen (p0);
-		}
-		else {
-			report ("not implemented: AGI Mouse palettes\n");
-		}
+	if (opt.agimouse && p0 >= 100 && p0 < 110) {
+		report ("not implemented: AGI Mouse palettes\n");
+		return;
 	}
 	else
 #endif
-		shake_screen (p0);
+
+	shake_start ();
+	commit_both ();			/* Fixes SQ1 demo */
+	for (i = 4 * p0; i; i--) { 
+		shake_screen (i & 1);
+                flush_block (0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
+                main_cycle ();
+	}
+	shake_end ();
 }
 
 
