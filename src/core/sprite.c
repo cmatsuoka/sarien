@@ -43,12 +43,8 @@ struct sprite {
  */
 #undef ALLOC_DEBUG
 
-#ifdef __TURBOC__
-#  define POOL_SIZE 16000
-#else
-#  define POOL_SIZE 32000
-#endif
-static UINT8 *sprite_pool[POOL_SIZE];
+#define POOL_SIZE 32000
+static UINT8 sprite_pool[POOL_SIZE];
 static UINT8 *pool_top = (UINT8 *)sprite_pool;
 
 #ifdef ALLOC_DEBUG
