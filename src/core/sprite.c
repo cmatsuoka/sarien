@@ -86,6 +86,9 @@ static void objs_savearea (struct sprite *s)
 	int y;
 	UINT8 *p0, *q;
 
+	if (s->y_pos >= _WIDTH)
+		return;
+
 	p0 = &game.sbuf[s->x_pos + s->y_pos * _WIDTH];
 	q = s->buffer;
 	for (y = 0; y < s->y_size; y++) {
@@ -99,6 +102,9 @@ static void objs_restorearea (struct sprite *s)
 {
 	int y;
 	UINT8 *p0, *q;
+
+	if (s->y_pos >= _WIDTH)
+		return;
 
 	p0 = &game.sbuf[s->x_pos + s->y_pos * _WIDTH];
 	q = s->buffer;
@@ -480,7 +486,7 @@ void show_obj (n)
 		return;
 	
 	s.x_pos = (_WIDTH - c->width) / 2;
-	s.y_pos = 128;
+	s.y_pos = 120;
 	s.x_size = c->width;
 	s.y_size = c->height;
 	s.buffer = malloc (s.x_size * s.y_size);

@@ -318,7 +318,7 @@ int wait_key ()
 		poll_timer ();		/* msdos driver -> does nothing */
 		key = poll_keyboard ();
 		if (!console_keyhandler (key)) {
-			if (key == KEY_ENTER || key == KEY_ESCAPE)
+			if (key == KEY_ENTER || key == KEY_ESCAPE || key == ' ')
 				break;
 		}
 		console_cycle ();

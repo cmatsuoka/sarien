@@ -208,11 +208,12 @@ char* word_wrap_string (char *mesg, int *len)
 	char *msg, *v, *e;
 	int maxc, c, l = *len;
 
-	v = msg = strdup ((char*)mesg);
-	e = msg + strlen ((char*)msg);
+	v = msg = strdup (mesg);
+	e = msg + strlen (msg);
 	maxc = 0;
 
 	while (42) {
+		_D ("[%s], %d", msg, maxc);
 		while ((c = strcspn (v, "\n")) <= l) {
 			if (c > maxc)
 				maxc = c;
