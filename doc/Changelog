@@ -21,7 +21,7 @@ Revision History
 	- Fixed speach bubbles bug for going outside of screen (draw_obj)
 	- Added more inventory code for object viewing
 	- Added Peter Hawkins' save patches
-	- Added Magnus Kristianses's statusline patches
+	- Added Magnus Kristiansen's status line patches
 
 0.5.1 (20000110) *DEVELOPMENT*
 	- added new id mechanism with external id file.
