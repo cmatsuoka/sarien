@@ -24,4 +24,10 @@
 - (BOOL)hasPendingKey;
 - (int)getKey;
 
+- (void)displayIfNeeded;
+- (BOOL)needsDisplay;
+
+- (void)lock;
+- (void)unlock;
+
 @end

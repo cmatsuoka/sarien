@@ -59,19 +59,23 @@ int cocoa_deinit(void)
 
 void cocoa_put_block(int x, int y, int w, int h)
 {
+    [sarienView lock];
     [sarienView setNeedsDisplay: YES];
+    [sarienView unlock];
 }
 
 void cocoa_put_pixels(int x, int y, int w, UINT8 *p)
 {
     unsigned int* pixels;
 
+    [sarienView lock];
     pixels = &[sarienView screenContent][x + (y * GFX_WIDTH)];
     
     while (w--)
     {
         *pixels++ = sarienPalette[*p++];
     }
+    [sarienView unlock];
 }
 
 int cocoa_keypress(void)

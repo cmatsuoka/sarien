@@ -58,8 +58,18 @@
     CGImageRelease(screenImage);
     free(screen);
     [mutex release];
-
     [super dealloc];
+}
+
+- (void)displayIfNeeded
+{
+    [self setNeedsDisplay: YES];
+    [super displayIfNeeded];
+}
+
+- (BOOL)needsDisplay
+{
+    return YES;
 }
 
 - (void)drawRect:(NSRect)aRect
@@ -67,12 +77,14 @@
     CGContextRef context;
     CGRect       rc;
     NSRect       bnd;
-    
+
+    [mutex lock];
     context = [[NSGraphicsContext graphicsContextWithWindow: [self window]] graphicsPort];
     bnd     = [self frame];
     rc      = CGRectMake(bnd.origin.x, bnd.origin.y, aRect.size.width, aRect.size.height);
 
     CGContextDrawImage(context, rc, screenImage);
+    [mutex unlock];
 }
 
 - (unsigned int*)screenContent
@@ -175,6 +187,16 @@
     }
     
     return 0;
+}
+
+- (void)lock
+{
+    [mutex lock];
+}
+
+- (void)unlock
+{
+    [mutex unlock];
 }
 
 @end
