@@ -769,8 +769,10 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 		/* add rectangle around object, don't clobber control
 		 * info in priority data. The box extends to the end of
 		 * its priority band!
+		 *
+		 * SQ1 needs +1 (see bug #810331)
 		 */
-		y3 = (y2 / 12) * 12;
+		y3 = (y2 / 12) * 12 + 1;
 
 		p1 = &game.sbuf[x1 + y3 * _WIDTH];
 		p2 = &game.sbuf[x2 + y3 * _WIDTH];
