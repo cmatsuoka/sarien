@@ -1061,7 +1061,9 @@ int run_logic (int n)
 
 void execute_agi_command (UINT8 op, UINT8 *p)
 {
+#ifdef USE_CONSOLE
 	_D (_D_WARN "%s %d %d %d", logic_names_cmd[op].name, p[0], p[1], p[2]);
+#endif
 	agi_command[op](p);
 }
 
