@@ -105,7 +105,7 @@ extern struct gfx_driver *gfx;
 
 static char *apptext = TITLE " " VERSION;
 static HDC  hDC;
-static WNDCLASS wndclass;
+static WNDCLASSEX wc;
 static int xsize, ysize;
 	
 
@@ -211,7 +211,7 @@ static void update_mouse_pos(int x, int y)
 
 
 LRESULT CALLBACK
-MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
+MainWndProc (HWND hwndMain, UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
 	HDC          hDC;
 	PAINTSTRUCT  ps;
@@ -467,13 +467,12 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 
-	return DefWindowProc (hwnd, nMsg, wParam, lParam);
+	return DefWindowProc (hwndMain, nMsg, wParam, lParam);
 }
 
 static int init_vidmode ()
 {
 	int i;
-	HANDLE hMenu;
 
 #if 0
 	/* FIXME: place this in an "About" box or something... */
@@ -489,25 +488,30 @@ static int init_vidmode ()
 	xsize = GFX_WIDTH * scale;
 	ysize = (opt.fixratio ? ASPECT_RATIO(GFX_HEIGHT) : GFX_HEIGHT) * scale;
 
-	memset (&wndclass, 0, sizeof(WNDCLASS));
-	wndclass.lpszClassName = g_szMainWndClass;
-	wndclass.style         = CS_HREDRAW | CS_VREDRAW;
-	wndclass.lpfnWndProc   = MainWndProc;
-	wndclass.hInstance     = GetModuleHandle(NULL);
-	/* wndclass.hIcon         = LoadIcon (NULL, IDI_APPLICATION); */
-	wndclass.hIcon         = LoadIcon (NULL, "ICON_MAIN");
-	wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW);
-	wndclass.hbrBackground = GetStockObject (BLACK_BRUSH);
+	memset (&wc, 0, sizeof(WNDCLASS));
+	wc.cbSize        = sizeof(WNDCLASSEX);
+	wc.lpszClassName = g_szMainWndClass;
+	wc.style         = CS_HREDRAW | CS_VREDRAW;
+	wc.lpfnWndProc   = MainWndProc;
+	wc.hInstance     = GetModuleHandle(NULL);
+	/* wc.hIcon         = LoadIcon (NULL, IDI_APPLICATION); */
+	wc.hIcon         = LoadIcon (GetModuleHandle(NULL),
+				MAKEINTRESOURCE(ICON_MAIN));
+	wc.hIconSm       = (HICON)LoadImage (GetModuleHandle(NULL),
+				MAKEINTRESOURCE(ICON_MAIN),
+				IMAGE_ICON, 16, 16, 0);
+	wc.hCursor       = LoadCursor (NULL, IDC_ARROW);
+	wc.hbrBackground = GetStockObject (BLACK_BRUSH);
+	wc.lpszMenuName  = MAKEINTRESOURCE(MENU_MAIN);
 
-	hMenu = LoadMenu (GetModuleHandle(NULL), "MENU_MAIN");	
-
-	if (!RegisterClass(&wndclass)) {
+	if (!RegisterClassEx(&wc)) {
 		OutputDebugString("win32.c: init_vidmode(): can't register class");
 		g_err = err_Unk;
 		goto exx;
 	}
 
-	hwndMain = CreateWindow (
+	hwndMain = CreateWindowEx (
+		WS_EX_CLIENTEDGE,
 		g_szMainWndClass,
 		apptext,
 		WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX,
@@ -517,7 +521,7 @@ static int init_vidmode ()
 		ysize + GetSystemMetrics (SM_CYCAPTION) +
 			GetSystemMetrics (SM_CYFRAME),
 		NULL,
-		hMenu,
+		NULL,
 		NULL,
 		NULL 
 	);
@@ -692,7 +696,7 @@ static void win32_new_timer ()
 /* Primitive palette functions */
 static int set_palette (UINT8 *pal, int scol, int numcols)
 {
-	int          i, j;
+	int          i;
 	HDC          hDC;
 	LOGPALETTE   *palette;
 	PALETTEENTRY *entries;
@@ -707,31 +711,25 @@ static int set_palette (UINT8 *pal, int scol, int numcols)
 		}
 
 		palette->palVersion    = 0x300;
-		palette->palNumEntries = 256;   /* Yikes! */
+		palette->palNumEntries = 32;   /* Yikes! */
 
 		GetSystemPaletteEntries(hDC, 0, 16, palette->palPalEntry);
-
 		g_hPalette = CreatePalette(palette);
+		entries = (PALETTEENTRY *)malloc(32 * sizeof(PALETTEENTRY));
 
-		entries = (PALETTEENTRY *)malloc(256 * sizeof(PALETTEENTRY));
-
-		for (i = 0, j = 0; j < 256; j++) {
-			entries[j].peRed   = pal[i*3    ] << 2;
-			entries[j].peGreen = pal[i*3 + 1] << 2;
-			entries[j].peBlue  = pal[i*3 + 2] << 2;
-			entries[j].peFlags = PC_NOCOLLAPSE;
-
-			i ++;
-			if (i >= 32)
-				i = 0;
+		for (i = 0; i < 32; i++) {
+			entries[i].peRed   = pal[i*3    ] << 2;
+			entries[i].peGreen = pal[i*3 + 1] << 2;
+			entries[i].peBlue  = pal[i*3 + 2] << 2;
+			entries[i].peFlags = PC_NOCOLLAPSE;
 		}
 
-		SetPaletteEntries(g_hPalette, 0, 256, entries);
+		SetPaletteEntries(g_hPalette, 0, 32, entries);
 		SelectPalette(hDC, g_hPalette, FALSE);
 		RealizePalette(hDC);
 	}
 
-	ReleaseDC( hwndMain, hDC );
+	ReleaseDC(hwndMain, hDC);
 
 	return err_OK;
 }

@@ -30,8 +30,12 @@ archfiles: $(ARCH_SUBDIR)
 
 exefile: ../../bin/sarien$(EXE_SUFFIX)
 
-../../bin/sarien$(EXE_SUFFIX): $(MAIN_FILE).o $(LIB)
-	$(LD) $(LDFLAGS) $(XLDFLAGS) $(MAIN_FILE).o id.o $(XLIBS) $(X11LIBS) $(LIBS)
+ifeq ($(CORE_ARCH),win32)
+XTRA_OBJS = win32/winres.o
+endif
+
+../../bin/sarien$(EXE_SUFFIX): $(MAIN_FILE).o $(XTRA_OBJS) $(LIB)
+	$(LD) $(LDFLAGS) $(XLDFLAGS) $(MAIN_FILE).o id.o $(XTRA_OBJS) $(XLIBS) $(X11LIBS) $(LIBS)
 
 graph: callgraph.ps
 

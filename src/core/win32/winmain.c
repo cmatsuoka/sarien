@@ -30,7 +30,6 @@ struct game_id_list game_info;
 struct agi_game game;
 
 extern struct gfx_driver *gfx;
-
 extern struct gfx_driver gfx_win32;
 #ifdef USE_DIRECTX
 extern struct gfx_driver gfx_d3d;

@@ -3,7 +3,7 @@
 #include "resource.h"
 
 
-ICON_MAIN Icon "sarien.ico"
+ICON_MAIN ICON "sarien.ico"
 
 
 MENU_MAIN MENU
@@ -13,6 +13,10 @@ BEGIN
 		MENUITEM "&Open...", ITEM_FILE_OPEN
 		MENUITEM SEPARATOR
 		MENUITEM "E&xit", ITEM_FILE_EXIT
+	END
+
+	POPUP "&Options"
+	BEGIN
 	END
 
 	POPUP "&Help"
