@@ -265,6 +265,9 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		case VK_F10:
 			key = 0x4400;
 			break;
+		case VK_F11:
+			key = KEY_STATUSLN;
+			break;
 		case VK_F12:
 			key = KEY_PRIORITY;
 			break;

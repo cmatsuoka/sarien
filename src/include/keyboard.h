@@ -29,7 +29,8 @@ extern "C"{
 #define KEY_UP_LEFT	0x4700
 #define KEY_UP_RIGHT	0x4900
 
-#define KEY_PRIORITY	0xff61
+#define KEY_STATUSLN	0xff61		/* F11 */
+#define KEY_PRIORITY	0xffc8		/* F12 */
 
 #define KEY_PGUP	0x4A2D		/* keypad + */
 #define KEY_PGDN	0x4E2B  	/* keypad - */

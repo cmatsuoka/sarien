@@ -20,6 +20,7 @@ Revision History
 	- using table instead of computed values for priority bands
 	- implemented set.pri.base (used in KQ4)
 	- implemented echo.line (to repeat last input line with F3)
+	- added debug info on status line (activated with key F11)
 
 0.6.1 (20010722)
 	- fixed QNX build and Photon driver

@@ -201,6 +201,12 @@ int main_cycle ()
 		commit_both ();
 		key = 0;
 	}
+
+	if (key == KEY_STATUSLN) {
+		debug.statusline = !debug.statusline;
+		write_status ();
+		key = 0;
+	}
 #endif
 
 	kascii = KEY_ASCII (key);

@@ -432,6 +432,16 @@ void write_status ()
 {
 	char x[64];
 
+#ifdef USE_CONSOLE
+	if (debug.statusline) {
+		print_status ("%3d(%03d) %3d,%3d                        ",
+			getvar (0), getvar (1),
+			game.view_table[0].x_pos,
+			game.view_table[0].y_pos);
+		return;
+	}
+#endif
+
 	if (/*game.line_min_print == 0 ||*/ !game.status_line) {
 		clear_lines (0, 0, 0);
 		return;

@@ -38,6 +38,7 @@ struct sarien_debug {
 	int logic0;
 	int steps;
 	int priority;
+	int statusline;
 };
 
 extern struct sarien_console console;

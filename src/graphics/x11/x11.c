@@ -393,6 +393,9 @@ static void process_events ()
 			case XK_F10:
 				key = 0x4400;
 				break;
+			case XK_F11:
+				key = KEY_STATUSLN;
+				break;
 			case XK_F12:
 				key = KEY_PRIORITY;
 				break;

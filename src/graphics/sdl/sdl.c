@@ -364,6 +364,9 @@ static void process_events ()
 			case SDLK_F10:
 				key = 0x4400;
 				break;
+			case SDLK_F11:
+				key = KEY_STATUSLN;
+				break;
 			case SDLK_F12:
 				key = KEY_PRIORITY;
 				break;

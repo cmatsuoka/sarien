@@ -204,6 +204,9 @@ static void svgalib_key_handler (int scancode, int press)
 			0x4000, 0x4100, 0x4200, 0x4300, 0x4400};
 		key_value= ftable[(scancode - SCANCODE_F1)];
 		break; }
+	case SCANCODE_F11:
+		key_value = KEY_STATUSLN;
+		break;
 	case SCANCODE_F12:
 		key_value = KEY_PRIORITY;
 		break;
@@ -444,3 +447,4 @@ static void gfx_new_timer ()
 
 	process_events ();
 }
+

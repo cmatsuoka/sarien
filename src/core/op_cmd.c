@@ -144,11 +144,11 @@ cmd(log)		{ /* do nothing */ }
 cmd(trace_on)		{ /* do nothing */ }
 cmd(trace_info)		{ /* do nothing */ }
 cmd(show_mem)		{ message_box ("Enough memory"); }
-cmd(toggle_monitor)	{ report ("toggle.monitor\n"); }
-cmd(init_joy)		{ report ("init.joystick\n"); }
+cmd(toggle_monitor)	{ /* do nothing */; }
+cmd(init_joy)		{ /* do nothing */; }
 cmd(script_size)	{ report ("script.size(%d)\n", p0); }
 cmd(cancel_line)	{ report ("cancel.line\n"); }
-cmd(obj_status_f)	{ report ("obj.status.v\n"); }
+cmd(obj_status_f)	{ report ("obj.status.f\n"); }
 
 /* unknown commands:
  * unk_170: Force savegame name -- j5
@@ -171,7 +171,6 @@ cmd(fence_mouse)	{ report ("fence.mouse\n"); }
 cmd(mouse_posn)		{ report ("mouse.posn\n"); }
 cmd(release_key)	{ report ("release.key\n"); }
 cmd(adj_ego_move_to_xy)	{ report ("adj.ego.move.to.xy\n"); }
-
 
 
 cmd(call) {
@@ -248,13 +247,14 @@ cmd(show_pri_screen) {
 }
 
 cmd(animate_obj) {
-	if (~vt.flags & ANIMATED) {
-		_D (_D_WARN "animate vt entry #%d", p0);
-		vt.flags = ANIMATED | UPDATE | CYCLING;
-		vt.motion = MOTION_NORMAL;
-		vt.cycle = CYCLE_NORMAL;
-		vt.direction = 0;
-	}
+	if (vt.flags & ANIMATED)
+		return;
+
+	_D (_D_WARN "animate vt entry #%d", p0);
+	vt.flags = ANIMATED | UPDATE | CYCLING;
+	vt.motion = MOTION_NORMAL;
+	vt.cycle = CYCLE_NORMAL;
+	vt.direction = 0;
 }
 
 cmd(unanimate_all) {
@@ -264,39 +264,41 @@ cmd(unanimate_all) {
 }
 
 cmd(draw) {
-	if (~vt.flags & DRAWN) {
-		vt.flags |= UPDATE;
-		fix_position (p0);
-		vt.x_pos2 = vt.x_pos;
-		vt.y_pos2 = vt.y_pos;
-		vt.cel_data_2 = vt.cel_data;
-		erase_upd_sprites ();
-		vt.flags |= DRAWN;
-		blit_upd_sprites ();
-		vt.flags &= ~DONTUPDATE;
+	if (vt.flags & DRAWN)
+		return;
 
-		commit_block (vt.x_pos, vt.y_pos - vt.y_size + 1,
-			vt.x_pos + vt.x_size - 1, vt.y_pos);
+	vt.flags |= UPDATE;
+	fix_position (p0);
+	vt.x_pos2 = vt.x_pos;
+	vt.y_pos2 = vt.y_pos;
+	vt.cel_data_2 = vt.cel_data;
+	erase_upd_sprites ();
+	vt.flags |= DRAWN;
+	blit_upd_sprites ();
+	vt.flags &= ~DONTUPDATE;
 
-		_D ("vt entry #%d flags = %02x", p0, vt.flags);
-	}
+	commit_block (vt.x_pos, vt.y_pos - vt.y_size + 1,
+		vt.x_pos + vt.x_size - 1, vt.y_pos);
+
+	_D ("vt entry #%d flags = %02x", p0, vt.flags);
 }
 
 cmd(erase) {
-	if (vt.flags & DRAWN) {
-		erase_upd_sprites ();
-		if (vt.flags & UPDATE) {
-			vt.flags &= ~DRAWN;
-		} else {
-			erase_nonupd_sprites ();
-			vt.flags &= ~DRAWN;
-			blit_nonupd_sprites ();
-		}
-		blit_upd_sprites ();
+	if (~vt.flags & DRAWN)
+		return;
 
-		commit_block (vt.x_pos, vt.y_pos - vt.y_size + 1,
-			vt.x_pos + vt.x_size - 1, vt.y_pos);
+	erase_upd_sprites ();
+	if (vt.flags & UPDATE) {
+		vt.flags &= ~DRAWN;
+	} else {
+		erase_nonupd_sprites ();
+		vt.flags &= ~DRAWN;
+		blit_nonupd_sprites ();
 	}
+	blit_upd_sprites ();
+
+	commit_block (vt.x_pos, vt.y_pos - vt.y_size + 1,
+		vt.x_pos + vt.x_size - 1, vt.y_pos);
 }
 
 cmd(position) {
@@ -917,6 +919,10 @@ static void (*agi_command[183])(UINT8 *) = {
 
 #define CMD_BSIZE 12
 
+/**
+ * Execute a logic script
+ * @param n  Number of the logic resource to execute
+ */
 int run_logic (int n)
 {
 	UINT8 op, p[CMD_BSIZE];

@@ -315,6 +315,9 @@ static void commit_sprites (struct list_head *head)
 		s->v->y_pos2 = s->v->y_pos;
 		s->v->flags &= ~DIDNT_MOVE;
 	}
+
+	if (debug.statusline)
+		write_status ();
 }
 
 /**

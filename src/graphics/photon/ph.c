@@ -448,6 +448,12 @@ static int ph_keypress_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 			case Pk_F10:
 				key = 0x4400;
 				break;
+			case Pk_F11:
+				key = KEY_STATUSLN;
+				break;
+			case Pk_F12:
+				key = KEY_PRIORITY;
+				break;
 			case Pk_Return:
 				key = 0x0d;
 				break;
