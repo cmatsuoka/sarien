@@ -148,9 +148,9 @@ int main (int argc, char *argv[])
 	/* printf() breaks GCC 3.0 build */
 	fprintf (stdout,
 TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
-"Copyright (C) 1999-2002 Stuart George\n"
+"Copyright (C) 1999-2003 Stuart George\n"
 "Portions Copyright (C) 1998 Lance Ewing, (C) 1999 Felipe Rosinha,\n"
-" (C) 1999-2002 Claudio Matsuoka, (C) 1999-2001 Igor Nesterov,\n"
+" (C) 1999-2003 Claudio Matsuoka, (C) 1999-2001 Igor Nesterov,\n"
 " (C) 2001,2002 Vasyl Tsvirkunov, (C) 2001,2002 Thomas Akesson\n"
 "Scale2x Copyright (C) 2001-2002 Andrea Mazzoleni\n"
 #ifndef HAVE_GETOPT_LONG

@@ -217,18 +217,6 @@ enum {
 	lTEST_MODE
 };
 
-enum {
-	eKEY_PRESS = 1,
-	eSCAN_CODE,
-	eMENU_PRESS
-};
-
-enum {
-	GFX_MODE = 1,
-	TXT_MODE
-};
-
-
 struct game_id_list {
 	struct game_id_list *next;
 	UINT32 version;
