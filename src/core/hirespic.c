@@ -47,7 +47,7 @@ static INLINE int hires_fill_here (int x, int y)
 	if (!scr_on && !pri_on)
 		return FALSE;
 
-	p = &game.hires[y * (_WIDTH * 2) + x * 2];
+	p = &game.hires[(SINT32)y * (_WIDTH * 2) + x * 2];
 	s = &game.sbuf[y * _WIDTH + x];
 
 	if (scr_on) {
@@ -110,7 +110,7 @@ static void fix_pixel_here (int x, int y)
 **************************************************************************/
 static void hires_fill_scanline (int x, int y)
 {
-	int c;
+	unsigned int c;
 	int newspan_up, newspan_down;
 
 	if (!hires_fill_here (x, y))
@@ -146,12 +146,12 @@ static void hires_fill_scanline (int x, int y)
 	fix_pixel_right (c, y);
 }
 
-static void hiresFill (int x, int y)
+static void _hires_fill (unsigned int x, unsigned int y)
 {
 	_PUSH (x + 320 * y);
 
 	while (42) {
-		int c = _POP();
+		UINT16 c = _POP();
 
 		/* Exit if stack is empty */
 		if (c == 0xffff)
@@ -177,7 +177,7 @@ static void hires_fill ()
 	int x1, y1;
 
 	while ((x1 = next_byte) < 0xf0 && (y1 = next_byte) < 0xf0) {
-		hiresFill (x1, y1);
+		_hires_fill (x1, y1);
 	}
 
 	foffs--;
@@ -190,8 +190,8 @@ static void hires_fill ()
  */
 void show_hires_pic ()
 {
-	int i, y;
-	int offset;
+	int y, offset;
+	SINT32 i;
 
 	i = 0;
 	offset = game.line_min_print * CHAR_LINES;

@@ -101,7 +101,9 @@ update_statusline:
     			case 'q':
 				goto end_view;
 #ifdef USE_HIRES
+#ifdef USE_MOUSE
 			case BUTTON_RIGHT:
+#endif
     			case 'h':
 				opt.hires = !opt.hires;
 				show_pic ();
@@ -118,9 +120,11 @@ update_statusline:
 				goto update_statusline;
 			case 'r':
 				goto next_pic;
+#ifdef USE_MOUSE
 			case BUTTON_LEFT:
 				if (mouse.x < GFX_WIDTH / 2) 
 					goto previous_pic;
+#endif
 				/* fall through */
     			case '+':
 				_D ("next pic");

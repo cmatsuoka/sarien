@@ -180,7 +180,7 @@ struct agi_game {
 	unsigned int color_bg;
 	UINT8 sbuf[_WIDTH * _HEIGHT];	/**< 160x168 AGI screen buffer */
 #ifdef USE_HIRES
-	UINT8 hires[_WIDTH * _HEIGHT * 2];	/**< 320x128 hi-res buffer */
+	UINT8 *hires;			/**< 320x168 hi-res buffer */
 #endif
 
 	/* player command line */

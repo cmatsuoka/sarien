@@ -79,6 +79,9 @@ int main (int argc, char *argv[])
 
 	game.color_fg = 15;
 	game.color_bg = 0;
+#ifdef USE_HIRES
+	game.hires = malloc (_WIDTH * _HEIGHT * 2);
+#endif
 
 	if (init_video () != err_OK) {
 		ec = err_Unk;
@@ -153,6 +156,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 
 	deinit_sound ();
 	deinit_video ();
+	free (game.hires);
 
 bail_out:
 	if (ec == err_OK || ec == err_DoNothing) {

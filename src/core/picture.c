@@ -338,7 +338,7 @@ static INLINE int is_ok_fill_here (int x, int y)
 **************************************************************************/
 static void fill_scanline (int x, int y)
 {
-	int c;
+	unsigned int c;
 	int newspan_up, newspan_down;
 
 	if (!is_ok_fill_here (x, y))
@@ -370,12 +370,12 @@ static void fill_scanline (int x, int y)
 	}
 }
 
-static void agi_fill (int x, int y)
+static void agi_fill (unsigned int x, unsigned int y)
 {
 	_PUSH (x + 320 * y);
 
 	while (42) {
-		int c = _POP();
+		UINT16 c = _POP();
 
 		/* Exit if stack is empty */
 		if (c == 0xffff)
