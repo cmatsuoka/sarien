@@ -52,6 +52,7 @@ static void print_item (int n, int fg, int bg)
 		(n / 2) + 2, 40, fg, bg);
 }
 
+#ifdef USE_MOUSE
 static int find_item ()
 {
 	int r, c;
@@ -66,6 +67,7 @@ static int find_item ()
 
 	return (r - 2) * 2 + (c > 20);
 }
+#endif
 
 static int show_items ()
 {
@@ -120,6 +122,7 @@ static void select_items (int n)
 		case KEY_RIGHT:
 			if (fsel % 2 == 0 && fsel + 1 < n) fsel++;
 			break;
+#ifdef USE_MOUSE
 		case BUTTON_LEFT: {
 			int i = find_item ();
 			if (i >= 0 && i < n) {
@@ -131,6 +134,7 @@ static void select_items (int n)
 				goto exit_select;
 			}
 			break; }
+#endif
 		default:
 			break;
 		}

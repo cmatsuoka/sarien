@@ -22,6 +22,7 @@ The following compilers/environments can be used to build sarien:
 	GNU C compiler	UNIX, Linux, BeOS, QNX, AmigaOS
 	Cygwin/Mingw32	Win32
 	Visual C++	Win32
+	Embedded VC	WinCE
 	MIPSpro		IRIX
 	DJGPP		MS-DOS (uses Allegro)
 	Watcom C	MS-DOS

@@ -1,4 +1,4 @@
-
+$Id$
 
 
 Playability:
@@ -22,8 +22,8 @@ Extra features:
 
 0.7.0:
 
-* Demopacks 100% accurate
-* Sierra v2 games finishable
+* Demopacks 1-4 100% accurate
+* Main Sierra v2 games finishable (LSL1, KQ1-3, PQ1, SQ1-2)
 * AGDS game finishable
 * Sierra v3 games playable
 * Fix quit/restart crashes

@@ -21,6 +21,7 @@ extern "C"{
 #define USE_IIGS_SOUND
 #define USE_HIRES
 #define USE_COMMAND_LINE
+#define USE_MOUSE
 #define AGDS_SUPPORT
 #define OPT_LIST_OBJECTS
 #define OPT_PICTURE_VIEWER
@@ -65,6 +66,7 @@ extern "C"{
 #  undef USE_CONSOLE
 #  undef USE_PCM_SOUND
 #  undef USE_HIRES
+#  undef USE_MOUSE
 #  undef AGDS_SUPPORT
 #  undef OPT_LIST_OBJECTS
 #  undef OPT_PICTURE_VIEWER
@@ -271,15 +273,17 @@ void	release_sprites	(void);
 int main_cycle (void);
 int view_pictures (void);
 
+#ifdef USE_MOUSE
+
 struct mouse {
 	int button;
 	unsigned int x;
 	unsigned int y;
 };
 
-
 extern struct mouse mouse;
 
+#endif
 
 
 extern	volatile UINT32	clock_ticks;
@@ -418,7 +422,9 @@ struct sarien_options {
 #endif
 	int soundemu;		/**< sound emulation mode */
 	int gfxhacks;		/**< enable graphics driver optimizations */
+#ifdef USE_MOUSE
 	int agimouse;		/**< AGI Mouse 1.0 emulation */
+#endif
 };
 
 extern struct sarien_options opt;

@@ -121,6 +121,8 @@ cmd(word_to_string)	{ strcpy (game.strings[p0], game.ego_words[p1].word); }
 cmd(open_dialogue)	{ _D ("p0 = %d", p0); game.has_window = TRUE; }
 cmd(close_dialogue)	{ _D ("p0 = %d", p0); game.has_window = FALSE; }
 cmd(close_window)	{ close_window (); }
+cmd(status_line_on) 	{ game.status_line = TRUE; write_status (); }
+cmd(status_line_off)	{ game.status_line = FALSE; write_status (); }
 cmd(print)		{ print (cur_logic->texts[p0 - 1], 0, 0, 0); }
 cmd(print_f)		{ print (cur_logic->texts[_v[p0] - 1], 0, 0, 0); }
 cmd(print_at)		{ print (cur_logic->texts[p0 - 1], p1, p2, p3); }
@@ -372,18 +374,6 @@ cmd(end_of_loop) {
 	vt.flags |= (DONTUPDATE|UPDATE|CYCLING);
 	vt.cycle = CYCLE_END_OF_LOOP; 
 	vt.parm1 = p1;
-}
-
-cmd(status_line_on) {
-	game.status_line = TRUE;
-	write_status ();
-	show_pic ();
-}
-
-cmd(status_line_off) {
-	game.status_line = FALSE;
-	write_status ();
-	show_pic ();
 }
 
 cmd(block) {
@@ -746,13 +736,14 @@ cmd(clear_lines) {
 }
 
 cmd(push_script) {
+#ifdef USE_MOUSE
 	if (opt.agimouse) {
 		game.vars[27] = mouse.button ? 1 : 0;
 		game.vars[28] = mouse.x;
 		game.vars[29] = mouse.y;
-	} else {
+	} else
+#endif
 		report ("push.script\n");
-	}
 }
 
 cmd(set_pri_base) {
@@ -772,8 +763,10 @@ cmd(set_pri_base) {
 }
 
 cmd(mouse_posn)	{
+#ifdef USE_MOUSE
 	_v[p0] = WIN_TO_PIC_X(mouse.x);
 	_v[p1] = WIN_TO_PIC_Y(mouse.y);
+#endif
 }
 
 

@@ -78,7 +78,6 @@ static void draw_menu_bar ()
 {
 	struct list_head *h;
 	struct agi_menu *m;
-	int c, i;
 
 #ifdef FANCY_BOX
 	draw_box (0, 0, GFX_WIDTH - 1, 12, MENU_BG, MENU_LINE);
@@ -86,7 +85,6 @@ static void draw_menu_bar ()
 	clear_lines (0, 0, MENU_BG);
 #endif
 
-	i = 0; c = 1;
 	list_for_each (h, &menubar, next) {
 		m = list_entry (h, struct agi_menu, list);
 #ifdef FANCY_BOX
@@ -184,6 +182,7 @@ static void new_menu_selected (i)
     	draw_menu_option (i);
 }
 
+#ifdef USE_MOUSE
 static int mouse_over_text (unsigned int line, unsigned int col, char *s)
 {
 	if (mouse.x < col * CHAR_COLS)
@@ -200,6 +199,7 @@ static int mouse_over_text (unsigned int line, unsigned int col, char *s)
 
 	return TRUE;
 }
+#endif
 
 static int h_index;
 static int v_index;
@@ -346,6 +346,7 @@ int menu_keyhandler (int key)
    		draw_menu_bar ();
 	}
 
+#ifdef USE_MOUSE
 	/*
 	 * Mouse handling
 	 */
@@ -431,6 +432,7 @@ int menu_keyhandler (int key)
 			goto exit_menu;
 		}
 	}
+#endif /* USE_MOUSE */
 
 	if (!menu_active) {
    		if (h_cur_menu >= 0) {

@@ -18,7 +18,9 @@
 
 #define TICK_SECONDS	20
 
+#ifdef USE_MOUSE
 struct mouse mouse;
+#endif
  
 /**
  * Set up new room.
@@ -197,6 +199,7 @@ int main_cycle ()
 
 	key = do_poll_keyboard ();
 
+#ifdef USE_MOUSE
 	/* In AGI Mouse emulation mode we must update the mouse-related
 	 * vars in every interpreter cycle.
 	 */
@@ -204,6 +207,7 @@ int main_cycle ()
 		game.vars[28] = mouse.x / 2;
 		game.vars[29] = mouse.y;
 	}
+#endif
 
 #ifdef USE_CONSOLE
 	if (key == KEY_PRIORITY) {
@@ -293,8 +297,10 @@ int run_game ()
 	game.input_mode = INPUT_NONE;
 	game.line_user_input = 22;
 
+#ifdef USE_MOUSE
 	if (opt.agimouse)
 		report ("Using AGI Mouse 1.0 protocol\n");
+#endif
 
 	report ("Running AGI script.\n");
 

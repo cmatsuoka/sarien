@@ -147,12 +147,14 @@ int handle_controller (int key)
 		}
 	}
 
+#ifdef USE_MOUSE
 	if (key == BUTTON_LEFT) {
 		if (getflag (F_menus_work) && mouse.y <= CHAR_LINES) {
 			new_input_mode (INPUT_MENU);
 			return TRUE;
 		}
 	}
+#endif
 
 	if (game.player_control) {
 		int d = 0;
@@ -170,6 +172,7 @@ int handle_controller (int key)
 			}
 		}
 
+#ifdef USE_MOUSE
 		if (!opt.agimouse) {
 			/* Handle mouse button events */
 			if (key == BUTTON_LEFT) {
@@ -179,6 +182,7 @@ int handle_controller (int key)
 				return TRUE;
 			} 
 		}
+#endif
 
 		v->flags &= ~ADJ_EGO_XY;
 
@@ -350,8 +354,11 @@ int wait_key ()
 		poll_timer ();		/* msdos driver -> does nothing */
 		key = do_poll_keyboard ();
 		if (!console_keyhandler (key)) {
-			if (key == KEY_ENTER || key == KEY_ESCAPE ||
-				key == BUTTON_LEFT)
+			if (key == KEY_ENTER || key == KEY_ESCAPE
+#ifdef USE_MOUSE
+				|| key == BUTTON_LEFT
+#endif
+				)
 				break;
 		}
 		console_cycle ();

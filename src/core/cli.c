@@ -57,7 +57,9 @@ static void help (int argc, char **argv)
 "  -H --hires {0|1}   Enable/disable experimental hi-res mode.\n"
 #endif
 "  -h --help          Display this help screen.\n"
+#ifdef USE_MOUSE
 "  -m --agimouse      AGI Mouse 1.0 compatibility mode.\n"
+#endif
 "  -n --no-sound      Disable sound output.\n"
 #ifdef OPT_PICTURE_VIEWER
 "  -p --picture-viewer\n"
@@ -139,7 +141,9 @@ int parse_cli (int argc, char **argv)
 		{ "wait-key",		0, 0, 'k' },
 		{ "no-x-shm",		0, 0, 'x' },
 		{ "aspect-ratio",       1, 0, 'r' },
+#ifdef USE_MOUSE
 		{ "agimouse",		0, 0, 'm' },
+#endif
 		{ "scale",		1, 0, 'S' },
 		{ "no-gfx-optimizations",0,0, 'g' }
 	};
@@ -245,9 +249,11 @@ int parse_cli (int argc, char **argv)
 			opt.hires = strtoul (optarg, NULL, 0);
 			break;
 #endif
+#ifdef USE_MOUSE
 		case 'm':
 			opt.agimouse = TRUE;
 			break;
+#endif
 		case 'n':
 			opt.nosound = TRUE;
 			break;
