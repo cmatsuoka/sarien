@@ -366,6 +366,8 @@ static int play_game ()
 				game.has_prompt = 1;
 			}
 			interpret_cycle ();
+			setflag (F_entered_cli, FALSE);
+			setflag (F_said_accepted_input, FALSE);
 		}
 
 		if (game.quit_prog_now == 0xff)
