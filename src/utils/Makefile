@@ -4,9 +4,11 @@ XCFLAGS =
 OBJS	=
 DFILES	= Makefile README
 CFILES	=
-DDIRS	= showlog xv3 volx
+DDIRS	= showlog xv3 volx agi2pdb
 XDFILES =
 LIB	=
+
+NONPORTABLE = agiplay
 
 all:
 	for i in $(DDIRS); do           \

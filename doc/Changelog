@@ -21,6 +21,8 @@ Revision History
 	- buildsystem fixes for XF86 DGA and BeOS
 	- added support for BeOS 5 and SDL
 	- case-insensitive matching to load AGI resource files in UNIX
+	- portability fixes
+	- added agi2pdb to the utilities set
 
 0.5.2 (20000512) *DEVELOPMENT*
 	- Fixed speach bubbles bug for going outside of screen (draw_obj)

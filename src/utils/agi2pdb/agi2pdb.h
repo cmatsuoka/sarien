@@ -211,6 +211,9 @@ struct PalmOSAGI
 	union PalmOSAGI4 v4;
 };
 
+int v2id_game (void); 
+int v3id_game (void);
+
 #ifdef __cplusplus
 };
 #endif

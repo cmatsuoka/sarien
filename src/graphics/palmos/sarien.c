@@ -165,3 +165,4 @@ UInt32 PilotMain (UInt16 cmd, MemPtr cmdPBP, UInt16 launchFlags)
 
 	return 0;
 }
+

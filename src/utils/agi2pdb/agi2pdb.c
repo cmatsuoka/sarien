@@ -6,6 +6,10 @@
 
 #include "agi2pdb.h"
 
+#ifdef VERSION
+#undef VERSION
+#endif
+
 #define VERSION "0.0.1"
 
 int test_v3_game(char *dirfile, char *gpath);
@@ -173,7 +177,7 @@ int convert_v2(char *outfile, char *gpath)
 	FILE *ofp;
 	FILE *fp;
 	char	buff[256];
-	int		len;
+	/* int		len; */
 	int		i;
 	int		total_len;
 
@@ -287,7 +291,7 @@ int convert_v2(char *outfile, char *gpath)
 		/* skip pdbheader size */
 		fseek(fp, sizeof(struct pdb_pdbheader), SEEK_SET);
 
-		total_len=total_len + 4095 & 0xfffff000;
+		total_len=(total_len + 4095) & 0xfffff000;
 		write_word((UINT8*)&PDBHeader.numberOfRecords, total_len/4096);
 
 		/* create record headers */
@@ -322,7 +326,7 @@ int convert_v3(char *outfile, char *dirfile, char *gpath)
 	FILE *ofp;
 	FILE *fp;
 	char	buff[256];
-	int		len;
+	/* int		len; */
 	int		i;
 	int		total_len;
 
@@ -408,7 +412,7 @@ int convert_v3(char *outfile, char *dirfile, char *gpath)
 		/* skip pdbheader size */
 		fseek(fp, sizeof(struct pdb_pdbheader), SEEK_SET);
 
-		total_len=total_len + 4095 & 0xfffff000;
+		total_len=(total_len + 4095) & 0xfffff000;
 		write_word((UINT8*)&PDBHeader.numberOfRecords, total_len/4096);
 
 		/* create record headers */
