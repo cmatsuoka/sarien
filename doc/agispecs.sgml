@@ -22,7 +22,15 @@
      <firstname>Lance</firstname>
      <surname>Ewing</surname>
      <AuthorBlurb><Para>
-      Lance Ewing (<email> </email>)
+      Lance Ewing (<email></email>)
+     </Para></AuthorBlurb>
+    </Author>
+
+    <Author>
+     <firstname>Ian</firstname>
+     <surname>Schmidt</surname>
+     <AuthorBlurb><Para>
+      Ian Schmidt (<email></email>)
      </Para></AuthorBlurb>
     </Author>
 
@@ -35,12 +43,21 @@
     </Author>
 
     <Author>
-     <firstname>Jeremy</firstname>
-     <surname>Hayes</surname>
+     <firstname>Alex</firstname>
+     <surname>Simkin</surname>
      <AuthorBlurb><Para>
-       Jeremy Hayes (<email></email>)
+      Alex Simkin (<email></email>)
      </Para></AuthorBlurb>
     </Author>
+
+    <Author>
+     <firstname>Ian</firstname>
+     <surname>Schmidt</surname>
+     <AuthorBlurb><Para>
+      Ian Schmidt (<email></email>)
+     </Para></AuthorBlurb>
+    </Author>
+
 
     <Author>
      <firstname>Claudio</firstname>
@@ -65,7 +82,7 @@
 
     <LegalNotice>
      <Para>
-     Copyright (C) 2001 by the authors
+     Copyright (C) 1997-2001 by the authors
      </Para>
      <Para>
    Permission is hereby granted, free of charge, to any person obtaining a
@@ -202,7 +219,9 @@ Please contact the document maintainer to add more names to this list.
 
 
 <chapter id="overview"><title>General AGI overview</title>
-
+<para>
+   <author><firstname/Lance/ <surname/Ewing/</author>, modified by
+   <author><firstname/Claudio/ <surname/Matsuoka/</author>, 22 May 1999.
 <para>
    AGI stands for <emphasis/Adventure Game Interpreter/ and it is the old
    version of Sierra On-Line's 3D adventure interpreter. It was used
@@ -1106,23 +1125,56 @@ print ("Message 34 in logic.0 is %g34.");
      <thead>
       <row> <entry>Variable</entry> <entry>Description</entry> </row>
      </thead>
+
      <tbody>
-      <row> <entry>0</entry> <entry>Current room number (parameter new_room cmd), initially 0.</entry> </row>
-      <row> <entry>1</entry> <entry>Previous room number.</entry> </row>
-      <row> <entry>2</entry> <entry>Code of the border touched by Ego:
-        <simplelist>
-         <member>0 - Touched nothing
-         <member>1 - Top edge of the screen or the horizon
-         <member>2 - Right edge of the screen
-         <member>3 - Bottom edge of the screen
-         <member>4 - Left edge of the screen
-        </simplelist>
-       </entry> </row>
-      <row> <entry>3</entry> <entry>Current score.</entry> </row>
-      <row> <entry>4</entry> <entry>Number of object, other than Ego, that touched the border.</entry> </row>
-      <row> <entry>5</entry> <entry>The code of border touched by the object in Var (4).</entry> </row>
-      <row> <entry>6</entry> <entry>Direction of Ego's motion.
-   <literal>
+      <row>
+       <entry>0</entry>
+       <entry>
+         Current room number (parameter of <function/new_room/),
+         initially 0
+       </entry>
+      </row>
+
+      <row>
+       <entry>1</entry>
+       <entry>Previous room number</entry>
+      </row>
+
+      <row>
+       <entry>2</entry>
+       <entry>Code of the border touched by Ego:
+        <literal>
+         0 - Touched nothing
+         1 - Top edge of the screen or the horizon
+         2 - Right edge of the screen
+         3 - Bottom edge of the screen
+         4 - Left edge of the screen
+        </literal>
+       </entry>
+      </row>
+
+      <row>
+       <entry>3</entry>
+       <entry>Current score.</entry>
+      </row>
+
+      <row>
+       <entry>4</entry>
+       <entry>
+         Number of object, other than Ego, that touched the border
+       </entry>
+      </row>
+
+      <row>
+       <entry>5</entry>
+       <entry>The code of border touched by the object in Var (4)</entry>
+      </row>
+
+      <row>
+       <entry>6</entry>
+       <entry>
+         Direction of Ego's motion
+         <literal>
                       1
                 8     |     2
                   \   |   /
@@ -1132,47 +1184,131 @@ print ("Message 34 in logic.0 is %g34.");
                   /   |   \
                 6     |     4
                       5
-   </literal>
-       </entry> </row>
-      <row> <entry>7</entry> <entry>Maximum score.</entry> </row>
-      <row> <entry>8</entry> <entry>Number of free 256-byte pages of the interpreter's memory.</entry> </row>
-      <row> <entry>9</entry> <entry>If == 0, it is the number of the word in the user message that was</entry> </row>
-   not found in the dictionary. <emphasis>(I would assume they mean "if != 0", but
-   that's what they say. --VB)</emphasis>
-      <row> <entry>10</entry> <entry>Time delay between interpreter cycles in 1/20 second intervals.</entry> </row>
-      <row> <entry>11</entry> <entry>Seconds (interpreter's internal clock)</entry> </row>
-      <row> <entry>12</entry> <entry>Minutes (interpreter's internal clock)</entry> </row>
-      <row> <entry>13</entry> <entry>Hours (interpreter's internal clock)</entry> </row>
-      <row> <entry>14</entry> <entry>Days (interpreter's internal clock)</entry> </row>
-      <row> <entry>15</entry> <entry>Joystick sensitivity (if Flag (8) = 1).</entry> </row>
-      <row> <entry>16</entry> <entry>ID number of the view-resource associated with Ego.</entry> </row>
-      <row> <entry>17</entry> <entry>Interpreter error code (if == 0) <emphasis>(Again I would expect this</entry> </row>
-	to say ``if != 0''. --VB)</emphasis>
-      <row> <entry>18</entry> <entry>Additional information that goes with the error code.</entry> </row>
-      <row> <entry>19</entry> <entry>Key pressed on the keyboard.</entry> </row>
-      <row> <entry>20</entry> <entry>Computer type. For IBM-PC it is always 0.</entry> </row>
-      <row> <entry>21</entry> <entry>If Flag (15) == 0 (command reset 15 was issued) and Var (21) is</entry> </row>
-   not equal to 0, the window is automatically closed after 1/2 * Var
-   (21) seconds.
-      <row> <entry>22</entry> <entry>Sound generator type:
-        <simplelist>
-         <member>1 - PC
-         <member>3 - Tandy
-        </simplelist>
-       </entry> </row>
-      <row> <entry>23</entry> <entry>0:F - sound volume (for Tandy).</entry> </row>
-      <row> <entry>24</entry> <entry>This variable stores the maximum number that can be entered</entry> </row>
-      in the input line. By default, this variable is set to 41 (29h).
-      (information by Dark Minister)
-      <row> <entry>25</entry> <entry>ID number of the member selected using status command or 0xFF if ESC</entry> </row>
-   was pressed.
-      <row> <entry>26</entry> <entry>monitor type
-       <simplelist>
-         <member>0 - CGA
-         <member>2 - HCG
-         <member>3 - EGA
-       </simplelist>
-      </entry> </row>
+         </literal>
+       </entry>
+      </row>
+
+      <row>
+       <entry>7</entry>
+       <entry>Maximum score</entry>
+      </row>
+
+      <row>
+       <entry>8</entry>
+       <entry>
+         Number of free 256-byte pages of the interpreter's memory
+       </entry>
+      </row>
+
+      <row>
+       <entry>9</entry>
+       <entry>
+         If == 0, it is the number of the word in the user message that was
+         not found in the dictionary<footnote>I would assume they mean
+         "if != 0", but that's what they say. (VB)</footnote>
+       </entry>
+      </row>
+
+      <row>
+       <entry>10</entry>
+       <entry>
+         Time delay between interpreter cycles in 1/20 second intervals.
+       </entry>
+      </row>
+
+      <row>
+       <entry>11</entry>
+       <entry>Seconds (interpreter's internal clock)</entry>
+      </row>
+
+      <row>
+       <entry>12</entry>
+       <entry>Minutes (interpreter's internal clock)</entry>
+      </row>
+
+      <row>
+       <entry>13</entry>
+       <entry>Hours (interpreter's internal clock)</entry>
+      </row>
+
+      <row>
+       <entry>14</entry>
+       <entry>Days (interpreter's internal clock)</entry>
+      </row>
+
+      <row>
+       <entry>15</entry>
+       <entry>Joystick sensitivity (if Flag (8) == 1)</entry>
+      </row>
+
+      <row>
+       <entry>16</entry>
+       <entry>ID number of the view-resource associated with Ego.</entry>
+      </row>
+
+      <row>
+       <entry>17</entry>
+       <entry>
+         Interpreter error code (if == 0)<footnote>Again I would expect
+         this to say ``if != 0''. (VB)</footnote>
+       </entry>
+      </row>
+
+      <row>
+       <entry>18</entry>
+       <entry>Additional information that goes with the error code</entry>
+      </row>
+
+      <row>
+       <entry>19</entry>
+       <entry>Key pressed on the keyboard</entry>
+      </row>
+
+      <row>
+       <entry>20</entry>
+       <entry>Computer type. For IBM-PC it is always 0.</entry>
+      </row>
+
+      <row>
+       <entry>21</entry>
+       <entry>
+         If Flag (15) == 0 (command reset 15 was issued) and Var (21) is
+         not equal to 0, the window is automatically closed after 1/2 * Var
+         (21) seconds.
+       </entry>
+      </row>
+
+      <row>
+       <entry>22</entry>
+       <entry>Sound generator type: 1 - PC, 3 - Tandy</entry>
+      </row>
+
+      <row>
+       <entry>23</entry>
+       <entry>0:F - sound volume (for Tandy).</entry>
+      </row>
+
+      <row>
+       <entry>24</entry>
+       <entry>
+         This variable stores the maximum number that can be entered
+         in the input line. By default, this variable is set to 41 (29h).
+         (information by Dark Minister)
+       </entry>
+      </row>
+
+      <row>
+       <entry>25</entry>
+       <entry>
+         ID number of the member selected using status command or
+         0xFF if ESC was pressed.
+       </entry>
+      </row>
+
+      <row>
+       <entry>26</entry>
+       <entry>Monitor type: 0 - CGA, 2 - HCG, 3 - EGA</entry>
+      </row>
      </tbody>
     </tgroup>
    </informaltable>
@@ -1189,32 +1325,101 @@ print ("Message 34 in logic.0 is %g34.");
       <row> <entry>Flag</entry> <entry>Description</entry> </row>
      </thead>
      <tbody>
-      <row> <entry>0</entry> <entry>Ego base line is completely on pixels with priority = 3 (water</entry> </row>
-   surface).
-      <row> <entry>1</entry> <entry>Ego is invisible of the screen (completely obscured by another</entry> </row>
-   object).
-      <row> <entry>2</entry> <entry>the player has issued a command line.</entry> </row>
-      <row> <entry>3</entry> <entry>Ego base line has touched a pixel with priority 2 (signal).</entry> </row>
-      <row> <entry>4</entry> <entry><function/said/ command has accepted the user input.</entry> </row>
-      <row> <entry>5</entry> <entry>The new room is executed for the first time.</entry> </row>
-      <row> <entry>6</entry> <entry><function/restart_game/ command has been executed.</entry> </row>
-      <row> <entry>7</entry> <entry>if this flag is 1, writing to the script buffer is blocked.</entry> </row>
-      <row> <entry>8</entry> <entry>if 1, Var(15) determines the joystick sensitivity.</entry> </row>
-      <row> <entry>9</entry> <entry>sound on/off.</entry> </row>
-      <row> <entry>10</entry> <entry>1 turns on the built-in debugger.</entry> </row>
-      <row> <entry>11</entry> <entry>Logic 0 is executed for the first time.</entry> </row>
-      <row> <entry>12</entry> <entry>`restore_game' command has been executed.</entry> </row>
-      <row> <entry>13</entry> <entry>1 allows the `status' command to select members.</entry> </row>
-      <row> <entry>14</entry> <entry>1 allows the menu to work.</entry> </row>
-      <row> <entry>15</entry> <entry>Determines the output mode of `print' and `print_at' commands
-      <simplelist>
-       <member>1 - message window is left on the screen
-       <member>0 - message window is closed when <keycap/ENTER/ or
-         <keycap/ESC/ key are pressed.
-         If Var(21) is not 0, the window is closed automatically after 1/2 *
-         Var(21) seconds
-      </simplelist>
-      </entry> </row>
+      <row>
+       <entry>0</entry>
+       <entry>
+         Ego base line is completely on pixels with priority = 3 (water
+         surface)
+       </entry>
+      </row>
+
+      <row>
+       <entry>1</entry>
+       <entry>
+         Ego is invisible of the screen (completely obscured by another
+         object)
+       </entry>
+      </row>
+
+      <row>
+       <entry>2</entry>
+       <entry>the player has issued a command line</entry>
+      </row>
+
+      <row>
+       <entry>3</entry>
+       <entry>
+         Ego base line has touched a pixel with priority 2 (signal)
+       </entry>
+      </row>
+
+      <row>
+       <entry>4</entry>
+       <entry><function/said/ command has accepted the user input</entry>
+      </row>
+
+      <row>
+       <entry>5</entry>
+       <entry>The new room is executed for the first time</entry>
+      </row>
+
+      <row>
+       <entry>6</entry>
+       <entry><function/restart_game/ command has been executed</entry>
+      </row>
+
+      <row>
+       <entry>7</entry>
+       <entry>If set, writing to the script buffer is blocked</entry>
+      </row>
+
+      <row>
+       <entry>8</entry>
+       <entry>If set, Var(15) determines the joystick sensitivity.</entry>
+      </row>
+
+      <row>
+       <entry>9</entry>
+       <entry>Sound on/off</entry>
+      </row>
+
+      <row>
+       <entry>10</entry>
+       <entry>If set, turns on the built-in debugger</entry>
+      </row>
+
+      <row>
+       <entry>11</entry>
+       <entry>Logic 0 is executed for the first time</entry>
+      </row>
+
+      <row>
+       <entry>12</entry>
+       <entry><function/restore_game/ command has been executed.</entry>
+      </row>
+
+      <row>
+       <entry>13</entry>
+       <entry>
+         If set, allows the <function/status/ command to select members
+       </entry>
+      </row>
+
+      <row>
+       <entry>14</entry>
+       <entry>If set, allows the menu to work</entry>
+      </row>
+
+      <row>
+       <entry>15</entry>
+       <entry>
+         Determines the output mode of <function/print/ and <function/print_at/
+         commands; if set, the message window is left on the screen, otherwise
+         the message window is closed when <keycap/ENTER/ or <keycap/ESC/
+         are pressed. If Var(21) is not set, the window is closed
+         automatically after 1/2 * Var(21) seconds
+       </entry>
+      </row>
      </tbody>
     </tgroup>
    </informaltable>
@@ -2260,12 +2465,20 @@ From the AGDS documentation translated by Vassili Bykov,
    it <emphasis>are also automatically unloaded</emphasis>!
 
    <variablelist>
-   <function id="load.logic">load.logic(n)</function>
-   Load into memory the LOGIC resource number <emphasis/n/, i.e. Logic(n)
 
-   <function>load.logic.v(n)</function>
-   Load into memory the LOGIC resource number <emphasis/i/, where <emphasis/i/ is the value of
-   <parameter/vn/, i.e. Logic(<parameter/vn/)
+    <varlistentry>
+      <term><function id="load.logic">load.logic(n)</function></term>
+      <listitem><para>
+       Load into memory the logic resource number <parameter/n/, i.e. Logic(n)
+      </para></listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><function>load.logic.v(n)</function></term>
+       Load into memory the logic resource number <parameter/i/, where
+       <parameter/i/ is the value of <parameter/vn/, i.e. Logic(<parameter/vn/)
+      </para></listitem>
+    </varlistentry>
 
 <function id="load.pic">load.pic(n)</function>
    Loads into memory the PICTURE resource number <emphasis/i/, where <emphasis/i/ is the value
