@@ -34,6 +34,8 @@
 
 static struct agi_logic *cur_logic;
 
+int timer_hack;		/* Workaround for timer loop in MH1 */
+
 #define _v game.vars
 #define cmd(x) static void cmd_##x (UINT8 *p)
 
@@ -985,6 +987,7 @@ int run_logic (int n)
 	code = cur_logic->data;
 	cur_logic->cIP = cur_logic->sIP;
 
+	timer_hack = 0;
 	while (ip < game.logics[n].size && !game.quit_prog_now) {
 #ifdef USE_CONSOLE
 		if (debug.enabled) {
@@ -1013,9 +1016,14 @@ int run_logic (int n)
 		case 0xfe:			/* goto */
 			/* +2 covers goto size */
 			ip += 2 + ((SINT16)lohi_getword (code + ip));
-			/* timer must keep running even in goto loops */
-			/*poll_timer ();
-			 *update_timer ();*/
+			/* timer must keep running even in goto loops,
+			 * but Sarien can't do that :(
+			 */
+			if (timer_hack > 20) {
+				poll_timer ();
+				update_timer ();
+				timer_hack = 0;
+			}
 			break;
 		case 0x00:			/* return */
 			return 1;

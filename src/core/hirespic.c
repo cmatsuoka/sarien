@@ -40,7 +40,7 @@ static void fix_pixel_bothsides (int x, int y)
 	/* If two lines are contiguous in the lo-res pic, make them
 	 * contiguous in the hi-res pic. This condition is needed
 	 * in some scenes like in front of Lefty's in LSL1, to draw
-	 * the pole. Note: it adds artifacting in some cases.
+	 * the pole. Note: it adds artifacts in some cases.
 	 */
 	s = &game.sbuf[y * _WIDTH + x / 2];
 	if ((*(p - 1) & 0x0f) != (*(s - 1) & 0x0f))
@@ -93,7 +93,7 @@ static void draw_hires_line (int x1, int y1, int x2, int y2)
 			x2 = x;
 		}
 
-		fix_pixel_bothsides (x1, y1);	
+		fix_pixel_bothsides (x1, y1);
 
    		for( ; x1 < x2; x1++)
 			put_hires_pixel (x1, y1);
@@ -134,7 +134,7 @@ static void draw_hires_line (int x1, int y1, int x2, int y2)
 	}
 
 	put_hires_pixel (x, y);
-	fix_pixel_bothsides (x, y);	
+	fix_pixel_bothsides (x, y);
 
 	do {
 		errorY += deltaY;
@@ -150,12 +150,12 @@ static void draw_hires_line (int x1, int y1, int x2, int y2)
 		}
 
 		put_hires_pixel (x, y);
-		fix_pixel_bothsides (x, y);	
+		fix_pixel_bothsides (x, y);
 		i--;
 	} while (i > 0);
 
 	put_hires_pixel (x, y);
-	fix_pixel_bothsides (x, y);	
+	fix_pixel_bothsides (x, y);
 }
 
 /**************************************************************************
@@ -572,10 +572,18 @@ void fix_hires_picture ()
 		if ((*p & 0x0f) == 0x0f && (*b & 0x0f) != 0x0f)
 			*p = *b;
 		p++;
-		if ((*p & 0x0f) == 0x0f && (*b & 0x0f) != 0x0f)
+		if ((*p & 0x0f) == 0x0f && (*b & 0x0f) != 0x0f &&
+			(*(b + 1) & 0x0f) != 0x0f)
+		{
 			*p = *b;
-		if ((*p >> 4) == 4 && (*b >> 4) != 4)
-			*p = (*p & 0x0f) | (*b & 0xf0);
+		}
+
+		if ((*p >> 4) == 4 && (*b >> 4) != 4 &&
+			(*(b + 1) >> 4) != 4)
+		{
+			*p = *b;
+			/* *p = (*p & 0x0f) | (*b & 0xf0); */
+		}
 		p++; b++;
 	}
 }

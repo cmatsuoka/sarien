@@ -16,7 +16,7 @@
 #include "keyboard.h"
 #include "menu.h"
 
-#define TICK_SECONDS 20
+#define TICK_SECONDS	20
 
 struct mouse mouse;
  

@@ -35,6 +35,7 @@ static UINT8	test_keypressed	(void);
 #define test_obj_in_room(obj,v)	(object_get_location (obj) == getvar (v))
 #define test_compare_strings(s1,s2) (!strcmp(game.strings[s1], game.strings[s2]))
 
+extern int timer_hack;	/* For the timer loop in MH1 logic 153 */
 
 static UINT8 test_keypressed ()
 {
@@ -214,21 +215,27 @@ int test_if_code (int lognum)
 			goto end_test;
 		case 0x01:
 			ec = test_equal (p[0], p[1]);
+			if (p[0] == 11) timer_hack++;
 			break;
 		case 0x02:
 			ec = test_equal (p[0], getvar(p[1]));
+			if (p[0] == 11 || p[1] == 11) timer_hack++;
 			break;
 		case 0x03:
 			ec = test_less (p[0], p[1]);
+			if (p[0] == 11) timer_hack++;
 			break;
 		case 0x04:
 			ec = test_less(p[0], getvar(p[1]));
+			if (p[0] == 11 || p[1] == 11) timer_hack++;
 			break;
 		case 0x05:
 			ec = test_greater (p[0], p[1]);
+			if (p[0] == 11) timer_hack++;
 			break;
 		case 0x06:
 			ec = test_greater (p[0], getvar (p[1]));
+			if (p[0] == 11 || p[1] == 11) timer_hack++;
 			break;
 		case 0x07:
 			ec = test_isset (p[0]);
