@@ -126,7 +126,6 @@ static void nanox_timer ()
 }
 
 
-
 static int nanox_init_vidmode ()
 {
 	PSD	mempsd;

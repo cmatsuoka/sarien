@@ -52,6 +52,19 @@ static QDGlobals qd;
 static WindowPtr myWindow, whichWindow;
 static EventRecord myEvent;
 static char theChar;
+static RGBColor rgb_color[32];
+
+
+#define KEY_QUEUE_SIZE 16
+
+static int key_queue[KEY_QUEUE_SIZE];
+static int key_queue_start = 0;
+static int key_queue_end = 0;
+
+#define key_enqueue(k) do { key_queue[key_queue_end++] = (k); \
+	key_queue_end %= KEY_QUEUE_SIZE; } while (0)
+#define key_dequeue(k) do { (k) = key_queue[key_queue_start++]; \
+	key_queue_start %= KEY_QUEUE_SIZE; } while (0)
 
 
 #ifdef __MPW__
@@ -97,7 +110,7 @@ static void process_events ()
 				/* Menu bar: learn which command, then
 				 * execute it.
 				 */
-				DoCommand(MenuSelect(myEvent.where));
+				/*DoCommand(MenuSelect(myEvent.where));*/
 				break;
 			case inDrag:
 				/* title bar: call Window Manager to drag */
@@ -132,23 +145,54 @@ static void process_events ()
 }
 
 
+static void macos_timer ()
+{
+#if 0
+	struct timeval tv;
+	struct timezone tz;
+	static double msec = 0.0;
+	double m;
+	
+	gettimeofday (&tv, &tz);
+	m = 1000.0 * tv.tv_sec + tv.tv_usec / 1000.0;
+
+	while (m - msec < 42) {
+		usleep (5000);
+		gettimeofday (&tv, &tz);
+		m = 1000.0 * tv.tv_sec + tv.tv_usec / 1000.0;
+	}
+	msec = m; 
+#endif
+
+	process_events ();
+}
+
+
 static int macos_init_vidmode ()
 {
-	OSErr		error;
-	SysEnvRec	theWorld;
+	OSErr error;
+	SysEnvRec theWorld;
+	int i;
 	
-	error = SysEnvirons(1, &theWorld);
+	error = SysEnvirons (1, &theWorld);
 	if (theWorld.hasColorQD == false)
 		return -1;
 	
 	/* Initialize all the needed managers. */
-	InitGraf(&qd.thePort);
-	InitFonts();
-	InitWindows();
-	InitMenus();
-	TEInit();
-	InitDialogs(nil);
-	InitCursor();
+	InitGraf (&qd.thePort);
+	InitFonts ();
+	InitWindows ();
+	InitMenus ();
+	TEInit ();
+	InitDialogs (nil);
+	InitCursor ();
+
+	/* Set palette */
+	for (i = 0; i < 32; i++) {
+		rgb_color[i].red   = (int)palette[i * 3] << 2;
+		rgb_color[i].green = (int)palette[i * 3 + 1] << 2;
+		rgb_color[i].blue  = (int)palette[i * 3 + 2] << 2;
+	}
 
 	windRect = qd.screenBits.bounds;
 	InsetRect (&windRect, 50, 50);
@@ -162,6 +206,7 @@ static int macos_init_vidmode ()
 static int macos_deinit_vidmode ()
 {
 	DisposeWindow (myWindow);
+	return 0;
 }
 
 
@@ -183,24 +228,34 @@ static void macos_put_block (int x1, int y1, int x2, int y2)
 
 static void macos_put_pixels(int x, int y, int w, UINT8 *p)
 {
-#if 0
-	UINT8 *s;
- 	for (s = &screen_buffer[y * 320 + x]; w--; *s++ = *p++);
-#endif
+	struct RGBColor *c;
+
+	if (w == 0)
+		return;
+
+	while (w--) {
+		c = &rgb_color[*p++];
+		SetCPixel (x++, y, c);
+	}
 }
 
 
 static int macos_keypress ()
 {
+	process_events ();
+	return key_queue_start != key_queue_end;
 }
 
 
 static int macos_get_key ()
 {
-}
+	UINT16 k;
 
+	while (key_queue_start == key_queue_end)	/* block */
+		macos_timer ();
 
-static void macos_timer ()
-{
+	key_dequeue(k);
+
+	return k;
 }
 
