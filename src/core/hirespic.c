@@ -298,42 +298,42 @@ static void fix_pixel_here (int x, int y)
 **************************************************************************/
 static void hiresFill (int x, int y)
 {
-	struct point_xy c;
+	UINT16 c;
 
-	c.x = x;
-	c.y = y;
-	_PUSH (&c);
+	_PUSH (x + 320 * y);
 
 	while (42) {
-		_POP(&c);
+		c = _POP();
 
 		/* Exit if stack is empty */
-		if (c.x == 0xffff || c.y == 0xffff)
+		if (c == 0xffff)
 			break;
 
-		if (hires_fill_here (c.x, c.y)) {
-			put_hires_pixel (2 * c.x, c.y);
-			fix_pixel_here (c.x, c.y);
+		x = c % 320;
+		y = c / 320;
+		if (hires_fill_here (x, y)) {
+			put_hires_pixel (2 * x, y);
+			fix_pixel_here (x, y);
 
-			if (c.x > 0) {
-				if (hires_fill_here (c.x - 1, c.y)) {
-					c.x--; _PUSH (&c); c.x++;
+			if (x > 0) {
+				if (hires_fill_here (x - 1, y)) {
+					_PUSH (c - 1);
     				} else {
-					fix_pixel_left (c.x - 1, c.y);
+					fix_pixel_left (x - 1, y);
 				}
 			}
-			if (c.x < _WIDTH - 1) {
-				if (hires_fill_here (c.x + 1, c.y)) {
-					c.x++; _PUSH (&c); c.x--;
+			if (x < _WIDTH - 1) {
+				if (hires_fill_here (x + 1, y)) {
+					_PUSH (c + 1);
  				} else {
-					fix_pixel_right (c.x + 1, c.y);
+					fix_pixel_right (x + 1, y);
 				}
 			}
-			if (c.y < _HEIGHT - 1 && hires_fill_here (c.x, c.y + 1)) {
-				c.y++; _PUSH (&c); c.y--;
+			if (y < _HEIGHT - 1 && hires_fill_here (x, y + 1)) {
+				_PUSH (c + 320);
     			}
-			if (c.y > 0 && hires_fill_here (c.x, c.y - 1)) {
-				c.y--; _PUSH (&c); c.y++;
+			if (y > 0 && hires_fill_here (x, y - 1)) {
+				_PUSH (c - 320);
     			}
 		}
 	}

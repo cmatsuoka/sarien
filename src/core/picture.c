@@ -49,19 +49,20 @@ static void put_virt_pixel (int x, int y)
 
 #define STACK_SEG_SIZE 0x1000
 
+#if 0
 struct point_xy {
-	struct point_xy *next;
-	unsigned int x, y;
+	UINT16 x, y;
 };
+#endif
 
 #define MAX_STACK_SEGS 16
 static unsigned int stack_num_segs;
 static unsigned int stack_seg;
 static unsigned int stack_ptr;
 
-static struct point_xy *stack[MAX_STACK_SEGS];
+static UINT16 *stack[MAX_STACK_SEGS];
 
-static INLINE void _PUSH (struct point_xy *c)
+static INLINE void _PUSH (UINT16 c)
 {
 	if (stack_ptr >= STACK_SEG_SIZE) {
 		/* Allocate new stack segment */
@@ -70,7 +71,7 @@ static INLINE void _PUSH (struct point_xy *c)
 
 		if (stack_num_segs <= ++stack_seg) {
 			_D ("new stack (#%d)", stack_num_segs);
-			stack[stack_num_segs] = malloc (sizeof (struct point_xy)
+			stack[stack_num_segs] = malloc (sizeof (UINT16)
 				* STACK_SEG_SIZE);
 			assert (stack[stack_num_segs] != NULL);
 			stack_num_segs++;
@@ -78,28 +79,24 @@ static INLINE void _PUSH (struct point_xy *c)
 		stack_ptr = 0;
 	}
 
-	stack[stack_seg][stack_ptr].x = c->x;
-	stack[stack_seg][stack_ptr].y = c->y;
+	stack[stack_seg][stack_ptr] = c;
 	stack_ptr++;
 }
 
 
-static INLINE void _POP (struct point_xy *c)
+static INLINE UINT16 _POP ()
 {
 	if (stack_ptr == 0) {
 		if (stack_seg == 0) {
-			c->x = c->y = 0xffff;
+			return 0xffff;
 		} else {
 			stack_seg--;
-			 stack_ptr = STACK_SEG_SIZE - 1;
+			stack_ptr = STACK_SEG_SIZE;
 		}
-
-		return;
 	}
 
 	stack_ptr--;
-	c->x = stack[stack_seg][stack_ptr].x;
-	c->y = stack[stack_seg][stack_ptr].y;
+	return stack[stack_seg][stack_ptr];
 }
 
 
@@ -293,32 +290,32 @@ static INLINE int is_ok_fill_here (int x, int y)
 **************************************************************************/
 static void agiFill (int x, int y)
 {
-	struct point_xy c;
+	UINT16 c;
 
-	c.x = x;
-	c.y = y;
-	_PUSH (&c);
+	_PUSH (x + 320 * y);
 
 	while (42) {
-		_POP(&c);
+		c = _POP();
 
 		/* Exit if stack is empty */
-		if (c.x == 0xffff || c.y == 0xffff)
+		if (c == 0xffff)
 			break;
 
-		if (is_ok_fill_here (c.x, c.y)) {
-			put_virt_pixel (c.x, c.y);
-			if (c.x > 0 && is_ok_fill_here (c.x - 1, c.y)) {
-				c.x--; _PUSH (&c); c.x++;
+		x = c % 320;
+		y = c / 320;
+		if (is_ok_fill_here (x, y)) {
+			put_virt_pixel (x, y);
+			if (x > 0 && is_ok_fill_here (x - 1, y)) {
+				_PUSH (c - 1);
     			}
-			if (c.x < _WIDTH - 1 && is_ok_fill_here (c.x + 1, c.y)) {
-				c.x++; _PUSH (&c); c.x--;
+			if (x < _WIDTH - 1 && is_ok_fill_here (x + 1, y)) {
+				_PUSH (c + 1);
  			}
-			if (c.y < _HEIGHT - 1 && is_ok_fill_here (c.x, c.y + 1)) {
-				c.y++; _PUSH (&c); c.y--;
+			if (y < _HEIGHT - 1 && is_ok_fill_here (x, y + 1)) {
+				_PUSH (c + 320);
     			}
-			if (c.y > 0 && is_ok_fill_here (c.x, c.y - 1)) {
-				c.y--; _PUSH (&c); c.y++;
+			if (y > 0 && is_ok_fill_here (x, y - 1)) {
+				_PUSH (c - 320);
     			}
 		}
 	}
@@ -537,7 +534,7 @@ static void draw_picture ()
 
 	drawing = 1;
 
-	stack[0] = calloc (sizeof (struct point_xy), STACK_SEG_SIZE);
+	stack[0] = calloc (sizeof (UINT16), STACK_SEG_SIZE);
 	stack_ptr = stack_seg = 0;
 	stack_num_segs = 1;
 
