@@ -2,7 +2,7 @@
 
 XCFLAGS	= -I ../../include
 OBJS	=
-DFILES	= Makefile sarien.c callback.h sarienRsc.h
+DFILES	= Makefile winmain.c sarien.ico sarien.info winres.rc
 CFILES	=
 DDIRS	=
 LIB	= ../../../lib/libsarien.a

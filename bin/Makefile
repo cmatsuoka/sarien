@@ -1,7 +1,7 @@
 
 XCFLAGS	=
 OBJS	= 
-DFILES	= Makefile sarien.ico sarien.info
+DFILES	= Makefile
 CFILES	=
 DDIRS	=
 XDFILES	=

@@ -2,7 +2,7 @@
 
 XCFLAGS =
 OBJS	=
-DFILES	= Makefile sarien.cfg sarien.spec winres.rc
+DFILES	= Makefile sarien.cfg sarien.spec
 CFILES	=
 DDIRS	=
 XDFILES =

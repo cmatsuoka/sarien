@@ -1,5 +1,5 @@
 
-XCFLAGS	= -I../../include
+XCFLAGS	= -I../../include -I../../core/win32
 OBJS	= sound_win32.o
 DFILES	= Makefile $(OBJS:.o=.c)
 CFILES	=

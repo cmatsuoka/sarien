@@ -52,8 +52,7 @@ BOOL CheckForGame(char *szDir)
 	if (hFind == INVALID_HANDLE_VALUE)
 		return FALSE;
 
-	do
-	{
+	do {
 		sprintf(szFullPath, "%s\\%s", szDir, ffd.cFileName);
 		dwFileInfo = GetFileAttributes(szFullPath);
 		

@@ -11,21 +11,26 @@ GFILES	= agi_v2.c agi_v3.c agi_v4.c agi.c cli.c words.c view.c id.c \
 	  logic.c keyboard.c savegame.c sound.c silent.c console.c \
 	  cycle.c graphics.c sprite.c checks.c motion.c menu.c view.c
 XDEPS	= $(MAIN_FILE).o
-DFILES	= Makefile $(OBJS:.o=.c) rand.c main.c winmain.c id.c hirespic.c \
+DFILES	= Makefile $(OBJS:.o=.c) rand.c main.c id.c hirespic.c \
 	  Makefile.wat Makefile.dj
 CFILES	=
-DDIRS	= dc palmos
+DDIRS	= dc palmos win32
 XLIBS	= -L../../lib -lagi -lsarien
 
 LIB	= ../../lib/libagi.a
 LIB2	= ../../lib/libsarien.a
 
-all: fixcr $(LIB) $(LIB2) ../../bin/sarien
+all: fixcr $(LIB) $(LIB2) archfiles ../../bin/sarien
+
+arch:
+	(cd $(CORE_ARCH); $(MAKE) all)
 
 $(LIB2): $(LIB2)(rand.o)
 	$(RANLIB) $(LIB2)
 
 include ../../Rules
+
+archfiles: $(ARCH_SUBDIR)
 
 ../../bin/sarien: $(MAIN_FILE).o ../../lib/libagi.a ../../lib/libsarien.a
 	$(LD) $(LDFLAGS) $(XLDFLAGS) $(MAIN_FILE).o id.o $(XLIBS) $(X11LIBS) $(LIBS)

@@ -213,7 +213,7 @@ SOURCE=..\src\core\view.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\core\winmain.c
+SOURCE=..\src\core\win32\winmain.c
 # End Source File
 # Begin Source File
 

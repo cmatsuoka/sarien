@@ -22,6 +22,8 @@ STRIP		= strip
 SOUND_DRIVER	= dummy
 CONSOLE_DRIVER	= palmos
 FILEIO_DRIVER	= palmos
+ARCH_SUBDIR	= arch
+CORE_ARCH	= palmos
 MAIN_FILE	= palmos/sarien
 
 #

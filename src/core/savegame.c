@@ -542,14 +542,6 @@ int load_game(char* s)
 			parm[3], parm[4], parm[5], parm[6]);
 	}
 
-#ifndef DREAMCAST
-	/* Why is this here? -- BP */
-	if(ferror(f) || feof(f)) {
-		fclose(f);
-		return err_BadFileOpen;
-	}
-#endif
-
 	fclose(f);
 
 	setflag(F_restore_just_ran, TRUE);
