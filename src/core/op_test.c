@@ -51,8 +51,8 @@ static UINT8 test_controller (UINT8 cont)
 {
 	int r;
 
-	r = game.events[cont].occured;
-	game.events[cont].occured = FALSE;
+	r = game.ev_keyp[cont].occured | game.ev_scan[cont].occured;
+	game.ev_keyp[cont].occured = game.ev_scan[cont].occured = FALSE;
 
 	return r;
 }
@@ -108,7 +108,7 @@ static UINT8 test_obj_right(UINT8 n, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 static UINT8 test_said (UINT8 nwords, UINT8 *cc)
 {
 	int c, n = game.num_ego_words;
-	UINT16 z = 0;
+	int z = 0;
 
 	if (!getflag (F_entered_cli))
 		return FALSE;
@@ -137,10 +137,10 @@ static UINT8 test_said (UINT8 nwords, UINT8 *cc)
 
 		switch (z) {
 		case 9999:	/* rest of line (empty string counts to...) */
-			nwords=1;
+			nwords = 1;
 			break;
 		case 1:			/* any word */
-			break;
+			break; 
 		default:
 			if (game.ego_words[c].id != z)
 				return FALSE;
@@ -149,13 +149,13 @@ static UINT8 test_said (UINT8 nwords, UINT8 *cc)
 	}
 
 	/* The entry string should be entirely parsed, or last word = 9999 */
-	if ( ( n ) && ( z != 9999 ) )
+	if (n && z != 9999)
 		return FALSE;
 
 	/* The interpreter string shouldn't be entirely parsed, but next
-	 * word must be 9999
+	 * word must be 9999.
 	 */
-	if ( (nwords != 0) && (lohi_getword (cc) != 9999) )    
+	if (nwords != 0 && lohi_getword(cc) != 9999)    
 		return FALSE;
 
 	setflag (F_said_accepted_input, TRUE);
@@ -186,7 +186,7 @@ int test_if_code (int lognum)
 
 		last_ip = ip;
 		op = *(code + ip++);
-		memmove (&p, (code + ip), 16);
+		memmove (p, (code + ip), 16);
 
 		switch(op) {
 		case 0xFF:			/* END IF, TEST TRUE */
@@ -253,7 +253,7 @@ int test_if_code (int lognum)
 			ec = test_said (p[0], (UINT8*)code + (ip + 1));
 			ip = last_ip;
 			ip++;		/* skip opcode */
-			ip+=p[0]*2;	/* skip num_words*2 */
+			ip += p[0] * 2;	/* skip num_words * 2 */
 			ip++;		/* skip num_words opcode */
 			break;
 		case 0x0F:

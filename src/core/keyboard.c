@@ -100,7 +100,8 @@ void get_string (int x, int y, int len, int str)
 }
 
 
-/*
+/**
+ * Raw key grabber.
  * poll_keyboard() is the raw key grabber (above the gfx driver, that is).
  * It handles console keys and insulates AGI from the console. In the main
  * loop, handle_keys() handles keyboard input and ego movement.
@@ -119,27 +120,25 @@ int poll_keyboard ()
 }
 
 
-void handle_controller (int key)
+int handle_controller (int key)
 {
 	int i;
 
-	for (i = 0; i < MAX_DIRS; i++){
-		int data = game.events[i].data;
-		switch (game.events[i].event) {
-		case eSCAN_CODE:
-			if (data == KEY_SCAN(key) && KEY_ASCII(key) == 0) {
-				_D ("event: scan code");
-				game.events[i].occured = TRUE;
-				report("event SC:%i occured\n", i);
-			}
-			break;
-		case eKEY_PRESS:
-			if (data == KEY_ASCII(key) && KEY_SCAN(key) == 0) {
-				_D ("event: key press");
-				game.events[i].occured = TRUE;
-				report ("event AC:%i occured\n", i);
-			}
-			break;
+	if (key == 0)
+		return FALSE;
+
+	for (i = 0; i < MAX_DIRS; i++) {
+		if (game.ev_scan[i].data == KEY_SCAN(key) && KEY_ASCII(key) == 0) {
+			_D ("event %d: scan code", i);
+			game.ev_scan[i].occured = TRUE;
+			report("event SC:%i occured\n", i);
+			return TRUE;
+		}
+		if (game.ev_keyp[i].data == KEY_ASCII(key) && KEY_SCAN(key) == 0) {
+			_D ("event %d: key press", i);
+			game.ev_keyp[i].occured = TRUE;
+			report ("event AC:%i occured\n", i);
+			return TRUE;
 		}
 	}
 
@@ -159,10 +158,11 @@ void handle_controller (int key)
 		if (d) {
 			game.view_table[0].direction = 
 				game.view_table[0].direction == d ? 0 : d;
+			return TRUE;
 		}
-
-		return;
 	}
+
+	return FALSE;
 }
 
 

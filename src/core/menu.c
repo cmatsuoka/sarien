@@ -215,14 +215,6 @@ int menu_keyhandler (int key)
 		clock_val = game.clock_enabled;
 		game.clock_enabled = FALSE;
 
-#if 0
-		release_sprites ();
-		save_screen ();
-		redraw_sprites ();
-		update_screen ();
-#endif
-		
-
 		/* calc size of horizontal menu */
 		for (men = master_menu->next; men; h_max_menu++, men=men->next);
 	
@@ -238,6 +230,7 @@ int menu_keyhandler (int key)
 	
     	switch (key) {
 	case KEY_ESCAPE:
+		_D (_D_WARN "KEY_ESCAPE");
 		goto exit_menu;
     	case KEY_ENTER:
 		_D (_D_WARN "KEY_ENTER");
@@ -247,8 +240,8 @@ int menu_keyhandler (int key)
     		for (i = 0; i < v_cur_menu; i++, men = men->down);
     		if (men->enabled) {
 			_D ("event %d registered", men->event);
-    			game.events[men->event].occured = TRUE;
-    			game.events[men->event].data = men->event;
+    			game.ev_scan[men->event].occured = TRUE;
+    			game.ev_scan[men->event].data = men->event;
 			goto exit_menu;
     		}
     		break;

@@ -57,11 +57,13 @@ int agi_init ()
 	for (i = 0; i < MAX_VARS; i++)
 		setvar(i, 0);
 
-	/* clear all logics, pictures, views and events */
-	memset (&game.logics, 0, MAX_DIRS * sizeof (struct agi_logic));
+	/* clear all resources and events */
+	memset (&game.views, 0, MAX_DIRS * sizeof (struct agi_view));
 	memset (&game.pictures, 0, MAX_DIRS * sizeof (struct agi_picture));
-	memset (&game.views, 0x0, MAX_DIRS * sizeof (struct agi_view));
-	memset (&game.events, 0x0, MAX_DIRS * sizeof (struct agi_event));
+	memset (&game.logics, 0, MAX_DIRS * sizeof (struct agi_logic));
+	memset (&game.sounds, 0, MAX_DIRS * sizeof (struct agi_sound));
+	memset (&game.ev_scan, 0, MAX_DIRS * sizeof (struct agi_event));
+	memset (&game.ev_keyp, 0, MAX_DIRS * sizeof (struct agi_event));
 
 	init_words ();
 	set_rnd_seed ();

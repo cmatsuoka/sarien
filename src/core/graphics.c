@@ -444,7 +444,9 @@ void clear_screen (int c)
 	flush_screen ();
 }
 
-
+/**
+ * Clear the console screen.
+ */
 void clear_console_screen (int n)
 {
 	memset (console_screen + (200 - n * 10) * GFX_WIDTH, 0,

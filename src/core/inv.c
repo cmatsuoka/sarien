@@ -107,7 +107,9 @@ void inventory ()
 		while (flag) {
 			cy = 2 + fsel;
 			if (show) {
-			/* nothing is a special case! */
+				show = 0;
+
+				/* nothing is a special case! */
 				if (!objcount) {
 					print_text (NOTHING_MSG, 0,
 						NOTHING_X, NOTHING_Y, 40,
@@ -118,13 +120,13 @@ void inventory ()
 				} else {
 					if (ls) {
 						print_text (object_name (intobj[ls-1]),
-						0, lx1, (((ly1/2)+1)<<3),
+						0, lx1, (ly1/2)+1,
 						40, STATUS_FG, STATUS_BG);
 						schedule_update (lx1, ly1, lx2, cy+8);
 					}
 
 					jlen = strlen (object_name(intobj[fsel]));
-					joffs = (cy % 2 == 0 ? 0 : 40-jlen)<<3;
+					joffs = cy % 2 == 0 ? 0 : 40-jlen;
 
 					lx1 = joffs;
 					ly1 = cy;
@@ -132,11 +134,10 @@ void inventory ()
 					ls = fsel+1;		/* ls ALWAYS >0 */
 
 					print_text (object_name (intobj[fsel]),
-						0, lx1, (((cy/2)+1)<<3), 40,
+						0, lx1, (cy/2)+1, 40,
 						STATUS_BG, STATUS_FG);
 					schedule_update (lx1, ly1, lx2, cy+8);
 				}
-				show = 0;
 			}
 
 			/* DF : FIXME : get_key() is not console aware */
@@ -146,13 +147,12 @@ void inventory ()
 			case KEY_ENTER:
 				setvar(V_sel_item, intobj[fsel]);
 				report("show_obj() -> %i\n", intobj[fsel]);
-				setvar(25, intobj[fsel]);
+				setvar(V_sel_item, intobj[fsel]);
 				flag = FALSE;
 				break;
 			case KEY_ESCAPE:
-				setvar(V_sel_item, 0xFF);
+				setvar(V_sel_item, 0xff);
 				report("show_obj() -> %i\n", intobj[fsel]);
-				setvar(25, 0xFF);
 				flag = FALSE;
 				break;
 			case KEY_UP:

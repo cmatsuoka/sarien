@@ -78,7 +78,6 @@ enum {
 };
 
 struct agi_event {
-	UINT8	event;
 	UINT8	occured;
 	UINT16	data;
 };
@@ -168,7 +167,8 @@ struct agi_game {
 
 	int num_objects;
 
-	struct agi_event events[MAX_DIRS];	/**< keyboard events */
+	struct agi_event ev_keyp[MAX_DIRS];	/**< keyboard keypress events */
+	struct agi_event ev_scan[MAX_DIRS];	/**< keyboard scan events */
 	char strings[MAX_WORDS1][MAX_WORDS2];	/**< strings */
 
 	/* directory entries for resources */

@@ -21,5 +21,6 @@ void	checkmove_both		(void);
 void	update_graf		(void);
 void	adjustpos_putblock	(struct vt_entry *v);
 void	add_to_pic		(int, int, int, int, int, int, int);
+void	show_obj		(int);
 
 #endif /* __AGI_SPRITE_H */

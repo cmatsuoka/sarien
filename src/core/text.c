@@ -167,7 +167,7 @@ void close_window ()
 
 /* len is in characters, not pixels!!
  */
-void message_box (char *p, int y, int x, int len)
+static void textbox (char *p, int y, int x, int len)
 {
 	/* if x | y = -1, then centre the box */
 	int xoff, yoff, lin, h, w;
@@ -186,8 +186,8 @@ void message_box (char *p, int y, int x, int len)
 	xoff = x * CHAR_COLS;
 	yoff = y * CHAR_LINES;
 	len--;
-
-	m = msg = word_wrap_string (p, &len);
+	
+	m = msg = word_wrap_string (agi_sprintf (p, 0), &len);
 
 	for (lin = 1; *m; m++) {
 		if (*m == '\n')
@@ -219,6 +219,14 @@ void message_box (char *p, int y, int x, int len)
 	do_update ();
 }
 
+void message_box (char *p, int y, int x, int len)
+{
+	textbox (p, y, x, len);
+	wait_key ();
+	show_pic ();
+	flush_screen ();
+}
+
 /**
  *
  */
@@ -226,7 +234,7 @@ int print (char *p, int lin, int col, int len)
 {
 	assert (p != NULL);
 
-	message_box (p, lin, col, len);
+	textbox (p, lin, col, len);
 
 	if (getflag (F_output_mode)) {
 		/* non-blocking window */
@@ -284,7 +292,8 @@ void print_status (char *message, ...)
 
 	va_end (args);
 
-        print_text (x, 0, game.line_status, 0, 40, STATUS_FG, STATUS_BG);
+        print_text (agi_sprintf (x, 0), 0, game.line_status, 0, 40,
+		STATUS_FG, STATUS_BG);
 	flush_lines (game.line_status, game.line_status);
 }
 
@@ -305,9 +314,12 @@ char *agi_sprintf (char *s, int n)
 
 	for (*p = xx = xy = 0; *s; ) {
 		switch (*s) {
+		case '\\':
+			s++;
+			continue;
 		case '%':
 			s++;
-			switch(*s++) {
+			switch (*s++) {
 			case 'v':
 				xx = atoi(s);
 				while (*s >= '0' && *s <= '9')
@@ -419,3 +431,5 @@ void flush_lines (int l1, int l2)
 
 	flush_block (0, l1, GFX_WIDTH - 1, l2);
 }
+
+/* end: text.c */

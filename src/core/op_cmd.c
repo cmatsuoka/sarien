@@ -129,6 +129,8 @@ cmd(print)		{ print (cur_logic->texts[p0 - 1], 0, 0, 0); }
 cmd(print_v)		{ print (cur_logic->texts[_v[p0] - 1], 0, 0, 0); }
 cmd(print_at)		{ print (cur_logic->texts[p0 - 1], p1, p2, p3); }
 cmd(print_at_v)		{ print (cur_logic->texts[_v[p0] - 1], p1, p2, p3); }
+cmd(show_obj)		{ show_obj (p0); }
+cmd(show_obj_v)		{ show_obj (_v[p0]); }
 cmd(play_sound)		{ start_sound (p0, p1); }
 cmd(stop_sound)		{ stop_sound (); }
 cmd(accept_input)	{ new_input_mode (INPUT_NORMAL); }
@@ -514,19 +516,20 @@ cmd(config_screen) {
 }
 
 cmd(text_mode) {
-	if (game.gfx_mode) {
-		//save_screen ();
-		game.gfx_mode = FALSE;
-		if (game.color_bg == 7)
-			game.color_bg = 15;
-		clear_screen (0);
-	}
+	game.gfx_mode = FALSE;
+	/*
+	 * Simulates the "bright background bit" of the PC video
+	 * controller.
+	 */
+	if (game.color_bg)
+		game.color_bg |= 0x08;
+	clear_screen (game.color_bg);
 }
 
 cmd(graphics_mode) {
 	if (!game.gfx_mode) {
-		//restore_screen ();
 		game.gfx_mode = TRUE;
+		clear_screen (0);
 		show_pic ();
  		write_status ();
 	}
@@ -534,7 +537,7 @@ cmd(graphics_mode) {
 
 cmd(status) {
 	inventory();
-	setvar (25, 0xFF);	/* ??!? */
+	setvar (V_sel_item, 0xff);
 }
 
 cmd(quit) {
@@ -629,9 +632,18 @@ cmd(set_cursor_char) {
 }
 
 cmd(set_key) {
-	game.events[p2].event = p0 ? eKEY_PRESS : eSCAN_CODE;
-	game.events[p2].data = p0 ? p0 : p1;
-	game.events[p2].occured = FALSE;
+	_D ("%d %d %d", p0, p1, p2);
+	if (p0 && p1) {
+		_D (_D_WARN "FIXME: not registered!");
+		return;
+	}
+	if (p0) {		/* keypress */
+		game.ev_keyp[p2].data = p0;
+		game.ev_keyp[p2].occured = FALSE;
+	} else {		/* scancode */
+		game.ev_scan[p2].data = p1;
+		game.ev_scan[p2].occured = FALSE;
+	}
 }
 
 cmd(set_string) {
@@ -668,51 +680,6 @@ cmd(clear_text_rect) {
 cmd(clear_lines) {
 	clear_lines (p0, p1, p2);
 	flush_lines (p0, p1);
-}
-
-
-/* FIXME: ugly, shouldn't manage bg */
-cmd(show_obj) {
-#if 0
-	struct view_cel *c;
-	UINT8 *bg;
-	int x, y, w, h, x_, y_, w_, i, j;
-	int n = p0;
-
-	agi_load_resource (rVIEW, n);
-	if (! (c = &views[n].loop[0].cel[0]))
-		return;
-	
-	w_ = c->width;
-	h = c->height;
-	w = w_ * 2;
-	x = _WIDTH - w_;
-	x_ = x / 2;
-	y_ = 120;
-	y = game.line_min_print ? y_ + 8 : y_;
-	bg = malloc (w * h);
-
-	/* FIXME: flush_block () coordinates */
-
-	for (i = w - 1; i >= 0; i--)
-		for (j = h - 1; j >= 0; j--)
-			bg[i + w * j] = layer1_data[x + i + 320 * (y + j)];
-
-	for (i = w - 1; i >= 0; i--)
-		for (j = h - 1; j >= 0; j--)
-			layer1_data[x + i + 320 * (y + j)] = c->data[i / 2 + w_ * j];
-	flush_block (x, y, x + w, y + h);
-
-	/* FIXME: should call agi_printf */
-	message_box (views[n].descr, CENTER);
-
-	for (i = w - 1; i >= 0; i--)
-		for (j = h - 1; j >= 0; j--)
-			layer1_data[x + i + 320 * (y + j)] = bg[i + w * j];
-	flush_block (x, y, x + w, y + h);
-
-	free (bg);
-#endif
 }
 
 

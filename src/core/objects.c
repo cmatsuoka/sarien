@@ -17,6 +17,9 @@
 extern struct agi_game game;
 extern int decode_objects(UINT8* mem, UINT32 flen);
 
+/**
+ * AGI object
+ */
 struct agi_object {
         int location;
         char *name;
@@ -118,7 +121,6 @@ int load_objects (char *fname)
 	return err_OK;
 }
 
-
 void unload_objects ()
 {
 	int i;
@@ -150,12 +152,10 @@ void object_set_location (int n, int i)
 	objects[n].location = i;
 }
 
-
 int object_get_location (int n)
 {
 	return objects[n].location;
 }
-
 
 char *object_name (int n)
 {

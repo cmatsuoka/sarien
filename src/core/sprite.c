@@ -14,6 +14,7 @@
 #include "agi.h"
 #include "sprite.h"
 #include "graphics.h"
+#include "text.h"
 
 /**
  * Sprite structure. 
@@ -575,6 +576,29 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 			}
 		}
 	}
+}
+
+void show_obj (n)
+{
+	struct view_cel *c;
+	struct sprite s;
+
+	agi_load_resource (rVIEW, n);
+	if (!(c = &game.views[n].loop[0].cel[0]))
+		return;
+	
+	s.x_pos = (_WIDTH - c->width) / 2;
+	s.y_pos = 128;
+	s.x_size = c->width;
+	s.y_size = c->height;
+	s.buffer = malloc (s.x_size * s.y_size);
+
+	objs_savearea (&s);
+	blit_cel (s.x_pos, s.y_pos, 15, c);
+	message_box (game.views[n].descr, -1, -1, -1);
+	objs_restorearea (&s);
+
+	free (s.buffer);
 }
 
 /* end: sprite.c */

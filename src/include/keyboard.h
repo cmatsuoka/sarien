@@ -42,14 +42,13 @@ extern "C"{
 #define KEY_PGDN	0xff56  /*          must change to PC keyb */
 #define KEY_HOME	0xff57  /*          scancodes! */
 #define KEY_END		0xff58
+#define KEY_TAB		0xff09
 #endif
 
 #define KEY_SCAN(k)	(k >> 8)
 #define KEY_ASCII(k)	(k & 0xff)
 
-
 extern	UINT8		scancode_table[];
-//extern	UINT16		key;
 
 
 void	init_words	(void);
@@ -58,7 +57,7 @@ int	poll_keyboard	(void);
 void	clean_keyboard	(void);
 void	handle_keys	(int);
 void	handle_getstring(int);
-void	handle_controller(int);
+int	handle_controller(int);
 void	get_string	(int, int, int, int);
 UINT16	agi_get_keypress(void);
 int	wait_key	(void);
