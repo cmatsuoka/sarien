@@ -139,25 +139,30 @@ static void _putpixels_scale1 (int x, int y, int w, BYTE *p)
 	LeaveCriticalSection(&g_screen.cs);
 }
 
+
 static void _putpixels_scale2 (int x, int y, int w, BYTE *p)
 {
-	BYTE *p0 = g_screen.screen_pixels, *p1; /* Word aligned! */
+	BYTE *p0 = g_screen.screen_pixels, *p1; /* word aligned */
 
 	/* Using ASPECT_RATIO to allow runtime window resize */
 	y = ASPECT_RATIO(GFX_HEIGHT) - y - 1;
-	x <<= 1; y <<= 1; 
+	x <<= 1; 
+	y <<= 1; 
 	p0 += x + y * xsize;
 	p1 = p0 + xsize;
 
 	EnterCriticalSection(&g_screen.cs);
-	if (!opt.hires || y > 0 || y < (GFX_HEIGHT - 1)) {
+	
+	if (!opt.hires || y == 0 || y >= ((GFX_HEIGHT - 1)<<2)) {
 		while (w--) {
-			*p0++ = *p; *p0++ = *p;
-			*p1++ = *p; *p1++ = *p;
+			*p0++ = *p; 
+			*p0++ = *p;
+			*p1++ = *p; 
+			*p1++ = *p;
 			p++;
 		}
 	} else {
-		scale2x_8_def(p0, p1, p - GFX_WIDTH, p, p + GFX_WIDTH, w);
+		scale2x_8_def(p1, p0, p - GFX_WIDTH, p, p + GFX_WIDTH, w);
 	}
 	LeaveCriticalSection (&g_screen.cs);
 }
@@ -183,7 +188,8 @@ static void _putpixels_fixratio_scale2 (int x, int y, int w, BYTE *p)
 		return;
 
 	y = GFX_HEIGHT - y - 1;
-	x <<= 1; y <<= 1; 
+	x <<= 1; 
+	y <<= 1; 
 
 	if (y < ((GFX_WIDTH - 1) << 2) && ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2)) {
 		extra = w;
@@ -196,7 +202,7 @@ static void _putpixels_fixratio_scale2 (int x, int y, int w, BYTE *p)
 	p2 = p1 + xsize;
 
 	EnterCriticalSection(&g_screen.cs);
-	if (!opt.hires || y > 0 || y < ASPECT_RATIO(GFX_HEIGHT - 1)) {
+	if (!opt.hires || y == 0 || y >= (ASPECT_RATIO(GFX_HEIGHT - 1) << 1)) {
 		for (_p = p; w--; p++) {
 			*p0++ = *p;
 			*p0++ = *p;
@@ -208,11 +214,13 @@ static void _putpixels_fixratio_scale2 (int x, int y, int w, BYTE *p)
 			*p2++ = *p;
 		}
 	} else {
-		scale2x_8_def(p0, p1, p - GFX_WIDTH * 2, p, p + GFX_WIDTH * 2, w);
-		scale2x_8_def(p1, p2, p - GFX_WIDTH * 2, p, p + GFX_WIDTH * 2, extra);
+		_p = p;
+		scale2x_8_def(p2, p1, _p - GFX_WIDTH, _p, _p + GFX_WIDTH, extra);
+		scale2x_8_def(p1, p0, _p - GFX_WIDTH, _p, _p + GFX_WIDTH, w);
 	}
 	LeaveCriticalSection (&g_screen.cs);
 }
+
 
 static void set_putpixels_method ()
 {
@@ -597,6 +605,7 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 
 		}
 		
+
 		// this causes assertions in VS.NET
 		// _D (": key = 0x%02x ('%c')", key, isprint(key) ? key : '?');
 
