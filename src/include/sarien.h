@@ -63,7 +63,7 @@ extern "C"{
  * manage it with a memory allocator of your own.
  */
 #ifdef __MPW__
-#  include <AppleEvents.h>
+#  include <Memory.h>
 #  define malloc(x)	((void *)NewPtr (x))
 #  define calloc(x,s)	((void *)NewPtrClear ((x) * (s)))
 #  define free(x)	DisposePtr ((Ptr)(x))
