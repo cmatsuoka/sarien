@@ -1,21 +1,17 @@
-/*
- *  Sarien AGI :: Copyright (C) 1999 Dark Fiber
- *
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  the Free Software Foundation; see docs/COPYING for further details.
  */
+
+/*
+ * Win32 sound driver by Felipe Rosinha
+ */
+
 #include <stdio.h>
 #include <windows.h>
 #include <mmsystem.h>
@@ -41,8 +37,7 @@ static int   win32_init_sound   (SINT16 *buffer);
 static void  win32_close_sound  (void);
 static void  win32_swap_buffers (void);
 
-SOUND_DRIVER sound_win32=
-{
+static struct sound_driver sound_win32 = {
 	"Win32 native sound output",
 	win32_init_sound,
 	win32_close_sound,

@@ -1,23 +1,15 @@
-/*
- *  Sarien AGI :: Copyright (C) 1999 Dark Fiber 
- *
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-/* BSD sound driver by Claudio Matsuoka <claudio@helllabs.org>
+/*
+ * BSD sound driver by Claudio Matsuoka <claudio@helllabs.org>
  */
 
 #include <stdio.h>
@@ -37,7 +29,7 @@ static void bsd_close_sound (void);
 static void dump_buffer (void);
 static SINT16 *buffer;
 
-static SOUND_DRIVER sound_bsd = {
+static struct sound_driver sound_bsd = {
 	"BSD /dev/audio sound output",
 	bsd_init_sound,
 	bsd_close_sound,
@@ -86,8 +78,7 @@ static int bsd_init_sound (SINT16 *b)
 	if (ioctl (audio_fd, AUDIO_SETINFO, &ainfo) == -1)
 		return err_Unk;
 
-	fprintf (stderr, "sound_bsd: BSD sound support by "
-		"claudio@helllabs.org\n");
+	report (sound_bsd: BSD sound support by claudio@helllabs.org\n");
 
 	/* Set sound device to 16 bit, 22 kHz mono */
 

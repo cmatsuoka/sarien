@@ -1,20 +1,11 @@
-/*
- *  Sarien AGI :: Copyright (C) 1999 Dark Fiber 
- *
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
 #include <stdio.h>
@@ -34,13 +25,49 @@
 /* TODO: add support for variable sampling rate in the output device
  */
 
-AGI_INSTRUMENT	*instruments;
-UINT32		num_instruments;
+/* private data types (no need to be in the public header */
+struct sound_envelope {
+	UINT8 bp;
+	UINT8 inc_hi;
+	UINT8 inc_lo;
+};
 
-AGI_SOUND	sounds[MAX_DIRS];
-SOUND_DRIVER	*snd;
+struct sound_wavelist {
+	UINT8 top;
+	UINT8 addr;
+	UINT8 size;
+	UINT8 mode;
+	UINT8 rel_hi;
+	UINT8 rel_lo;
+};
 
-SINT16 *snd_buffer;
+struct sound_instrument {
+	struct sound_envelope env[8];
+	UINT8 relseg;
+	UINT8 priority;
+	UINT8 bendrange;
+	UINT8 vibdepth;
+	UINT8 vibspeed;
+	UINT8 spare;
+	UINT8 wac;
+	UINT8 wbc;
+	struct sound_wavelist wal[8];
+	struct sound_wavelist wbl[8];
+};
+
+struct sound_iigs_sample {
+	UINT8 type_lo;
+	UINT8 type_hi;
+	UINT8 srate_lo;
+	UINT8 srate_hi;
+	UINT16 unknown[2];
+	UINT8 size_lo;
+	UINT8 size_hi;
+	UINT16 unknown2[13];
+};
+
+static struct sound_instrument *instruments;
+static int num_instruments;
 static int playing;
 static struct channel_info chn[NUM_CHANNELS];
 static int endflag = -1;
@@ -51,11 +78,16 @@ static UINT8 *wave;
 static UINT8 env;
 static SINT16 *waveform;
 
+
+SINT16 *snd_buffer;
+struct agi_sound sounds[MAX_DIRS];
+struct sound_driver *snd;
+
 extern struct sarien_options opt;
+extern struct sound_driver sound_dummy;
 
 
-static SINT16 waveform_ramp[WAVEFORM_SIZE] =
-{
+static SINT16 waveform_ramp[WAVEFORM_SIZE] = {
        0,   8,  16,  24,  32,  40,  48,  56,
       64,  72,  80,  88,  96, 104, 112, 120,
      128, 136, 144, 152, 160, 168, 176, 184,
@@ -66,8 +98,7 @@ static SINT16 waveform_ramp[WAVEFORM_SIZE] =
     -64, -56, -48, -40,  -32, -24, -16,  -8   	/* Ramp up */
 };
 
-static SINT16 waveform_square[WAVEFORM_SIZE] =
-{
+static SINT16 waveform_square[WAVEFORM_SIZE] = {
      255, 230, 220, 220, 220, 220, 220, 220,
      220, 220, 220, 220, 220, 220, 220, 220,
      220, 220, 220, 220, 220, 220, 220, 220,
@@ -78,8 +109,7 @@ static SINT16 waveform_square[WAVEFORM_SIZE] =
     -220,-220,-220,-110,   0,   0,   0,   0   	/* Square */
 };
 
-static SINT16 waveform_mac[WAVEFORM_SIZE] =
-{
+static SINT16 waveform_mac[WAVEFORM_SIZE] = {
       45, 110, 135, 161, 167, 173, 175, 176,
      156, 137, 123, 110,  91,  72,  35,  -2,
      -60,-118,-142,-165,-170,-176,-177,-179,
@@ -112,7 +142,7 @@ static int note_to_period (int note)
 }
 
 
-void unload_sound(UINT16 resnum)
+void unload_sound (int resnum)
 {
 	_D (("(%d)", resnum));
 
@@ -127,24 +157,23 @@ void unload_sound(UINT16 resnum)
 }
 
 
-void decode_sound (UINT16 resnum)
+void decode_sound (int resnum)
 {
 	int type, size;
 	SINT16 *buf;
 	UINT8 *src;
-	AGI_IIGS_SAMPLE *smp;
+	struct sound_iigs_sample *smp;
 
 	_D (("(%d)", resnum));
 	type = lohi_getword ((UINT8 *)sounds[resnum].rdata);
 
-	if (type == AGI_SOUND_SAMPLE)
-	{
+	if (type == AGI_SOUND_SAMPLE) {
 		/* Convert sample data to 16 bit signed format
 		 */
-		smp = (AGI_IIGS_SAMPLE *)sounds[resnum].rdata;
+		smp = (struct sound_iigs_sample *)sounds[resnum].rdata;
 		size = ((int)smp->size_hi << 8) + smp->size_lo;
 		src = (UINT8 *)sounds[resnum].rdata;
-		buf = (SINT16*)calloc (1, 54 + (size << 1) + 100);	/* FIXME */
+		buf = calloc (1, 54 + (size << 1) + 100);	/* FIXME */
 		memcpy (buf, src, 54);
 		for (; size--; buf[size + 54] =
 			((SINT16)src[size + 54] - 0x80) << 4); /* FIXME */
@@ -154,12 +183,11 @@ void decode_sound (UINT16 resnum)
 }
 
 
-void start_sound (UINT16 resnum, UINT16 flag)
+void start_sound (int resnum, int flag)
 {
 	int i;
-	AGI_IIGS_SAMPLE *smp;
+	struct sound_iigs_sample *smp;
 
-	_D (("(%d, %d)", resnum, flag));
 	if (sounds[resnum].flags & SOUND_PLAYING)
 		return;
 
@@ -180,7 +208,7 @@ void start_sound (UINT16 resnum, UINT16 flag)
 	switch (type) {
 	case AGI_SOUND_SAMPLE:
 		_D ((": IIGS sample"));
-		smp = (AGI_IIGS_SAMPLE *)sounds[resnum].rdata;
+		smp = (struct sound_iigs_sample *)sounds[resnum].rdata;
 		for (i = 0; i < NUM_CHANNELS; i++) {
 			chn[i].flags = 0;
 			chn[i].ins = (SINT16 *)&sounds[resnum].rdata[54];
@@ -194,8 +222,7 @@ void start_sound (UINT16 resnum, UINT16 flag)
 	case AGI_SOUND_MIDI:
 		_D ((": IIGS MIDI sequence"));
 
-		for (i = 0; i < NUM_CHANNELS; i++)
-		{
+		for (i = 0; i < NUM_CHANNELS; i++) {
 			chn[i].flags = AGI_SOUND_LOOP | AGI_SOUND_ENVELOPE;
 			chn[i].ins = waveform;
 			chn[i].size = WAVEFORM_SIZE;
@@ -240,29 +267,29 @@ void start_sound (UINT16 resnum, UINT16 flag)
 }
 
 
-void stop_sound (void)
+void stop_sound ()
 {
 	int i;
 
 	_D (("()"));
 
 	endflag = -1;
-	for (i = 0; i < NUM_CHANNELS; i++)
-	{
+	for (i = 0; i < NUM_CHANNELS; i++) {
 		chn[i].vol = 0;
 		chn[i].end = 0;
 	}
-	if (playing_sound != -1)
+
+	if (playing_sound != -1) {
 		sounds[playing_sound].flags &= ~SOUND_PLAYING;
-	playing_sound = -1;
+		playing_sound = -1;
+	}
 }
 
 
-int init_sound (void)
+int init_sound ()
 {
 	int r = -1;
 
-	_D (("()"));
 	snd_buffer = (SINT16*)calloc (2, BUFFER_SIZE);
 	__init_sound ();
 
@@ -299,16 +326,6 @@ int init_sound (void)
 	} else {
 		report ("disabled\n");
 	}
-
-#if 0
-	report ("sound: interpolation is "
-#ifdef USE_INTERPOLATION
-		"enabled"
-#else
-		"disabled"
-#endif
-	"\n");
-#endif
 
 	return r;
 }
@@ -434,7 +451,7 @@ void play_agi_sound ()
 }
 
 
-void play_sound (void)
+void play_sound ()
 {
 	int i;
 
@@ -446,8 +463,7 @@ void play_sound (void)
 	else
 		play_agi_sound ();
 
-	if (!playing)
-	{
+	if (!playing) {
 		for (i = 0; i < NUM_CHANNELS; chn[i++].vol = 0);
 		if (endflag != -1)
 			setflag (endflag, TRUE);
@@ -479,8 +495,7 @@ UINT32 mix_sound (void)
 			chn[c].vol * chn[c].env >> 16 :
 			chn[c].vol;
 
-		for (i = 0; i < BUFFER_SIZE; i++)
-	  	{
+		for (i = 0; i < BUFFER_SIZE; i++) {
 			b = src[p >> 8];
 #ifdef USE_INTERPOLATION
 			b += ((src[((p >> 8) + 1) % chn[c].size] -
@@ -514,26 +529,26 @@ UINT32 mix_sound (void)
 }
 
 
-UINT16 load_instruments(UINT8 *fname)
+int load_instruments (char *fname)
 {
-	FILE	*fp;
-	UINT32	j, k;
-	AGI_INSTRUMENT ai;
-	UINT32 num_wav;
+	FILE *fp;
+	int j, k;
+	struct sound_instrument ai;
+	int num_wav;
 
-	fixpath(NO_GAMEDIR, (UINT8*)"sierrastandard");
+	fixpath (NO_GAMEDIR, (UINT8*)"sierrastandard");
 	report ("Loading samples: %s\n", path);
 
 	if ((fp = fopen ((char*)path, "rb")) == NULL)
 		return err_BadFileOpen;
 
-	if((wave = (UINT8*)malloc(0x10000)) == NULL)
+	if ((wave = malloc (0x10000)) == NULL)
 		return err_NotEnoughMemory;
 
 	fread (wave, 0x10000, 1, fp);
 	fclose (fp);
 
-	fixpath(NO_GAMEDIR, fname);
+	fixpath (NO_GAMEDIR, fname);
 	report ("Loading instruments: %s\n", path);
 
 	if ((fp = fopen ((char*)path, "rb")) == NULL)
@@ -560,8 +575,7 @@ for (num_wav = j = 0; j < 40; j++) {
 	printf ("A wave count: %d, B wave count: %d\n", ai.wac, ai.wbc);
 #endif
 
-	for (k = 0; k < ai.wac; k++, num_wav++)
-	{
+	for (k = 0; k < ai.wac; k++, num_wav++) {
 		fread (&ai.wal[k], 1, 6, fp);
 #if 0
 		printf ("[A %d of %d] top: %02x, wave address: %02x, "
@@ -572,8 +586,7 @@ for (num_wav = j = 0; j < 40; j++) {
 #endif
 	}
 
-	for (k = 0; k < ai.wbc; k++, num_wav++)
-	{
+	for (k = 0; k < ai.wbc; k++, num_wav++) {
 		fread (&ai.wbl[k], 1, 6, fp);
 #if 0
 		printf ("[B %d of %d] top: %02x, wave address: %02x, "
@@ -586,7 +599,7 @@ for (num_wav = j = 0; j < 40; j++) {
 }
 
 	num_instruments = j;
-	printf ("%ld Ensoniq 5503 instruments loaded. (%ld waveforms)\n",
+	printf ("%d Ensoniq 5503 instruments loaded. (%d waveforms)\n",
 		num_instruments, num_wav);
 
 	fclose(fp);
@@ -594,9 +607,10 @@ for (num_wav = j = 0; j < 40; j++) {
 	return err_OK;
 }
 
-void unload_instruments(void)
+
+void unload_instruments ()
 {
-	free(instruments);
+	free (instruments);
 }
 
 

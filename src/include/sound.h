@@ -56,80 +56,33 @@ struct channel_info {
 	UINT32 env;
 };
 
-typedef struct SOUND_DRIVER
-{
+struct sound_driver {
 	char *description;
 	int (*init)(SINT16 *buffer);
 	void (*deinit)(void);
-} SOUND_DRIVER;
+};
 
-typedef struct AGI_SOUND
-{
+struct agi_sound {
 	UINT32	flen;			/* size of raw data */
 	UINT8	*rdata;			/* raw sound data */
 	UINT8	flags;			/* sound flags */
 	UINT16	type;			/* sound resource type */
-} AGI_SOUND;
+};
 
-typedef struct AGI_ENVELOPE
-{
-	UINT8 bp;
-	UINT8 inc_hi;
-	UINT8 inc_lo;
-} ENVELOPE;
+extern	struct sound_driver	*snd;
+//extern  struct sound_driver	sound_dummy;
+//extern	struct agi_sound	sounds[];
 
-typedef struct AGI_WAVELIST
-{
-	UINT8 top;
-	UINT8 addr;
-	UINT8 size;
-	UINT8 mode;
-	UINT8 rel_hi;
-	UINT8 rel_lo;
-} WAVELIST;
-
-typedef struct AGI_INSTRUMENT
-{
-	ENVELOPE env[8];
-	UINT8 relseg;
-	UINT8 priority;
-	UINT8 bendrange;
-	UINT8 vibdepth;
-	UINT8 vibspeed;
-	UINT8 spare;
-	UINT8 wac;
-	UINT8 wbc;
-	WAVELIST wal[8];
-	WAVELIST wbl[8];
-} AGI_INSTRUMENT;
-
-typedef struct AGI_IIGS_SAMPLE
-{
-	UINT8 type_lo;
-	UINT8 type_hi;
-	UINT8 srate_lo;
-	UINT8 srate_hi;
-	UINT16 unknown[2];
-	UINT8 size_lo;
-	UINT8 size_hi;
-	UINT16 unknown2[13];
-} AGI_IIGS_SAMPLE;
-
-
-extern	SOUND_DRIVER	*snd;
-extern	AGI_SOUND	sounds[];
-extern  SOUND_DRIVER	sound_dummy;
-
-extern	void	decode_sound(UINT16 resnum);
-extern	void	unload_sound(UINT16 resnum);
-extern	void	play_sound (void);
-extern	int	init_sound (void);
-extern	void	deinit_sound (void);
-extern	void	start_sound (UINT16, UINT16);
-extern	void	stop_sound (void);
-extern	UINT32	mix_sound (void);
-extern	void	__init_sound (void);
-extern	UINT16	load_instruments(UINT8 *fname);
+void	decode_sound		(int);
+void	unload_sound		(int);
+void	play_sound		(void);
+int	init_sound		(void);
+void	deinit_sound		(void);
+void	start_sound		(int, int);
+void	stop_sound		(void);
+UINT32	mix_sound		(void);
+void	__init_sound		(void);
+int	load_instruments	(char *fname);
 
 #ifdef __cplusplus
 };

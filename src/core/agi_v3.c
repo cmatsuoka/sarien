@@ -32,6 +32,7 @@ static int agi_v3_unload_resource (int, int);
 extern struct agi_picture pictures[];
 extern struct agi_logic logics[];
 extern struct agi_view views[];
+extern struct agi_sound sounds[];
 extern struct gfx_driver *gfx;
 
 struct agi_loader agi_v3 = {
