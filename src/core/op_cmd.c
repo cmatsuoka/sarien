@@ -481,7 +481,7 @@ void cmd_get_num (UINT8 logic, UINT8 msg, UINT8 num)
 
 	if (logics[logic].texts!=NULL && (msg-1)<=logics[logic].num_texts) {
 		p = agi_printf (logics[logic].texts[msg-1], logic);
-		print_text (p, 0, 0, 23*8, strlen ((char*)p) + 1, txt_fg, txt_bg);
+		print_text (p, 0, 0, 23*CHAR_LINES, strlen ((char*)p) + 1, txt_fg, txt_bg);
 		p = get_string (8* (strlen ((char*)p)-1), 23*8, 4);
 		while (*p!=0x0 && isspace (*p)!=0)
 			p++;
@@ -720,7 +720,7 @@ void cmd_get_string (UINT8 logic, UINT8 str, UINT8 msg, UINT8 y, UINT8 x, UINT8 
     	open_dialogue=1;
 
 		p=agi_printf (logics[logic].texts[msg-1], logic);
-		print_text (p, 0, x * 8, y * 8, strlen (p), txt_fg, txt_bg);
+		print_text (p, 0, x * CHAR_COLS, y * CHAR_LINES, strlen (p), txt_fg, txt_bg);
 		p = get_string (x * CHAR_COLS + CHAR_COLS * (strlen (p) - 1), y*CHAR_LINES, len);
 		strcpy (game.strings[str], p );
 
@@ -1041,9 +1041,9 @@ void cmd_clear_text_rect (UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2, UINT8 c)
 	/*y1++;*/
 	x2++;
 	y2++;
-	draw_box (y1 * 8, x1 * 8, y2 * 8, x2 * 8, c, c,
-		BX_SAVE | NO_LINES, game.line_min_print * 8);
-	put_block (y1 * 8, x1 * 8, y2 * 8, x2 * 8);
+	draw_box (y1 * CHAR_COLS, x1 * CHAR_LINES, y2 * CHAR_COLS, x2 * CHAR_LINES, c, c,
+		BX_SAVE | NO_LINES, game.line_min_print * CHAR_LINES);
+	put_block (y1 * CHAR_COLS, x1 * CHAR_LINES, y2 * CHAR_COLS, x2 * CHAR_LINES);
 }
 
 

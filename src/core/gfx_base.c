@@ -210,16 +210,18 @@ void shake_screen (int n)
 
 int init_video ()
 {
+#ifdef USE_CONSOLE
 	int i;
+#endif
 
 	fprintf (stderr, "Initializing graphics: resolution %dx%d (scale=%d)\n",
 		GFX_WIDTH, GFX_HEIGHT, opt.scale);
 
+#ifdef USE_CONSOLE
 	/* "Transparent" colors */
 	for (i = 0; i < 48; i++)
 		palette[i + 48] = (palette[i] + 0x30) >> 2;
 
-#ifdef USE_CONSOLE
 	/* Console */
 	for (i = 0; i < CONSOLE_LINES_BUFFER; i++)
 		console.line[i] = strdup ("\n");
@@ -258,7 +260,8 @@ void put_text_character (int l, int x, int y, int c, int fg, int bg)
 	UINT8 *p;
 
 #if defined PALMOS || defined FAKE_PALMOS
-	c = toupper (c);
+	if (c & 0x80)
+		c = 1;
 #endif
 
 	p = font + (c * CHAR_LINES);

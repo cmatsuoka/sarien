@@ -54,7 +54,7 @@ static void print_text2 (int l, char *msg, int foff, int xoff, int yoff,
 
 				if((x1!=(len-1) || x1==39) && ((y1*CHAR_LINES)+yoff <= (GFX_HEIGHT - CHAR_LINES))) {
 					put_text_character (l, (x1 * CHAR_COLS) + xoff + foff,
-						(y1 * 8) + yoff, *m, fg, bg);
+						(y1 * CHAR_LINES) + yoff, *m, fg, bg);
 					if (x1>maxx)
 						maxx=x1;
 					if (x1<minx)
@@ -78,12 +78,12 @@ static void print_text2 (int l, char *msg, int foff, int xoff, int yoff,
 	if (maxx < minx)
 		return;
 
-	maxx <<= 3;
-	minx <<= 3;
+	maxx *= CHAR_COLS;
+	minx *= CHAR_COLS;
 
 	/* FIXME: move to gfx_base.c and create wrapper function */
 	if (update)
-		put_block (foff+xoff+minx, yoff, ofoff+xoff+maxx+7, yoff+y1*8+9);
+		put_block (foff+xoff+minx, yoff, ofoff+xoff+maxx+CHAR_COLS-1, yoff+y1*CHAR_LINES+CHAR_LINES+1);
 }
 
 
@@ -158,8 +158,8 @@ void textbox (char *message, int x, int y, int len)
 
 	_D (": lin=%d", lin);
 
-	if (lin * 8 > GFX_HEIGHT)
-		lin = (GFX_HEIGHT / 8);
+	if (lin * CHAR_LINES > GFX_HEIGHT)
+		lin = (GFX_HEIGHT / CHAR_LINES);
 
 	if (xoff == -1)
 		xoff = (GFX_WIDTH - ((len + 2) * CHAR_COLS)) / 2;
@@ -235,8 +235,7 @@ void print_status (char *message, ...)
 	va_end (args);
 
         print_text (x, 0, game.line_status, 0, 41, STATUS_FG, STATUS_BG);
-	/* FIXME: should define put_status() in gfx */
-	put_block (0, 0, 319, 8);
+	put_block (0, 0, GFX_WIDTH, CHAR_LINES);
 }
 
 
