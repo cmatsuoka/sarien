@@ -311,7 +311,7 @@ static void sdl_put_block (int x1, int y1, int x2, int y2)
 }
 
 
-static void inline sdl_put_pixel (int x, int y, int c)
+static void inline _put_pixel (int x, int y, int c)
 {
 	UINT32 pixel;
 	UINT8 *bits, bpp;
@@ -360,11 +360,11 @@ static void inline sdl_put_pixel (int x, int y, int c)
 	register int i, j;
 
 	if (scale == 1) {
-		sdl_put_pixel (x, y, c);
+		_put_pixel (x, y, c);
 	} else {
 		for (i = 0; i < scale; i++)
 			for (j = 0; j < scale; j++)
-				sdl_put_pixel (x * scale + i, y * scale + j, c);
+				_put_pixel (x * scale + i, y * scale + j, c);
 	}
 }
 
