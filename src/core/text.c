@@ -126,12 +126,12 @@ static void blit_textbox (char *p, int y, int x, int len)
 	h = (lin + 2) * CHAR_LINES;
 
 	if (xoff < 0)
-		xoff = (GFX_WIDTH - w) / 2;
+		xoff = (GFX_WIDTH - w - CHAR_COLS) / 2;
 	else
 		xoff -= CHAR_COLS;
 
 	if (yoff < 0)
-		yoff = (GFX_HEIGHT - 2 * CHAR_LINES - h) / 2;
+		yoff = (GFX_HEIGHT - 3 * CHAR_LINES - h) / 2;
 
 	draw_window (xoff, yoff, xoff + w - 1, yoff + h - 1);
 

@@ -574,6 +574,8 @@ static void blit_sprites (struct list_head *head)
 	list_for_each (h, head, next) {
 		struct sprite *s = list_entry (h, struct sprite, list);
 		objs_savearea (s);
+		/* _D ("s->v->entry = %d (prio %d)", s->v->entry,
+			s->v->priority); */
 		hidden = blit_cel (s->x_pos, s->y_pos, s->v->priority,
 			s->v->cel_data);
 		if (s->v->entry == 0) {		/* if ego, update f1 */
@@ -792,7 +794,7 @@ void show_obj (n)
 		return;
 
 	x1 = (_WIDTH - c->width) / 2;
-	y1 = 120;
+	y1 = 112;
 	x2 = x1 + c->width - 1;
 	y2 = y1 + c->height - 1;
 
