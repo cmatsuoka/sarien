@@ -10,11 +10,11 @@
 
 OBJS =	main.obj global.obj agi_v2.obj agi_v3.obj agi.obj	&
 		cli.obj words.obj objects.obj picture.obj id.obj	&
-		view.obj logic.obj gfx.obj keyboard.obj rand.obj	&
+		view.obj logic.obj text.obj keyboard.obj rand.obj	&
 		menu.obj lzw.obj getopt.obj getopt1.obj sound.obj	&
 		font.obj op_test.obj op_misc.obj op_dbg.obj		&
 		op_cmd.obj savegame.obj silent.obj iff.obj cycle.obj &
-		console.obj inv.obj
+		console.obj inv.obj gfx_agi.obj gfx_base.obj
 
 all: start agi_core.lib
 
@@ -34,4 +34,3 @@ clean: .symbolic
 .after
 	@if exist wlib.lnk @del wlib.lnk
 	@cd $(HOME)
-
