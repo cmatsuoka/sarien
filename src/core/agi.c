@@ -54,18 +54,24 @@ int agi_init ()
 	_D("initializing");
 
 	/* reset all flags to false and all variables to 0 */
-	for (i = 0; i < (MAX_FLAGS << 3); i++)
-		setflag (i, 0);
+	for (i = 0; i < MAX_FLAGS; i++)
+		game.flags[i] = 0;
 	for (i = 0; i < MAX_VARS; i++)
-		setvar (i, 0);
+		game.vars[i] = 0;
 
 	/* clear all resources and events */
-	memset (&game.views, 0, MAX_DIRS * sizeof (struct agi_view));
-	memset (&game.pictures, 0, MAX_DIRS * sizeof (struct agi_picture));
-	memset (&game.logics, 0, MAX_DIRS * sizeof (struct agi_logic));
-	memset (&game.sounds, 0, MAX_DIRS * sizeof (struct agi_sound));
-	memset (&game.ev_scan, 0, MAX_DIRS * sizeof (struct agi_event));
-	memset (&game.ev_keyp, 0, MAX_DIRS * sizeof (struct agi_event));
+	for (i = 0; i < MAX_DIRS; i++) {
+		memset (&game.views[i],    0, sizeof (struct agi_view));
+		memset (&game.pictures[i], 0, sizeof (struct agi_picture));
+		memset (&game.logics[i],   0, sizeof (struct agi_logic));
+		memset (&game.sounds[i],   0, sizeof (struct agi_sound));
+		memset (&game.ev_scan[i],  0, sizeof (struct agi_event));
+		memset (&game.ev_keyp[i],  0, sizeof (struct agi_event));
+	}
+
+	/* clear view table */
+	for (i = 0; i < MAX_VIEWTABLE; i++)
+		memset (&game.view_table[i], 0, sizeof (struct vt_entry));
 
 	init_words ();
 	set_rnd_seed ();
