@@ -41,29 +41,74 @@ struct sprite {
  * Blitter functions
  */
 
-static int blit_cel (int x, int y, int spr, struct view_cel *c)
-{
-	UINT8 *p0, *p, *q = NULL;
 #ifdef USE_HIRES
+
+static int blit_hires_cel (int x, int y, int spr, struct view_cel *c)
+{
+	UINT8 *q = NULL;
 	UINT8 *h0, *h;
-#endif
 	int i, j, t;
 	int epr, pr;		/* effective and real priorities */
 	int hidden = TRUE;
 
-	p0 = &game.sbuf[x + y * _WIDTH];
-#ifdef USE_HIRES
 	h0 = &game.hires[(x + y * _WIDTH) * 2];
+	q = c->data;
+	t = c->transparency;
+	spr <<= 4;
+
+	for (i = 0; i < c->height; i++) {
+		h = h0;
+		for (j = c->width * 2; j; j--, h++) {
+			/* Check if we're on a control line */
+			if ((pr = *h & 0xf0) < 0x30) {
+				UINT8 *p1;
+				/* Yes, get effective priority going down */
+				for (p1 = h; (epr = *p1 & 0xf0) < 0x30; p1 += _WIDTH * 2) {
+					if (p1 >= game.sbuf + _WIDTH * _HEIGHT) {
+						epr = 0x40;
+						break;
+					}
+				}
+			} else {
+				epr = pr;
+			}
+			if (*q != t && spr >= epr) {
+				/* Keep control line information visible,
+				 * but put our priority over water (0x30)
+				 * surface
+				 */
+				*h = (pr < 0x30 ? pr : spr) | *q;
+				hidden = FALSE;
+			}
+			q += (j & 1);
+		}
+		h0 += _WIDTH * 2;
+	}
+
+	return hidden;
+}
+
 #endif
+
+static int blit_cel (int x, int y, int spr, struct view_cel *c)
+{
+	UINT8 *p0, *p, *q = NULL;
+	int i, j, t;
+	int epr, pr;		/* effective and real priorities */
+	int hidden = TRUE;
+
+#ifdef USE_HIRES
+	if (opt.hires)
+		return blit_hires_cel (x, y, spr, c);
+#endif
+
+	p0 = &game.sbuf[x + y * _WIDTH];
 	q = c->data;
 	t = c->transparency;
 	spr <<= 4;
 
 	for (i = 0; i < c->height; i++) {
 		p = p0;
-#ifdef USE_HIRES
-		h = h0;
-#endif
 		for (j = c->width; j; j--, p++, q++) {
 			/* Check if we're on a control line */
 			if ((pr = *p & 0xf0) < 0x30) {
@@ -83,20 +128,11 @@ static int blit_cel (int x, int y, int spr, struct view_cel *c)
 				 * but put our priority over water (0x30)
 				 * surface
 				 */
-#ifdef USE_HIRES
-				*h = *(h + 1) =
-#endif
 				*p = (pr < 0x30 ? pr : spr) | *q;
 				hidden = FALSE;
 			}
-#ifdef USE_HIRES
-			h += 2;
-#endif
 		}
 		p0 += _WIDTH;
-#ifdef USE_HIRES
-		h0 += _WIDTH * 2;
-#endif
 	}
 
 	return hidden;
