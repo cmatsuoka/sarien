@@ -235,21 +235,22 @@ struct agi_logicnames logic_names_cmd[]= {
 	_L("div.v",		2, 0xC0),	/* A8 */
 	_L("close.window",	0, 0x00),	/* A9 */
 
-	_L("unknown170",	1, 0x00),	/* AA */
-	_L("unknown171",	0, 0x00),	/* AB */
-	_L("unknown172",	0, 0x00),	/* AC */
-	_L("unknown173",	0, 0x00),	/* AD */
-	_L("unknown174",	1, 0x00),	/* AE */
-	_L("unknown175",	1, 0x00),	/* AF */
+	_L("set.simple",	1, 0x00),	/* AA */
+	_L("push.script",	0, 0x00),	/* AB */
+	_L("pop.script",	0, 0x00),	/* AC */
+	_L("hold.key",		0, 0x00),	/* AD */
+	_L("set.pri.base",	1, 0x00),	/* AE */
+	_L("discard.sound",	1, 0x00),	/* AF */
 
 	/* 1 arg for AGI version 3.002.086 */
-	_L("unknown176",	0, 0x00),	/* B0 */
+	_L("hide.mouse",	0, 0x00),	/* B0 */
 
-	_L("unknown177",	1, 0x00),	/* B1 */
-	_L("unknown178",	0, 0x00),	/* B2 */
-	_L("unknown179",	4, 0x00),	/* B3 */
-	_L("unknown180",	2, 0x00),	/* B4 */
-	_L("unknown181",	0, 0x00),	/* B5 */
+	_L("allow.menu",	1, 0x00),	/* B1 */
+	_L("show.mouse",	0, 0x00),	/* B2 */
+	_L("fence.mouse",	4, 0x00),	/* B3 */
+	_L("mouse.posn",	2, 0x00),	/* B4 */
+	_L("release.key",	0, 0x00),	/* B5 */
+	_L("adj.ego.move.to.xy",0, 0x00),	/* B6 */
 	_L(NULL,		0, 0x00)
 };
 

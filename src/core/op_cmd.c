@@ -37,22 +37,22 @@ static struct agi_logic *cur_logic;
 #define _v game.vars
 #define cmd(x) static void cmd_##x (UINT8 *p)
 
-cmd(inc)		{ if (_v[p0] != 0xff) ++_v[p0]; }
-cmd(dec)		{ if (_v[p0] != 0) --_v [p0]; }
-cmd(assign)		{ _v[p0] = p1; }
-cmd(add)		{ _v[p0] += p1; }
-cmd(sub)		{ _v[p0] -= p1; }
-cmd(mul)		{ _v[p0] *= p1; }
-cmd(div)		{ _v[p0] /= p1; }
-cmd(assign_v)		{ _v[p0] = _v[p1]; }
-cmd(add_v)		{ _v[p0] += _v[p1]; }
-cmd(sub_v)		{ _v[p0] -= _v[p1]; }
+cmd(increment)		{ if (_v[p0] != 0xff) ++_v[p0]; }
+cmd(decrement)		{ if (_v[p0] != 0) --_v [p0]; }
+cmd(assignn)		{ _v[p0] = p1; }
+cmd(addn)		{ _v[p0] += p1; }
+cmd(subn)		{ _v[p0] -= p1; }
+cmd(assignv)		{ _v[p0] = _v[p1]; }
+cmd(addv)		{ _v[p0] += _v[p1]; }
+cmd(subv)		{ _v[p0] -= _v[p1]; }
+cmd(mul_n)		{ _v[p0] *= p1; }
 cmd(mul_v)		{ _v[p0] *= _v[p1]; }
+cmd(div_n)		{ _v[p0] /= p1; }
 cmd(div_v)		{ _v[p0] /= _v[p1]; }
-cmd(rand_num)		{ _v[p2] = rnd (1 + (p1 - p0)) + p0; }
-cmd(lindirect_v)	{ _v[_v[p0]] = _v[p1]; }
+cmd(random)		{ _v[p2] = rnd (1 + (p1 - p0)) + p0; }
+cmd(lindirectn)		{ _v[_v[p0]] = p1; }
+cmd(lindirectv)		{ _v[_v[p0]] = _v[p1]; }
 cmd(rindirect)		{ _v[p0] = _v[_v[p1]]; }
-cmd(lindirect)		{ _v[_v[p0]] = p1; }
 cmd(set)		{ setflag (*p, TRUE); }
 cmd(reset)		{ setflag (*p, FALSE); }
 cmd(toggle)		{ setflag (*p, !getflag (*p)); }
@@ -60,14 +60,14 @@ cmd(set_v)		{ setflag (_v[p0], TRUE); }
 cmd(reset_v)		{ setflag (_v[p0], FALSE); }
 cmd(toggle_v)		{ setflag (_v[p0], !getflag (*p)); }
 cmd(new_room)		{ new_room (p0); }
-cmd(new_room_v)		{ new_room (_v[p0]); }
+cmd(new_room_f)		{ new_room (_v[p0]); }
 cmd(load_view)		{ agi_load_resource (rVIEW, p0); }
 cmd(load_logic)		{ agi_load_resource (rLOGIC, p0); }
 cmd(load_sound)		{ agi_load_resource (rSOUND, p0); }
-cmd(load_view_v)	{ agi_load_resource (rVIEW, _v[p0]); }
-cmd(load_logic_v)	{ agi_load_resource (rLOGIC, _v[p0] ); }
+cmd(load_view_f)	{ agi_load_resource (rVIEW, _v[p0]); }
+cmd(load_logic_f)	{ agi_load_resource (rLOGIC, _v[p0] ); }
 cmd(discard_view)	{ agi_unload_resource (rVIEW, p0); }
-cmd(object_on_any)	{ _D ("p0 = %d", p0); vt.flags &= ~(ON_WATER | ON_LAND); }
+cmd(object_on_anything)	{ vt.flags &= ~(ON_WATER | ON_LAND); }
 cmd(object_on_land)	{ _D ("p0 = %d", p0); vt.flags |= ON_LAND; }
 cmd(object_on_water)	{ _D ("p0 = %d", p0); vt.flags |= ON_WATER; }
 cmd(observe_horizon)	{ _D ("p0 = %d", p0); vt.flags &= ~IGNORE_HORIZON; }
@@ -79,21 +79,21 @@ cmd(ignore_blocks)	{ _D ("p0 = %d", p0); vt.flags |= IGNORE_BLOCKS; }
 cmd(set_horizon)	{ _D ("p0 = %d", p0); game.horizon = p0; }
 cmd(get_priority)	{ _v[p1] = vt.priority; }
 cmd(set_priority)	{ vt.flags |= FIXED_PRIORITY; vt.priority = p1; }
-cmd(set_priority_v)	{ vt.flags |= FIXED_PRIORITY; vt.priority = _v[p1]; }
+cmd(set_priority_f)	{ vt.flags |= FIXED_PRIORITY; vt.priority = _v[p1]; }
 cmd(release_priority)	{ vt.flags &= ~FIXED_PRIORITY; }
 cmd(set_upper_left)	{ /* do nothing (AGI 2.917) */ }
 cmd(start_update)	{ start_update (&vt); }
 cmd(stop_update)	{ stop_update (&vt); }
-cmd(cur_view)		{ _v[p1] = vt.current_view; }
-cmd(cur_cel)		{ _v[p1] = vt.current_cel; _D ("v%d=%d", p1, _v[p1]); }
+cmd(current_view)	{ _v[p1] = vt.current_view; }
+cmd(current_cel)	{ _v[p1] = vt.current_cel; _D ("v%d=%d", p1, _v[p1]); }
+cmd(current_loop)	{ _v[p1] = vt.current_loop; }
 cmd(last_cel)		{ _v[p1] = vt.loop_data->num_cels - 1; }
 cmd(set_cel)		{ set_cel (&vt, p1); vt.flags &= ~DONTUPDATE; }
-cmd(set_cel_v)		{ set_cel (&vt, _v[p1]); vt.flags &= ~DONTUPDATE; }
-cmd(cur_loop)		{ _v[p1] = vt.current_loop; }
+cmd(set_cel_f)		{ set_cel (&vt, _v[p1]); vt.flags &= ~DONTUPDATE; }
 cmd(set_view)		{ set_view (&vt, p1); }
-cmd(set_view_v)		{ set_view (&vt, _v[p1]); }
+cmd(set_view_f)		{ set_view (&vt, _v[p1]); }
 cmd(set_loop)		{ set_loop (&vt, p1); }
-cmd(set_loop_v)		{ set_loop (&vt, _v[p1]); }
+cmd(set_loop_f)		{ set_loop (&vt, _v[p1]); }
 cmd(number_of_loops)	{ _v[p1] = vt.num_loops; }
 cmd(fix_loop)		{ vt.flags |= FIX_LOOP; }
 cmd(release_loop)	{ vt.flags &= ~FIX_LOOP; }
@@ -106,14 +106,14 @@ cmd(normal_cycle)	{ vt.cycle = CYCLE_NORMAL; vt.flags |= CYCLING; }
 cmd(reverse_cycle)	{ vt.cycle = CYCLE_REVERSE; vt.flags |= CYCLING; }
 cmd(set_dir)		{ vt.direction = _v[p1]; }
 cmd(get_dir)		{ _v[p1] = vt.direction; }
-cmd(get_room_v)		{ _v[p1] = object_get_location (_v[p0]); }
+cmd(get_room_f)		{ _v[p1] = object_get_location (_v[p0]); }
 cmd(put)		{ object_set_location (p0, _v[p1]); }
-cmd(put_v)		{ object_set_location (_v[p0], _v[p1]); }
+cmd(put_f)		{ object_set_location (_v[p0], _v[p1]); }
 cmd(drop)		{ object_set_location (p0, 0); }
 cmd(get)		{ object_set_location (p0, EGO_OWNED); }
-cmd(get_v)		{ object_set_location (_v[p0], EGO_OWNED); }
+cmd(get_f)		{ object_set_location (_v[p0], EGO_OWNED); }
 cmd(parse)		{ dictionary_words (agi_sprintf(game.strings[p0])); }
-cmd(set_text_attr)	{ game.color_fg = p0; game.color_bg = p1; }
+cmd(set_text_attribute)	{ game.color_fg = p0; game.color_bg = p1; }
 cmd(shake_screen)	{ shake_screen (p0); }
 cmd(word_to_string)	{ strcpy (game.strings[p0], game.ego_words[p1].word); }
 cmd(status_line_on)	{ game.status_line = TRUE; write_status (); }
@@ -122,12 +122,12 @@ cmd(open_dialogue)	{ _D ("p0 = %d", p0); game.has_window = TRUE; }
 cmd(close_dialogue)	{ _D ("p0 = %d", p0); game.has_window = FALSE; }
 cmd(close_window)	{ close_window (); }
 cmd(print)		{ print (cur_logic->texts[p0 - 1], 0, 0, 0); }
-cmd(print_v)		{ print (cur_logic->texts[_v[p0] - 1], 0, 0, 0); }
+cmd(print_f)		{ print (cur_logic->texts[_v[p0] - 1], 0, 0, 0); }
 cmd(print_at)		{ print (cur_logic->texts[p0 - 1], p1, p2, p3); }
 cmd(print_at_v)		{ print (cur_logic->texts[_v[p0] - 1], p1, p2, p3); }
 cmd(show_obj)		{ show_obj (p0); }
 cmd(show_obj_v)		{ show_obj (_v[p0]); }
-cmd(play_sound)		{ start_sound (p0, p1); }
+cmd(sound)		{ start_sound (p0, p1); }
 cmd(stop_sound)		{ stop_sound (); }
 cmd(accept_input)	{ new_input_mode (INPUT_NORMAL); }
 cmd(prevent_input)	{ new_input_mode (INPUT_NONE); }
@@ -145,11 +145,11 @@ cmd(trace_on)		{ /* do nothing */ }
 cmd(trace_info)		{ /* do nothing */ }
 cmd(show_mem)		{ message_box ("Enough memory"); }
 cmd(toggle_monitor)	{ report ("Not implemented: toggle.monitor\n"); }
-cmd(init_joystick)	{ report ("Not implemented: init.joystick\n"); }
+cmd(init_joy)		{ report ("Not implemented: init.joystick\n"); }
 cmd(script_size)	{ report ("Not implemented: script.size(%d)\n", p0); }
 cmd(echo_line)		{ report ("Not implemented: echo.line\n"); }
 cmd(cancel_line)	{ report ("Not implemented: cancel.line\n"); }
-cmd(obj_status_v)	{ report ("Not implemented: obj.status.v\n"); }
+cmd(obj_status_f)	{ report ("Not implemented: obj.status.v\n"); }
 
 /* unknown commands:
  * unk_170: Force savegame name -- j5
@@ -160,18 +160,19 @@ cmd(obj_status_v)	{ report ("Not implemented: obj.status.v\n"); }
  * unk_177: Disable menus completely -- j5
  * unk_181: Deactivate keypressed control (default control of ego)
  */
-cmd(unk_170)		{ report ("Not implemented: cmd_unk_170\n"); }
-cmd(unk_171)		{ report ("Not implemented: cmd_unk_171\n"); }
-cmd(unk_172)		{ report ("Not implemented: cmd_unk_172\n"); }
-cmd(unk_173)		{ report ("Not implemented: cmd_unk_173\n"); }
-cmd(unk_174)		{ report ("Not implemented: cmd_unk_174\n"); }
-cmd(unk_175)		{ report ("Not implemented: cmd_unk_175\n"); }
-cmd(unk_176)		{ report ("Not implemented: cmd_unk_176\n"); }
-cmd(unk_177)		{ report ("Not implemented: cmd_unk_177\n"); }
-cmd(unk_178)		{ report ("Not implemented: cmd_unk_178\n"); }
-cmd(unk_179)		{ report ("Not implemented: cmd_unk_179\n"); }
-cmd(unk_180)		{ report ("Not implemented: cmd_unk_180\n"); }
-cmd(unk_181)		{ report ("Not implemented: cmd_unk_181\n"); }
+cmd(set_simple)		{ report ("Not implemented: set.simple\n"); }
+cmd(push_script)	{ report ("Not implemented: push.script\n"); }
+cmd(pop_script)		{ report ("Not implemented: pop.script\n"); }
+cmd(hold_key)		{ report ("Not implemented: hold.key\n"); }
+cmd(set_pri_base)	{ report ("Not implemented: set.pri.base\n"); }
+cmd(discard_sound)	{ report ("Not implemented: discard.sound\n"); }
+cmd(hide_mouse)		{ report ("Not implemented: hide.mouse\n"); }
+cmd(allow_menu)		{ report ("Not implemented: allow.menu\n"); }
+cmd(show_mouse)		{ report ("Not implemented: show.mouse\n"); }
+cmd(fence_mouse)	{ report ("Not implemented: fence.mouse\n"); }
+cmd(mouse_posn)		{ report ("Not implemented: mouse.posn\n"); }
+cmd(release_key)	{ report ("Not implemented: release.key\n"); }
+cmd(adj_ego_move_to_xy)	{ report ("Not implemented: adj.ego.move.to.xy\n"); }
 
 
 
@@ -192,7 +193,7 @@ cmd(call) {
 	cur_logic->cIP = old_cIP;
 }
 
-cmd(call_v) {
+cmd(call_f) {
 	cmd_call (&_v[p0]);
 }
 
@@ -305,7 +306,7 @@ cmd(position) {
 	vt.y_pos = vt.y_pos2 = p2;
 }
 
-cmd(position_v) {
+cmd(position_f) {
 	vt.x_pos = vt.x_pos2 = _v[p1];
 	vt.y_pos = vt.y_pos2 = _v[p2];
 }
@@ -341,7 +342,7 @@ cmd(reposition_to) {
 	fix_position (p0);
 }
 
-cmd(reposition_to_v) {
+cmd(reposition_to_f) {
 	vt.x_pos = _v[p1];
 	vt.y_pos = _v[p2];
 	vt.flags |= UPDATE_POS;
@@ -352,7 +353,7 @@ cmd(add_to_pic) {
 	add_to_pic (p0, p1, p2, p3, p4, p5, p6);
 }
 
-cmd(add_to_pic_v) {
+cmd(add_to_pic_f) {
 	add_to_pic (_v[p0], _v[p1], _v[p2], _v[p3], _v[p4], _v[p5], _v[p6]);
 }
 
@@ -449,7 +450,7 @@ cmd(move_obj) {
 	move_obj (&vt);
 }
 
-cmd(move_obj_v) {
+cmd(move_obj_f) {
 	vt.motion = MOTION_MOVE_OBJ;
 	vt.parm1 = _v[p1];
 	vt.parm2 = _v[p2];
@@ -531,13 +532,13 @@ cmd(version) {
 	message_box (msg);
 }
 
-cmd(config_screen) {
+cmd(configure_screen) {
 	game.line_min_print = p0;
 	game.line_user_input = p1;
 	game.line_status = p2;
 }
 
-cmd(text_mode) {
+cmd(text_screen) {
 	game.gfx_mode = FALSE;
 	/*
 	 * Simulates the "bright background bit" of the PC video
@@ -548,7 +549,7 @@ cmd(text_mode) {
 	clear_screen (game.color_bg);
 }
 
-cmd(graphics_mode) {
+cmd(graphics) {
 	if (!game.gfx_mode) {
 		game.gfx_mode = TRUE;
 		clear_screen (0);
@@ -680,7 +681,7 @@ cmd(display) {
 		game.color_fg, game.color_bg);
 }
 
-cmd(display_v) {
+cmd(display_f) {
 	_D ("p0 = %d", p0);
 	print_text (cur_logic->texts[_v[p2] - 1], _v[p1], 0, _v[p0], 40,
 		game.color_fg, game.color_bg);
@@ -712,19 +713,19 @@ cmd(clear_lines) {
 }
 
 
-static void (*agi_command[182])(UINT8 *) = {
+static void (*agi_command[183])(UINT8 *) = {
 	NULL,				/* 0x00 */
-	cmd_inc,
-	cmd_dec,
-	cmd_assign,
-	cmd_assign_v,
-	cmd_add,
-	cmd_add_v,
-	cmd_sub,
-	cmd_sub_v,			/* 0x08 */
-	cmd_lindirect_v,
+	cmd_increment,
+	cmd_decrement,
+	cmd_assignn,
+	cmd_assignv,
+	cmd_addn,
+	cmd_addv,
+	cmd_subn,
+	cmd_subv,			/* 0x08 */
+	cmd_lindirectv,
 	cmd_rindirect,
-	cmd_lindirect,
+	cmd_lindirectn,
 	cmd_set,
 	cmd_reset,
 	cmd_toggle,
@@ -732,11 +733,11 @@ static void (*agi_command[182])(UINT8 *) = {
 	cmd_reset_v,			/* 0x10 */
 	cmd_toggle_v,
 	cmd_new_room,
-	cmd_new_room_v,
+	cmd_new_room_f,
 	cmd_load_logic,
-	cmd_load_logic_v,
+	cmd_load_logic_f,
 	cmd_call,
-	cmd_call_v,
+	cmd_call_f,
 	cmd_load_pic,			/* 0x18 */
 	cmd_draw_pic,
 	cmd_show_pic,
@@ -744,31 +745,31 @@ static void (*agi_command[182])(UINT8 *) = {
 	cmd_overlay_pic,
 	cmd_show_pri_screen,
 	cmd_load_view,
-	cmd_load_view_v,
+	cmd_load_view_f,
 	cmd_discard_view,		/* 0x20 */
 	cmd_animate_obj,
 	cmd_unanimate_all,
 	cmd_draw,
 	cmd_erase,
 	cmd_position,
-	cmd_position_v,
+	cmd_position_f,
 	cmd_get_posn,
 	cmd_reposition,			/* 0x28 */
 	cmd_set_view,
-	cmd_set_view_v,
+	cmd_set_view_f,
 	cmd_set_loop,
-	cmd_set_loop_v,
+	cmd_set_loop_f,
 	cmd_fix_loop,
 	cmd_release_loop,
 	cmd_set_cel,
-	cmd_set_cel_v,			/* 0x30 */
+	cmd_set_cel_f,			/* 0x30 */
 	cmd_last_cel,
-	cmd_cur_cel,
-	cmd_cur_loop,
-	cmd_cur_view,
+	cmd_current_cel,
+	cmd_current_loop,
+	cmd_current_view,
 	cmd_number_of_loops,
 	cmd_set_priority,
-	cmd_set_priority_v,
+	cmd_set_priority_f,
 	cmd_release_priority,		/* 0x38 */
 	cmd_get_priority,
 	cmd_stop_update,
@@ -779,7 +780,7 @@ static void (*agi_command[182])(UINT8 *) = {
 	cmd_set_horizon,
 	cmd_object_on_water,		/* 0x40 */
 	cmd_object_on_land,
-	cmd_object_on_any,
+	cmd_object_on_anything,
 	cmd_ignore_objs,
 	cmd_observe_objs,
 	cmd_distance,
@@ -795,7 +796,7 @@ static void (*agi_command[182])(UINT8 *) = {
 	cmd_step_size,
 	cmd_step_time,			/* 0x50 */
 	cmd_move_obj,
-	cmd_move_obj_v,
+	cmd_move_obj_f,
 	cmd_follow_ego,
 	cmd_wander,
 	cmd_normal_motion,
@@ -806,25 +807,25 @@ static void (*agi_command[182])(UINT8 *) = {
 	cmd_block,
 	cmd_unblock,
 	cmd_get,
-	cmd_get_v,
+	cmd_get_f,
 	cmd_drop,
 	cmd_put,
-	cmd_put_v,			/* 0x60 */
-	cmd_get_room_v,
+	cmd_put_f,			/* 0x60 */
+	cmd_get_room_f,
 	cmd_load_sound,
-	cmd_play_sound,
+	cmd_sound,
 	cmd_stop_sound,
 	cmd_print,
-	cmd_print_v,
+	cmd_print_f,
 	cmd_display,
-	cmd_display_v,			/* 0x68 */
+	cmd_display_f,			/* 0x68 */
 	cmd_clear_lines,
-	cmd_text_mode,
-	cmd_graphics_mode,
+	cmd_text_screen,
+	cmd_graphics,
 	cmd_set_cursor_char,
-	cmd_set_text_attr,
+	cmd_set_text_attribute,
 	cmd_shake_screen,
-	cmd_config_screen,
+	cmd_configure_screen,
 	cmd_status_line_on,		/* 0x70 */
 	cmd_status_line_off,
 	cmd_set_string,
@@ -836,23 +837,23 @@ static void (*agi_command[182])(UINT8 *) = {
 	cmd_accept_input,		/* 0x78 */
 	cmd_set_key,
 	cmd_add_to_pic,
-	cmd_add_to_pic_v,
+	cmd_add_to_pic_f,
 	cmd_status,
 	cmd_save_game,
 	cmd_load_game,
 	cmd_init_disk,
 	cmd_restart_game,		/* 0x80 */
 	cmd_show_obj,
-	cmd_rand_num,
+	cmd_random,
 	cmd_program_control,
 	cmd_player_control,
-	cmd_obj_status_v,
+	cmd_obj_status_f,
 	cmd_quit,
 	cmd_show_mem,
 	cmd_pause,			/* 0x88 */
 	cmd_echo_line,
 	cmd_cancel_line,
-	cmd_init_joystick,
+	cmd_init_joy,
 	cmd_toggle_monitor,
 	cmd_version,
 	cmd_script_size,
@@ -861,7 +862,7 @@ static void (*agi_command[182])(UINT8 *) = {
 	cmd_set_scan_start,
 	cmd_reset_scan_start,
 	cmd_reposition_to,
-	cmd_reposition_to_v,
+	cmd_reposition_to_f,
 	cmd_trace_on,
 	cmd_trace_info,
 	cmd_print_at,
@@ -878,23 +879,24 @@ static void (*agi_command[182])(UINT8 *) = {
 	cmd_show_obj_v,
 	cmd_open_dialogue,
 	cmd_close_dialogue,
-	cmd_mul,
+	cmd_mul_n,
 	cmd_mul_v,
-	cmd_div,
+	cmd_div_n,
 	cmd_div_v,			/* 0xa8 */
 	cmd_close_window,
-	cmd_unk_170,
-	cmd_unk_171,
-	cmd_unk_172,
-	cmd_unk_173,
-	cmd_unk_174,
-	cmd_unk_175,
-	cmd_unk_176,
-	cmd_unk_177,
-	cmd_unk_178,
-	cmd_unk_179,
-	cmd_unk_180,
-	cmd_unk_181
+	cmd_set_simple,
+	cmd_push_script,
+	cmd_pop_script,
+	cmd_hold_key,
+	cmd_set_pri_base,
+	cmd_discard_sound,
+	cmd_hide_mouse,			/* 0xb0 */
+	cmd_allow_menu,	
+	cmd_show_mouse,
+	cmd_fence_mouse,
+	cmd_mouse_posn,
+	cmd_release_key,
+	cmd_adj_ego_move_to_xy
 };
 
 
@@ -969,4 +971,5 @@ void execute_agi_command (UINT8 op, UINT8 *p)
 {
 	agi_command[op](p);
 }
+
 

@@ -63,11 +63,12 @@ static char *match (char *p, int f)
 				i = j = -1;
 				break;
 			}
-			if (tolower (e->d_name[i]) != tolower(pattern[j]))
+			if (tolower (e->d_name[i]) != tolower (pattern[j]))
 				break;
 		}
+
 		/* exact match */
-		if (i < 0 && j < 0) {
+		if (i < 0 && j <= 0) {
 			if (f) {
 				strcpy (path, dir);
 				strcat (path, "/");
