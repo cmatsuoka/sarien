@@ -29,6 +29,13 @@ struct sarien_options opt;
 struct game_id_list game_info;
 struct agi_game game;
 
+extern struct gfx_driver *gfx;
+
+extern struct gfx_driver gfx_win32;
+#ifdef USE_DIRECTX
+extern struct gfx_driver gfx_d3d;
+#endif
+
 #ifndef __GNUC__
 void _D (char *x, ...)
 {
@@ -266,4 +273,21 @@ bail_out:
 
 	return ec;
 }
+
+int init_machine (int argc, char **argv)
+{
+#ifdef USE_DIRECTX
+	gfx = &gfx_d3d;
+#else
+	gfx = &gfx_win32;
+#endif
+
+	return err_OK;
+}
+
+int deinit_machine ()
+{
+	return err_OK;
+}
+
 

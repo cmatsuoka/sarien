@@ -750,14 +750,20 @@ int console_keyhandler (int k)
 		return TRUE;
 #endif
 
+	/* this code breaks scrolling up, maybe it shoud only be executed in the default case? */
 	if (k) {
-		if (k != KEY_ENTER && console.first_line != CONSOLE_LINES_BUFFER -
-			CONSOLE_LINES_ONSCREEN) {
-			console.first_line = CONSOLE_LINES_BUFFER -
-				CONSOLE_LINES_ONSCREEN;
-			build_console_layer ();
+		/* make sure it's not enter or a scroll key */
+		if ((k != KEY_ENTER) && (k != CONSOLE_SCROLLUP_KEY) && 
+			(k != CONSOLE_SCROLLDN_KEY) && (k != CONSOLE_START_KEY)) {
+			/* on any other input reset the console to the bottom */
+			if (console.first_line != CONSOLE_LINES_BUFFER - 
+				CONSOLE_LINES_ONSCREEN) {
+				console.first_line = CONSOLE_LINES_BUFFER - 
+					CONSOLE_LINES_ONSCREEN;
+				build_console_layer ();
+			}
+			console.count = -1;
 		}
-		console.count = -1;
 	}
 
 	switch (k) {
