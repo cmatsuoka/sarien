@@ -1746,265 +1746,158 @@ goto(Label1);
 
 <sect2>
 <title>Commands to load and unload resources</title>
-<para>
 
 <warning><para>
   Note: when a resource is unloaded, all resources loaded after
   it are also automatically unloaded (in the Sierra interpreter).
 </para></warning>
 
-   <variablelist>
+<para>
+  <variablelist>
 
     <varlistentry>
-      <term/<function id="load.logic">load.logic(n)</function>/
+      <term/<function id="load.logic"/load.logic(n), load.logic.v(n)//
       <listitem><para>
-       Load into memory the logic resource number <parameter/n/, i.e. Logic(n)
+        Load the logic resource number <parameter/n/ (<parameter/vn/).
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function>load.logic.v(n)</function>/
+      <term/<function id="load.pic"/load.pic(n)//
       <listitem><para>
-       Load into memory the logic resource number <parameter/i/, where
-       <parameter/i/ is the value of <parameter/vn/, i.e. Logic(<parameter/vn/)
+        Load the picture resource number <parameter/i/,
+        where <parameter/i/ is the value of <parameter/vn/.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="load.pic">load.pic(n)</function>/
+      <term/<function id="load.view"/load.view(n), load.view.v(n)//
       <listitem><para>
-       Loads into memory the picture resource number <parameter/i/,
-       where <parameter/i/ is the value of <parameter/vn/, i.e.
-       Picture(<parameter/vn/).
-       <footnote><para>This may be a mistake in the original: I would expect
-       this command to be <function/load.pic.v/, while <function/load.pic(n)/
-       would load resource number <parameter/n/. (VB)</para>
-       <para><function/load.pic.v/ may be a more appropriate name
-       for it, but the name above is what they gave it. There is no
-       equivalent command that takes a number rather than a variable. (LE)
-       </para></footnote>
+        Load the view resource number <parameter/n/ (<parameter/vn/).
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="load.view">load.view(n)</function>/
+      <term/<function id="load.sound"/load.sound(n)//
       <listitem><para>
-       Loads into memory the view resource number <parameter/n/, i.e. View(n).
+        Loads into memory the sound resource number <parameter/n/.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="load.view.v">load.view.v(n)</function>/
+      <term/<function id="discard.pic"/discard.pic(n)//
       <listitem><para>
-       Loads into memory the view resource number <parameter/i/,
-       where <parameter/i/ is the value of <parameter/vn/, i.e.
-       View(<parameter/vn/)
+        Unload the picture resource number <parameter/i/, where
+        <parameter/i/ is the value of <parameter/vn/.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="load.sound">load.sound(n)</function>/
+      <term/<function id="discard.view"/discard.view(n), discard.view.v(n)//
       <listitem><para>
-       Loads into memory the sound resource number <parameter/n/,
-       i.e. Sound(n).
-       <footnote><para>Note that there is no <function/load.sound.v/ listed.
-       I wonder if this is a mistake or there really is no way to load a
-       sound with indirection (unlikely, I think) (VB)</para><para>
-       There really is no way of loading a sound with indirection.
-       The command doesn't exist. (LE)</para></footnote>
+        Unload the view resource number <parameter/n/ (<parameter/vn/).
       </para></listitem>
     </varlistentry>
-
-    <varlistentry>
-      <term/<function id="discard.pic">discard.pic(n)</function>/
-      <listitem><para>
-       Unload the picture resource number <parameter/i/, where
-       <parameter/i/ is the value of <parameter/vn/.
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term/<function id="discard.view">discard.view(n)</function>/
-      <listitem><para>
-       Unload the view resource number <parameter/n/, i.e. View(<parameter/n/).
-      </para></listitem>
-    </varlistentry>
-
-    <varlistentry>
-      <term/<function id="discard.view.v">discard.view.v(n)</function>/
-      <listitem><para>
-       Unload the view resource number <parameter/i/ where <parameter/i/
-       is the value of <parameter/vn/, i.e. View(<parameter/vn/).
-       <footnote><para>And what about <function/discard.logic/,
-       <function/discard.logic.v/, <function/discard.sound/, and
-       <function/discard.sound.v/? (VB)</para><para>
-       There must be some other way that those commands are removed from
-       memory, because the commands you mention above don't exist. (LE)
-       </para></footnote>
-      </para></listitem>
-    </varlistentry>
-
-   </variablelist>
+  </variablelist>
 </para>
 </sect2>
 
-<sect2><title>Program control commands</title>
+<sect2>
+<title>Program control commands</title>
 <para>
-   The <function/new.room/ command is one of the most powerful commands
-   of the interpreter.
-   It is used to change algorithms of the object behaviour, props, etc.
-   Automatic change of Ego coordinates imitates moving into a room
-   adjacent to the edge of the initial one.<footnote><para>Sounds awkward
-   but that's what it says. (VB)</para></footnote>
-</para><para>
-   The format of the command is:
-
-</para><para>
-   <variablelist>
+  <variablelist>
     <varlistentry>
-      <term>
-       <function id="new.room">new.room(n)</function>,
-       <function id="new.room.v">new.room.v(n)</function>
-      </term>
+      <term/<function id="new.room"/new.room(n), new.room.v(n)//
 
       <listitem><para>
         These commands do the following:
       </para><para>
 
         <orderedlist>
-         <listitem><para>
-          <function>stop.update</function>
-          and <function/unanimate/ are issued to all objects;
-         </para></listitem>
-     
-         <listitem><para>
-          All resources except Logic(0) are discarded;
-         </para></listitem>
-     
-         <listitem><para>
-          Command <function>player.control</function> is issued;
-         </para></listitem>
-     
-         <listitem><para>
-          <function><ulink url="unblock"/unblock/</function> command is issued;
-         </para></listitem>
-     
-         <listitem><para>
-          <function/set.horizon(36)/ command is issued;
-         </para></listitem>
-     
-         <listitem><para>
-          <function/v1/ is assigned the value of <literal/v0/;
-          <literal/v0/ is assigned <parameter/n/ (or the value of <parameter/vn/
-          when the command is
-          <literal><ulink url="new.room.v"/new.room.v/</literal>);
-         </para></listitem>
-     
-         <listitem><para>
-          <literal/v4/ is assigned 0;
-         </para></listitem>
-     
-         <listitem><para>
-          <literal/v5/ is assigned 0;
-         </para></listitem>
-     
-         <listitem><para>
-          <literal/v16/ is assigned the ID number of the VIEW resource that was
-          associated with Ego (the player character).
-         </para></listitem>
-     
-         <listitem><para>
-          Logic(i) resource is loaded where <parameter/i/ is the value of
-          <literal/v0/!
-         </para></listitem>
-     
-         <listitem><para>
-          Set Ego coordinates according to <literal/v2/:
+          <listitem/<para/Commands <function/stop.update/
+            and <function/unanimate/ are issued to all objects//
+          <listitem/<para/All resources except logic 0 are discarded//
+          <listitem/<para/Control over ego is given to the player//
+          <listitem/<para/Blocks are removed//
+          <listitem/<para/Horizon is set to 36//
+          <listitem/<para/<parameter/v1/ is assigned the value of
+            <parameter/v0/, and <literal/v0/ is assigned <parameter/n/
+            (or the value of <parameter/vn/)//
+          <listitem/<para/<parameter/v4/ is assigned 0//
+          <listitem/<para/<parameter/v5/ is assigned 0//
+          <listitem/<para/<parameter/v16/ is assigned the number of the
+            view resource associated with ego//
+          <listitem/<para/Logic resource <parameter/vn/ is loaded//
+          <listitem/<para/Set ego coordinates according to <parameter/v2/:
             <simplelist>
-             <member>if Ego touched the bottom edge, put it on the horizon;
-             <member>if Ego touched the top edge, put it on the bottom edge
-               of the screen;
-             <member>if Ego touched the right edge, put it at the left and
-               vice versa.
-            </simplelist>
-         </para></listitem>
-     
-         <listitem><para>
-          <literal/v2/ is assigned 0 (meaning Ego has not touched any edges).
-         </para></listitem>
-     
-         <listitem><para>
-          <literal/f5/ is set to 1 (meaning in the first interpreter cycle after
-          the new_room command all initialization parts of all logics loaded
-          and called from the initialization part of the new room's logic
-          will be called. In the subsequent cycle <literal/f5/ is reset to 0
-          (see <xref linkend="workcycle"> and
-          the source of the ``Thunderstorm''. This is very important!).
-         </para></listitem>
-     
-         <listitem><para>
-          Clear keyboard input buffer and return to the main AGI loop.
-         </para></listitem>
-
+              <member>if ego touched the bottom edge, put it on the horizon;
+              <member>if ego touched the top edge, put it on the bottom edge
+                of the screen;
+              <member>if ego touched the right edge, put it at the left and
+                vice versa.
+            </simplelist>//
+          <listitem/<para/<parameter/v2/ is assigned 0 (meaning that ego
+            has not touched any edges)//
+          <listitem/<para/<parameter/f5/ is set to 1 (meaning in the first
+            interpreter cycle after the <function/new.room/ command all
+            initialization parts of all logics loaded and called from the
+            initialization part of the new room's logic will be called.
+            In the subsequent cycle <parameter/f5/ is reset to 0.//
+          <listitem/<para/Clear keyboard input buffer and return to the
+            main AGI loop//
         </orderedlist>
-
       </para></listitem>
     </varlistentry>
-
-   </variablelist>
+  </variablelist>
 </para>
 </sect2>
 
-<sect2><title>Subroutine call commands</title>
+<sect2>
+<title>Subroutine call commands</title>
 <para>
-   <variablelist>
-
+  <variablelist>
     <varlistentry>
-      <term/<function id="call">call(n), call.v(n)</function>/
+      <term/<function id="call"/call(n), call.v(n)//
       <listitem><para>
-       LOGIC resource number <parameter/n/ (or number <parameter/i/
-       where <parameter/i/ the value of <parameter/vn/) is executed as a
-       subroutine.
-       If the logic with the given ID is not loaded in memory, it is
-       temporarily loaded and discarded after returning from the call
-       (this takes extra time). <function>call</function>
-       does not change any variables or flags.
+        The logic resource number <parameter/n/ (or <parameter/vn/)
+        is executed as a subroutine. If the logic with the given ID is
+        not loaded in memory, it is temporarily loaded and discarded
+        after returning from the call. <function/call/ does not change
+        any variables or flags.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function id="return">return</function>/
+      <term/<function id="return"/return//
       <listitem><para>
-       This command returns control to the interpreter if it is executed in
-       Logic(0), or to the command following the call command which called
-       the current logic.
+        This command returns control to the interpreter if it is executed in
+        logic 0, or to the command following the call command which called
+        the current logic.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term/<function>jump &lt;label&gt;</function>/
+      <term/<function/jump &lt;label&gt;//
       <listitem><para>
-       This command unconditionally transfers control to a command starting
-       after label <literal/label/ within the same logic.
+        This command unconditionally transfers control to a command starting
+        after label <parameter/label/ within the same logic.
       </para></listitem>
     </varlistentry>
 
     <varlistentry>
-      <term><function id="set.scan.start">set.scan.start(),
-      reset.scan.start()</function></term>
+      <term/<function id="set.scan.start"/set.scan.start, reset.scan.start//
       <listitem><para>
-       Normally, when a logic is called using call command, execution begins
-       at the first instruction.
-       The <function><ulink url="set.scan.start"/set.scan.start/</function>
-       command sets the entry point at the command following it, while
-       <function><ulink url="reset.scan.start"/reset.scan.start/</function>
-       returns the entry point to the beginning.
+        Normally, when a logic is called using call command, execution
+        begins at the first instruction. The <function/set.scan.start/
+        command sets the entry point at the command following it, while
+        <function/reset.scan.start/ returns the entry point to the beginning.
       </para></listitem>
     </varlistentry>
    </variablelist>
 </para>
 
-<sect2><title>Object control commands</title>
+<sect2>
+<title>Object control commands</title>
 <para>
    The interpreter controls the movement of objects in the screen
    automatically checking the following conditions:

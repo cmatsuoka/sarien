@@ -143,6 +143,7 @@ static void print_line_prompt ()
 	}
 }
 
+
 void update_timer ()
 {
 	if (!game.clock_enabled)
@@ -189,6 +190,7 @@ void old_input_mode ()
 int main_cycle ()
 {
 	unsigned int key, kascii;
+	struct vt_entry *v = &game.view_table[0];
 
 	poll_timer ();		/* msdos driver -> does nothing */
 	update_timer ();
@@ -219,6 +221,15 @@ int main_cycle ()
 		key = 0;
 	}
 #endif
+
+	/* Click-to-walk mouse interface */
+	if (game.player_control && v->flags & ADJ_EGO_XY) {
+		v->direction = get_direction (v->x_pos, v->y_pos,
+			v->parm1, v->parm2, v->step_size);
+
+		if (v->direction == 0)
+			in_destination (v);
+	}
 
 	kascii = KEY_ASCII (key);
 

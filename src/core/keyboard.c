@@ -127,15 +127,6 @@ int handle_controller (int key)
 	struct vt_entry *v = &game.view_table[0];
 	int i;
 
-	/* Click-to-walk mouse interface */
-	if (game.player_control && v->flags & ADJ_EGO_XY) {
-		v->direction = get_direction (v->x_pos, v->y_pos,
-			v->parm1, v->parm2, v->step_size);
-
-		if (v->direction == 0)
-			in_destination (v);
-	}
-
 	if (key == 0)
 		return FALSE;
 
