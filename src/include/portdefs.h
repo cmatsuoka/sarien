@@ -93,8 +93,21 @@ static char g_vmu_port[2];
 #endif
 
 #ifdef PALMOS
+/* Mappings between standard c functions and PalmOS equivalents.
+ * Should be done for all functions used by Sarien that are available
+ * in the PalmOS API since it creates smaller (and perhaps faster) code.
+ */
+/* Memory Manager (incomplete) */
 #  define malloc(x) MemPtrNew(x)
 #  define free(x)   MemPtrFree(x)
+/* String Manager (includes all obviously equivalent functions) */
+#  define atoi(str)          StrAToI(str)
+#  define strcat(dst,src)    StrCat(dst,src)
+#  define strchr(str,chr)    StrChr(str,chr)
+#  define strcpy(dst,src)    StrCopy(dst,src)
+#  define strlen(str)        StrLen(str)
+#  define strncpy(dst,src,n) StrNCopy(dst,src,n)
+#  define strstr(str,token)  StrStr(str,token)
 #endif
 
 
