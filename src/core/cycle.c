@@ -308,10 +308,6 @@ static int play_game ()
 	stop_sound ();
 	clear_screen (0);
 
-	setvar (V_computer, 0);			/* IBM PC */
-	setvar (V_soundgen, 1);			/* IBM PC SOUND */
-	setvar (V_monitor, 0x3);		/* EGA monitor */
-	setvar (V_max_input_chars, 38);
 	game.horizon = HORIZON;
 	game.player_control = FALSE;
 
@@ -323,7 +319,6 @@ static int play_game ()
 	game.gfx_mode = TRUE;
 	game.quit_prog_now = FALSE;
 	game.clock_enabled = TRUE;
-	game.input_mode = INPUT_NONE;
 	game.line_user_input = 22;
 
 #ifdef USE_MOUSE
@@ -373,13 +368,21 @@ int run_game ()
 {
 	int ec = err_OK;
 
-	setflag (F_restart_game, FALSE);
-
 	/* Execute the game */
     	do {
 		_D(_D_WARN "game loop");
+
 		if (agi_init () != err_OK)
 			break;
+		if (ec == err_RestartGame)
+			setflag (F_restart_game, TRUE);
+
+		setvar (V_computer, 0);			/* IBM PC */
+		setvar (V_soundgen, 1);			/* IBM PC SOUND */
+		setvar (V_monitor, 0x3);		/* EGA monitor */
+		setvar (V_max_input_chars, 38);
+		game.input_mode = INPUT_NONE;
+
 		game.state = STATE_RUNNING;
 		ec = play_game();
 		game.state = STATE_LOADED;

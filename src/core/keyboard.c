@@ -343,8 +343,7 @@ void handle_keys (int key)
 			game.input_buffer[game.cursor_pos - 1], fg, bg);
 
 		/* Print cursor */
-		print_character (game.cursor_pos + 1, l, game.cursor_char, fg, bg );
-
+		print_character (game.cursor_pos + 1, l, game.cursor_char, fg, bg);
 		break;
 	}
 }

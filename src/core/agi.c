@@ -54,10 +54,10 @@ int agi_init ()
 	_D("initializing");
 
 	/* reset all flags to false and all variables to 0 */
-	for (i = 0; i < MAX_FLAGS; i++)
+	for (i = 0; i < (MAX_FLAGS << 3); i++)
 		setflag (i, 0);
 	for (i = 0; i < MAX_VARS; i++)
-		setvar(i, 0);
+		setvar (i, 0);
 
 	/* clear all resources and events */
 	memset (&game.views, 0, MAX_DIRS * sizeof (struct agi_view));

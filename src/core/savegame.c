@@ -354,9 +354,9 @@ int load_game(char* s)
 	}
 	/* game.crc - not saved */
 
-	for(i=0; i<MAX_FLAGS; i++)
+	for (i = 0; i < MAX_FLAGS; i++)
 		game.flags[i] = read_uint8(f);
-	for(i=0; i<MAX_VARS; i++)
+	for (i = 0; i < MAX_VARS; i++)
 		game.vars[i] = read_uint8(f);
 
 	game.horizon = read_sint16(f);
