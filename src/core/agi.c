@@ -148,7 +148,6 @@ int agi_deinit ()
 	int ec;
 
 	clean_input ();			/* remove all words from memory */
-	deinit_menus ();		/* unload the menus */
 	agi_unload_resources ();	/* unload resources in memory */
 	ec = loader->deinit ();
 	unload_objects();

@@ -42,6 +42,9 @@ struct agi_menu_option {
 
 static LIST_HEAD(menubar);
 
+static int h_cur_menu;
+static int v_cur_menu;
+
 
 static struct agi_menu *get_menu (int i)
 {
@@ -246,6 +249,8 @@ void init_menus ()
 {
 	h_index = 0;
 	h_col = 1;
+	h_cur_menu = 0;
+	v_cur_menu = 0;
 }
 
 
@@ -351,8 +356,6 @@ void submit_menu ()
 int menu_keyhandler (int key)
 {
 	static int clock_val;
-	static int h_cur_menu = 0;
-	static int v_cur_menu = 0;
 	static int menu_active = FALSE;
 	struct agi_menu_option *d;
 	struct list_head *h;

@@ -389,6 +389,8 @@ int run_game ()
 		agi_deinit ();
     	} while (ec == err_RestartGame);
 
+	deinit_menus ();
+
 	return ec;
 }
 
