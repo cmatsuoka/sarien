@@ -182,7 +182,7 @@
    logic section of the AGI Studio help file, and the various other
    bits of documentation and tutorials available on-line.
    The programming info contained in this document is mostly from
-   <xref linkend="agds"> and uses different syntax and
+   <application>AGDS</application> and uses different syntax and
    terminology for the language and can be confusing if you are using
    AGI Studio for your programming.
 </para>
@@ -4599,7 +4599,7 @@ if (isset(3)) {     [ hit.special
 
 <sect1 id="dirfmt"><title>Directory files</title>
 <para>
-   Written by <author><firstname/Lance/ <surnameEwing/,
+   Written by <author><firstname/Lance/ <surname/Ewing/</author>,
    31 August 1997.
 </para><para>
    All AGI games have either one directory file, or more commonly, four.
@@ -4614,8 +4614,8 @@ if (isset(3)) {     [ hit.special
    The directory files give the location of the data types within the VOL
    files. The type of directory determines the type of data. For example,
    the <literal/logdir/ gives the locations of the LOGIC files. For a brief
-   introduction to the different data types, see section
-   <xref linkend="overview" name="General AGI overview">.
+   introduction to the different data types, see
+   <xref linkend="overview">.
 </para><para>
    Note: In this description and elsewhere in documents written by me,
    the AGI data called LOGIC, PICTURE, VIEW, and SOUND data are referred
@@ -4821,24 +4821,19 @@ Compressed picture code: F0 6F 81 24 5F 07 F2 5F 81 46 7 ...
 
 <sect1 id="rescode"><title>Sample code</title>
 <para>
-   The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
-
    <simplelist>
-    <member><literal><ulink name="examples/files/agifiles.c"/agifiles.c/</literal>
-      by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: routines to handle loading of resources
-    <member><literal><ulink name="examples/files/agifiles.h"/agifiles.h/</literal>
-      by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: header file for <literal/agifiles.c/
-    <member><literal><ulink name="examples/files/general.h"/general.h/</literal>
-      by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: general definitions
-    <member><literal><ulink name="examples/files/volx2.c"/volx2.c/</literal>
-      by <ulink name="mailto:lance.e@ihug.co.nz" name="Lance Ewing">, <ulink name="mailto:jmoller@algonet.se" name="Joakim Möller"> and <ulink name="mailto:mrtn@rocketmail.com"/Martin Tillenius/: program to extract
-      resources from AGI version 2 games (UNIX version available in
-      the <ulink name="http://agi.helllabs.org/#utils/"/AGI Utils/ package).
-    <member><literal><ulink name="examples/files/xv3.pas"/xv3.pas/</literal>
-      by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: program to extract resources from AGI version 3 games
-      (UNIX version available in the <ulink name="http://agi.helllabs.org/#utils/"/AGI Utils/ package).
-    <member><literal><ulink name="examples/files/agiver.pas"/agiver.pas/</literal>
-      by <ulink name="mailto:mikeph@concentric.net"/Jeremy Hayes/: displays version number of game and interpreter
+    <member><filename/agifiles.c/ by Lance Ewing:
+      routines to handle loading of resources
+    <member><filename/agifiles.h/ by Lance Ewing:
+      header file for <filename/agifiles.c/
+    <member><filename/general.h/ by Lance Ewing:
+      general definitions
+    <member><filename/volx2.c/ by Lance Ewing, Joakim Möller and
+      Martin Tillenius: program to extract resources from AGI version 2 games
+    <member><filename/xv3.pas/ by Lance Ewing: program to extract
+      resources from AGI version 3 games
+    <member><filename/agiver.pas/ by Jeremy Hayes:
+      displays version number of game and interpreter
    </simplelist>
 </para>
 
@@ -4849,10 +4844,7 @@ Compressed picture code: F0 6F 81 24 5F 07 F2 5F 81 46 7 ...
 
 <chapter id="logicres"><title>LOGIC resources</title>
 <para>
-<emphasis>
-Written by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/
-(Last updated: 27 January 1997).
-</emphasis>
+   Lance Ewing, 27 January 1997.
 </para>
 
 <sect1 id="logicfmt"><title>Introduction</title>
@@ -4908,11 +4900,9 @@ if (said( open, door))       [ must be close enough
 
 <sect1 id="cmdlist"><title>Command list and argument types</title>
 <para>
-<emphasis>
-Written by <ulink name="mailto:ptrkelly@ozemail.com.au"/Peter Kelly/
-(Last updated: 3 March 1998).
-</emphasis>
+   Peter Kelly, 3 March 1998.
 
+</para><para>
    This is a list of all AGI commands and their argument types. The
    function and name of some of these is not yet known. Check out
    <literal/agicommands.pas/ in section ``Sample code'' for a Delphi/Pascal
@@ -5212,26 +5202,30 @@ if (isset(5))
    which tests whether flag number 5 is set. The 0xFF effectively switches
    the interpreter into a condition checking mode which leads us to the
    next set of codes which I call the condition codes:
-
+</para><para>
 <programlisting>
 0x00 - 0x12    Condition codes.
 </programlisting>
+</para><para>
 
-   The <literal/isset/ condition code was introduced in example 2 above. When the
-   interpreter encounters a 0xFF it will then interpret the following code
-   values as being in the condition code range until it encounters the
-   next 0xFF which switches it back into normal AGI command mode. The two
-   bytes immediately following the second 0xFF determine how many bytes
-   this <literal/if/ statement lasts for before the <literal/if/ is ended. When the
-   second 0xFF is encountered the interpreter, be it us or the machine,
-   does three things:
-   <enum>
-    <listitem><para>Reads in the following two bytes.
-    <listitem><para>Opens a bracket.
-    <listitem><para>Switches to AGI command mode.
-   </enum>
+   The <function/isset/ condition code was introduced in example 2 above.
+   When the interpreter encounters a 0xFF it will then interpret the
+   following code values as being in the condition code range until it
+   encounters the next 0xFF which switches it back into normal AGI command
+   mode. The two bytes immediately following the second 0xFF determine how
+   many bytes this <function/if/ statement lasts for before the <function/if/
+   is ended.  When the second 0xFF is encountered the interpreter, be it
+   us or the machine, does three things:
+</para><para>
+   <orderedlist>
+    <listitem><para>Reads in the following two bytes.</para></listitem>
+    <listitem><para>Opens a bracket.</para></listitem>
+    <listitem><para>Switches to AGI command mode.</para></listitem>
+   </orderedlist>
+</para><para>
 
    Example 3: KQ1. Room 2.
+</para><para>
 <programlisting>
 FF 07 05 FF    if (isset(5))
 84 00          {			[ For 0x0084 bytes.
@@ -5242,6 +5236,7 @@ FF 07 05 FF    if (isset(5))
                }			[ Closed. 0x0084 bytes counted.
 </programlisting>
 
+</para><para>
    Of course, the code inside the brackets is only executed if the <literal/if/
    condition is met.
 </para>
@@ -5255,7 +5250,9 @@ FF 07 05 FF    if (isset(5))
    longer</emphasis> (this is a consequence of the way the interpreter handles
    <literal/if/ and <literal/else/ codes which is discussed later).
 
+</para><para>
    Here's an example:
+</para><para>
 <programlisting>
 if (isset(231)) {                          FF 07 E7 FF 05 00
     printf("The door is already open.");   65 0F
@@ -5271,11 +5268,13 @@ else {                                     FE 11 00
 }
 </programlisting>
 
+</para><para>
    Usually you would expect the bracket distance to be 0x0002 but in the
    above case it is clearly 0x0005 which illustrates the difference
    between a straight <literal/if/ statement and an <literal/if..else/ structure. The
    situation is the same for nested <literal/if..else/ structures.
 
+</para><para>
    The <literal/else/ statements themselves are a lot like <literal/if/ statements
    except that they're test condition is given after the 0xFE code but is
    instead the inverse of the condition given by the above <literal/if/
@@ -5286,6 +5285,7 @@ else {                                     FE 11 00
 <sect2><title>Test conditions</title>
 <para>
    Conditions can be one of the following types:
+</para><para>
 <programlisting>
 FF 07 05 FF                         One condition tested, ie. isset(5)
 FF FD 07 05 FF                      One condition NOTed, ie. !isset(5)
@@ -5293,7 +5293,9 @@ FF 07 05 07 06 FF                   Multiple conditions, ANDed.
 FF FC 07 05 07 06 FC FF             Multiple conditions ORed.
 FF FC 07 06 07 06 FC FD 07 08 FF    Combination.
 </programlisting>
+</para><para>
    These conditions translate to:
+</para><para>
 <programlisting>
 if (isset(5))
 if (!isset(5))
@@ -5301,12 +5303,14 @@ if (isset(5) && isset(6))
 if (isset(5) || isset(6))
 if ((isset(5) || isset(6)) && !isset(7))
 </programlisting>
+</para><para>
 
    If multiple boolean expressions are grouped together, then there
    respective values are ANDed together. If multiple boolean expressions
    are grouped together and then surrounded by a pair of 0xFC codes, then
    their values are ORed together.
 
+</para><para>
    The 0xFD code only applies to the following condition code whose
    boolean value it inverts.
 </para>
@@ -5320,6 +5324,7 @@ if ((isset(5) || isset(6)) && !isset(7))
    AGI command and condition code. These four bytes are interpreted as
    follows:
 
+</para><para>
 <programlisting>
 Byte  Meaning
 ----- -----------------------------------------------------------
@@ -5330,18 +5335,23 @@ Byte  Meaning
 ----- -----------------------------------------------------------
 </programlisting>
 
+</para><para>
    The type of arguments value is interpreted as follows:
+</para><para>
 
 <programlisting>
 Bit        7     6     5     4     3     2     1       0
 command( arg1, arg2, arg3, arg4, arg5, arg6, arg7); (unknown)
 </programlisting>
 
+</para><para>
    If the bit is set, argument is interpreted as a variable; otherwise
    the argument is interpreted as a number. It is unknown what bit 0 does
    since no AGI command or AGI condition code has more than seven arguments.
 
+</para><para>
    Examples:
+</para><para>
    <simplelist>
     <member>0x80 Says that the commands first argument is a variable.
     <member>0x60 Says that the second and third arguments are variable numbers.
@@ -5355,7 +5365,9 @@ command( arg1, arg2, arg3, arg4, arg5, arg6, arg7); (unknown)
    be displayed by that logic script. These strings are encrypted by
    xoring every eleven bytes with the string "Avis Durgan".
 
+</para><para>
    Example 4: KQ1. Room 2.
+</para><para>
 <programlisting>
 if (said(look, alligators))
 {
@@ -5363,16 +5375,21 @@ if (said(look, alligators))
 }
 </programlisting>
 
+</para><para>
    In the above example, the print statement is represented as:
+</para><para>
 
 <programlisting>
 65 08
 </programlisting>
 
+</para><para>
    The 0x08 is the number given to the string and corresponds to its
    position in the list of strings at the end of the logic script.
 
+</para><para>
    The format of the text section is as follows:
+</para><para>
 <programlisting>
 Byte  Meaning
 ----- -----------------------------------------------------------
@@ -5396,7 +5413,9 @@ Byte  Meaning
    used to find the start of the implementation for an AGI statement.
    Below are a couple of examples:
 
+</para><para>
    Example 5: MH2. equaln.
+</para><para>
 <programlisting>
 ;equaln   (eg.   if (work = 3)   )
 0D71 AC            LODSB                       ;get variable number
@@ -5410,7 +5429,9 @@ Byte  Meaning
 0D81 C3            RET
 </programlisting>
 
+</para><para>
    Example 6: MH2. equalv.
+</para><para>
 <programlisting>
 ;equalv  (eg.   if (work = maxwork)   )
 0D82 AC            LODSB                       ;get first var number
@@ -5426,6 +5447,7 @@ Byte  Meaning
 0D98 C3            RET
 </programlisting>
 
+</para><para>
    These two examples show the difference between how numbers and
    variables are dealt with. In the case of a variable, the variables
    number is used as an index into the table of variable values to get
@@ -5444,6 +5466,7 @@ Byte  Meaning
    what the comment says. For those of you who can't follow whats going
    on, I'll explain the interpretation in steps after the code block.
 
+</para><para>
 <programlisting>
 ;Decoding a LOGIC file.
 1E6C:2EF2 56            PUSH  SI
@@ -5554,6 +5577,7 @@ s)
 1E6C:2FA9 E954FF        JMP   2F00
 </programlisting>
 
+</para><para>
    <emphasis/Situation 1./ Okay, every LOGIC file starts in normal AGI command
    execution mode. In this routine, if the code is below 0xFC, then it is
    presumed to be an AGI command. It will then call the main command
@@ -5563,6 +5587,7 @@ s)
    where it loops back to the top and deals with the next code in the
    LOGIC file.
 
+</para><para>
    <emphasis/Situation 2./ If the code is an 0xFF code, then if jumps to the <literal/if/
    statement handler. In this routine is basically assesses whether the
    whole test condition evaluates to true or to false. It does this by
@@ -5580,6 +5605,7 @@ s)
    stage it jumps over the two bytes following the closing 0xFF and then
    goes back to executing straight AGI commands.
 
+</para><para>
    <emphasis/Situation 3./ If in the normal execution of AGI commands, the code 0xFE
    is encountered, a very simple action takes place. The two bytes which
    follow form a 16-bit twos complement value which is added to execution
@@ -5589,7 +5615,9 @@ s)
    best described as <literal/goto/ statements. If you're confused by this, the
    following example will probably explain things.
 
+</para><para>
    Example:
+</para><para>
 <programlisting>
 if (said( open, door)) {
     [ first block of AGI statements
@@ -5599,9 +5627,11 @@ else {
 }
 </programlisting>
 
+</para><para>
    The above example is how the original coder would have written the AGI
    code. If we now look at the following example, it is not hard to see
    that it would achieve the same thing.
+</para><para>
 
 <programlisting>
 if (!said( open, door)) goto label1;
@@ -5614,6 +5644,7 @@ label1:
 label2:
 </programlisting>
 
+</para><para>
    This is exactly how all <literal/if/s and <literal/else/s are implemented in the LOGIC
    code. The <literal/if/ statement is a conditional branch where the branch is
    taken if the condition is not met, while the <literal/else/ statement is a
@@ -5629,13 +5660,16 @@ label2:
    code is 0x0E, and the byte following this byte gives the number of
    two byte words that follow as parameters.
 
+</para><para>
    Examples:
+</para><para>
 
 <programlisting>
 if (said(marble))                          FF 0E 01 1E 01 FF
 if (said( open, door))                     FF 0E 02 37 02 73 00 FF
 </programlisting>
 
+</para><para>
    In the above examples, the values 0x011E, 0x0237, and 0x0073 are just
    random word numbers that could stand for the words given.
 </para>
@@ -5649,7 +5683,9 @@ if (said( open, door))                     FF 0E 02 37 02 73 00 FF
    increment with each pass and an <literal/if/ statement to test the value of
    the variable and take action if it was withing the desired range.
 
+</para><para>
    Example:
+</para><para>
 <programlisting>
 if (greatern(30, 45) && lessn(30, 55)) {
     print("You're in the hot zone!);
@@ -5657,6 +5693,7 @@ if (greatern(30, 45) && lessn(30, 55)) {
 }
 </programlisting>
 
+</para><para>
    I have found evidence of this sort of thing taking place which means
    that they must loop over continuously. I don't know whether this is
    something that the interpreter does itself or whether it is part of
@@ -5666,7 +5703,9 @@ if (greatern(30, 45) && lessn(30, 55)) {
    statement, it is easy to see that some of the structures such as
    ``do..while'' can infact be coded into LOGIC code.
 
+</para><para>
    Example:
+</para><para>
 
 <programlisting>
 FF FD 0D FF 03 00 FE F7 FF
@@ -5675,6 +5714,7 @@ do {
 } while (!havekey);
 </programlisting>
 
+</para><para>
    The above translation is a simple one which is taken from SQ2. The
    value 0xFFF7 is the twos complement notation for -9 which is the exact
    branching value to take the execution back to the start of the <literal/if/
@@ -5691,10 +5731,12 @@ do {
    only get executed if <literal/logic.0/ calls them directly or indirectly (i.e.
    LOGICs called from <literal/logic.0/ can call other LOGICs and so on).
 
+</para><para>
    I have also become aware that code 0x00 can basically be thought of
    as the command <literal/return/. If <literal/logic.0/ calls another logic, the
    execution will return to <literal/LOGIC.0/ when the 0x00 code is encountered.
 
+</para><para>
    It is also possible to set the entry point for a LOGIC file. The
    <literal/set.scan.start/ command makes the entry point of the LOGIC file being
    executed equal to the position of the command following
@@ -5706,19 +5748,17 @@ do {
 
 <sect1 id="logiccode"><title>Sample code</title>
 <para>
-   The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
-
    <simplelist>
-    <member><literal><ulink name="examples/logic/logic.c"/logic.c/</literal>
-      by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: loads LOGIC resources into LOGICFile structure
-    <member><literal><ulink name="examples/logic/logic.h"/logic.h/</literal>
-      by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: header file for <literal/logic.c/
-    <member><literal><ulink name="examples/files/agifiles.c"/agifiles.c/</literal>
-      by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: routines to handle loading of resources
-    <member><literal><ulink name="examples/files/agifiles.h"/agifiles.h/</literal>
-      by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: header file for <literal/agifiles.c/
-    <member><literal><ulink name="examples/logic/agicommands.pas"/agicommands.pas/</literal>
-      by <ulink name="mailto:ptrkelly@ozemail.com.au"/Peter Kelly/: Delphi/Pascal unit with a list of all commands and
+    <member><filename/logic.c/
+      by Lance Ewing: loads LOGIC resources into LOGICFile structure
+    <member><filename/logic.h/
+      by Lance Ewing: header file for <filename/logic.c/
+    <member><filename/agifiles.c/
+      by Lance Ewing: routines to handle loading of resources
+    <member><filename/agifiles.h/
+      by Lance Ewing: header file for <filename/agifiles.c/
+    <member><filename/agicommands.pas/
+      by Peter Kelly: Delphi/Pascal unit with a list of all commands and
       argument types
    </simplelist>
 </para>
@@ -5729,11 +5769,8 @@ do {
 
 <chapter id="picture"><title>PICTURE resources</title>
 <para>
-<emphasis>
-Written by <ulink name="mailto:lance.e@ihug.co.nz" name="Lance Ewing">, with additions/modifications by <ulink name="mailto:claudio@helllabs.org"/Claudio Matsuoka/
-based on the AGDS documentation translated by <ulink name="mailto:nest@rtsnet.ru"/Vassili Bykov/
-(Last updated: 22 May 1999).
-</emphasis>
+   Lance Ewing, updated by Claudio Matsuoka based on the AGDS documentation,
+   22 May 1999.
 </para>
 
 <sect1 id="picintro"><title>Introduction</title>
@@ -5745,9 +5782,11 @@ based on the AGDS documentation translated by <ulink name="mailto:nest@rtsnet.ru
    picture and they have the advantage of taking less space than would a
    bit image of a complete picture.
 
+</para><para>
    Pictures are drawn using nine different drawing actions. These actions
    are given values from 0xF0 to 0xFA and are defined as follows:
 
+</para><para>
    <simplelist>
     <member>0xF0: Change picture colour and enable picture draw.
     <member>0xF1: Disable picture draw.
@@ -5762,11 +5801,13 @@ based on the AGDS documentation translated by <ulink name="mailto:nest@rtsnet.ru
     <member>0xFA: Plot with pen.
     <member>0xFB--0xFE: Unused in most AGI games.
    </simplelist>
+</para><para>
 
    Note: SQ2 appears to be the only AGI version 2 game that uses 0xF9 and
    0xFA. The AGI interpreters before this game will most likely not
    support these two drawing actions.
 
+</para><para>
    In the following detailed descriptions of each action, the word
    ``picture'' refers to the screen that is seen by the player when they
    play the AGI screen. The word ``priority'' refers to the screen that is
@@ -5791,6 +5832,7 @@ based on the AGDS documentation translated by <ulink name="mailto:nest@rtsnet.ru
 <sect2><title>Color palette</title>
 <para>
    The following colors are used in AGI. RGB is given in 6 bit values.
+</para><para>
    <programlisting>
 Code  Color             R    G    B
 ----- ---------------- ---- ---- ----
@@ -6206,7 +6248,7 @@ Code  Color             R    G    B
    the screens I've tried Showpic on which makes me believe its probably
    not a fault in this algorithm, but somewhere else in the code.
 </para><para>
-   Note that Sarien (see <xref linkend="otheragi" name="Other interpreters">)
+   Note that Sarien (see <xref linkend="otheragi">)
    use a more efficient line drawing algorithm written by Joshua Neal and
    Stuart George.
 </para><para>
@@ -6327,14 +6369,12 @@ Tool:Line V:A P:o C:o X=199 Y=55 Pri:2
 
 <sect1 id="piccode"><title>Sample code</title>
 <para>
-   The following examples are available in the
-   <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
 
    <simplelist>
-    <member><literal><ulink name="examples/picture/picv3-v2.c"/picv3-v2.c/</literal>
-       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: converts version 3 pictures to version 2 pictures
-    <member><literal><ulink name="examples/picture/showpic.c"/showpic.c/</literal>
-       by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: displays pictures
+    <member><filename/picv3-v2.c/
+       by Lance Ewing: converts version 3 pictures to version 2 pictures
+    <member><filename/showpic.c/
+       by Lance Ewing: displays pictures
    </simplelist>
 </para>
 </sect1>
@@ -6344,7 +6384,7 @@ Tool:Line V:A P:o C:o X=199 Y=55 Pri:2
 
 <chapter id="view"><title>VIEW resources</title>
 <para>
-  Peter Kelly, modified Claudio Matsuoka, updated 22 May 1999.
+  Peter Kelly, updated by Claudio Matsuoka, 22 May 1999.
 </para>
 
 <sect1><title>Introduction</title>
@@ -6361,14 +6401,15 @@ Tool:Line V:A P:o C:o X=199 Y=55 Pri:2
    be used for a single image. The maximum number of loops supported by
    the interpreter is 255 (0-254) and the maximum number of cels in each
    is 255 (0-254).
-</para><para>
-   <warning>
+</para>
+<warning>
+  <para>
     Except when noted otherwise, 16 bit data is stored in little endian
     format (i.e. the value has the least significant byte stored first, and
     the most significant byte stored second). Most word values in AGI are
     stored like this, but not all.
-   </warning>
-</para>
+  </para>
+</warning>
 
 <sect1><title>VIEW resource format</title>
 
@@ -6388,12 +6429,13 @@ Byte  Meaning
  ...  ...
 ----- -----------------------------------------------------------
    </programlisting>
-</para><para>
-   <warning>
+</para>
+<warning>
+   <para>
     Two of these loop references CAN point to the same place. This
     is done when you want to use mirroring (more on this later).
-   </warning>
-</para>
+   </para>
+</warning>
 
 <sect2><title>Loop header (3+ bytes)</title>
 <para>
@@ -6571,22 +6613,22 @@ Byte  Meaning
 </para><para>
    View objects appear to have the following properties:
 </para><para>
-   <itemizedlist>
-    <listitem>x position
-    <listitem>y position
-    <listitem>current view
-    <listitem>current loop
-    <listitem>current cel
-    <listitem>priority
-    <listitem>cycle time (1/n gives the fraction of the maximum speed)
-    <listitem>step time (1/n gives the fraction of the maximum speed)
-    <listitem>x size (in pixels)
-    <listitem>y size (in pixels)
-    <listitem>step size
-    <listitem>direction
-    <listitem>number of loops
-    <listitem>number of cels
-   </itemizedlist>
+   <simplelist>
+    <member>x position
+    <member>y position
+    <member>current view
+    <member>current loop
+    <member>current cel
+    <member>priority
+    <member>cycle time (1/n gives the fraction of the maximum speed)
+    <member>step time (1/n gives the fraction of the maximum speed)
+    <member>x size (in pixels)
+    <member>y size (in pixels)
+    <member>step size
+    <member>direction
+    <member>number of loops
+    <member>number of cels
+   </simplelist>
 </para><para>
    There are probably other properties that aren't listed here which they
    also possess. In an object oriented environment such as SCI, these
@@ -6663,15 +6705,16 @@ View flags:
 ----- -----------------------------------------------------------
    </programlisting>
 
-</para><para>
-   <warning>
+</para>
+<warning>
+  <para>
     The above format structure is simply the way in which Sierra's
     AGI interpreter stores information about VIEW objects. In attempting
     to write an AGI interpreter, you would not have to restrict yourself
     to this format, just as long as you store this information in some
     manner that the interpreter can have access to.
-   </para>
-</para>
+  </para>
+</warning>
 </sect1>
 
 <sect1><title>VIEW test commands</title>
@@ -6746,18 +6789,16 @@ X........
 
 <sect1 id="viewcode"><title>Sample code</title>
 <para>
-   The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
-
    <simplelist>
-    <member><literal><ulink name="examples/view/viewview.pas"/viewview.pas/</literal>
-      by <ulink name="mailto:ptrkelly@ozemail.com.au"/Peter Kelly/: unit from AGIhack that displays VIEWs
+    <member><filename/viewview.pas/
+      by Peter Kelly: unit from AGIhack that displays VIEWs
    </simplelist>
 </chapter>
 
 
-<chapter id="res_sound"><title>SOUND resources</title>
+<chapter id="soundresource"><title>SOUND resources</title>
 <para>
-   Written by Lance Ewing, modified by Claudio Matsuoka, 22 May 1999.
+   Lance Ewing, updated by Claudio Matsuoka, 22 May 1999.
 </para>
 
 <sect1><title>Introduction</title>
@@ -7009,7 +7050,8 @@ R0      R1      R2
    According to Paul Lunga, sound in the Macintosh and Tandy versions of
    the AGI games are pretty much the same as the PCjr version (three
    sound channels plus noise). AIFF files of AGI music in these platforms
-   are available at <ulink name="http://agi.helllabs.org/sound">
+   are available at <ulink url="http://agi.helllabs.org/sound">
+   http://agi.helllabs.org/sound</ulink>.
 </para>
 
 <sect1><title>Sound resource format (PCjr version)</title>
@@ -7069,21 +7111,18 @@ Byte  Meaning
    <simplelist>
     <member>First and second byte: Note duration
     <member>Third byte
-      <simplelist>
-       <member>In the case of a tone voice,
-<verb>
+       In the case of a tone voice,
+<literal>
 7  6  5  4  3  2  1  0
 
 0  .  .  .  .  .  .  .      Always 0.
 .  X  .  .  .  .  .  .      Unused, ignored.
 .  .  F0 F1 F2 F3 F4 F5     6 of 10-bits in frequency count.
-</verb>
-       <member>In the case of the noise voice, this byte is equal to zero.
-      </simplelist>
+</literal>
+       In the case of the noise voice, this byte is equal to zero.
     <member>Fourth byte
-      <simplelist>
-       <member>In the case of a tone voice,
-<verb>
+       In the case of a tone voice,
+<literal>
 7  6  5  4  3  2  1  0
 
 1  .  .  .  .  .  .  .      Always 1.
@@ -7092,9 +7131,9 @@ Byte  Meaning
 
 F = frequency = 111860 / (((Byte3 & 0x3f) << 4) + (Byte4 & 0x0f))
 R = register address
-</verb>
-       <member>In the case of the noise voice,
-<verb>
+</literal>
+       In the case of the noise voice,
+<literal>
 7  6  5  4  3  2  1  0
 
 1  .  .  .  .  .  .  .      Always 1.
@@ -7108,10 +7147,9 @@ NF0  NF1       Noise Frequency
  0    0         1,193,180 / 512 = 2330
  0    1         1,193,180 / 1024 = 1165
  1    0         1,193,180 / 2048 = 583
-</verb>
-      </simplelist>
+</literal>
     <member>Fifth byte
-<verb>
+<literal>
    7  6  5  4  3  2  1  0
 
    1  .  .  .  .  .  .  .      Identifies first byte (command byte)
@@ -7140,7 +7178,7 @@ NF0  NF1       Noise Frequency
     1  0  1        Voice 3 attenuation (4 bits)
     1  1  0        Noise voice control (4 bits; 3 used)
     1  1  1        Noise voice attenuation (4 bits)
-</verb>
+</literal>
    </simplelist>
    The note data for one voice is terminated by two consecutive 0xFF
    values.
@@ -7523,22 +7561,17 @@ f = 111860 / (((Byte2 & 0x3F) << 4) + (Byte3 & 0x0F))
 
 <sect1 id="soundcode"><title>Sample code</title>
 <para>
-   The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
 
 </para><para>
    <simplelist>
-    <member><literal><ulink name="examples/sound/adlib.c"/adlib.c/</literal>
-      by Kevin A. Lee: low level adlib routines
-    <member><literal><ulink name="examples/sound/adlib.h"/adlib.h/</literal>
-      by Kevin A. Lee: header for <literal/adlib.c/
-    <member><literal><ulink name="examples/sound/oldplay.c"/oldplay.c/</literal>
-      by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/: old program to play AGI sounds
-    <member><literal><ulink name="examples/sound/play.c"/play.c/</literal>
-      by <ulink name="mailto:jchrr@hrz.uni-bielefeld.de"/Jens Christian Restemeier/: new program for playing AGI sounds (plays as a MIDI
-      file)
-    <member><literal><ulink name="examples/sound/agiplay.c"/agiplay.c/</literal>
-      by <ulink name="mailto:claudio@helllabs.org"/Claudio Matsuoka/: program to play PCjr AGI sound resources in Linux using
-      software mixing and <literal>/dev/dsp</literal>
+    <member><filename/adlib.c/ by Kevin A. Lee: low level adlib routines
+    <member><filename/adlib.h/ by Kevin A. Lee: header for <filename/adlib.c/
+    <member><filename/oldplay.c/ by Lance Ewing: old program to play AGI sounds
+    <member><filename/play.c/ by Jens Christian Restemeier:
+      new program for playing AGI sounds (plays as a MIDI file)
+    <member><filename/agiplay.c/ by Claudio Matsuoka: program to play PCjr
+      AGI sound resources in Linux using software mixing and
+      <filename>/dev/dsp</filename>.
    </simplelist>
 
 </para>
@@ -7547,10 +7580,7 @@ f = 111860 / (((Byte2 & 0x3F) << 4) + (Byte3 & 0x0F))
 
 <chapter id="otherdata"><title>Other game data</title>
 <para>
-<emphasis>
-Written by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/
-(Last updated: 31 August 1997).
-</emphasis>
+    Lance Ewing, 31 August 1997.
 </para>
 
 <sect1><title>Format of the <literal/object/ file</title>
@@ -7706,25 +7736,97 @@ if (said(take, anyword)) {
 
 <sect1 id="othercode"><title>Sample code</title>
 <para>
-   The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
 
    <simplelist>
-    <member><literal><ulink name="examples/otherdata/object.pas"/object.pas/</literal>
-      by <ulink name="mailto:ptrkelly@ozemail.com.au"/Peter Kelly/: displays contents of the <literal/object/ file
-    <member><literal><ulink name="examples/otherdata/words.pas"/words.pas/</literal>
-      by <ulink name="mailto:ptrkelly@ozemail.com.au"/Peter Kelly/: displays contents of the <literal/words.tok/ file
+    <member><filename/object.pas/
+      by Peter Kelly: displays contents of the <filename/object/ file
+    <member><filename/words.pas/
+      by Peter Kelly: displays contents of the <filename/words.tok/ file
    </simplelist>
 </chapter>
 
 
 <chapter id="other"><title>Other information</title>
 
-<sect1 id="agds"><title>The AGDS package</title>
+<sect1 id="otheragi"><title>Other AGI interpreters</title>
 <para>
-<emphasis>
-Written by <ulink name="mailto:ptrkelly@ozemail.com.au"/Peter Kelly/
-(Last updated: 27 January 1998).
-</emphasis>
+   Besides <application>AGDS</application> (which
+   was the first non-Sierra AGI interpreter), a number of
+   alternative interpreters have been brought to light in the last few years.
+   None of them is fully functional at the time of this writing, although
+   good progress is being made to have full compatibility with the original
+   Sierra interpreter. Some of the new interpreters are portable and
+   open the possibility of playing the Sierra AGI classics natively in
+   platforms where the original AGI interpreter has never been ported,
+   such as UNIX and BeOS. The new possibilities include four voice PCjr
+   or sixteen-voice, digitally sampled IIgs sound replaying in the IBM-PC.
+</para><para>
+
+   <variablelist>
+
+    <varlistentry>
+     <term/MEKA/
+     <listitem><para>
+       <application>MEKA</application> stands for ``Möller, Ewing and
+       Kelly Adventure'' and has been developed by AGI hackers
+       Joakim Möller, Lance Ewing and Peter Kelly using DJGPP and
+       the Allegro library to run under MS-DOS. It has support for both v2
+       and v3 games, and some routines from <application>MEKA</application>
+       have been reused in Sarien, specifcally the LZW decompression
+       routines and modified picture decoding routines.
+      </para></listitem>
+     </varlistentry>
+
+     <varlistentry>
+      <term/JAGI/
+      <listitem><para>
+        <application>JAGI</application> (1998) is a free AGI interpreter
+        for Linux written in C by Jens Christian Restemeier.
+        <application>JAGI</application> uses GGI for graphics output and OSS
+        for sound. The latest available version is 0.1, distributed under
+        the GNU GPL. <application>JAGI</application> supports only v2 games.
+      </para></listitem>
+     </varlistentry>
+
+     <varlistentry>
+      <term/Sarien/
+      <listitem><para>
+        Formerly known as Yggdrasil, <application>Sarien</application>
+        (1999) is a portable AGI interpreter developed by Stuart George
+        and distributed under the GNU GPL.
+        It runs in MS-DOS, Win32 and many Unix and Unix-like
+        systems such as Solaris, Linux and QNX, and is capable of playing
+        v2 and v3 AGI and AGDS games. (If you like acronyms,
+        <application>Sarien</application> can be expanded to
+        ``Sierra AGI Resource Interpreter ENgine''.)
+      </para></listitem>
+     </varlistentry>
+
+     <varlistentry>
+      <term/LAGII/
+      <listitem><para>
+        Developed by XoXus, the
+        <application>Linux AGI Interpreter</application>, or
+        <application>LAGII</application> (1999),
+        runs in the Linux console using SVGAlib. Currently it supports
+        v2 games. Fully expanded, LAGII stands for ``Linux Adventure
+        Game Interpreter Interpreter''. It is distributed under the
+        GNU GPL.
+      </para></listitem>
+     </varlistentry>
+
+    </variablelist>
+</para>
+</sect1>
+</chapter>
+
+
+
+<appendix id="thunderstorm">
+<title>The making of the <emphasis/Thunderstorm/ educational Program</title>
+<para>
+   A. V. Horev, Chuvashia State University, August 1991. Translated from
+   Russian by Vassili Bykov.
 </para><para>
    Around 1990--91 there was a project in Russia similar to ours. Pretty
    much all of the file formats were figured out and documented, and a
@@ -7738,44 +7840,36 @@ Written by <ulink name="mailto:ptrkelly@ozemail.com.au"/Peter Kelly/
    now benefit from this project. Vassili Bykov has since provided an
    improved translation.
 </para><para>
-   I have recently found out that the author of the package was
-   <ulink name="mailto:simkin@argussoft.ru"/Alex Simkin/
+   I have recently found out that the author of the package was Alex Simkin
    (with help from Serge Lapin). Alex tells me that some of the tools were
    originally written to solve a puzzle in Leisure Suit Larry 1. A friend
    from Elias (a publising group) asked him to make a compiler so he could
    edit the logics and translate the games into Russian. The AGDS package
    was the result. I would like to thank Alex and Serge for all their work
    on AGDS, which has helped us a lot, particularly in the area of logic
-   programming. I would also like to thank
-   <ulink name="mailto:const@aha.ru/Konstantin Mironovich/ for putting me in
-   touch with Alex after seeing one of the AGI websites.
-</para>
-</sect1>
-
-<sect1 id="thunderstorm"><title>The making of the <emphasis/Thunderstorm/ educational Program</title>
-<para>
-<emphasis>
-Written by A. V. Horev, Chuvashia State University and translated by Vassili Bykov.
-</emphasis>
+   programming. I would also like to thank Konstantin Mironovich for
+   putting me in touch with Alex after seeing one of the AGI websites.
 </para><para>
-   <emphasis>
+   Peter Kelly, 27 January 1998.
+</para>
+
+<warning>
+  <para>
    Translator's note: The original uses terms such as AGDS interpreter,
    AGDS programming, AGDS language. In the translation I am replacing AGDS
    in these with AGI, leaving AGDS only to refer to the set of resource
    creation and manipulation utilities this document originally accompanied.
    I believe this is only fair.
-   </emphasis>
 </para><para>
-   <emphasis>
    In the ``classic'' AGI, words of command names are separated with
    dots, while in this text they are separated with underscores
-   (<literal/new.room.v/ vs. <literal/new_room_v/) - the consequence of using MASM as
-   the assembler for logic code in AGDS. I leave the names with underscores,
-   but keep this in mind.
-   </emphasis>
-</para>
+   (<function/new.room.v/ vs. <function/new_room_v/) -- the consequence
+   of using MASM as the assembler for logic code in AGDS. I leave the names
+   with underscores, but keep this in mind.
+  </para>
+</warning>
 
-<sect2><title>The making of <emphasis/Thunderstorm/ educational program</title>
+<sect1><title>The making of <emphasis/Thunderstorm/ educational program</title>
 <para>
    <quote>
 <emphasis>``... how did it come to pass?''</emphasis>
@@ -7813,9 +7907,9 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
    fairly quickly only of you have good programming skills and some
    experience of using IBM PC.
 </para>
-</sect2>
+</sect1>
 
-<sect2><title>How we started</title>
+<sect1><title>How we started</title>
 <para>
    I should say this project popped as if out of nowhere and we had a
    fairly short time to finish it: about 2 months, a month of that to
@@ -7832,19 +7926,21 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
    everything so it is then easier to program? And how to program is not
    clear either. What to do? Tried to play a few Sierra games to get used
    to them. But all the games are controlled using key phrases that,
-   naturally, I don't know. <emphasis>(He probably means the input in English and
-   he doesn't speak English. --VB)</emphasis> No time to guess. Tried to print out
-   words.tok using WL utility. Didn't help much because the dictionary
-   stores separate words while the game requires complete sentences which
+   naturally, I don't know.<footnote><para>He probably means the input in
+   English and he doesn't speak English. (VB)</para></footnote>
+   No time to guess. Tried to print out <filename/words.tok/ using
+   the WL utility. Didn't help much because the dictionary stores
+   separate words while the game requires complete sentences which
    are in some way analyzed by the interpreter and, depending on the
-   result, the game develops. Now this is interesting! This means I can
-   write an educational program and communicate with it using sentences.
-   (As it appeared later, only English).
+   result, the game develops. Now this is interesting! This means that
+   I can write an educational program and communicate with it using
+   sentences.  (As it appeared later, only English).
 </para><para>
-   Then I found that in <emphasis/In Search of a Lost Planet/ (by the way, it begins
-   with a key phrase `start game') you can load and turn on the debugger
-   using <literal/Alt+D/ and <literal/Scroll Lock/. This opens a text window with the
-   commands. Later came understanding that to the left of a command is
+   Then I found that in <emphasis/In Search of a Lost Planet/ (by the way,
+   it begins with a key phrase `start game') you can load and turn on the
+   debugger using <literal/Alt+D/
+   and <keycap/Scroll Lock/. This opens a text window with the
+   commands. Later I understood that to the left of a command is
    the number of logic it is from, while to the right and below, the
    result. Noticed that if nothing happens in the game (no input using
    error keys or key phrases), the logic numbers and commands are the
@@ -7852,7 +7948,8 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
    Besides, if the debugger was turned on while the character on the
    screen was moving, every cycle a new phase of the character's movement
    was drawn on the screen (for example, the leg was going up). Picked up
-   the manual, read <emphasis/Interpreter Work Cycle/. All became a bit more clear.
+   the manual, read <emphasis/Interpreter Work Cycle/. All became a bit
+   more clear.
    As it appears, each cycle the interpreter redraws the character if a
    movement command was issued (this is easier to see than to understand
    from explanations, try to do that yourself). So the character is a
@@ -7870,9 +7967,9 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
    educational programs, for the interpreter, because there were no
    examples at all.
 </para>
-</sect2>
+</sect1>
 
-<sect2><title>What do you have to know about the interpreter
+<sect1><title>What do you have to know about the interpreter
        to write a simple educational program?</title>
 <para>
    The title intentionally talks about an educational program because I
@@ -7880,8 +7977,8 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
    topics. Learning while playing is the best kind of learning. I think
    you will agree that a good educational program should be like a game.
 </para><para>
-   When you bought AGDS you have also received a <emphasis/Thunderstorm/ educational
-   program as an example. Not only the program itself, but also the
+   When you bought AGDS you have also received a <emphasis/Thunderstorm/
+   educational program as an example. Not only the program itself, but also the
    commented source code of logics of that program. I think the program
    is far from being perfect but it may be a good example to you in
    learning AGI language. Though the program is fairly simple and does
@@ -7895,39 +7992,50 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
    Programming for AGI is fairly unusual because of the specifics of how
    the interpreter works:
    <itemizedlist>
-    <listitem><para>The cyclic nature of the interpreter operation completely defines
+    <listitem><para>
+       The cyclic nature of the interpreter operation completely defines
        the style of AGI programming. The style is rather unusual and
        requires understanding and getting used to it. We shall discuss,
        using the source of of <emphasis/Thunderstorm/ as an example, how to write
        programs executing in that cyclic manner.
     </para></listitem>
 
-    <listitem><para>A common set of variables, flags, and strings for all the
+    <listitem><para>
+       A common set of variables, flags, and strings for all the
        subroutines loaded in the interpreter memory, which means any
        variable or flag is accessible from any part of the program (this
        includes the reserved variables and flags).
     </para></listitem>
 
-    <listitem><para>Data elements of any type (variable, flag, resource) are
+    <listitem><para>
+       Data elements of any type (variable, flag, resource) are
        identified with a unique ID number (0..255, string variable -
        0..11). At first this seems inconvenient, but later you get used
        to it.
     </para></listitem>
 
-    <listitem><para>Command name determines the data type it operates on, the nature
+    <listitem><para>
+       Command name determines the data type it operates on, the nature
        of its operation, and the result. For example, consider assignment
-       commands: <literal/assignn 10, 2/ means store the value 2 into the variable
-       number 10; <literal/assignv 10, 2/ means store the value of variable 2 into
-       the variable 10; <literal/set 10/ mean set flag 10 to 1. Most often you will
-       have to memorize what each command does and the type of its
-       operands.
+       commands: <function/assignn 10, 2/ means store the value 2 into the
+       variable number 10; <function/assignv 10, 2/ means store the value
+       of variable 2 into the variable 10; <function/set 10/ mean set
+       flag 10 to 1. Most often you will have to memorize what each command
+       does and the type of its operands.
     </para></listitem>
 
-    <listitem><para>Small internal interpreter memory occasionally overflows. This is
+    <listitem><para>
+       Small internal interpreter memory occasionally overflows. This is
        annoying because there may be lots of free RAM at the same time.
-    <listitem><para>There are powerful commands new_room and <literal/new_room_v/ used to
-       completely change the program behaviour.
-    <listitem><para>There are many test commands which allow not only to check the
+    </para></listitem>
+
+    <listitem><para>
+       There are powerful commands <function/new_room/ and
+       <function/new_room_v/ used to completely change the program behaviour.
+    </para></listitem>
+
+    <listitem><para>
+       There are many test commands which allow not only to check the
        state of variables and flags, but also the position of objects one
        relative to another, or relative to some special lines and areas
        drawn on the background (for example, control barriers or water
@@ -7935,10 +8043,12 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
        according to the design.
     </para></listitem>
 
-    <listitem><para>The ability to fairly easily animate objects on the screen. Note
+    <listitem><para>
+       The ability to fairly easily animate objects on the screen. Note
        that all the images programmatically associated with objects the
        interpreter or the user can control, have to be first created
-       using the VIM utility, as well as the background created using PM
+       using the <application>VIM</application> utility, as well as the
+       background created using <application>PM</application>
        utility. That is, creating an animation is a two-stage process:
        drawing a frame-by-frame animated sequence of the object (a human
        figure walking but not moving) and programmatic movement of the
@@ -7947,30 +8057,32 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
        designer, the artist and the programmer.
     </para></listitem>
 
-    <listitem><para>The ability to use a built-in debugger, invoked using Scroll Lock
-       if the debugger table log.dbg is loaded into the interpreter
+    <listitem><para>
+       The ability to use a built-in debugger, invoked using Scroll Lock
+       if the debugger table <filename/log.dbg/ is loaded into the interpreter
        memory.
     </para></listitem>
 
    </itemizedlist>
 </para><para>
+
    I want to warn you that most probably you will not be able to use the
    debugger on IBM PC XTs because DUU and VM utilities (of the versions
-   we have) have problems including log.dbg into data volumes on IBM PC
-   XTs. Because <emphasis/Thunderstorm/ was created on an XT, I wrote it ``blindly''
-   because I could not (and still cannot) use the debugger. For that
-   reason there is no debugger in the program - this may complicate your
-   study of <emphasis/Thunderstorm/.
+   we have) have problems including <filename/log.dbg/ into data volumes
+   on IBM PC XTs. Because <emphasis/Thunderstorm/ was created on an XT,
+   I wrote it ``blindly'' because I could not (and still cannot) use the
+   debugger. For that reason there is no debugger in the program -- this
+   may complicate your study of <emphasis/Thunderstorm/.
 </para>
-</sect2>
+</sect1>
 
-<sect2><title>How I coded <emphasis/Thunderstorm/</title>
+<sect1><title>How I coded <emphasis/Thunderstorm/</title>
 <para>
    By the time I had to start coding I had an approximate design of what
    we wanted to make but no idea of how to approach it.
 </para>
 
-<sect3><title>I had the design</title>
+<sect2><title>I had the design</title>
 <para>
    Was that the right design? Could it actually be used to create a
    program? The design, and how detailed it is, determines a lot, in
@@ -8021,7 +8133,8 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
    <emphasis/Thunderstorm/. In this case all the programmer has to do is describe
    one object, associate it with the view resource and play back the
    animation. Remember that with this approach you cannot arbitrarily
-   increase the animation length: VIM editor and the interpreter itself
+   increase the animation length: <application>VIM</application> editor
+   and the interpreter itself
    have their limitations, besides, a large VIEW resource takes a
    significant part of the interpreter's internal memory. Even if does
    not overflow, redrawing large images may significantly slow down the
@@ -8080,7 +8193,7 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
    So let's assume the design is ready, the art is drawn, and we can
 </para>
 
-<sect3><title>Start Coding</title>
+<sect2><title>Start Coding</title>
 <para>
    Each room in the game has its program (LOGIC resource, or simply
    "logic"), the backdrop, and the objects some of which can be
@@ -8098,7 +8211,8 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
 </para><para>
    Starting to code, remember that the program controlled by the
    interpreter executes in cycles (this is unusual and takes some time to
-   get used to). This means that when <literal/call/ or <literal/call_v/ command is
+   get used to). This means that when <function/call/ or
+   <function/call_v/ command is
    executed in logic 0, control is passed to the logic which is the operand
    of the command. That logic may similarly pass control to yet another logic,
    etc. The called logic's commands will be executed once (unless it
@@ -8120,7 +8234,8 @@ Written by A. V. Horev, Chuvashia State University and translated by Vassili Byk
    information.
 </para><para>
    For example, suppose you want to play the animation associated with
-   the object 1 once. To do that it is enough to issue <literal/end_of_loop 1, 121/
+   the object 1 once. To do that it is enough to issue
+   <function/end_of_loop 1, 121/
    command, where 121 is the identifier of the flag set to 1 once the
    animation reaches the last frame. Therefore, you have to return
    control to the interpreter on every subsequent iteration of the
@@ -8146,7 +8261,8 @@ A:   ..............
 </para><para>
    Now it gets a bit more clear and we can start working on logic 0. (It
    is a good idea to read further keeping handy the source code of
-   <emphasis/Thunderstorm/'s <literal/log0.asm/, <literal/log01.asm/ and <literal/log05.asm/.
+   <emphasis/Thunderstorm/'s <filename/log0.asm/, <filename/log01.asm/
+   and <filename/log05.asm/.
 </para><para>
    Logic 0 (unlike all other logics) always stays in the interpreter's
    memory and determines all the interpreter's actions relevant to the
@@ -8347,7 +8463,7 @@ A:   ..............
     </para></listitem>
 
     <listitem><para>
-      The <functions/call_v 0/ command that calls the logic corresponding
+      The <function/call_v 0/ command that calls the logic corresponding
       to the last room set using <function/new_room v/, which has to be
       executed each interpreter cycle.
     </para></listitem>
@@ -8418,7 +8534,7 @@ A:   ..............
    checked in logic 0).
 </para>
 
-<sect3><title><emphasis/Thunderstorm/ Program Structure</title>
+<sect2><title><emphasis/Thunderstorm/ Program Structure</title>
 <para>
    Before we continue our discussion of logics, a few words about the
    program structure.
@@ -8492,9 +8608,9 @@ A:   ..............
    sound signal and a corresponding message) the lesson is repeated and
    the score is decreased by one point.
 </para>
-</sect3>
+</sect2>
 
-<sect3><title>Writing <emphasis/Thunderstorm/'s logics</title>
+<sect2><title>Writing <emphasis/Thunderstorm/'s logics</title>
 <para>
    The logic that starts teaching is logic 5. Its commented source code
    is in <filename/log05.asm/, this is why I will give here only a short
@@ -8544,7 +8660,7 @@ A:   ..............
    (<parameter/v130/), the value of which is incremented each time a
    message is issued. When the logic is invoked in a cycle, only the
    block for which the variable value and the block number are the same
-   executes. Tests are performed by the commands labelled <lieteral/EQn/
+   executes. Tests are performed by the commands labelled <function/EQn/
    where <parameter/n/ is the block number.
 </para><para>
    This logic manages text windows differently. A window goes away
@@ -8576,10 +8692,10 @@ A:   ..............
    <function/end_of_loop/ command. The time delay between the frames
    (set with <literal/cycle_time/), step size -- number of pixels the
    object moves each interpreter cycle (set with <function/step_size/)
-   <footnote>I suspect they may actually mean ``each step'' (VB)</footnote>
-   and the time delay between the steps (set with <function/step_time/)
-   were determined by trial and error so that animation finishes by the
-   time the object reaches the destination.
+   <footnote><para>I suspect they may actually mean ``each step'' (VB)
+   </para></footnote> and the time delay between the steps (set with
+   <function/step_time/) were determined by trial and error so that
+   animation finishes by the time the object reaches the destination.
 </para><para>
    The drops moving down create air flow (objects 4 and 5 with cycles 1
    and 2 of the view resource 22 associated with them playing
@@ -8832,12 +8948,12 @@ A:   ..............
    source as it is because I think this form is better suited to studying
    the AGI language.
 </para>
-</sect3>
 </sect2>
+</sect1>
 
-<sect2><title>Final Advice</title>
+<sect1><title>Final Advice</title>
 
-<sect3><title>To the Programmer</title>
+<sect2><title>To the Programmer</title>
 <para>
    Remember that:
    <itemizedlist>
@@ -8964,16 +9080,16 @@ A:   ..............
       do something special, like replace regular ASCII table with
       Cyrillic but even that will unlikely give the desired result as
       the interpreter ignores certain codes, so you will not be able to
-      use them.<footnote>I should say this is overly pessimistic as I saw
+      use them.<footnote><para>I should say this is overly pessimistic as I saw
       myself KQ3 hacked by someone to be in Russian: it printed all
-      messages in Russian and understood Russian commands! (VB)</footnote>
+      messages in Russian and understood Russian commands! (VB)</para></footnote>
     </para></listitem>
 
     <listitem><para>
       Messages in Russian are printed fine, except you should use a
-      capital Roman A instead of a capital Cyrillic A.<footnote>The
+      capital Roman A instead of a capital Cyrillic A.<footnote><para>The
       shape of the letter ``A'' is the same in Cyrillic but it is
-      represented with a different byte value. (VB)</footnote>
+      represented with a different byte value. (VB)</para></footnote>
     </para></listitem>
 
     <listitem><para>
@@ -8986,14 +9102,14 @@ A:   ..............
       studying the source of Sierra games. You can extract their logics
       using VM utility and disassemble the source using SM utility. You
       may have to search for text in many files, I recommend
-      <filename/ts.exe/ from Norton Utilities for that.<footnote>This is
+      <filename/ts.exe/ from Norton Utilities for that.<footnote><para>This is
       what is actually called ``grepping the source'' and <literal/grep(1)/
-      is tool to use. (VB)</footnote>
+      is tool to use. (VB)</para></footnote>
     </para></listitem>
    </itemizedlist>
 </para>
 
-<sect3><title>To the Artist</title>
+<sect2><title>To the Artist</title>
 <para>
    Remember that:
    <itemizedlist>
@@ -9002,17 +9118,19 @@ A:   ..............
     </para></listitem>
 
     <listitem><para>
-      Your tools are PV and VIM utilities. Their manuals are detailed
+      Your tools are <application>PV</application> and
+      <application>VIM</application> utilities. Their manuals are detailed
       enough.
     </para></listitem>
 
     <listitem><para>
-      PM is used to create backdrops, VIM to create animations.
+      <application>PM</application> is used to create backdrops,
+      <application>VIM</application> to create animations.
     </para></listitem>
    </itemizedlist>
 </para>
 <para>
-   When you use PM
+   When you use <application>PM</application>
 
    <itemizedlist>
    
@@ -9036,17 +9154,19 @@ A:   ..............
       what next. Only the result is important because PICTURE resources
       are first drawn in an internal buffer and only then displayed on
       the screen. The process of drawing is not visible and you don't
-      have to prettify an otherwise good picture.<footnote>Interpreters on
+      have to prettify an otherwise good picture.
+      <footnote><para>Interpreters on
       Apple II did not have an internal buffer because of the lack of
       RAM and did draw PICTURE resources directly on the screen, so
-      the process was visible. (VB)</footnote> But you might be
+      the process was visible. (VB)</para></footnote> But you might be
       interested on how Sierra artists drew their pictures, so extract
       some of the PICTURE resources from the games and trace them using PM.
     </para></listitem>
 
     <listitem><para>
-      Fine details are better created as bitmaps (VIEWs) using VIM
-      because they would take too many PM commands. The programmer will
+      Fine details are better created as bitmaps (VIEWs) using
+      <application>VIM</application> because they would take too many
+      <application>PM</application> commands. The programmer will
       overlay these images on the backdrop using the <function/add_to_pic/
       command. But be careful about that. <emphasis>(Why? --VB)</emphasis>
     </para></listitem>
@@ -9064,7 +9184,7 @@ A:   ..............
 </para>
 
 <para>
-   Using VIM:</title>
+   Using <application>VIM</application>:
 </para>
 <para>
    <itemizedlist>
@@ -9097,8 +9217,8 @@ A:   ..............
     <listitem><para>
       Drawing an animation, use colour reference points in each cel. Use
       the fact that as cels are changed the cursor stays where it was in
-      the previous cel.<footnote>He means changing cels in the editor, not
-      during playback by the interpreter. (VB)</footnote>
+      the previous cel.<footnote><para>He means changing cels in the
+      editor, not during playback by the interpreter. (VB)</para></footnote>
     </para></listitem>
 
     <listitem><para>
@@ -9111,18 +9231,18 @@ A:   ..............
     </para></listitem>
    </itemizedlist>
 </para>
-</sect3>
+</sect2>
 
-<sect3><title>To the Designer</title>
+<sect2><title>To the Designer</title>
 <para>
    You have to know everything! Your design is the key to success! Read
    carefully the manual and this text. Play Sierra games to understand
    what the interpreter can do. You are the key person!
 </para>
-</sect3>
 </sect2>
+</sect1>
 
-<sect2><title>About other utilities</title>
+<sect1><title>About other utilities</title>
 <para>
    This is mostly about quirks I ran into working with them on IBM XT.
    This applies only to the utility versions I have.
@@ -9191,9 +9311,9 @@ A:   ..............
    wish you success in creating your own programs. Everything depends on
    your will and skills!
 </para>
-</sect>
+</sect1>
 
-<sect2><title>License Agreement</title>
+<sect1><title>License Agreement</title>
 <para>
 <quote>
      By receiving the <emphasis/Thunderstorm/ educational program you
@@ -9209,84 +9329,14 @@ A:   ..............
 </quote>
 </para>
 
+<para>
 <quote>
                                                               August 1991
                                                           Cheboksary City
 </quote>
 </para>
 </sect1>
-
-<sect1 id="otheragi"><title>Other AGI interpreters</title>
-<para>
-   Besides <application><ulink name="agds"/AGDS/</application> (which
-   was the first non-Sierra AGI interpreter), a number of
-   alternative interpreters have been brought to light in the last few years.
-   None of them is fully functional at the time of this writing, although
-   good progress is being made to have full compatibility with the original
-   Sierra interpreter. Some of the new interpreters are portable and
-   open the possibility of playing the Sierra AGI classics natively in
-   platforms where the original AGI interpreter has never been ported,
-   such as UNIX and BeOS. The new possibilities include four voice PCjr
-   or sixteen-voice, digitally sampled IIgs sound replaying in the IBM-PC.
-</para><para>
-
-   <variablelist>
-
-    <varlistentry>
-     <term/MEKA/
-     <listitem><para>
-       <application>MEKA</application> stands for ``Möller, Ewing and
-       Kelly Adventure'' and has been developed by AGI hackers
-       Joakim Möller, Lance Ewing and Peter Kelly using DJGPP and
-       the Allegro library to run under MS-DOS. It has support for both v2
-       and v3 games, and some routines from <application>MEKA</application>
-       have been reused in Sarien, specifcally the LZW decompression
-       routines and modified picture decoding routines.
-      </para></listitem>
-     </varlistentry>
-
-     <varlistentry>
-      <term/JAGI/
-      <listitem><para>
-        <application>JAGI</application> (1998) is a free AGI interpreter
-        for Linux written in C by Jens Christian Restemeier.
-        <application>JAGI</application> uses GGI for graphics output and OSS
-        for sound. The latest available version is 0.1, distributed under
-        the GNU GPL. <application>JAGI</application> supports only v2 games.
-      </para></listitem>
-     </varlistentry>
-
-     <varlistentry>
-      <term/Sarien/
-      <listitem><para>
-        Formerly known as Yggdrasil, <application>Sarien</application>
-        (1999) is a portable AGI interpreter developed by Stuart George
-        and distributed under the GNU GPL.
-        It runs in MS-DOS, Win32 and many Unix and Unix-like
-        systems such as Solaris, Linux and QNX, and is capable of playing
-        v2 and v3 AGI and AGDS games. (If you like acronyms,
-        <application>Sarien</application> can be expanded to
-        ``Sierra AGI Resource Interpreter ENgine''.)
-      </para></listitem>
-     </varlistentry>
-
-     <varlistentry>
-      <term/LAGII/
-      <listitem><para>
-        Developed by XoXus, the
-        <application>Linux AGI Interpreter</application>, or
-        <application>LAGII</application> (1999),
-        runs in the Linux console using SVGAlib. Currently it supports
-        v2 games. Fully expanded, LAGII stands for ``Linux Adventure
-        Game Interpreter Interpreter''. It is distributed under the
-        GNU GPL.
-      </para></listitem>
-     </varlistentry>
-
-    </variablelist>
-</para>
-</sect1>
-</chapter>
+</appendix>
 
 </Book>
 
