@@ -1,8 +1,10 @@
 #
-# Makefile for DJGPP + Allegro
+# Makefile for DJGPP v2
+#
+# $Id$
 #
 
-include $(HOME)/src/graphics/msdos/djgpp.dep
+include $(TOPDIR)/Rules.dj
 
 OBJS = djgpp.o
 

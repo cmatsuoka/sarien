@@ -1,6 +1,8 @@
-include $(HOME)\Version
+# $Id$
 
-CFLAGS = -I$(HOME)/src/include -O2 -m386 -DVERSION='"$(VERSION)"' -DHAVE_ALLEGRO -DSTACK_PUSHPOP -Wall
+include $(TOPDIR)/Version
+
+CFLAGS = -I$(TOPDIR)/src/include -O2 -m386 -DVERSION='"$(VERSION)"' -DHAVE_ALLEGRO -DSTACK_PUSHPOP -Wall
 
 %.o : %.asm
 	$(NSM) -f coff $< -o$@
