@@ -228,7 +228,7 @@ int menu_keyhandler (int key)
    		for (v_max_menu = 0; men; v_max_menu++, men = men->down) {}
 	
    		draw_horizontal_menu_bar (h_cur_menu, h_max_menu);
-   		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu) {}
+   		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
 		menu_active = TRUE;
 	}
 	
