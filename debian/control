@@ -8,9 +8,9 @@ Standards-Version: 3.5.2
 Package: sarien
 Architecture: any
 Depends: ${shlibs:Depends}
-Description: An interprenter for AGI resources
+Description: An interpreter for AGI resources
  The old Sierra games is made with the AGI engine. Sarien 
- is a free interprenter for AGI resources
+ is a free interpreter for AGI resources.
  .
  Games written in AGI includes:
    * Kings Quest I - IV
