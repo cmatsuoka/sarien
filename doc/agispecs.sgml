@@ -391,15 +391,17 @@ draw (smoke);
 <sect1 id="bands">
 <title>The priority screen</title>
 
+<para>
   <figure id="fig-visible-screen" float="1">
     <title>AGI visible screen</title>
-    <graphic fileref="images/specs/visible_screen.png" format="png">
+    <graphic fileref="visible_screen.png" format="png">
   </figure>
 
   <figure id="fig-priority-screen" float="1">
     <title>AGI priority screen</title>
-    <graphic fileref="images/specs/priority_screen.png" format="png">
+    <graphic fileref="priority_screen.png" format="png">
   </figure>
+</para>
 
 <sect2>
 <title>Priority data</title>
@@ -650,7 +652,7 @@ draw (smoke);
 
   <figure id="fig-flowchart" float="1">
     <title>Intepreter cycle flowchart</title>
-    <graphic fileref="flowchart.eps" format="eps">
+    <graphic fileref="flowchart.png" format="png">
   </figure>
 
 </sect2>
@@ -687,7 +689,8 @@ draw (smoke);
       <row> <entry/3/ <entry/Current score/ </row>
       <row> <entry/4/ <entry/Number of the object, if not ego, that
 			touched the border/ </row>
-      <row> <entry/5/ <entry/Code of border touched by the object in v4/ </row>
+      <row> <entry/5/ <entry/Code of border touched by the object in
+			<parameter/v4// </row>
       <row> <entry/6/ <entry/Direction of ego's motion/ </row>
       <row> <entry/7/ <entry/Maximum score/ </row>
       <row> <entry/8/ <entry/Number of free 256-byte pages of memory/ </row>
@@ -1065,85 +1068,84 @@ LOADER v3.0 (c) Copyright Sierra On-Line, Inc. 1987 keyOfs
 <para>
   If the search is unsuccessful, <parameter/v9/ is assigned the number
   of the word in the message that failed to match and the processing
-  ends. If all the words have been assigned some codes:
-</para><para>
-  <simplelist>
-  <member>The Interpreter removes from the sequence of codes all zeros (that
-     means all vocabulary words with zero codes are ignored).
-  <member><literal/f2/ (the user has entered an input line) is set to 1
-  <member><literal/f4/ (<function/said/ command accepted the user input)
-     is set to 0.
-  </simplelist>
-
-</para><para>
-   If the sequence of code produced by the interpreter is
-</para><para>
-   <quote>
-   V(1), V(2),...V(m)
-   </quote>
-</para><para>
-   The test is performed as follows:
-</para><para>
-   <quote>
-   If <literal/f2/ == 0 or <literal/f4/ == 1, return FALSE.
-   </quote>
-</para><para>
-   Compare parameters W(i) and codes V(i) as follows:
-   <simplelist>
-    <member>if W(i) = 1, it matches any V(i);
-    <member>if W(i) = 9999, it matches the whole remaining input i.e. the
-       codes V(i), V(i+1),...V(m).
-   </simplelist>
-</para><para>
-   Otherwise W(i) should be equal to V(i).
-</para><para>
-   If all elements match, <literal/f4/ (<function/said/ accepted the
-   user input) is set to 1 and the command returns TRUE. Otherwise,
-   FALSE is returned.
+  ends. If all the words have been assigned some codes, the interpreter
+  removes all zeros from the sequence of codes (thus ignoring all
+  all vocabulary words with zero code), sets <parameter/f2/
+  (user entered input line) to 1 and <parameter/f4/ (<function/said/
+  command accepted) 0.
 </para>
+
+<para>
+  If the sequence of codes produced by the interpreter is V(1), V(2),...V(m),
+  the test is performed as follows:
+</para>
+
+<itemizedlist>
+  <listitem><para>
+    If <parameter/f2/ is false or <parameter/f4/ is true, return false.
+  </para></listitem>
+
+  <listitem><para>
+    Compare parameters W(i) and codes V(i) as follows:
+    <simplelist>
+      <member>if W(i) = 1, it matches any V(i);
+      <member>if W(i) = 9999, it matches the whole remaining input i.e. the
+        codes V(i), V(i+1),...V(m).
+    </simplelist>
+  </para></listitem>
+
+  <listitem><para>
+    Otherwise W(i) should be equal to V(i).
+  </para></listitem>
+</itemizedlist>
+
+<para>
+   If all elements match, <parameter/f4/ (<function/said/ accepted the
+   user input) is set to true.
+</para>
+
 </sect1>
 
-<sect1 id="verctrl"><title>AGI interpreter versions</title>
-<para>
-</para>
+<sect1 id="verctrl">
+<title>AGI interpreter versions</title>
 
 <sect2><title>Sorted by Game</title>
 <para>
 <programlisting>
-Game	Ver.	Int	Int. Ver.	Date
-------- ------- ------- --------------- ---------
-AGID	?.?	AGI	2.915		??/??/??
-BC	2.00	AGI	2.439		06/14/87
-BC	2.10	AGI	3.002.098	11/10/88
-GR	2.01	AGI	3.002.149	12/22/88
-KQ1	1.0U	AGI	2.272		Unknown
-KQ1	2.0F	AGI	2.425		??/??/87
-KQ1	2.0F	AGI	2.917		Unknown
-KQ2	2.1	AGI	2.411		Unknown
-KQ2	2.2	AGI	2.426		Unknown
-KQ2	2.2	AGI	2.917		??/??/87
-KQ3	1.01	AGI	2.272		11/08/86
-KQ3	2.00	AGI	2.435		05/25/87
-KQ3	2.14	AGI	2.936		03/15/88
-KQ4	2.0	AGI	3.002.086	07/27/88
-KQ4D	?.??	AGI	3.002.102	??/??/??
-LSL1	1.00	AGI	2.440		06/01/87
-LSL1	1.0	AGI	2.917		06/01/87
-MG	?.??	AGI	2.915		Unknown
-MH1	1.22	AGI	3.002.102	08/30/88
-MH1	1.22	AGI	3.002.107	08/31/88
-MH2	3.02B	AGI	3.002.149	07/26/89
-MH2	3.03	AGI	3.002.149	08/17/89
-PQ1	2.0G	AGI	2.917		12/03/87
-SQ1	1.0X	AGI	2.089		Unknown
-SQ1	2.2	AGI	2.426		??/??/??
-SQ1	2.2	AGI	2.917		??/??/??
-SQ1	2.2	AGI	2.917		??/??/87
-SQ2	2.0C	AGI	2.915		??/??/87
-SQ2	2.0C	AGI	2.917		Unknown
-SQ2	2.0D	AGI	2.936		Unknown
-SQ2	2.0F	AGI	2.936		Unknown
-XM86	?.??	AGI	2.272		Unknown
+Game	Ver.	Int. Ver.	Date
+------- ------- --------------- ---------
+AGID	?.?	2.915		??/??/??
+BC	2.00	2.439		06/14/87
+BC	2.10	3.002.098	11/10/88
+GR	2.01	3.002.149	12/22/88
+KQ1	1.0U	2.272		Unknown
+KQ1	2.0F	2.425		??/??/87
+KQ1	2.0F	2.917		Unknown
+KQ2	2.1	2.411		Unknown
+KQ2	2.2	2.426		Unknown
+KQ2	2.2	2.917		??/??/87
+KQ3	1.01	2.272		11/08/86
+KQ3	2.00	2.435		05/25/87
+KQ3	2.14	2.936		03/15/88
+KQ4	2.0	3.002.086	07/27/88
+KQ4D	?.??	3.002.102	??/??/??
+LSL1	1.00	2.440		06/01/87
+LSL1	1.0	2.917		06/01/87
+MG	?.??	2.915		Unknown
+MH1	1.22	3.002.102	08/30/88
+MH1	1.22	3.002.107	08/31/88
+MH2	3.02B	3.002.149	07/26/89
+MH2	3.03	3.002.149	08/17/89
+PQ1	2.0G	2.917		12/03/87
+SQ1	1.0X	2.089		Unknown
+SQ1	2.2	2.426		??/??/??
+SQ1	2.2	2.917		??/??/??
+SQ1	2.2	2.917		??/??/87
+SQ2	2.0C	2.915		??/??/87
+SQ2	2.0C	2.917		Unknown
+SQ2	2.0D	2.936		Unknown
+SQ2	2.0F	2.936		Unknown
+XM86	?.??	2.272		Unknown
 </programlisting>
 </para>
 
@@ -1240,7 +1242,7 @@ XM86	?.??	AGI	2.272		Unknown
 
 
 <chapter id="logic">
-<title>The AGI script language</title>
+<title>The script language</title>
 
 <sect1 id="syntax">
 <title>Source code conventions</title>
@@ -1321,22 +1323,28 @@ else {
     &lt;more action commands&gt;
 }
 </programlisting>
-</para><para>
-   Carriage returns are not necessary:
+</para>
+
+<para>
+  Multiple commands can be placed in a single line:
 </para><para>
 <programlisting>
 if (&lt;test commands&gt;) { &lt;action commands&gt; } else { &lt;more action commands&gt; }
 </programlisting>
-</para><para>
-   Test commands are coded like action commands except there is no
-   semicolon. They are separated by &amp&amp or || for AND or OR.
+</para>
+
+<para>
+  Test commands are coded like action commands except there is no
+  semicolon. They are separated by &amp&amp or || for AND or OR.
 </para><para>
 <programlisting>
 if (isset(f5) &&
     greatern(v5,6)) { ......
 </programlisting>
-</para><para>
-   Again, carriage returns are not necessary within the if statement:
+</para>
+
+<para>
+  Multiple tests can be placed in a single line within the if statement:
 </para><para>
 <programlisting>
 if (lessn(v5,6) && (greatern(v5,2)) { .......
@@ -1344,17 +1352,21 @@ if (lessn(v5,6) && (greatern(v5,2)) { .......
 if (isset(f90) && equalv(v32,v34)
     && greatern(v34,20)) { .......
 </programlisting>
-</para><para>
-   A ! placed in front of a command signifies a NOT.
+</para>
+
+<para>
+  A ! placed in front of a command negates its result:
 </para><para>
 <programlisting>
 if (!isset(f7)) {
   ......
 </programlisting>
-</para><para>
-   Boolean expressions are not necessarily simplified so they must follow
-   the rules set down by the file format. If test commands are to be
-   ORred together, they must be placed in brackets.
+</para>
+
+<para>
+  Boolean expressions are not necessarily simplified so they must follow
+  the rules set down by the file format. If test commands are to be
+  ORred together, they must be placed in brackets.
 </para><para>
 <programlisting>
 if ((isset(f1) || isset(f2)) {
@@ -1365,13 +1377,17 @@ if (isset(f1) && (isset(f2) || isset(f3))) {
 
 if (isset(1) || (isset(2) && isset(3))) {    is NOT legal
 </programlisting>
-</para><para>
-   Depending on the compiler, simplification of boolean expressions may
-   be supported, so the above may not apply in all cases (although if
-   these are rules are followed then the logic will work with all
-   compilers).
-</para><para>
-   Substitutions for the following test commands are available:
+</para>
+
+<para>
+  Depending on the compiler, simplification of boolean expressions may
+  be supported, so the above may not apply in all cases (although if
+  these are rules are followed then the logic will work with all
+  compilers).
+</para>
+
+<para>
+  The following test commands and operations are equivalent:
 </para><para>
 <programlisting>
 equaln(v30,4)         v30 == 4
@@ -1387,8 +1403,10 @@ lessv(v30,v32)        v30 < v32
 !lessn(v30,4)         v30 >= 4
 !lessv(v30,v32)       v30 >= v32
 </programlisting>
-</para><para>
-   Also, flags can be tested for by just using the name of the flag:
+</para>
+
+<para>
+  Also, flags can be tested for by just using the name of the flag:
 </para><para>
 <programlisting>
 if (f6) { .....
@@ -1399,45 +1417,36 @@ if (v7 > 0 && !f6) { .....
 
 <sect2><title>Argument types</title>
 <para>
-   There are 9 different types of arguments that commands use:
+  There are 9 different types of arguments that commands use:
 
-   <simplelist>
-    <member>Number (no prefix)
-    <member>Var (prefix ``v'')
-    <member>Flag (prefix ``f'')
-    <member>Message (prefix ``m'')
-    <member>Object (prefix ``o'')
-    <member>Inventory Item (prefix ``i'')
-    <member>String (prefix ``s'')
-    <member>Word (prefix ``w'')
-    <member>Controller (prefix ``c'')
-   </simplelist>
+  <itemizedlist>
+    <listitem/<para/Number (no prefix)//
+    <listitem/<para/Variable (prefix ``v'')//
+    <listitem/<para/Flag (prefix ``f'')//
+    <listitem/<para/Message (prefix ``m'')//
+    <listitem/<para/Object (prefix ``o'')//
+    <listitem/<para/Inventory Item (prefix ``i'')//
+    <listitem/<para/String (prefix ``s'')//
+    <listitem/<para/Word (prefix ``w'')//
+    <listitem/<para/Controller (prefix ``c'')//
+  </itemizedlist>
+</para>
+
+<para>
+  Each of these types of arguments is given by the prefix and then a
+  number from 0--255, e.g. <parameter/v5/, <parameter/f6/,
+  <parameter/m27/, <parameter/o2/.  The <function/said/ test command
+  uses its own special arguments which will be described later.
 </para><para>
-   The <function/said/ test command uses its own special arguments
-   which will be described later.
-</para><para>
-   Each of these types of arguments is given by the prefix and then a
-   number from 0--255, e.g. v5, f6, m27, o2.
-</para><para>
-   The word type is words that the player has typed in, not words that
-   are stored in the <literal/words.tok/ file. Strings are the temporary string
-   variables stored in memory, not to be confused with messages (that are
-   stored in the LOGIC resources). Controllers are menu members and keys.
-</para><para>
-   Compilers can enforce type checking, so that the programmer must use
-   the correct prefix for an argument so that they know they are using
-   the right type. Decoders should display arguments with the right type.
-</para><para>
-<programlisting>
-move.obj(so4,80,120,2,f66);
-if (obj.in.box(so2,30,60,120,40)) { .....
-</programlisting>
-</para><para>
-   A complete list of the commands and their argument types is available
-   as part of AGI Specs.
-</para><para>
-   Messages and inventory members may be given in either numerical text
-   format:
+  The ``word'' type refers to words that the player has typed in, not to
+  words stored in the <filename/words.tok/ file. Strings are the temporary
+  string variables stored in memory, not to be confused with messages
+  stored in the logic resources. Controllers are menu members and keys.
+</para>
+
+<para>
+  Messages and inventory members may be given in either numerical text
+  format:
 </para><para>
 <programlisting>
 print("He's not here.");
@@ -1445,71 +1454,77 @@ print(m12);
 if (has("Jetpack")) { .....
 if (has(io9)) { .....
 </programlisting>
-</para><para>
-   Messages can also be split over multiple lines:
+</para>
+
+<para>
+  Messages can also be split over multiple lines:
 </para><para>
 <programlisting>
 print("This message is split "
       "over multiple lines.");
 </programlisting>
-</para><para>
-   Quote marks must be used around messages and object names. This is
-   important because some messages or object names may contain brackets
-   or commas, which could confuse the compiler. This is also the case for
-   the <literal/said/ command which will be described shortly.
+</para>
+
+<para>
+  Quote marks must be used around messages and object names. This is
+  important because some messages or object names may contain brackets
+  or commas, which could confuse the compiler. This is also the case for
+  the <function/said/ command which will be described shortly.
 </para><para>
 <programlisting>
 if (has("Buckazoid(s)")) { .....        // no ambiguity here about where
                                         // the argument ends
 </programlisting>
+</para>
 
+<para>
+  The <function/said/ test command uses different parameters to all the
+  other commands. Where as the others use 8 bit arguments (0--255),
+  <literal/function/ takes 16 bit arguments (0--65535). Also, the number
+  of arguments in a <function/said/ command can vary. The numbers given
+  in the arguments are the word group numbers from the <filename/words.tok/
+  file.
 </para><para>
-   The <literal/said/ test command uses different parameters to all the other
-   commands. Where as the others use 8 bit arguments (0--255), <literal/said/ takes
-   16 bit arguments (0--65535). Also, the number of arguments in a <literal/said/
-   command can vary. The numbers given in the arguments are the word
-   group numbers from the <literal/words.tok/ file.
-</para><para>
-
 <programlisting>
 if (said(4,80)) { .....
 </programlisting>
-</para><para>
-   Words can also be given in place of the numbers:
+</para>
+
+<para>
+  Words can also be given in place of the numbers:
 </para><para>
 <programlisting>
 if (said("look")) { .....
 if (said("open","door")) { .....
 </programlisting>
-</para><para>
-   Quote marks must also be used around the words.
 </para>
 
-<sect2><title>Labels and the goto command</title>
+<sect2>
+<title>Labels and the <function/goto/ command</title>
 <para>
-   Labels are given like this:
+  Labels are given like this:
 
 </para><para>
 <programlisting>
 Label1:
 </programlisting>
-</para><para>
+</para>
 
-   The label name can contain letters, numbers, and the characters "_"
-   and ".". No spaces are allowed.
-
-   The <literal/goto/ command takes one parameter, the name of a label.
-
+<para>
+  The label name can contain letters, numbers, and the characters "_"
+  and ".". No spaces are allowed.
+  The <function/goto/ command takes one parameter, the name of a label.
 </para><para>
 <programlisting>
 goto(Label1);
 </programlisting>
 </para>
 
-<sect2><title>The return command</title>
+<sect2>
+<title>The <function/return/ command</title>
 <para>
-   The return command is just a normal action command (number 0), with no
-   arguments. This must be the last command in every logic.
+  The return command is just a normal action command (number 0), with no
+  arguments. This must be the last command in every script.
 </para>
 
 </sect1>
@@ -5514,40 +5529,39 @@ Tool:Line V:A P:o C:o X=199 Y=55 Pri:2
 </chapter>
 
 
-<chapter id="view"><title>VIEW resources</title>
-<para>
-  Peter Kelly, updated by Claudio Matsuoka, 22 May 1999.
-</para>
+<chapter id="view"><title>View resources</title>
 
 <sect1><title>Introduction</title>
 <para>
-   View resources contain some of the graphics for the game. Unlike the
-   picture resources which are full-screen background images, view
-   resources are smaller <emphasis/sprites/ used in the game, such as
-   animations and objects. They are also stored as bitmaps, whereas
-   pictures are stored in vector format.
+  View resources contain some of the graphics for the game. Unlike the
+  picture resources which are full-screen background images, view
+  resources are smaller <emphasis/sprites/ used in the game, such as
+  animations and objects. They are also stored as bitmaps, whereas
+  pictures are stored in vector format.
 </para><para>
-   Each view resource consists of one or more <emphasis/loops/. Each loop
-   in the resource consists of one or more <emphasis/cels/ (frames).
-   Thus several animations can be stored in one view, or a view can just
-   be used for a single image. The maximum number of loops supported by
-   the interpreter is 255 (0-254) and the maximum number of cels in each
-   is 255 (0-254).
+  Each view resource consists of one or more <emphasis/loops/. Each loop
+  in the resource consists of one or more <emphasis/cels/ (frames).
+  Thus several animations can be stored in one view, or a view can just
+  be used for a single image. The maximum number of loops supported by
+  the interpreter is 255 (0-254) and the maximum number of cels in each
+  is 255 (0-254).
 </para>
-<warning>
-  <para>
-    Except when noted otherwise, 16 bit data is stored in little endian
-    format (i.e. the value has the least significant byte stored first, and
-    the most significant byte stored second). Most word values in AGI are
-    stored like this, but not all.
-  </para>
-</warning>
 
-<sect1><title>VIEW resource format</title>
+<warning><para>
+  Except when noted otherwise, 16 bit data is stored in little endian
+  format (i.e. the value has the least significant byte stored first, and
+  the most significant byte stored second). Most word values in AGI are
+  stored like this, but not all.
+</para></warning>
 
-<sect2><title>View header (7+ bytes)</title>
+<sect1>
+<title>View resource format</title>
+
+<sect2>
+<title>View header (7+ bytes)</title>
+
 <para>
-   <programlisting>
+  <programlisting>
 Byte  Meaning
 ----- -----------------------------------------------------------
   0   Unknown (always seems to be either 1 or 2)
@@ -5560,18 +5574,19 @@ Byte  Meaning
  9-10 Position of third loop (if any)
  ...  ...
 ----- -----------------------------------------------------------
-   </programlisting>
+  </programlisting>
 </para>
-<warning>
-   <para>
-    Two of these loop references CAN point to the same place. This
-    is done when you want to use mirroring (more on this later).
-   </para>
-</warning>
 
-<sect2><title>Loop header (3+ bytes)</title>
+<warning><para>
+  Two of these loop references can point to the same place. This
+  is done when you want to use mirroring (more on this later).
+</para></warning>
+
+<sect2>
+<title>Loop header (3+ bytes)</title>
+
 <para>
-   <programlisting>
+  <programlisting>
 Byte  Meaning
 ----- -----------------------------------------------------------
   0   Number of cels in this loop
@@ -5579,12 +5594,14 @@ Byte  Meaning
  3-4  Position of second cel (if any), relative to start of loop
  5-6  Position of third cel (if any), relative to start of loop
 ----- -----------------------------------------------------------
-   </programlisting>
+  </programlisting>
 </para>
 
-<sect2><title>Cel header (3 bytes)</title>
+<sect2>
+<title>Cel header (3 bytes)</title>
+
 <para>
-   <programlisting>
+  <programlisting>
 Byte  Meaning
 ----- -----------------------------------------------------------
   0   Width of cel (remember that AGI pixels are 2 normal EGA
@@ -5593,249 +5610,263 @@ Byte  Meaning
   1   Height of cel
   2   Transparency and cel mirroring
 ----- -----------------------------------------------------------
-   </programlisting>
+  </programlisting>
 </para><para>
-   The first four bits of this byte tell the interpreter how to handle
-   the mirroring of this cel (explained later).
+  The first four bits of this byte tell the interpreter how to handle
+  the mirroring of this cel (explained later).
 </para><para>
-   The last four bits represent the transparent color. When the cel is
-   drawn on the screen, any pixels of this color will show through to the
-   background.
+  The last four bits represent the transparent color. When the cel is
+  drawn on the screen, any pixels of this color will show through to the
+  background.
 </para><para>
-   All cels have a transparent color, so if you want an opaque cel then
-   you must set the transparent color to one that is not used in the cel.
+  All cels have a transparent color, so if you want an opaque cel then
+  you must set the transparent color to one that is not used in the cel.
 </para>
 
-<sect2><title>Cel data</title>
+<sect2>
+<title>Cel data</title>
 <para>
-   The actual image data for each cel is stored using RLE (run length
-   encoding) compression. This means that instead of having one byte for
-   each single pixel (or 1/2 byte as you would use for 16 colors), each
-   byte specifies how many pixels there are to be in a row and what
-   colour they are. I will refer to these groups of pixels as ``chunks''.
+  The actual image data for each cel is stored using RLE (run length
+  encoding) compression. This means that instead of having one byte for
+  each single pixel (or 1/2 byte as you would use for 16 colors), each
+  byte specifies how many pixels there are to be in a row and what
+  colour they are. I will refer to these groups of pixels as ``chunks''.
 </para><para>
-   This method of compression is not very efficient if there is a lot of
-   single pixels in the image (e.g. a view showing static on a TV
-   screen), but in most cases it does save a fair amount of space.
+  This method of compression is not very efficient if there is a lot of
+  single pixels in the image (e.g. a view showing static on a TV
+  screen), but in most cases it does save a fair amount of space.
 </para><para>
-   Each line (not to be confused with a chunk) in the cel consists of
-   several bytes of pixel data, then a 0 to end the line. Each byte of
-   pixel data represents one chunk. The first four bits determine the
-   colour, and the last four bits determine the number of pixels in the
-   chunk.
+  Each line (not to be confused with a chunk) in the cel consists of
+  several bytes of pixel data, then a 0 to end the line. Each byte of
+  pixel data represents one chunk. The first four bits determine the
+  colour, and the last four bits determine the number of pixels in the
+  chunk.
 </para><para>
-   Example: <literal/AX BY CZ 00/
+  Example: <literal/AX BY CZ 00/
 </para><para>
-   This line will have:
+  This line will have:
    <simplelist>
     <member>X pixels of colour A (<literal/AX/)
     <member>Y pixels of colour B (<literal/BY/)
     <member>Z pixels of colour C (<literal/CZ/)
     <member>(then that will be the end of the line) (<literal/00/)
-   </simplelist>
+  </simplelist>
 </para><para>
-   If the color of the last chunk on the line is the transparent color,
-   there is no need to store this. For example, if C was the transparent
-   color in the above example, you could just write <literal/AX BY 00/.
-   This also saves some space.
+  If the color of the last chunk on the line is the transparent color,
+  there is no need to store this. For example, if C was the transparent
+  color in the above example, you could just write <literal/AX BY 00/.
+  This also saves some space.
 </para>
 
-<sect2><title>Mirroring</title>
+<sect2>
+<title>Mirroring</title>
 <para>
-   Mirroring is when you have one loop where all the cels are a mirror
-   image of the corresponding cels in another loop. Although you could do
-   this manually by drawing one loop and then copying and pasting all the
-   cels to another loop and flipping them horizontally, AGI views provide
-   the ability to have this done automatically -- you can draw one loop,
-   and have another loop which is set as a mirror of this loop. Thus,
-   when you change one loop you change the other. This is useful if you
-   have an animation of a character walking left and right -- you just
-   draw the right-walking animation and have another loop a mirror of
-   this which will have the left-walking animation. Another advantage of
-   cel mirroring is to save space -- it doesn't make much difference these
-   days, but back when AGI was written the games were designed to run on
-   256K systems which meant that memory had to be used as efficiently as
-   possible.
+  Mirroring is when you have one loop where all the cels are a mirror
+  image of the corresponding cels in another loop. Although you could do
+  this manually by drawing one loop and then copying and pasting all the
+  cels to another loop and flipping them horizontally, AGI views provide
+  the ability to have this done automatically -- you can draw one loop,
+  and have another loop which is set as a mirror of this loop. Thus,
+  when you change one loop you change the other. This is useful if you
+  have an animation of a character walking left and right -- you just
+  draw the right-walking animation and have another loop a mirror of
+  this which will have the left-walking animation. Another advantage of
+  cel mirroring is to save space -- it doesn't make much difference these
+  days, but back when AGI was written the games were designed to run on
+  256K systems which meant that memory had to be used as efficiently as
+  possible.
 </para><para>
-   Mirroring is done by having both loops share the same cel data -- you
-   saw above that you can have two loop references pointing to the same
-   place. The first four bits of the 3rd byte in the header of each cel
-   tell the interpreter what is mirrored:
+  Mirroring is done by having both loops share the same cel data -- you
+  saw above that you can have two loop references pointing to the same
+  place. The first four bits of the 3rd byte in the header of each cel
+  tell the interpreter what is mirrored:
 </para><para>
-   <programlisting>
+  <programlisting>
  Bit  Meaning
 ----- -----------------------------------------------------------
   0   Specify whether or not this cel is mirrored.
  1-3  Specify the number of the loop (from 0-7) which is NOT
       mirrored
 ----- -----------------------------------------------------------
-   </programlisting>
+  </programlisting>
 
 </para><para>
-   When the interpreter goes to display a loop, it looks at the bit 0 and
-   sees if it is mirrored or not. If it is, then it checks the loop
-   number -- if this is NOT the same as the current loop, then it flips
-   the cel before displaying it.
+  When the interpreter goes to display a loop, it looks at the bit 0 and
+  sees if it is mirrored or not. If it is, then it checks the loop
+  number -- if this is NOT the same as the current loop, then it flips
+  the cel before displaying it.
 </para>
 
 <para>
-   If you have a cel that is mirrored, you need to ensure that the number
-   of bytes the cel takes up in the resource is greater than or equal to
-   the number of bytes that the flipped version of the cel would take up.
-   The reason for this is that the interpreter loads the view resource
-   into memory and works with that for displaying cels, rather than
-   decoding it and storing it in memory as a non-compressed bitmap. I
-   assume that it doesn't even bother ``decoding'' it as such -- it probably
-   just draws the chunks of color on the screen as they are. When it has
-   to display the flipped version of a cel, instead of storing the
-   flipped cel somewhere else in memory, it flips the version that is
-   there. So in memory you have the view resource that was read from the
-   file, except that some of the cels have been changed. This is why
-   there is mirroring information stored in each cel -- the interpreter
-   has to know what cels have been changed. When it flips a cel, it
-   changes the loop number in the 3rd byte of the cel header to the
-   number of the loop it is currently displaying the cel for. So when it
-   looks at this number the next time for a different loop, it will see
-   that the cel is not the right way round for that loop and mirror it
-   again.
+  If you have a cel that is mirrored, you need to ensure that the number
+  of bytes the cel takes up in the resource is greater than or equal to
+  the number of bytes that the flipped version of the cel would take up.
+  The reason for this is that the interpreter loads the view resource
+  into memory and works with that for displaying cels, rather than
+  decoding it and storing it in memory as a non-compressed bitmap. I
+  assume that it doesn't even bother ``decoding'' it as such -- it probably
+  just draws the chunks of color on the screen as they are. When it has
+  to display the flipped version of a cel, instead of storing the
+  flipped cel somewhere else in memory, it flips the version that is
+  there. So in memory you have the view resource that was read from the
+  file, except that some of the cels have been changed. This is why
+  there is mirroring information stored in each cel -- the interpreter
+  has to know what cels have been changed. When it flips a cel, it
+  changes the loop number in the 3rd byte of the cel header to the
+  number of the loop it is currently displaying the cel for. So when it
+  looks at this number the next time for a different loop, it will see
+  that the cel is not the right way round for that loop and mirror it
+  again.
 </para><para>
-   This process seems very inefficient to me. I don't know why it doesn't
-   just draw the chunks of color on the screen back to front. But since
-   it does it this way we have to make sure that there is enough room for
-   the flipped cel.
+  This process seems very inefficient to me. I don't know why it doesn't
+  just draw the chunks of color on the screen back to front. But since
+  it does it this way we have to make sure that there is enough room for
+  the flipped cel.
 </para><para>
-   It seems that not all versions of the interpreter require this,
-   however -- I was working with version 2.917 when I was testing this
-   out, but I noticed that versoin 2.440 did not require this. I will
-   attempt to try this with all different interpreters and provide a list
-   of which ones use this in a future version of this document. But it is
-   best to put these bytes in just in case, as the views will still work
-   regardless.
+  It seems that not all versions of the interpreter require this,
+  however -- I was working with version 2.917 when I was testing this
+  out, but I noticed that versoin 2.440 did not require this. I will
+  attempt to try this with all different interpreters and provide a list
+  of which ones use this in a future version of this document. But it is
+  best to put these bytes in just in case, as the views will still work
+  regardless.
 </para>
 
 <sect2><title>Description</title>
 <para>
-   All the views in the game that are used as close-ups of inventory
-   members have a description. When a player ``examines'' these (in some
-   games you can select ``see object'' from the menu), they will see the
-   first cel of the first loop of this view and the description of the
-   object they are examining. This is brought up using the <literal/show.obj/
-   command.
+  All the views in the game that are used as close-ups of inventory
+  members have a description. When a player ``examines'' these (in some
+  games you can select ``see object'' from the menu), they will see the
+  first cel of the first loop of this view and the description of the
+  object they are examining. This is brought up using the <literal/show.obj/
+  command.
 </para><para>
-   The description is stored in plain text, and terminated by a null
-   character. Lines are separated by an 0x0A.
+  The description is stored in plain text, and terminated by a null
+  character. Lines are separated by an 0x0A.
 </para>
 
-<sect1><title>VIEW table</title>
+<sect1>
+<title>The view table</title>
 <para>
-  Lance Ewing, 31 August 1997.
-</para><para>
-   Firstly we should note that there is a difference between a VIEW and a
-   VIEW object. A VIEW is a collection of animated sequences that are
-   stored in a VOL file. When a view is loaded into memory, it is then
-   connected to one or more VIEW table entries (see below) that store
-   information on what the interpreter calls objects (don't confuse this
-   with inventory members). An object is an animated sprite that is
-   currently being controlled by the interpreter. With each
-   interpretation cycle, the state of each object in the VIEW table is
-   updated and, if required, updated on the screen. It is therefore
-   possible to have five or more hungry crocodiles swimming in a moat
-   each which have there own VIEW table entries, all of which point to
-   the same VIEW data.
-</para><para>
-   View objects appear to have the following properties:
-</para><para>
-   <simplelist>
-    <member>x position
-    <member>y position
-    <member>current view
-    <member>current loop
-    <member>current cel
-    <member>priority
-    <member>cycle time (1/n gives the fraction of the maximum speed)
-    <member>step time (1/n gives the fraction of the maximum speed)
-    <member>x size (in pixels)
-    <member>y size (in pixels)
-    <member>step size
-    <member>direction
-    <member>number of loops
-    <member>number of cels
-   </simplelist>
-</para><para>
-   There are probably other properties that aren't listed here which they
-   also possess. In an object oriented environment such as SCI, these
-   properties are stored as instance variables (or selectors) as part of
-   the object. Since AGI isn't object oriented, we would expect to find
-   some sort of VIEW table stored in memory which holds theses properties
-   within it. In SQ2 this VIEW table consisted of 43 byte entries. Most
-   commands that deal with VIEW objects will make adjustments to the data
-   in the entry for the relevant object.
-</para>
+  Firstly we should note that there is a difference between a view resource
+  and an (on-screen) object. A view is a collection of animated sequences
+  that are stored in a file. When a view is loaded into memory, it is then
+  connected to one or more view table entries (see below) that store
+  information on what the interpreter calls objects (don't confuse this
+  with inventory items). An object is an animated sprite that is currently
+  being controlled by the interpreter. With each interpretation cycle, the
+  state of each object in the view table is updated and, if required, updated
+  on the screen. It is therefore possible to have five or more hungry
+  crocodiles swimming in a moat each which have there own view table entries,
+  all of which point to the same view resource data. Contents of each
+  view table entry are given in <xref linkend="tab-view-table">.
 
-<sect2><title>View table entry</title>
-<para>
-   <programlisting>
-Byte  Meaning
------ -----------------------------------------------------------
-00-01 step.time (stored twice)
-  02  ??	entry number
-03-04 x position
-05-06 y position
-  07  current view
-08-09 pointer to start of view data.
-  0A  current loop
-  0B  number of loops
-0C-0D pointer to start of loop data
-  0E  current cel
-  0F  number of cels
-10-11 pointer to start of cel data
-12-13 pointer to start of cel data (same as above)
-14-15 ??
-16-17 copy of x position
-18-19 copy of y position
-1A-1B x size
-1C-1D y size
-  1E  step size
-1F-20 cycle time (stored twice)
-  21  direction (heading)
-      0 = stationary, 1 = north, 2 = north/east, 3 = east,
-      4 = south/east, 5 = south, 6 = south/west, 7 = west,
-      8 = north/west
-  22  0 = normal.motion, 1 = wander, 2 = follow.ego, 3 = move.obj
-  23  0 = normal.cycle, 1 = end.of.loop, 2 = reverse.loop,
-      3 = reverse.cycle
-  24  priority
-25-26 View flags (see below)
------ -----------------------------------------------------------
-   </programlisting>
-</para><para>
-View flags:
-</para><para>
-   <programlisting>
- Bit  Meaning
------ -----------------------------------------------------------
-   0  ??
-   1  0 = observe blocks, 1 = ignore blocks
-   2  0 = priority released, 1 = fixed priority
-   3  0 = observe horizon, 1 = ignore horizon
-   4  ??
-   5  0 = stop cycling, 1 = cycling.
-   6  ??
-   7  ??
-   8  1 = view on water
-   9  0 = observe objects, 1 = ignore objects
-  10  ??
-  11  1 = view on land
-  12  ??
-  13  0 = loop released, 1 = loop fixed
-  14  ??
-  15  ??
-  27  ?? (storage for some view related command parameters)
-  28  ?? (storage for some view related command parameters)
-  29  ?? (storage for some view related command parameters)
-  2A  ?? (storage for some view related command parameters)
------ -----------------------------------------------------------
-   </programlisting>
+<table id="tab-view-table">
+  <title>View table entry</title>
+  <tgroup cols="2">
+    <thead>
+      <row/ <entry/Offset/ <entry/Description/ /
+    </thead>
+    <tbody>
+      <row/ <entry/00/    <entry/step time/ /
+      <row/ <entry/01/    <entry/step time counter/ /
+      <row/ <entry/02/    <entry/table entry number/ /
+      <row/ <entry/03-04/ <entry/x position/ /
+      <row/ <entry/05-06/ <entry/y position/ /
+      <row/ <entry/07/    <entry/current view/ /
+      <row/ <entry/08-09/ <entry/pointer to start of view data/ /
+      <row/ <entry/0A/    <entry/current loop/ /
+      <row/ <entry/0B/    <entry/number of loops/ /
+      <row/ <entry/0C-0D/ <entry/pointer to start of loop data/ /
+      <row/ <entry/0E/    <entry/current cel/ /
+      <row/ <entry/0F/    <entry/number of cels/ /
+      <row/ <entry/10-11/ <entry/pointer to start of cel data/ /
+      <row/ <entry/12-13/ <entry/pointer to start of previous cel data/ /
+      <row/ <entry/14-15/ <entry/pointer to sprite data/ /
+      <row/ <entry/16-17/ <entry/previous x position/ /
+      <row/ <entry/18-19/ <entry/previous y position/ /
+      <row/ <entry/1A-1B/ <entry/x size/ /
+      <row/ <entry/1C-1D/ <entry/y size/ /
+      <row/ <entry/1E/    <entry/step size/ /
+      <row/ <entry/1F/    <entry/cycle time/ /
+      <row/ <entry/20/    <entry/cycle time counter/ /
+      <row/ <entry/21/   <entry/direction (see <xref linkend="tab-direction">)//
+      <row/ <entry/22/    <entry/motion type (see <xref linkend="tab-motion">)//
+      <row/ <entry/23/    <entry/cycle type (see <xref linkend="tab-cycle">)//
+      <row/ <entry/24/    <entry/priority/ /
+      <row/ <entry/25-26/ <entry/flags (see <xref linkend="tab-view-flags">)//
+    </tbody>
+  </tgroup>
+</table>
+
+<table id="tab-direction">
+  <title>Direction table</title>
+  <tgroup cols="3">
+    <tbody>
+      <row/ <entry/8/ <entry/1/ <entry /2/ /
+      <row/ <entry/7/ <entry/0/ <entry /3/ /
+      <row/ <entry/6/ <entry/5/ <entry /4/ /
+    </tbody>
+  </tgroup>
+</table>
+
+<table id="tab-motion">
+  <title>Motion table</title>
+  <tgroup cols="2">
+    <thead>
+      <row/ <entry/Value/ <entry/Description/ /
+    </thead>
+    <tbody>
+      <row/ <entry/0/    <entry/Normal motion/ /
+      <row/ <entry/1/    <entry/Wander/ /
+      <row/ <entry/2/    <entry/Follow ego/ /
+      <row/ <entry/3/    <entry/Move object/ /
+    </tbody>
+  </tgroup>
+</table>
+
+<table id="tab-cycle">
+  <title>Cycle table</title>
+  <tgroup cols="2">
+    <thead>
+      <row/ <entry/Value/ <entry/Description/ /
+    </thead>
+    <tbody>
+      <row/ <entry/0/    <entry/Normal cycle/ /
+      <row/ <entry/1/    <entry/End of loop/ /
+      <row/ <entry/2/    <entry/Reverse loop/ /
+      <row/ <entry/3/    <entry/Reverse cycle/ /
+    </tbody>
+  </tgroup>
+</table>
+
+<table id="tab-cycle">
+  <title>Cycle table</title>
+  <tgroup cols="3">
+    <thead>
+      <row/ <entry/Bit/ <entry/Flag reset/ <entry/Flag set/ /
+    </thead>
+    <tbody>
+      <row/ <entry/0/  <entry// <entry// /
+      <row/ <entry/1/  <entry/Observe blocks/    <entry/Ignore blocks/ /
+      <row/ <entry/2/  <entry/Variable priority/ <entry/Fixed priority/ /
+      <row/ <entry/3/  <entry/Observe horizon/   <entry/Ignore horizon/ /
+      <row/ <entry/4/  <entry// <entry// /
+      <row/ <entry/5/  <entry/Not cycling/       <entry/Cycling/ /
+      <row/ <entry/6/  <entry// <entry// /
+      <row/ <entry/7/  <entry// <entry// /
+      <row/ <entry/8/  <entry//                  <entry/Object on water/ /
+      <row/ <entry/9/  <entry/Observe objects/   <entry/Ignore objects/ /
+      <row/ <entry/10/ <entry// <entry// /
+      <row/ <entry/11/ <entry//                  <entry/Object on land/ /
+      <row/ <entry/12/ <entry// <entry// /
+      <row/ <entry/13/ <entry// <entry/Loop fixed/ /
+      <row/ <entry/14/ <entry// <entry// /
+      <row/ <entry/15/ <entry// <entry// /
+    </tbody>
+  </tgroup>
+</table>
+
 
 </para>
 <warning>

@@ -18,5 +18,14 @@ dox:
 	[ -d html ] || mkdir html
 	doxygen sarien.doxygen
 
-flowchart.eps: flowchart.dot
+flowchart.ps: flowchart.dot
 	dot -Tps -o$@ $+
+
+specs: flowchart.ps
+	[ -d agispecs ] || mkdir agispecs
+	(cd agispecs; \
+	 convert ../flowchart.ps flowchart.png; \
+	 docbook2html ../agispecs.sgml; \
+	 ln -sf book1.html index.html) || true;
+	cp images/specs/*png agispecs/
+
