@@ -47,50 +47,26 @@ static void put_virt_pixel (int x, int y)
 
 /* For the flood fill routines */
 
-#define STACK_SEG_SIZE 0x1000
-
-#define MAX_STACK_SEGS 16
-static unsigned int stack_num_segs;
-static unsigned int stack_seg;
+#define STACK_SIZE 128
 static unsigned int stack_ptr;
-
-static UINT16 *stack[MAX_STACK_SEGS];
+static UINT16 stack[STACK_SIZE];
 
 static INLINE void _PUSH (UINT16 c)
 {
-	if (stack_ptr >= STACK_SEG_SIZE) {
-		/* Allocate new stack segment */
+	assert (stack_ptr < STACK_SIZE);
 
-		assert (stack_num_segs < MAX_STACK_SEGS);
-
-		if (stack_num_segs <= ++stack_seg) {
-			_D ("new stack (#%d)", stack_num_segs);
-			stack[stack_num_segs] = malloc (sizeof (UINT16)
-				* STACK_SEG_SIZE);
-			assert (stack[stack_num_segs] != NULL);
-			stack_num_segs++;
-		}
-		stack_ptr = 0;
-	}
-
-	stack[stack_seg][stack_ptr] = c;
+	stack[stack_ptr] = c;
 	stack_ptr++;
 }
 
 
 static INLINE UINT16 _POP ()
 {
-	if (stack_ptr == 0) {
-		if (stack_seg == 0) {
-			return 0xffff;
-		} else {
-			stack_seg--;
-			stack_ptr = STACK_SEG_SIZE;
-		}
-	}
+	if (stack_ptr == 0)
+		return 0xffff;
 
 	stack_ptr--;
-	return stack[stack_seg][stack_ptr];
+	return stack[stack_ptr];
 }
 
 
@@ -285,6 +261,37 @@ static INLINE int is_ok_fill_here (int x, int y)
 /**************************************************************************
 ** agiFill
 **************************************************************************/
+static void fill_scanline (int x, int y)
+{
+	int c;
+	int newspan_up, newspan_down;
+
+	/* Scan for left border */
+	for (c = x - 1; is_ok_fill_here (c, y); c--);
+	
+	newspan_up = newspan_down = 1;
+	for (c++; is_ok_fill_here (c, y); c++) {
+		put_virt_pixel (c, y);
+		if (is_ok_fill_here (c, y - 1)) {
+			if (newspan_up) {
+				_PUSH (c + 320 * (y - 1));
+				newspan_up = 0;
+			}
+		} else {
+			newspan_up = 1;
+		}
+
+		if (is_ok_fill_here (c, y + 1)) {
+			if (newspan_down) {
+				_PUSH (c + 320 * (y + 1));
+				newspan_down = 0;
+			}
+		} else {
+			newspan_down = 1;
+		}
+	}
+}
+
 static void agiFill (int x, int y)
 {
 	_PUSH (x + 320 * y);
@@ -298,17 +305,11 @@ static void agiFill (int x, int y)
 
 		x = c % 320;
 		y = c / 320;
-		if (is_ok_fill_here (x, y)) {
-			put_virt_pixel (x, y);
-			if (is_ok_fill_here (x - 1, y)) _PUSH (c - 1);
-			if (is_ok_fill_here (x + 1, y)) _PUSH (c + 1);
-			if (is_ok_fill_here (x, y + 1)) _PUSH (c + 320);
-			if (is_ok_fill_here (x, y - 1)) _PUSH (c - 320);
-		}
+
+		fill_scanline (x, y);
 	}
 
 	stack_ptr = 0;
-	stack_seg = 0;
 }
 
 /**************************************************************************
@@ -507,7 +508,6 @@ static void plot_brush ()
 static void draw_picture ()
 {
 	UINT8 act;
-	unsigned int i;
 	int drawing;
 #ifdef USE_HIRES
 	int save_foffs;
@@ -520,10 +520,6 @@ static void draw_picture ()
  	pri_colour = 0x4;
 
 	drawing = 1;
-
-	stack[0] = calloc (sizeof (UINT16), STACK_SEG_SIZE);
-	stack_ptr = stack_seg = 0;
-	stack_num_segs = 1;
 
 	_D (_D_WARN "Drawing picture");
 	for (drawing = 1; drawing && foffs < flen; ) {
@@ -626,9 +622,6 @@ static void draw_picture ()
 		}
 #endif
 	}
-
-	for (i = 0; i < stack_num_segs; i++)
-		free (stack[i]);
 }
 
 /*
@@ -762,20 +755,6 @@ void show_pic ()
 		put_pixels_a (0, y + offset, _WIDTH, &game.sbuf[i]);
 		i += _WIDTH;
 	}
-
-#if 0
-	/* Amiga/IIgs transitions. Too slow, and annoying after a few rooms.
-	 * Also doesn't work well with console.
-	 */
-#define BRICK_W 4
-#define BRICK_H 2
-	for (i = 0; i < 20000; i++) {
-		int bx = rnd (GFX_WIDTH / BRICK_W) * BRICK_W;
-		int by = rnd (GFX_HEIGHT / BRICK_H) * BRICK_H;
-		flush_block (bx, by, bx + BRICK_W - 1, by + BRICK_H - 1);
-		do_update ();
-	}
-#endif
 
 	flush_screen ();
 }

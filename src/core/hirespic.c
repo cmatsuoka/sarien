@@ -231,6 +231,9 @@ static INLINE int hires_fill_here (int x, int y)
 {
 	UINT8 *p, *s;
 
+	if (x < 0 || x >= _WIDTH || y < 0 || y >= _HEIGHT)
+		return FALSE;
+
 	if (!scr_on && !pri_on)
 		return FALSE;
 
@@ -296,14 +299,47 @@ static void fix_pixel_here (int x, int y)
 /**************************************************************************
 ** agiFill
 **************************************************************************/
+static void hires_fill_scanline (int x, int y)
+{
+	int c;
+	int newspan_up, newspan_down;
+
+	/* Scan for left border */
+	for (c = x - 1; hires_fill_here (c, y); c--);
+	fix_pixel_left (c, y);
+	
+	newspan_up = newspan_down = 1;
+	for (c++; hires_fill_here (c, y); c++) {
+		put_hires_pixel (c * 2, y);
+		fix_pixel_here (c, y);
+
+		if (hires_fill_here (c, y - 1)) {
+			if (newspan_up) {
+				_PUSH (c + 320 * (y - 1));
+				newspan_up = 0;
+			}
+		} else {
+			newspan_up = 1;
+		}
+
+		if (hires_fill_here (c, y + 1)) {
+			if (newspan_down) {
+				_PUSH (c + 320 * (y + 1));
+				newspan_down = 0;
+			}
+		} else {
+			newspan_down = 1;
+		}
+	}
+	fix_pixel_right (c, y);
+}
+
 static void hiresFill (int x, int y)
 {
-	UINT16 c;
-
 	_PUSH (x + 320 * y);
 
 	while (42) {
-		c = _POP();
+		int c = _POP();
 
 		/* Exit if stack is empty */
 		if (c == 0xffff)
@@ -311,36 +347,13 @@ static void hiresFill (int x, int y)
 
 		x = c % 320;
 		y = c / 320;
-		if (hires_fill_here (x, y)) {
-			put_hires_pixel (2 * x, y);
-			fix_pixel_here (x, y);
 
-			if (x > 0) {
-				if (hires_fill_here (x - 1, y)) {
-					_PUSH (c - 1);
-    				} else {
-					fix_pixel_left (x - 1, y);
-				}
-			}
-			if (x < _WIDTH - 1) {
-				if (hires_fill_here (x + 1, y)) {
-					_PUSH (c + 1);
- 				} else {
-					fix_pixel_right (x + 1, y);
-				}
-			}
-			if (y < _HEIGHT - 1 && hires_fill_here (x, y + 1)) {
-				_PUSH (c + 320);
-    			}
-			if (y > 0 && hires_fill_here (x, y - 1)) {
-				_PUSH (c - 320);
-    			}
-		}
+		hires_fill_scanline (x, y);
 	}
 
 	stack_ptr = 0;
-	stack_seg = 0;
 }
+
 
 /**************************************************************************
 ** xCorner
