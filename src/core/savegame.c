@@ -533,6 +533,10 @@ int load_game(char* s)
 
 	erase_both();
 
+/* Clear input line */
+	clear_screen(0);
+	write_status();
+
 /* Recreate background from saved image stack */
 	clear_image_stack();
 	while((t = read_uint8(f)) != 0)
@@ -555,6 +559,9 @@ int load_game(char* s)
 	game.has_prompt = 0; /* force input line repaint if necessary*/
 	clean_input();
 	
+	erase_both();
+	blit_both();
+	commit_both();
 	show_pic();
 	do_update();
 

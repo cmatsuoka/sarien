@@ -634,6 +634,8 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 	_D ("v=%d, l=%d, c=%d, x=%d, y=%d, p=%d, m=%d",
 		view, loop, cel, x, y, pri, mar); 
 
+	record_image_stack_call(ADD_VIEW, view, loop, cel, x, y, pri, mar);
+
 	if (pri == 0)
 		pri = 8;		/* ??!? */
 
@@ -688,8 +690,6 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 	blit_both ();
 
 	commit_block (x1, y1, x2, y2);
-
-	record_image_stack_call(ADD_VIEW, view, loop, cel, x, y, pri, mar);
 }
 
 /**
