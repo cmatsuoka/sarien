@@ -2244,7 +2244,7 @@ void run_logic (int lognum)
 			test_if_code (lognum);
 			break;
 		case 0xFE:				/* GOTO */
-			ip += 2+lohi_getword (code+ip);	/* +2 covers goto size*/
+			ip += 0+((SINT16)lohi_getword (code+ip));	/* +2 covers goto size*/
 			break;
 		case 0x00:				/* return */
 			return;
