@@ -226,8 +226,7 @@ int save_game (char* s, char* d)
 	for (i = 0; i < MAX_VARS; i++)
 		write_uint8 (f, game.vars[i]);
 
-	write_uint8 (f, (SINT8)game.simple_save);
-	write_uint8 (f, (SINT8)game.horizon);
+	write_sint16 (f, (SINT8)game.horizon);
 	write_sint16 (f, (SINT16)game.line_status);
 	write_sint16 (f, (SINT16)game.line_user_input);
 	write_sint16 (f, (SINT16)game.line_min_print);
@@ -403,8 +402,7 @@ int load_game(char* s)
 	for (i = 0; i < MAX_VARS; i++)
 		game.vars[i] = read_uint8(f);
 
-	game.simple_save = read_uint8(f);
-	game.horizon = read_uint8(f);
+	game.horizon = read_sint16(f);
 	game.line_status = read_sint16(f);
 	game.line_user_input = read_sint16(f);
 	game.line_min_print = read_sint16(f);
