@@ -267,7 +267,7 @@ static void _putpixels_fixratio (int x, int y, int w, UINT8 *p)
 static void process_events ()
 {
 	SDL_Event event;
-	int key;
+	int key = 0;
 
 	while (SDL_PollEvent (&event) > 0) {
 		switch (event.type) {
@@ -275,13 +275,13 @@ static void process_events ()
 			key = (event.button.button == 1) ?
 				BUTTON_LEFT : BUTTON_RIGHT;
 			mouse.button = TRUE;
+			key_enqueue (key);
+			/* fall through */
+		case SDL_MOUSEMOTION:
 			mouse.x = event.button.x / opt.scale;
 			mouse.y = event.button.y / opt.scale;
 			if (opt.fixratio)
 				mouse.y = mouse.y * 5 / 6;
-			_D (_D_WARN "ButtonPress %04x @ %d,%d",
-				key, mouse.x, mouse.y);
-			key_enqueue (key);
 			break;
 		case SDL_MOUSEBUTTONUP:
 			mouse.button = FALSE;

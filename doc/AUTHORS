@@ -17,7 +17,7 @@
   * Several bugfixes
 
 - XoXus <xoxus@usa.net>
-  * Linux SVGAlib port
+  * Linux SVGAlib driver
 
 - Igor Nesterov <nest@rtsnet.ru>
   * Win32 port hacking
@@ -35,9 +35,10 @@
   * Fullscreen SDL patch 
 
 - Ryan Gordon <ryan_gordon@hotmail.com>
-  * SDL fixes
+  * SDL driver maintainer
   * Command line parsing fixes
   * Portability hacks
+  * Win32 driver mouse support
 
 - Magnus Kristiansen <makris@online.no>
   * Control line fixes

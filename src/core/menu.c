@@ -144,6 +144,23 @@ static void new_menu_selected (i)
     	draw_menu_option (i);
 }
 
+static int mouse_over_text (int line, int col, char *s)
+{
+	if (mouse.x < col * CHAR_COLS)
+		return FALSE;
+
+	if (mouse.x > (col + strlen (s)) * CHAR_COLS)
+		return FALSE;
+
+	if (mouse.y < line * CHAR_LINES)
+		return FALSE;
+
+	if (mouse.y >= (line + 1) * CHAR_COLS)
+		return FALSE;
+
+	return TRUE;
+}
+
 static int h_index;
 static int v_index;
 static int h_col;
@@ -171,10 +188,10 @@ void add_menu (char *s)
 {
 	struct menu *m;
 
-	_D (_D_WARN "add menu: %s", s);
-	
 	m = malloc (sizeof (struct menu));
 	m->text = strdup (s);
+	while (m->text[strlen(m->text) - 1] == ' ')
+		m->text[strlen(m->text) - 1] = 0;
 	m->down.next = &m->down;
 	m->down.prev = &m->down;
 	m->width = 0;
@@ -184,12 +201,10 @@ void add_menu (char *s)
 	m->wincol = h_col - 1;
 	v_index = 0;
 	v_max_menu[m->index] = 0;
-	h_col += strlen (s) + 1;
+	h_col += strlen (m->text) + 1;
 	h_max_menu = m->index;
 
-	while (m->text[strlen(m->text)] == ' ')
-		m->text[strlen(m->text)] = 0;
-
+	_D (_D_WARN "add menu: '%s' %02x", s, m->text[strlen(m->text)]);
 	list_add_tail (&m->list, &menubar);
 }
 
@@ -258,10 +273,7 @@ int menu_keyhandler (int key)
 
 			list_for_each (h, &menubar, next) {
 				m = list_entry (h, struct menu, list);
-				if (mouse.x > m->col * CHAR_COLS &&
-					mouse.x < (m->col + strlen(m->text)) *
-					CHAR_COLS)
-				{
+				if (mouse_over_text (0, m->col, m->text)) {
 					break;
 				} else {
 					hmenu++;
@@ -283,11 +295,8 @@ int menu_keyhandler (int key)
 			m = get_menu (h_cur_menu);
 			list_for_each (h, &m->down, next) {	
 				d = list_entry (h, struct menu_option, list);
-				if (mouse.x > (m->wincol + 1) * CHAR_COLS &&
-					mouse.x < (m->wincol + strlen (m->text))
-						* CHAR_COLS &&
-					mouse.y >=(2 + d->index) * CHAR_LINES &&
-					mouse.y < (3 + d->index) * CHAR_LINES)
+				if (mouse_over_text (2 + d->index,
+					m->wincol + 1, d->text))
 				{
 					break;
 				} else {
