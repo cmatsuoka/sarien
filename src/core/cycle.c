@@ -306,6 +306,7 @@ int run_game ()
 
 	_D (_D_WARN "initializing...");
 	stop_sound ();
+	clear_screen (0);
 
 	setflag (F_logic_zero_firsttime, TRUE);	/* not in 2.917 */
 	setflag (F_new_room_exec, TRUE);	/* needed for MUMG and SQ2! */

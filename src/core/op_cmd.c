@@ -1011,10 +1011,10 @@ static void (*agi_command[183])(UINT8 *) = {
  */
 int run_logic (int n)
 {
-	UINT8 op			= 0;
-	UINT8 p[CMD_BSIZE]		= {0};
-	UINT8 *code			= NULL;
-	int num				= 0;
+	UINT8 op = 0;
+	UINT8 p[CMD_BSIZE] = { 0 };
+	UINT8 *code = NULL;
+	int num	= 0;
 
 	/* If logic not loaded, load it */
 	if (~game.dir_logic[n].flags & RES_LOADED) {

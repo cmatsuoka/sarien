@@ -90,10 +90,6 @@ int decode_logic (int n)
  */
 void unload_logic (int n)
 {
-	/* Keep logic 0 in memory */
-	if (!n)
-		return;
-
 	if (game.dir_logic[n].flags & RES_LOADED) {
 		free (game.logics[n].data);
 		if (game.logics[n].num_texts)
