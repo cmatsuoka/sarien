@@ -50,10 +50,11 @@ static struct gfx_driver gfx_macos = {
 
 static QDGlobals qd;
 static WindowPtr window;
-static RGBColor rgb_color[32];
+static int rgb_palette[32];
 static GWorldPtr gworld;
 static PixMapHandle pix, wpix;
 static UINT8 *screen_buffer;
+static int depth = 16;
 
 
 #define KEY_QUEUE_SIZE 16
@@ -104,19 +105,19 @@ int deinit_machine ()
 /* In the normal 8/15/16/24/32 bpp cases idx indexes the data item directly.
  * x and y are available for the other depths.
  */
-static INLINE void putpixel_32 (XImage *img, int idx, int p)
+static INLINE void putpixel_32 (void *img, int idx, int p)
 {
-	((int *)screen_buffer)[idx] = p;
+	((int *)img)[idx] = p;
 }
 
-static INLINE void putpixel_16 (XImage *img, int idx, int p)
+static INLINE void putpixel_16 (void *img, int idx, int p)
 {
-	((short *)screen_buffer)[idx] = p;
+	((short *)img)[idx] = p;
 }
 
-static INLINE void putpixel_8 (XImage *img, int idx, int p)
+static INLINE void putpixel_8 (void *img, int idx, int p)
 {
-	((char *)screen_buffer)[idx] = p;
+	((char *)img)[idx] = p;
 }
 
 /* ===================================================================== */
@@ -127,7 +128,7 @@ static INLINE void putpixel_8 (XImage *img, int idx, int p)
 _putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
 	if (w == 0) return; \
 	x += y * GFX_WIDTH; \
-	while (w--) { putpixel_##d## (ximage, x++, rgb_palette[*p++]); } \
+	while (w--) { putpixel_##d## (screen_buffer, x++, rgb_palette[*p++]); }\
 }
 
 #define _putpixels_scale2(d) static void \
@@ -138,19 +139,23 @@ _putpixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) { \
 	y = x + (GFX_WIDTH << 1); \
 	while (w--) { \
 		c = rgb_palette[*p++]; \
-		putpixel_##d## (ximage, x++, c); \
-		putpixel_##d## (ximage, x++, c); \
-		putpixel_##d## (ximage, y++, c); \
-		putpixel_##d## (ximage, y++, c); \
+		putpixel_##d## (screen_buffer, x++, c); \
+		putpixel_##d## (screen_buffer, x++, c); \
+		putpixel_##d## (screen_buffer, y++, c); \
+		putpixel_##d## (screen_buffer, y++, c); \
 	} \
 }
 
 _putpixels_scale1(8);
 _putpixels_scale1(16);
 _putpixels_scale1(32);
+
+#if 0
+/* Don't need these for MacOS */
 _putpixels_scale2(8);
 _putpixels_scale2(16);
 _putpixels_scale2(32);
+#endif
 
 /* ===================================================================== */
 
@@ -175,26 +180,67 @@ _putpixels_fixratio_##d##bits_scale2 (int x, int y, int w, UINT8 *p0) { \
 	z = x + (GFX_WIDTH << 2); \
 	for (p = p0; w--; ) { \
 		c = rgb_palette[*p++]; \
-		putpixel_##d## (ximage, x++, c); \
-		putpixel_##d## (ximage, x++, c); \
-		putpixel_##d## (ximage, y++, c); \
-		putpixel_##d## (ximage, y++, c); \
+		putpixel_##d## (screen_buffer, x++, c); \
+		putpixel_##d## (screen_buffer, x++, c); \
+		putpixel_##d## (screen_buffer, y++, c); \
+		putpixel_##d## (screen_buffer, y++, c); \
 	} \
 	for (p = p0; extra--; ) { \
 		c = rgb_palette[*p++]; \
-		putpixel_##d## (ximage, z++, c); \
-		putpixel_##d## (ximage, z++, c); \
+		putpixel_##d## (screen_buffer, z++, c); \
+		putpixel_##d## (screen_buffer, z++, c); \
 	} \
 }
 
 _putpixels_fixratio_scale1 (8);
 _putpixels_fixratio_scale1 (16);
 _putpixels_fixratio_scale1 (32);
+
+#if 0
+/* Don't need these for MacOS */
 _putpixels_fixratio_scale2 (8);
 _putpixels_fixratio_scale2 (16);
 _putpixels_fixratio_scale2 (32);
+#endif
 
 /* ===================================================================== */
+
+
+static int set_palette (UINT8 *pal, int scol, int numcols)
+{
+	int i;
+
+	for (i = scol; i < scol + numcols; i++) {
+
+		switch (depth) {
+#if 0
+		case 8:
+			rgb_palette[i] = color[i].pixel;
+			break;
+#endif
+		case 15:
+			rgb_palette[i] =
+				((int)(pal[i * 3] & 0x3e) << 9) |
+				((int)(pal[i * 3 + 1] & 0x3e) << 4) |
+				((int)(pal[i * 3 + 2] & 0x3e) >> 1);
+			break;
+		case 16:
+			rgb_palette[i] =
+				((int)(pal[i * 3] & 0x3e) << 10) |
+				((int)(pal[i * 3 + 1] & 0x3f) << 5) |
+				((int)(pal[i * 3 + 2] & 0x3e) >> 1);
+			break;
+		case 24:
+			rgb_palette[i] =
+				((int) pal[i * 3] << 18) |
+				((int) pal[i * 3 + 1] << 10) |
+				((int)pal[i * 3 + 2]) << 2;
+			break;
+		}
+	}
+
+	return err_OK;
+}
 
 
 static void process_events ()
@@ -293,7 +339,6 @@ static int macos_init_vidmode ()
 	GDHandle old_gd;
 	GWorldPtr old_gw;
 	SysEnvRec theWorld;
-	int i;
 	
 	error = SysEnvirons (1, &theWorld);
 	if (theWorld.hasColorQD == false)
@@ -309,36 +354,38 @@ static int macos_init_vidmode ()
 	InitCursor ();
 
 	/* Set palette */
-	for (i = 0; i < 32; i++) {
-		rgb_color[i].red   = (int)palette[i * 3] << 10;
-		rgb_color[i].green = (int)palette[i * 3 + 1] << 10;
-		rgb_color[i].blue  = (int)palette[i * 3 + 2] << 10;
-	}
+	set_palette (palette, 0, 32);
 
 	/* Create offscreen pixmap */
-	SetRect (&gworld_rect, 0, 0, GFX_WIDTH, GFX_HEIGHT);
+	SetRect (&gworld_rect, 0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
 	GetGWorld (&old_gw, &old_gd);
-	if (NewGWorld (&gworld, 16, &gworld_rect, NULL, NULL, 0) != noErr)
+	if (NewGWorld (&gworld, depth, &gworld_rect, NULL, NULL, 0) != noErr)
 		return -1;
-	LockPixels (gworld->portPixMap);
+
 	SetGWorld (gworld, NULL);
-	FillCRect (&gworld_rect, gEmptyPat);
+	//EraseRect (&gworld->portRect);
 	SetGWorld (old_gw, old_gd);
-	UnlockPixels (gworld->portPixMap);
 
 	/* Set optimized put_pixels handler */
 	gfx_macos.put_pixels = _putpixels_16bits_scale1;
 
+	/* Create window */
+	SetRect (&window_rect, 50, 50, 50 + 320 - 1, 50 + 200 - 1);
+	window = NewCWindow (NULL, &window_rect, "\pSarien", true,
+		noGrowDocProc, (WindowPtr) -1, false, NULL);
+
 	/* Initialize pixmap pointers */
 	pix = GetGWorldPixMap (gworld);
+	LockPixels (pix);
 	wpix = ((CGrafPort *)window)->portPixMap;
 	screen_buffer = (UINT8 *)GetPixBaseAddr(pix);
 
-	/* Create window */
-	SetRect (&window_rect, 50, 50, 50 + 320, 50 + 200);
-	window = NewCWindow (NULL, &window_rect, "\pSarien", true,
-		noGrowDocProc, (WindowPtr) -1, false, NULL);
-	SetPort (window);	/* set window to current graf port */
+	/* set window to current graf port */
+	SetPort (window);
+
+	/* CopyBits needs these */
+	ForeColor (blackColor);
+	BackColor (whiteColor);
 
 	return err_OK;
 }
@@ -346,7 +393,7 @@ static int macos_init_vidmode ()
 
 static int macos_deinit_vidmode ()
 {
-	DisposePtr (gworld);
+	DisposePtr ((char *) gworld);
 	DisposeWindow (window);
 	return err_OK;
 }
@@ -355,17 +402,16 @@ static int macos_deinit_vidmode ()
 /* blit a block onto the screen */
 static void macos_put_block (int x1, int y1, int x2, int y2)
 {
-	Rect sr, dr;
+	Rect r;
 
 	if (x1 >= GFX_WIDTH)  x1 = GFX_WIDTH  - 1;
 	if (y1 >= GFX_HEIGHT) y1 = GFX_HEIGHT - 1;
 	if (x2 >= GFX_WIDTH)  x2 = GFX_WIDTH  - 1;
 	if (y2 >= GFX_HEIGHT) y2 = GFX_HEIGHT - 1;
 
-	SetRect (&sr, x1, y1, x2, y2);
-	SetRect (&dr, x1, y1, x2, y2);
+	SetRect (&r, x1, y1, x2, y2);
 
-	CopyBits ((BitMap *)*pix, (BitMap *)*wpix, &sr, &dr, srcCopy, 0L);
+	CopyBits ((BitMap *)*pix, (BitMap *)*wpix, &r, &r, srcCopy, 0L);
 }
 
 
