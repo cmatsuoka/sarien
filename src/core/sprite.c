@@ -16,6 +16,7 @@
 #include "sprite.h"
 #include "graphics.h"
 #include "text.h"
+#include "savegame.h"
 
 /**
  * Sprite structure. 
@@ -687,6 +688,8 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 	blit_both ();
 
 	commit_block (x1, y1, x2, y2);
+
+	record_image_stack_call(ADD_VIEW, view, loop, cel, x, y, pri, mar);
 }
 
 /**

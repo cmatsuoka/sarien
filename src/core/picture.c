@@ -15,6 +15,7 @@
 #include "agi.h"
 #include "graphics.h"
 #include "rand.h"
+#include "savegame.h"
 
 #define next_byte data[foffs++]
 
@@ -729,6 +730,10 @@ int decode_picture (int n, int clear)
 #ifdef USE_HIRES
 	fix_hires_picture ();
 #endif
+
+	if(clear)
+		clear_image_stack();
+	record_image_stack_call(ADD_PIC, n, clear, 0, 0, 0, 0, 0);
 
 	return err_OK;
 }

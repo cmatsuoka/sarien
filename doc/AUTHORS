@@ -72,6 +72,7 @@
 - Vasyl Tsvirkunov <vasyl@pacbell.net>
   * PocketPC port
   * Many bugfixes in the main code
+  * Savegame implementation
 
 
 Special thanks to:

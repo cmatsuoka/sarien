@@ -18,6 +18,7 @@
 #include "keyboard.h"
 #include "rand.h"
 #include "menu.h"
+#include "savegame.h"
 
 static struct agi_loader *loader;		/* loader */
 
@@ -173,6 +174,8 @@ int agi_deinit ()
 	ec = loader->deinit ();
 	unload_objects();
 	unload_words();
+
+	clear_image_stack();
 
 	return ec;
 }

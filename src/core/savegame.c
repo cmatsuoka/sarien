@@ -1,7 +1,11 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
  *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
+<<<<<<< savegame.c
  *  $Id$
+=======
+ *  $Id$
+>>>>>>> 1.42
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,14 +29,10 @@
 
 #include "sarien.h"
 #include "agi.h"
-#include "keyboard.h"
 #include "graphics.h"
+#include "sprite.h"
 #include "text.h"
-#include "opcodes.h"
 #include "savegame.h"
-#include "iff.h"
-
-static int loading_ok;
 
 #if defined(__DICE__) || defined(WIN32)
 #  define MKDIR(a,b) mkdir(a)
@@ -40,365 +40,523 @@ static int loading_ok;
 #  define MKDIR(a,b) mkdir(a,b)
 #endif
 
-
-/* Words are big-endian */
-
-static void write_num (UINT32 n, FILE *f)
+/* Image stack support */
+struct image_stack_element
 {
-	UINT8 size[4];
+	UINT8 type;
+	UINT8 pad;
+	SINT16 parm1;
+	SINT16 parm2;
+	SINT16 parm3;
+	SINT16 parm4;
+	SINT16 parm5;
+	SINT16 parm6;
+	SINT16 parm7;
+	struct image_stack_element* next;
+};
 
-	size[0] = (n & 0xff000000) >> 24;
-	size[1] = (n & 0x00ff0000) >> 16;
-	size[2] = (n & 0x0000ff00) >> 8;
-	size[3] = (n & 0x000000ff) >> 0;
+struct image_stack_element* image_stack = NULL;
 
-	fwrite (size, 1, 4, f);
+void clear_image_stack(void)
+{
+	struct image_stack_element* ptr = image_stack;
+	struct image_stack_element* doomed;
+	while(ptr)
+	{
+		doomed = ptr;
+		ptr = ptr->next;
+		free(doomed);
+	}
+	image_stack = NULL;
+}
+
+void record_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3, SINT16 p4, SINT16 p5, SINT16 p6, SINT16 p7)
+{
+	struct image_stack_element* pnew;
+	struct image_stack_element* ptr;
+
+	pnew = (struct image_stack_element*)malloc(sizeof(struct image_stack_element));
+	pnew->type = type;
+	pnew->parm1 = p1;
+	pnew->parm2 = p2;
+	pnew->parm3 = p3;
+	pnew->parm4 = p4;
+	pnew->parm5 = p5;
+	pnew->parm6 = p6;
+	pnew->parm7 = p7;
+	pnew->next = NULL;
+
+	if(image_stack)
+	{
+		ptr = image_stack;
+		while(ptr->next)
+			ptr = ptr->next;
+		ptr->next = pnew;
+	}
+	else
+		image_stack = pnew;
+}
+
+void replay_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3, SINT16 p4, SINT16 p5, SINT16 p6, SINT16 p7)
+{
+	switch(type)
+	{
+	case ADD_PIC:
+		agi_load_resource(rPICTURE, p1);
+		decode_picture(p1, p2);
+		break;
+	case ADD_VIEW:
+		agi_load_resource(rVIEW, p1);
+		add_to_pic(p1, p2, p3, p4, p5, p6, p7);
+		break;
+	}
+}
+
+/* */
+
+static char* strSig = "Sarien:";
+
+void write_uint8(FILE* f, SINT8 val)
+{
+	fwrite(&val, 1, 1, f);
+}
+
+void write_sint16(FILE* f, SINT16 val)
+{
+	static UINT8 buf[2];
+	buf[0] = (UINT8)((val>>8)&255);
+	buf[1] = (UINT8)(val&255);
+	fwrite(buf, 1, 2, f);
+}
+
+void write_uint16(FILE* f, UINT16 val)
+{
+	static UINT8 buf[2];
+	buf[0] = (UINT8)((val>>8)&255);
+	buf[1] = (UINT8)(val&255);
+	fwrite(buf, 1, 2, f);
+}
+
+UINT8 read_uint8(FILE* f)
+{
+	static UINT8 buf[1];
+	fread(buf, 1, 1, f);
+	return buf[0];
+}
+
+UINT16 read_uint16(FILE* f)
+{
+	static UINT8 buf[2];
+	fread(buf, 1, 2, f);
+	return (buf[0]<<8)|buf[1];
+}
+
+SINT16 read_sint16(FILE* f)
+{
+	static UINT8 buf[2];
+	fread(buf, 1, 2, f);
+	return (SINT16)((buf[0]<<8)|buf[1]);
 }
 
 
-static void iff_newchunk (char *t, UINT32 s, FILE *f)
+void write_string(FILE* f, char* s)
 {
-	fwrite (t, 1, 4, f);
-	write_num (s, f);
+	write_sint16(f, (SINT16)strlen(s));
+	fwrite(s, 1, strlen(s), f);
 }
 
-
-static void iff_newgroup (char *t, UINT32 s, char *n, FILE *f)
+void read_string(FILE* f, char* s)
 {
-	iff_newchunk (t, s, f);
-	fwrite (n, 1, 4, f);
+	SINT16 size = read_sint16(f);
+	fread(s, 1, size, f);
+	s[size] = (char)0;
 }
 
-
-static void iff_chunk_pad (UINT32 i, FILE *f)
+void write_bytes(FILE* f, char* s, SINT16 size)
 {
-	UINT8 b = 0x00;
-
-	while (i--)
-		fwrite (&b, 1, 1, f);
+	fwrite(s, 1, size, f);
 }
 
-
-#define WORD_ALIGN(x) (((((x) -1) >> 1) + 1) << 1)
-
-int save_game (char *s, char *d)
+void read_bytes(FILE* f, char* s, SINT16 size)
 {
-	FILE *f;
-	UINT32 i, s_agid, s_gcrc, s_form, s_desc, s_objs;
-	UINT32 s_flag, s_vars, s_stri, s_view, s_spic, s_apic;
-	UINT32 crc = 0x12345678;	/* FIXME */
+	fread(s, 1, size, f);
+}
 
-	_D ("(\"%s\", \"%s\")", s, d);
+int save_game(char* s, char* d)
+{
+	SINT16 i;
+	struct image_stack_element* ptr = image_stack;
+	FILE* f=fopen(s, "wb");
 
-	f = fopen (s, "wb");
+	if(!f)
+		return err_BadFileOpen;
 
-	/* IFF chunk sizes */
-	s_agid = strlen (game.id) + 1;
-	s_gcrc = 4;
-	s_desc = WORD_ALIGN (strlen (d) + 1);
-	s_vars = WORD_ALIGN (MAX_VARS) + 4;
-	s_flag = WORD_ALIGN (MAX_FLAGS) + 4;
-	s_objs = game.num_objects + 4;	/* 1 byte / object */
-	s_stri = 4;
-	for (i = 0; i < MAX_WORDS1; s_stri += strlen (game.strings[i++]) + 1) {}
-	s_view = 26 * 4;
-	s_apic = WORD_ALIGN (_WIDTH * _HEIGHT);
-	s_spic = WORD_ALIGN (GFX_WIDTH * GFX_HEIGHT);
-	s_form = s_agid + s_gcrc + s_desc + s_vars + s_flag + s_stri +
-		MAX_VIEWTABLE * (8 + s_view) + s_objs + s_apic + s_spic;
+	write_bytes(f, strSig, 8);
+	write_string(f, d);
 
-	iff_newgroup ("FORM", s_form, "FAGI", f);
+	write_sint16(f, (SINT16)game.state);
+	/* game.name */
+	write_string(f, game.id);
+	/* game.crc */
 
-	/* Game ID */
-	if (s_agid) {
-		iff_newchunk ("AGID", s_agid, f);
-		fwrite (game.id, 1, strlen (game.id) + 1, f);
-		s_agid -= strlen (game.id) + 1;
-		iff_chunk_pad (s_agid, f);
+	for(i=0; i<MAX_FLAGS; i++)
+		write_uint8(f, game.flags[i]);
+	for(i=0; i<MAX_VARS; i++)
+		write_uint8(f, game.vars[i]);
+
+	write_sint16(f, (SINT16)game.horizon);
+	write_sint16(f, (SINT16)game.line_status);
+	write_sint16(f, (SINT16)game.line_user_input);
+	write_sint16(f, (SINT16)game.line_min_print);
+	/* game.cursor_pos */
+	/* game.input_buffer */
+	/* game.echo_buffer */
+	/* game.keypress */
+	write_sint16(f, (SINT16)game.input_mode);
+	write_sint16(f, (SINT16)game.lognum);
+
+	write_sint16(f, (SINT16)game.player_control);
+	write_sint16(f, (SINT16)game.quit_prog_now);
+	write_sint16(f, (SINT16)game.status_line);
+	write_sint16(f, (SINT16)game.clock_enabled);
+	write_sint16(f, (SINT16)game.exit_all_logics);
+	write_sint16(f, (SINT16)game.picture_shown);
+	write_sint16(f, (SINT16)game.has_prompt);
+	write_sint16(f, (SINT16)game.game_flags);
+
+	write_sint16(f, (SINT16)game.alt_pri);
+	for(i=0; i<_HEIGHT; i++)
+		write_uint8(f, game.pri_table[i]);
+
+	/* game.msg_box_ticks */
+	/* game.block */
+	/* game.window */
+	/* game.has_window */
+
+	write_sint16(f, (SINT16)game.gfx_mode);
+	write_uint8(f, game.cursor_char);
+	write_sint16(f, (SINT16)game.color_fg);
+	write_sint16(f, (SINT16)game.color_bg);
+
+	/* game.hires (#ifdef USE_HIRES) */
+	/* game.sbuf */
+
+	/* game.ego_words */
+	/* game.num_ego_words */
+
+	write_sint16(f, (SINT16)game.num_objects);
+	for(i=0; i<(SINT16)game.num_objects; i++)
+		write_sint16(f, (SINT16)object_get_location(i));
+
+	/* game.ev_keyp */
+	/* game.ev_scan */
+	for(i=0; i<MAX_WORDS1; i++)
+		write_string(f, game.strings[i]);
+
+	/* record info about loaded resources */
+	for(i=0; i<MAX_DIRS; i++)
+	{
+		write_uint8(f, game.dir_logic[i].flags);
+		write_sint16(f, (SINT16)game.logics[i].sIP);
+		write_sint16(f, (SINT16)game.logics[i].cIP);
 	}
-	
-	/* Game CRC */
-	iff_newchunk ("GCRC", s_gcrc, f);
-	write_num (crc, f);
+	for(i=0; i<MAX_DIRS; i++)
+		write_uint8(f, game.dir_pic[i].flags);
+	for(i=0; i<MAX_DIRS; i++)
+		write_uint8(f, game.dir_view[i].flags);
+	for(i=0; i<MAX_DIRS; i++)
+		write_uint8(f, game.dir_sound[i].flags);
 
-	/* Save game description */
-	iff_newchunk ("DESC", s_desc, f);
-	s_desc -= fwrite (d, 1, (strlen (d) + 1), f);
-	iff_chunk_pad (s_desc, f);
+	/* game.pictures */
+	/* game.logics */
+	/* game.views */
+	/* game.sounds */
 
-	/* Variables */
-	iff_newchunk ("VARS", s_vars, f);
-	write_num (MAX_VARS, f);
-	s_vars -= 4;
-	fwrite (&game.vars, 1, MAX_VARS, f);
-	s_vars -= MAX_VARS;
-	iff_chunk_pad (s_vars, f);
+	for(i=0; i<MAX_VIEWTABLE; i++)
+	{
+		struct vt_entry* v = &game.view_table[i];
 
-	/* Flags */
-	iff_newchunk ("FLAG", s_flag, f);
-	write_num (MAX_FLAGS, f);
-	s_flag -= 4;
-	fwrite (&game.flags, 1, MAX_FLAGS, f);
-	s_flag -= MAX_FLAGS;
-	iff_chunk_pad (s_flag, f);
+		write_uint8(f, v->step_time);
+		write_uint8(f, v->step_time_count);
+		write_uint8(f, v->entry);
+		write_sint16(f, v->x_pos);
+		write_sint16(f, v->y_pos);
+		write_uint8(f, v->current_view);
 
-	/* Strings */
-	iff_newchunk ("STRI", s_stri, f);
-	write_num (MAX_WORDS1, f);
-	s_stri -= 4;
-	for (i = 0; i < MAX_WORDS1; i++) {
-		fwrite (game.strings[i], 1, strlen (game.strings[i]) + 1, f);
-		s_stri -= strlen (game.strings[i]) + 1;
-	}
-	iff_chunk_pad (s_stri, f);
+		/* v->view_data */
 
-	/* Save the objects */
-	iff_newchunk ("OBJS", s_objs, f);
+		write_uint8(f, v->current_loop);
+		write_uint8(f, v->num_loops);
 
-	write_num (game.num_objects, f);
-	for (i = 0; i < game.num_objects; i++) {
-		UINT8 x = object_get_location (i);
-		fwrite (&x, 1, 1, f);
-	}
+		/* v->loop_data */
 
-	for (i = 0; i < MAX_VIEWTABLE; i++) {
-		struct vt_entry *v = &game.view_table[i];
-		iff_newchunk ("VIEW", s_view, f);
-		write_num (v->entry, f);
-		write_num (v->step_time, f);
-		write_num (v->step_time_count, f);
-		write_num (v->x_pos, f);
-		write_num (v->y_pos, f);
-		write_num (v->current_view, f);
-		write_num (v->current_loop, f);
-		write_num (v->num_loops, f);
-		write_num (v->current_cel, f);
-		write_num (v->num_cels, f);
-		write_num (v->x_pos2, f);
-		write_num (v->y_pos2, f);
-		write_num (v->x_size, f);
-		write_num (v->y_size, f);
-		write_num (v->step_size, f);
-		write_num (v->cycle_time, f);
-		write_num (v->cycle_time_count, f);
-		write_num (v->direction, f);
-		write_num (v->motion, f);
-		write_num (v->cycle, f);
-		write_num (v->priority, f);
-		write_num (v->flags, f);
-		write_num (v->parm1, f);
-		write_num (v->parm2, f);
-		write_num (v->parm3, f);
-		write_num (v->parm4, f);
+		write_uint8(f, v->current_cel);
+		write_uint8(f, v->num_cels);
+
+		/* v->cel_data */
+		/* v->cel_data_2 */
+		
+		write_sint16(f, v->x_pos2);
+		write_sint16(f, v->y_pos2);
+
+		/* v->s */
+
+		write_sint16(f, v->x_size);
+		write_sint16(f, v->y_size);
+		write_uint8(f, v->step_size);
+		write_uint8(f, v->cycle_time);
+		write_uint8(f, v->cycle_time_count);
+		write_uint8(f, v->direction);
+
+		write_uint8(f, v->motion);
+		write_uint8(f, v->cycle);
+		write_uint8(f, v->priority);
+
+		write_uint16(f, v->flags);
+		
+		write_uint8(f, v->parm1);
+		write_uint8(f, v->parm2);
+		write_uint8(f, v->parm3);
+		write_uint8(f, v->parm4);
 	}
 
-	iff_newchunk ("SPIC", s_spic, f);
-	fwrite (get_sarien_screen (), GFX_WIDTH, GFX_HEIGHT, f);
+/* Save image stack */
+	while(ptr)
+	{
+		write_uint8(f, ptr->type);
+		write_sint16(f, ptr->parm1);
+		write_sint16(f, ptr->parm2);
+		write_sint16(f, ptr->parm3);
+		write_sint16(f, ptr->parm4);
+		write_sint16(f, ptr->parm5);
+		write_sint16(f, ptr->parm6);
+		write_sint16(f, ptr->parm7);
+		ptr = ptr->next;
+	}
+	write_uint8(f, 0);
 
-	iff_newchunk ("APIC", s_apic, f);
-	fwrite (game.sbuf, _WIDTH, _HEIGHT, f);
-
-	fclose (f);
+	fclose(f);
 
 	return err_OK;
 }
 
-static UINT32 read_num(UINT8 **x)
+int load_game(char* s)
 {
-	UINT32 a;
+	int i;
+	UINT8 t;
+	SINT16 parm[7];
+	char sig[8];
+	char id[8];
+	char description[256];
+	FILE* f=fopen(s, "rb");
 
-	a = hilo_getdword (*x);
-	*x += 4;
-
-	return a;
-}
-
-static void get_apic (UINT32 size, UINT8 *b)
-{
-	memcpy (game.sbuf, b, size);
-}
-
-static void get_spic (UINT32 size, UINT8 *b)
-{
-	memcpy (get_sarien_screen (), b, size);
-}
-
-static void get_view (UINT32 size, UINT8 *b)
-{
-	UINT32 i;
-	struct vt_entry *v;
-
-	i = read_num (&b);
-	_D ("(%d, %p) entry = %d", size, b, i);
-
-	if (i > MAX_VIEWTABLE)
-		return;
-
-	v = &game.view_table[i];
-
-	v->entry		= i;
-	v->step_time		= read_num (&b);
-	v->step_time_count	= read_num (&b);
-	v->x_pos		= read_num (&b);
-	v->y_pos		= read_num (&b);
-	v->current_view		= read_num (&b);
-	v->current_loop		= read_num (&b);
-	v->num_loops		= read_num (&b);
-	v->current_cel		= read_num (&b);
-	v->num_cels		= read_num (&b);
-	v->x_pos2		= read_num (&b);
-	v->y_pos2		= read_num (&b);
-	v->x_size		= read_num (&b);
-	v->y_size		= read_num (&b);
-	v->step_size		= read_num (&b);
-	v->cycle_time		= read_num (&b);
-	v->cycle_time_count	= read_num (&b);
-	v->direction		= read_num (&b);
-	v->motion		= read_num (&b);
-	v->cycle		= read_num (&b);
-	v->priority		= read_num (&b);
-	v->flags		= read_num (&b);
-	v->parm1		= read_num (&b);
-	v->parm2		= read_num (&b);
-	v->parm3		= read_num (&b);
-	v->parm4		= read_num (&b);
-
-#if 0
-	/* commented to prevent crash with uninitalized entries! */
-	set_view (v, v->current_view);
-	set_loop (v, v->current_loop);
-#endif
-}
-
-
-static void get_stri (UINT32 size, UINT8 *buffer)
-{
-	UINT32 i, j, n;
-	UINT8 b;
-
-	_D ("(%d, %p)", size, buffer);
-
-	n = hilo_getdword (buffer);
- 	buffer += 4;
-
-	for (i = 0; i < n; i++) {
-		for (j = 0, b = 1; b; j++) {
-			b = hilo_getbyte (buffer++);
-			game.strings[i][j] = b;
-		}
-	}
-}
-
-
-static void get_flag (UINT32 size, UINT8 *buffer)
-{
-	int n;
-
-	_D ("(%d, %p)", size, buffer);
-
-	n = hilo_getdword (buffer);
-	buffer += 4;
-
-	memcpy (game.flags, buffer, n);
-}
-
-
-static void get_vars (UINT32 size, UINT8 *buffer)
-{
-	int n;
-
-	n = hilo_getdword (buffer);
-	_D ("(%d, %p) get %d vars", size, buffer, n);
-	buffer += 4;
-
-	memcpy (game.vars, buffer, n);
-
-	_D ("done");
-}
-
-
-static void get_objs (UINT32 size, UINT8 *buffer)
-{
-	UINT32 i, n;
-
-	_D ("(%d, %p)", size, buffer);
-
-	n = hilo_getdword (buffer);
-	buffer += 4;
-
-	for (i = 0; i < n; i++) {
-		object_set_location (i, hilo_getbyte (buffer++));
-	}
-}
-
-
-static void get_agid (UINT32 size, UINT8 *buffer)
-{
-	_D ("(%d, %p)", size, buffer);
-
-	if (size < strlen (game.id)) {
-		loading_ok = 0;
-		return;
-	}
-
-	if (memcmp (buffer, game.id, strlen (game.id)))
-		loading_ok = 0;
-}
-
-
-static void get_gcrc (UINT32 size, UINT8 *buffer)
-{
-	_D ("(%d, %p)", size, buffer);
-}
-
-
-int load_game (char *s)
-{
-	FILE *f;
-	struct iff_header h;
-
-	_D ("(\"%s\")", s);
-	if ((f = fopen (s, "rb")) == NULL)
+	if(!f)
 		return err_BadFileOpen;
 
-	fread (&h, 1, sizeof (struct iff_header), f);
-	if (h.form[0] != 'F' || h.form[1] != 'O' || h.form[2] != 'R' ||
-		h.form[3] != 'M' || h.id[0] != 'F' || h.id[1] != 'A' ||
-		h.id[2] != 'G' || h.id[3] != 'I') {
-		fclose (f);
+	read_bytes(f, sig, 8);
+	if(strncmp(sig, strSig, 8))
+	{
+		fclose(f);
 		return err_BadFileOpen;
 	}
 
-	_D ("registering IFF chunks");
+	read_string(f, description);
 
-	/* IFF chunk IDs */
-	iff_register ("AGID", get_agid);
-	iff_register ("GCRC", get_gcrc);
-	iff_register ("FLAG", get_flag);
-	iff_register ("VARS", get_vars);
-	iff_register ("STRI", get_stri);
-	iff_register ("OBJS", get_objs);
-	iff_register ("VIEW", get_view);
-	iff_register ("APIC", get_apic);
-	iff_register ("SPIC", get_spic);
+	game.state = read_sint16(f);
+	/* game.name - not saved */
+	read_string(f, id);
+	if(strcmp(id, game.id))
+	{
+		fclose(f);
+		return err_BadFileOpen;
+	}
+	/* game.crc - not saved */
 
-	loading_ok = 1;
+	for(i=0; i<MAX_FLAGS; i++)
+		game.flags[i] = read_uint8(f);
+	for(i=0; i<MAX_VARS; i++)
+		game.vars[i] = read_uint8(f);
 
-	/* Load IFF chunks */
-	while (loading_ok && !feof (f))
-		iff_chunk (f);
+	game.horizon = read_sint16(f);
+	game.line_status = read_sint16(f);
+	game.line_user_input = read_sint16(f);
+	game.line_min_print = read_sint16(f);
 
-	iff_release ();
-	fclose (f);
+	/* These are never saved */
+	game.cursor_pos = 0;
+	game.input_buffer[0] = 0;
+	game.echo_buffer[0] = 0;
+	game.keypress = 0;
 
-#if 0
-	/* FIXME */
-	cmd_draw_pic (getvar (V_cur_room));
-	/* redraw_sprites (); */
-	game.exit_all_logics = TRUE;
-#endif
+	game.input_mode = read_sint16(f);
+	game.lognum = read_sint16(f);
 
-	setflag (F_restore_just_ran, TRUE);
+	game.player_control = read_sint16(f);
+	game.quit_prog_now = read_sint16(f);
+	game.status_line = read_sint16(f);
+	game.clock_enabled = read_sint16(f);
+	game.exit_all_logics = read_sint16(f);
+	game.picture_shown = read_sint16(f);
+	game.has_prompt = read_sint16(f);
+	game.game_flags = read_sint16(f);
+
+	game.alt_pri = read_sint16(f);
+	for(i=0; i<_HEIGHT; i++)
+		game.pri_table[i] = read_uint8(f);
+
+	if(game.has_window)
+		close_window();
+	game.msg_box_ticks = 0;
+	game.block.active = FALSE;
+	/* game.window - fixed by close_window() */
+	/* game.has_window - fixed by close_window() */
+
+	game.gfx_mode = read_sint16(f);
+	game.cursor_char = read_uint8(f);
+	game.color_fg = read_sint16(f);
+	game.color_bg = read_sint16(f);
+
+	/* game.hires (#ifdef USE_HIRES) - rebuilt from image stack */
+	/* game.sbuf - rebuilt from image stack */
+
+	/* game.ego_words - fixed by clean_input */
+	/* game.num_ego_words - fixed by clean_input */
+
+	game.num_objects = read_sint16(f);
+	for(i=0; i<(SINT16)game.num_objects; i++)
+		object_set_location(i, read_sint16(f));
+
+	/* Those are not serialized */
+	for (i = 0; i < MAX_DIRS; i++) {
+		game.ev_scan[i].occured = FALSE;
+		game.ev_keyp[i].occured = FALSE;
+	}
+
+	for(i=0; i<MAX_WORDS1; i++)
+		read_string(f, game.strings[i]);
+
+	for(i=0; i<MAX_DIRS; i++)
+	{
+		if(read_uint8(f) & RES_LOADED)
+			agi_load_resource(rLOGIC, i);
+		else if(!(game.dir_logic[i].flags & RES_CACHED))
+			agi_unload_resource(rLOGIC, i);
+		game.logics[i].sIP = read_sint16(f);
+		game.logics[i].cIP = read_sint16(f);
+	}
+	for(i=0; i<MAX_DIRS; i++)
+	{
+		if(read_uint8(f) & RES_LOADED)
+			agi_load_resource(rPICTURE, i);
+		else if(!(game.dir_pic[i].flags & RES_CACHED))
+			agi_unload_resource(rPICTURE, i);
+	}
+	for(i=0; i<MAX_DIRS; i++)
+	{
+		if(read_uint8(f) & RES_LOADED)
+			agi_load_resource(rVIEW, i);
+		else if(!(game.dir_view[i].flags & RES_CACHED))
+			agi_unload_resource(rVIEW, i);
+	}
+	for(i=0; i<MAX_DIRS; i++)
+	{
+		if(read_uint8(f) & RES_LOADED)
+			agi_load_resource(rSOUND, i);
+		else if(!(game.dir_sound[i].flags & RES_CACHED))
+			agi_unload_resource(rSOUND, i);
+	}
+
+	/* game.pictures - loaded above */
+	/* game.logics - loaded above */
+	/* game.views - loaded above */
+	/* game.sounds - loaded above */
+
+	for(i=0; i<MAX_VIEWTABLE; i++)
+	{
+		struct vt_entry* v = &game.view_table[i];
+
+		v->step_time = read_uint8(f);
+		v->step_time_count = read_uint8(f);
+		v->entry = read_uint8(f);
+		v->x_pos = read_sint16(f);
+		v->y_pos = read_sint16(f);
+		v->current_view = read_uint8(f);
+
+		/* v->view_data - fixed below  */
+
+		v->current_loop = read_uint8(f);
+		v->num_loops = read_uint8(f);
+
+		/* v->loop_data - fixed below  */
+
+		v->current_cel = read_uint8(f);
+		v->num_cels = read_uint8(f);
+
+		/* v->cel_data - fixed below  */
+		/* v->cel_data_2 - fixed below  */
+		
+		v->x_pos2 = read_sint16(f);
+		v->y_pos2 = read_sint16(f);
+
+		/* v->s - fixed below */
+
+		v->x_size = read_sint16(f);
+		v->y_size = read_sint16(f);
+		v->step_size = read_uint8(f);
+		v->cycle_time = read_uint8(f);
+		v->cycle_time_count = read_uint8(f);
+		v->direction = read_uint8(f);
+
+		v->motion = read_uint8(f);
+		v->cycle = read_uint8(f);
+		v->priority = read_uint8(f);
+
+		v->flags = read_uint16(f);
+		
+		v->parm1 = read_uint8(f);
+		v->parm2 = read_uint8(f);
+		v->parm3 = read_uint8(f);
+		v->parm4 = read_uint8(f);
+	}
+
+/* Fix some pointers in viewtable */
+	for(i=0; i<MAX_VIEWTABLE; i++)
+	{
+		struct vt_entry* v = &game.view_table[i];
+
+		set_view(v, v->current_view); /* Fix v->view_data */
+		set_loop(v, v->current_loop); /* Fix v->loop_data */
+		set_cel(v, v->current_cel);   /* Fix v->cel_data */
+		v->cel_data_2 = v->cel_data;
+		v->s = NULL; /* not sure if it is used... */
+	}
+
+	erase_both();
+
+/* Recreate background from saved image stack */
+	clear_image_stack();
+	while((t = read_uint8(f)) != 0)
+	{
+		for(i=0; i<7; i++)
+			parm[i] = read_sint16(f);
+		replay_image_stack_call(t, parm[0], parm[1], parm[2], parm[3], parm[4], parm[5], parm[6]);
+	}
+
+	if(ferror(f) || feof(f))
+	{
+		fclose(f);
+		return err_BadFileOpen;
+	}
+
+	fclose(f);
+
+	setflag(F_restore_just_ran, TRUE);
+
+	game.has_prompt = 0; /* force input line repaint if necessary*/
+	clean_input();
+	
+	show_pic();
+	do_update();
 
 	return err_OK;
 }
@@ -426,11 +584,11 @@ int savegame_dialog ()
 	sprintf (path, "%s/" DATA_DIR "/%s/", home, game.id);
 	MKDIR (path, 0711);
 
-	sprintf (path, "%s/" DATA_DIR "/%s/%08d.iff",
+	sprintf (path, "%s/" DATA_DIR "/%s/%08d.sav",
 		home, game.id, slot);
 	_D (_D_WARN "file is [%s]", path);
 	
-	save_game (path, desc);
+	save_game(path, desc);
 
 	message_box ("Game saved.");
 
@@ -454,24 +612,14 @@ int loadgame_dialog ()
 	sprintf (path, "%s/" DATA_DIR "/%s/", home, game.id);
 	MKDIR (path, 0711);
 	
-	sprintf (path, "%s/" DATA_DIR "/%s/%08d.iff",
+	sprintf (path, "%s/" DATA_DIR "/%s/%08d.sav",
 		home, game.id, slot);
-	if ((rc = load_game (path)) == err_OK) {
+
+	stop_sound();
+	if((rc = load_game (path)) == err_OK)
 		message_box ("Game loaded.");
-		/* FIXME: restore at correct point instead of using the
-		 *	  new.room hack
-		 */
-		show_pic ();
-		flush_screen ();
-		do_update ();
-		game.vars[V_border_touch_ego] = 0;
-		new_room (game.vars[0]);
-		setflag (F_new_room_exec, TRUE);
-		game.input_mode = INPUT_NORMAL;
-		write_status ();
-	} else {
+	else
 		message_box ("Error loading game.");
-	}
 
 	return rc;
 }

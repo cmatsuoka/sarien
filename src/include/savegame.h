@@ -21,6 +21,14 @@ int loadgame_dialog (void);
 int save_game (char *, char *);
 int load_game (char *);
 
+/* Image stack support */
+#define ADD_PIC 1
+#define ADD_VIEW 2
+
+void clear_image_stack(void);
+void record_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3, SINT16 p4, SINT16 p5, SINT16 p6, SINT16 p7);
+void replay_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3, SINT16 p4, SINT16 p5, SINT16 p6, SINT16 p7);
+
 #ifdef __cplusplus
 };
 #endif
