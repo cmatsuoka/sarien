@@ -28,6 +28,10 @@
 
 #define  AVIS_DURGAN  "Avis Durgan"
 
+#define WORDS "../words.tok"
+#define OBJECT "../object"
+#define AGIDATA "../agidata.ovl"
+
 typedef unsigned char byte;
 typedef unsigned int word;
 typedef char boolean;
@@ -176,8 +180,8 @@ void loadWords()
    long startPos;
    word wordNum, i;
 
-   if ((wordFile = fopen("words.tok","rb")) == NULL) {
-      printf("Cannot find file : words.tok\n");
+   if ((wordFile = fopen(WORDS ,"rb")) == NULL) {
+      fprintf (stderr, "Cannot open file " WORDS "\n");
       exit(1);
    }
 
@@ -226,8 +230,8 @@ int calcNumWords()
    long startPos;
    int max = 0, wordNum;
 
-   if ((wordFile = fopen("words.tok","rb")) == NULL) {
-      printf("Cannot find file : word.tok\n");
+   if ((wordFile = fopen(WORDS, "rb")) == NULL) {
+      fprintf(stderr, "Cannot open file " WORDS "\n");
       exit(1);
    }
 
@@ -285,8 +289,8 @@ void loadObjectNames()
    word index;
    boolean OBJ_ENCRYPTED = TRUE;
 
-   if ((objFile = fopen("object","rb")) == NULL) {
-      printf("Cannot find file : object\n");
+   if ((objFile = fopen(OBJECT,"rb")) == NULL) {
+      fprintf(stderr, "Cannot open file " OBJECT "\n");
       exit(1);
    }
 
@@ -400,8 +404,8 @@ int loadVersion()
    unsigned char aChar;
    char ver[15], found = 0;
 
-   if ((dataFile = fopen("agidata.ovl", "rb")) == NULL) {
-      printf("Error opening agidata.ovl\n");
+   if ((dataFile = fopen(AGIDATA, "rb")) == NULL) {
+      fprintf(stderr, "Cannot open file " AGIDATA "\n");
       exit(1);
    }
 
@@ -975,12 +979,12 @@ void printArg(byte cmd, byte arg, byte value)
 **************************************************************************/
 int main(int argc, char **argv)
 {
-   FILE *logicFile, /* *comFile, */ *dummyFile = NULL;
+   FILE *logicFile /* , *comFile, *dummyFile = NULL */;
    byte *fileData, *data, *endOfData, cmd, param, value;
    long progLength;
-   int counter=1, oldCount, lineNum, i, opt, /* result, */ disp;
+   int /*counter=1,*/ oldCount, lineNum, i, opt, /* result, */ disp;
    char tempString[500], ch = 0;
-   boolean STOP = FALSE, HALF = FALSE, BROWSE = FALSE, VARSTATS = FALSE;
+   boolean /*STOP = FALSE, HALF = FALSE, BROWSE = FALSE,*/ VARSTATS = FALSE;
    boolean MESSAGES = FALSE;
 
    if (argc < 2) {
@@ -998,38 +1002,36 @@ int main(int argc, char **argv)
       exit(0);
    }
    else {
-      for (opt=1; opt!=(argc-1); opt++) {
-	 if (argv[opt][0] == '-') {
-	    switch(argv[opt][1]) {
+      for (opt = 1; opt < argc; opt++) {
+	 if (argv[opt][0] != '-')
+		break;
+
+	 switch(argv[opt][1]) {
 #if 0
-	       case 's': STOP = TRUE; break;
-	       case 'h': HALF = TRUE; break;
-	       case 'b': BROWSE = TRUE; break;
+	 case 's': STOP = TRUE; break;
+	 case 'h': HALF = TRUE; break;
+	 case 'b': BROWSE = TRUE; break;
 #endif
-	       case 'r': DEBUG = TRUE; break;
-	       case 'v': VARSTATS = TRUE; break;
-	       case 'm': MESSAGES = TRUE; break;
-	       default: printf("Illegal option : %s\n", argv[opt]); exit(0);
-	    }
-	 }
-	 else {
-	    printf("Illegal option : %s\n", argv[opt]);
-	    exit(0);
+	 case 'r': DEBUG = TRUE; break;
+	 case 'v': VARSTATS = TRUE; break;
+	 case 'm': MESSAGES = TRUE; break;
+	 default: fprintf(stderr, "Illegal option : %s\n", argv[opt]); exit(0);
 	 }
       }
    }
 
-   if ((logicFile = fopen(argv[argc-1], "rb")) == NULL) {
-      printf("Error opening logic source file : %s\n", argv[argc-1]);
+for (; opt < argc; opt++) {
+   if ((logicFile = fopen(argv[opt], "rb")) == NULL) {
+      fprintf (stderr, "Error opening logic source file: %s\n", argv[argc-1]);
       exit(0);
    }
 
    if ((dumpFile = fopen("TEMPDUMP", "wt")) == NULL) {
-      printf("Error opening temporary file : TEMPDUMP\n");
+      fprintf (stderr, "Error opening temporary file: TEMPDUMP\n");
       exit(1);
    }
 
-   if (HALF) initScreen();
+   /* if (HALF) initScreen(); */
 
    progLength = getLength(logicFile);
    fileData = (byte*)malloc(progLength+10);
@@ -1404,23 +1406,23 @@ int main(int argc, char **argv)
 	 for (i=0; i<numGotos; i++) {
 	    if ((lineArray[lineNum] == gotos[i]) &&
 		(lineArray[lineNum+1] != gotos[i])) {
-	       if (BROWSE)
+	       /*if (BROWSE)
 		  fprintf(dummyFile, "\nLabel%d:\n\n", i);
-	       else
+	       else*/
 		  printf("\nLabel%d:\n\n", i);
 	    }
 	 }
-	 if (BROWSE)
+	 /*if (BROWSE)
 	    fprintf(dummyFile, "%s", tempString);
-	 else
+	 else*/
 	    printf("%s", tempString);
 	 lineNum++;
-	 if (STOP && (counter++ % 10) == 0) ch = getchar();
+	 /*if (STOP && (counter++ % 10) == 0) ch = getchar();*/
 	 if ((ch == 'q') || (ch == 27)) break;
       }
    }
 
-   if (STOP) getchar();
+   /* if (STOP) getchar(); */
 
    fclose(dumpFile);
    remove("TEMPDUMP");
@@ -1440,8 +1442,9 @@ int main(int argc, char **argv)
    freeWords();
    freeMessages();
    free(fileData);
+}
 
-   if (HALF) closeScreen();
+   /* if (HALF) closeScreen(); */
 
    return 0;
 }

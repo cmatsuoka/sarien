@@ -375,6 +375,7 @@ static void interpret_cycle ()
 {
 	int line_prompt = FALSE;
 
+	_D ("F5 = %d", getflag (5));
 	if (game.control_mode == CONTROL_PROGRAM)
 		view_table[EGO_VIEW_TABLE].direction = getvar (V_ego_dir);
 	else
@@ -509,8 +510,10 @@ int run_game2 ()
 	int ec = err_OK;
 	UINT32 x, y, z = 12345678;
 
-	stop_sound ();
+	_D ("()");
+	_D ("F5 = %d", getflag (5));
 
+	stop_sound ();
 	clear_buffer ();
 
 	/*setflag(F_logic_zeron_firsttime, TRUE);*/

@@ -179,6 +179,7 @@ static int agi_v2_unload_words ()
 
 static int agi_v2_unload_resource (int restype, int resnum)
 {
+	_D (_D_WARN "(restype = %d, resnum = %d)", restype, resnum);
 	switch (restype) {
 	case rLOGIC:
 		unload_logic (resnum);
@@ -210,6 +211,7 @@ UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 	UINT8 *data = NULL;
 	FILE *fp;
 
+	_D ("(agi_dir = )");
 	sprintf (x, "vol.%i", agid->volume);
 	path = fixpath (NO_GAMEDIR, x);
 
@@ -219,7 +221,6 @@ UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 		if (hilo_getword (x) == 0x1234) {
 			agid->len = lohi_getword (x + 3);
 			data = calloc (1, agid->len + 32);
-printf ("%s %d\n", path, agid->len);
 			if (data != NULL)
 				fread (data, 1, agid->len, fp);
 		} else {
@@ -251,6 +252,7 @@ int agi_v2_load_resource (int restype, int resnum)
 	UINT8 *data = NULL;
 
 	_D (_D_WARN "(restype = %d, resnum = %d)", restype, resnum);
+	_D ( "F5 = %d", getflag (5));
 	if (resnum > MAX_DIRS)
 		return err_BadResource;
 

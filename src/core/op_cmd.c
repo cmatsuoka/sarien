@@ -112,6 +112,7 @@ void cmd_call (UINT8 log)
 	UINT16 oip;
 	UINT16 osp;
 
+	_D (_D_WARN "F5 = %d", getflag (5));
 #ifndef NO_DEBUG
 	if (opt.debug == 4)
 		opt.debug = TRUE;
@@ -126,7 +127,7 @@ void cmd_call (UINT8 log)
 
 void cmd_load_view (UINT8 view)
 {
-	_D("(view = %d", view);
+	_D("(view = %d)", view);
 	loader->load_resource (rVIEW, view);
 }
 
@@ -143,6 +144,7 @@ void cmd_load_logic (UINT8 log)
 
 void cmd_new_room (UINT8 room)
 {
+	_D (_D_WARN "(room = %d)", room);
 	game.new_room_num = room;
 	game.ego_in_new_room = TRUE;
 	clear_buffer ();

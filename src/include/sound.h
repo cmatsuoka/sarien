@@ -70,8 +70,6 @@ struct agi_sound {
 };
 
 extern	struct sound_driver	*snd;
-//extern  struct sound_driver	sound_dummy;
-//externstruct agi_sound	sounds[];
 
 void	decode_sound		(int);
 void	unload_sound		(int);

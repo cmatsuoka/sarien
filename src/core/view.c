@@ -174,6 +174,7 @@ void add_view_table (int entry, int vw)
 {
 	_D ("(%d, %d)", entry, vw);
 
+	_D ("F5 = %d", getflag (5));
 	/* To prevent Larry explosion in room 11 after hooker */
 	if (~game.dir_view[vw].flags & RES_LOADED) {
 		report ("Parachute deployed: view %d not loaded\n", vw);

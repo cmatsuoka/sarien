@@ -58,8 +58,8 @@ struct agi_game {
 	char id[8];		/* game id */	
 
 	/* game flags and variables */
-	UINT8 flags[MAX_FLAGS / 8];		/* 256 bit flags */
-	UINT8 vars[MAX_VARS];			/* 256 byte variables */
+	UINT8 flags[MAX_FLAGS];		/* 256 flags (byte is easier to debug! */
+	UINT8 vars[MAX_VARS];			/* 256 variables */
 
 	/* internal variables */
 	int horizon;		/* horizon marker */

@@ -94,7 +94,7 @@ typedef signed long	SINT32;
         ":%d] " _D_INFO, __LINE__); printf (args); printf ("\x1b[0m\n"); \
         } while (0)
 #else
-extern void _D(char *,...);
+INLINE void _D(char *,...);
 #endif
 
 #ifdef __cplusplus

@@ -55,7 +55,7 @@ static void new_room_resources ()
 
 void new_room (int r)
 {
-	_D ("(%d)", r);
+	_D (_D_WARN "(%d)", r);
 
 	/* stop all animation */
 
@@ -100,6 +100,7 @@ void new_room (int r)
 	setvar (V_border_touch_ego, 0);
 	setflag (F_entered_cli, FALSE);
 	setflag (F_new_room_exec, TRUE);
+	_D ("F5 = %d", getflag (F_new_room_exec));
 }
 
 /*

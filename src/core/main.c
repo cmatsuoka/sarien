@@ -23,8 +23,8 @@
 #include "text.h"
 
 
-UINT16	run_game2(void);
-UINT16	crc_game(void);
+int	run_game2(void);
+//UINT16	crc_game(void);
 
 /* For the interactive picture viewer */
 UINT8	show_screen_mode = 'x';
@@ -45,7 +45,7 @@ struct sarien_options opt;
 struct game_id_list game_info;
 
 #ifndef _TRACE
-void _D (char *s, ...) { }
+INLINE void _D (char *s, ...) { }
 #endif
 
 static int detect_game (char *gn)
@@ -204,6 +204,7 @@ static int run_game ()
 {
 	int ec = err_OK;
 
+	_D ("F5 = %d", getflag (5));
 	switch (opt.gamerun) {
 	case gLIST_GAMES:
 	case gCRC:
