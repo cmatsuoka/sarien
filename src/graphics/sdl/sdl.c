@@ -35,6 +35,7 @@ static int key_alt = 0;
 static SDL_Surface *screen;
 
 SDL_Color color[32];
+Uint32 mapped_color[32];
 
 UINT32 clock_ticks;
 UINT32 clock_count;
@@ -65,7 +66,7 @@ static volatile UINT32 tick_timer = 0;
 #define TICK_SECONDS 20
 
 
-static struct gfx_driver GFX_sdl = {
+static struct gfx_driver gfx_sdl = {
 	init_vidmode,
 	deinit_vidmode,
 	sdl_put_block,
@@ -76,6 +77,230 @@ static struct gfx_driver GFX_sdl = {
 };
 
 extern struct gfx_driver *gfx;
+
+
+/*
+ * Some optimized put_pixel routines for the most common cases.
+ */
+
+static void inline _put_pixels_8bits_scale1 (int x, int y, int w, UINT8 *p)
+{
+	Uint8 *s;
+
+	if (w == 0) return;
+
+	s = (Uint8 *)screen->pixels + x + y * screen->w;
+
+	if (SDL_MUSTLOCK (screen)) {
+		if (SDL_LockSurface (screen) < 0)
+			return;
+	}
+
+	while (w--) { *s++ = mapped_color[*p++]; }
+
+	if (SDL_MUSTLOCK (screen))
+		SDL_UnlockSurface (screen);
+}
+
+static void inline _put_pixels_16bits_scale1 (int x, int y, int w, UINT8 *p)
+{
+	Uint16 *s;
+
+	if (w == 0) return;
+
+	s = (Uint16 *)screen->pixels + x + y * screen->w;
+
+	if (SDL_MUSTLOCK (screen)) {
+		if (SDL_LockSurface (screen) < 0)
+			return;
+	}
+
+	while (w--) { *s++ = mapped_color[*p++]; }
+
+	if (SDL_MUSTLOCK (screen))
+		SDL_UnlockSurface (screen);
+}
+
+static void inline _put_pixels_32bits_scale1 (int x, int y, int w, UINT8 *p)
+{
+	Uint32 *s;
+
+	if (w == 0) return;
+
+	s = (Uint32 *)screen->pixels + x + y * screen->w;
+
+	if (SDL_MUSTLOCK (screen)) {
+		if (SDL_LockSurface (screen) < 0)
+			return;
+	}
+
+	while (w--) { *s++ = mapped_color[*p++]; }
+
+	if (SDL_MUSTLOCK (screen))
+		SDL_UnlockSurface (screen);
+}
+
+static void inline _put_pixels_8bits_scale2 (int x, int y, int w, UINT8 *p)
+{
+	Uint8 *s, *t;
+
+	if (w == 0) return;
+
+	x <<= 1; y <<= 1;
+	s = (Uint8 *)screen->pixels + x + y * screen->w;
+	t = s + screen->w;
+
+	if (SDL_MUSTLOCK (screen)) {
+		if (SDL_LockSurface (screen) < 0)
+			return;
+	}
+
+	while (w--) {
+		int c = mapped_color[*p];
+		*s++ = c;
+		*s++ = c;
+		*t++ = c;
+		*t++ = c;
+		p++;
+	}
+
+	if (SDL_MUSTLOCK (screen))
+		SDL_UnlockSurface (screen);
+}
+
+static void inline _put_pixels_16bits_scale2 (int x, int y, int w, UINT8 *p)
+{
+	Uint16 *s, *t;
+
+	if (w == 0) return;
+
+	x <<= 1; y <<= 1;
+	s = (Uint16 *)screen->pixels + x + y * screen->w;
+	t = s + screen->w;
+
+	if (SDL_MUSTLOCK (screen)) {
+		if (SDL_LockSurface (screen) < 0)
+			return;
+	}
+
+	while (w--) {
+		int c = mapped_color[*p];
+		*s++ = c;
+		*s++ = c;
+		*t++ = c;
+		*t++ = c;
+		p++;
+	}
+
+	if (SDL_MUSTLOCK (screen))
+		SDL_UnlockSurface (screen);
+}
+
+static void inline _put_pixels_32bits_scale2 (int x, int y, int w, UINT8 *p)
+{
+	Uint32 *s, *t;
+
+	if (w == 0) return;
+
+	x <<= 1; y <<= 1;
+	s = (Uint32 *)screen->pixels + y * screen->w;
+	t = s + screen->w;
+
+	if (SDL_MUSTLOCK (screen)) {
+		if (SDL_LockSurface (screen) < 0)
+			return;
+	}
+
+	while (w--) {
+		int c = mapped_color[*p];
+		*s++ = c;
+		*s++ = c;
+		*t++ = c;
+		*t++ = c;
+		p++;
+	}
+
+	if (SDL_MUSTLOCK (screen))
+		SDL_UnlockSurface (screen);
+}
+
+/* Slow, non-optimized put pixel routine */
+static void inline _put_pixel (int x, int y, int c)
+{
+	Uint32 pixel;
+	Uint8 *bits, bpp;
+
+	pixel = mapped_color[c];
+
+	bpp = screen->format->BytesPerPixel;
+	bits = ((UINT8 *) screen->pixels) + y * screen->pitch + x * bpp;
+
+	/* Set the pixel */
+	switch (bpp) {
+	case 1:
+		*(Uint8 *)(bits) = pixel;
+		break;
+	case 2:
+		*((UINT16 *) (bits)) = (Uint16) pixel;
+		break;
+	case 3:{
+		UINT8 r, g, b;
+		r = (pixel >> screen->format->Rshift) & 0xff;
+		g = (pixel >> screen->format->Gshift) & 0xff;
+		b = (pixel >> screen->format->Bshift) & 0xff;
+		*((bits) + screen->format->Rshift / 8) = r;
+		*((bits) + screen->format->Gshift / 8) = g;
+		*((bits) + screen->format->Bshift / 8) = b;
+		}
+		break;
+	case 4:
+		*((UINT32 *) (bits)) = (Uint32) pixel;
+		break;
+	}
+}
+
+
+/* slow put pixel routine */
+static void sdl_put_pixels (int x, int y, int w, Uint8 *p)
+{
+	register int c;
+	register int i, j;
+
+	if (w == 0) return;
+
+	if (SDL_MUSTLOCK (screen)) {
+		if (SDL_LockSurface (screen) < 0)
+			return;
+	}
+
+	if (scale == 1) {
+		while (w--) {
+			_put_pixel (x++, y, *p++);
+		}
+	} else if (scale == 2) {
+		x <<= 1;
+		y <<= 1;
+		while (w--) {
+			c = *p++;
+			_put_pixel (x, y, c);
+			_put_pixel (x++, y + 1, c);
+			_put_pixel (x, y, c);
+			_put_pixel (x++, y + 1, c);
+		}
+	} else {
+		x *= scale;
+		y *= scale;
+		while (w--) {
+			c = *p++;
+			for (i = 0; i < scale; i++)
+				for (j = 0; j < scale; j++)
+					_put_pixel (x + i, y + j, c);
+		}
+	}
+
+	if (SDL_MUSTLOCK (screen))
+		SDL_UnlockSurface (screen);
+}
 
 
 static void process_events ()
@@ -177,6 +402,9 @@ static void process_events ()
 			case SDLK_ESCAPE:
 				key = 0x1b;
 				break;
+			case SDLK_PRINT:
+				key = KEY_PRIORITY;
+				break;
 			default:
 				if (!isalpha (key))
 					break;
@@ -216,7 +444,7 @@ static void process_events ()
 
 int init_machine (int argc, char **argv)
 {
-	gfx = &GFX_sdl;
+	gfx = &gfx_sdl;
 	scale = opt.scale;
 	clock_count = 0;
 	clock_ticks = 0;
@@ -264,8 +492,26 @@ static int init_vidmode ()
 		color[i].r = palette[i * 3] << 2;
 		color[i].g = palette[i * 3 + 1] << 2;
 		color[i].b = palette[i * 3 + 2] << 2;
+		mapped_color[i] = SDL_MapRGB (screen->format,
+			color[i].r, color[i].g, color[i].b);
 	}
 	SDL_SetColors (screen, color, 0, 32);
+
+	/* Use an optimized put_pixels if available */
+	switch (scale) {
+	case 1:
+		switch (screen->format->BytesPerPixel) {
+		case 1: gfx_sdl.put_pixels = _put_pixels_8bits_scale1; break;
+		case 2: gfx_sdl.put_pixels = _put_pixels_16bits_scale1; break;
+		case 4: gfx_sdl.put_pixels = _put_pixels_32bits_scale1; break;
+		}
+	case 2:
+		switch (screen->format->BytesPerPixel) {
+		case 1: gfx_sdl.put_pixels = _put_pixels_8bits_scale2; break;
+		case 2: gfx_sdl.put_pixels = _put_pixels_16bits_scale2; break;
+		case 4: gfx_sdl.put_pixels = _put_pixels_32bits_scale2; break;
+		}
+	}
 
 	return err_OK;
 }
@@ -298,85 +544,6 @@ static void sdl_put_block (int x1, int y1, int x2, int y2)
 		y2 *= scale;
 	}
 	SDL_UpdateRect (screen, x1, y1, x2 - x1 + 1, y2 - y1 + 1);
-}
-
-
-static void inline _put_pixel (int x, int y, int c)
-{
-	Uint32 pixel;
-	Uint8 *bits, bpp;
-
-	pixel = SDL_MapRGB (screen->format, color[c].r, color[c].g, color[c].b);
-
-	bpp = screen->format->BytesPerPixel;
-	bits = ((UINT8 *) screen->pixels) + y * screen->pitch + x * bpp;
-
-	/* Set the pixel */
-	switch (bpp) {
-	case 1:
-		*((UINT8 *) (bits)) = (Uint8) pixel;
-		break;
-	case 2:
-		*((UINT16 *) (bits)) = (Uint16) pixel;
-		break;
-	case 3:{
-		UINT8 r, g, b;
-		r = (pixel >> screen->format->Rshift) & 0xff;
-		g = (pixel >> screen->format->Gshift) & 0xff;
-		b = (pixel >> screen->format->Bshift) & 0xff;
-		*((bits) + screen->format->Rshift / 8) = r;
-		*((bits) + screen->format->Gshift / 8) = g;
-		*((bits) + screen->format->Bshift / 8) = b;
-		}
-		break;
-	case 4:
-		*((UINT32 *) (bits)) = (Uint32) pixel;
-		break;
-	}
-}
-
-
-/* put pixel routine */
-static void sdl_put_pixels (int x, int y, int w, Uint8 *p)
-{
-	register int c;
-	register int i, j;
-
-	if (w == 0)
-		return;
-
-	if (SDL_MUSTLOCK (screen)) {
-		if (SDL_LockSurface (screen) < 0)
-			return;
-	}
-
-	if (scale == 1) {
-		while (w--) {
-			_put_pixel (x++, y, *p++);
-		}
-	} else if (scale == 2) {
-		x <<= 1;
-		y <<= 1;
-		while (w--) {
-			c = *p++;
-			_put_pixel (x, y, c);
-			_put_pixel (x++, y + 1, c);
-			_put_pixel (x, y, c);
-			_put_pixel (x++, y + 1, c);
-		}
-	} else {
-		x *= scale;
-		y *= scale;
-		while (w--) {
-			c = *p++;
-			for (i = 0; i < scale; i++)
-				for (j = 0; j < scale; j++)
-					_put_pixel (x + i, y + j, c);
-		}
-	}
-
-	if (SDL_MUSTLOCK (screen))
-		SDL_UnlockSurface (screen);
 }
 
 
