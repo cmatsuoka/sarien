@@ -8,7 +8,7 @@ int num_tests;
 int num_failed;
 
 
-int main ()
+int main (int argc, char **argv)
 {
 	int i;
 	char input[40];
@@ -16,7 +16,7 @@ int main ()
 	/*
 	 * load the standard test game and resources
 	 */
-	if (agi_detect_game ("../../../jq") != err_OK)
+	if (agi_detect_game (argv[1]) != err_OK)
 		exit (0);
 	load_objects (OBJECTS);
 	load_words (WORDS);

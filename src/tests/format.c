@@ -28,10 +28,10 @@ void test_format ()
 	check ("escapes", "\\a\\b\\c 100\\% \\\\ \\%v0", "abc 100% \\ %v0");
 	check ("variable", "%v2 %v42 %v142", "2 42 142");
 	check ("fields", "%v2|1 %v2|0 %v2|3 %v42|4 %v142|2", "2  002 0042 42");
-	check ("object", "(%04)(%05)", "(phaser)(mushroom)");
-	check ("texts", "(%g28)", "(What the heck is a %w3?!)");
+	check ("object", "(%02)", "(test object)");
+	check ("texts", "(%g28)", "(I don't understand \"%w3\")");
 	check ("words", "%w1 %w2 %w3", "look test ");
 	check ("strings", "%s1", "a 100% %01 string test");
-	check ("message", "%m27", "What the heck is a test?!");
+	check ("message", "%m27", "I don't understand \"test\"");
 	check ("message", "(%m25)", "( 13:12:11 )");
 }
