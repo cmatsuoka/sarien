@@ -13,12 +13,6 @@
 #include <AEObjects.h>
 #include <AEPackObject.h>
 #include <Errors.h>
-//#include <Processes.h>
-//#include <QuickDraw.h>
-//#include <QDOffscreen.h>
-//#include <Palettes.h>
-//#include <ImageCompression.h>
-//#include <PictUtils.h>
 #include <Files.h>
 #include <stdlib.h>
 #include <string.h>
@@ -199,9 +193,6 @@ char *fixpath (int flag, char *fname)
 {
 	static char path[MAX_PATH];
 	char *s;
-
-	_D ("(flag = %d, fname = \"%s\")", flag, fname);
-	_D ("game.dir = %s", game.dir);
 
 	strcpy (path, game.dir);
 	if (*path && path[strlen (path) - 1] != ':')

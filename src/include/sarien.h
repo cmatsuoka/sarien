@@ -161,21 +161,21 @@ extern "C"{
 
 #ifdef _TRACE
 #  include <stdio.h>
-#ifdef __GNUC__
-#  define _D_INFO "\x1b[33m"
-#  define _D_CRIT "\x1b[31m"
-#  define _D_WARN "\x1b[36m"
-#  define _D(args...) do { \
+#  ifdef __GNUC__
+#    define _D_INFO "\x1b[33m"
+#    define _D_CRIT "\x1b[31m"
+#    define _D_WARN "\x1b[36m"
+#    define _D(args...) do { \
         printf("\x1b[33m" __PRETTY_FUNCTION__ " \x1b[37m[" __FILE__ \
         ":%d] " _D_INFO, __LINE__); printf (args); printf ("\x1b[0m\n"); \
         } while (0)
-#else
-#  define _D_INFO "I: "
-#  define _D_CRIT "C: "
-#  define _D_WARN "W: "
-#  define _D fflush (stdout); printf ("\n%s:%d: ", __FILE__, __LINE__); printf
-#endif /* __GNUC__ */
-#else
+#  else
+#    define _D_INFO "I: "
+#    define _D_CRIT "C: "
+#    define _D_WARN "W: "
+#    define _D fflush (stdout); printf ("\n%s:%d: ", __FILE__, __LINE__); printf
+#  endif /* __GNUC__ */
+#else /* _TRACE */
 #  define _D_INFO
 #  define _D_CRIT
 #  define _D_WARN
@@ -183,7 +183,7 @@ extern "C"{
 #    undef _D
 #  endif
 void _D(char *, ...);
-#endif
+#endif /* _TRACE */
 
 extern	UINT8	*exec_name;
 

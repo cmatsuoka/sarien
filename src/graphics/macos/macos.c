@@ -370,7 +370,7 @@ static int macos_init_vidmode ()
 	gfx_macos.put_pixels = _putpixels_16bits_scale1;
 
 	/* Create window */
-	SetRect (&window_rect, 50, 50, 50 + 320 - 1, 50 + 200 - 1);
+	SetRect (&window_rect, 50, 50, 50 + GFX_WIDTH - 1, 50 + GFX_HEIGHT - 1);
 	window = NewCWindow (NULL, &window_rect, "\pSarien", true,
 		noGrowDocProc, (WindowPtr) -1, false, NULL);
 
@@ -378,6 +378,7 @@ static int macos_init_vidmode ()
 	pix = GetGWorldPixMap (gworld);
 	LockPixels (pix);
 	wpix = ((CGrafPort *)window)->portPixMap;
+	//bpl = (*wpix)->rowBytes & 0x3fff;
 	screen_buffer = (UINT8 *)GetPixBaseAddr(pix);
 
 	/* set window to current graf port */
@@ -393,6 +394,7 @@ static int macos_init_vidmode ()
 
 static int macos_deinit_vidmode ()
 {
+	UnlockPixels (pix);
 	DisposePtr ((char *) gworld);
 	DisposeWindow (window);
 	return err_OK;
@@ -409,7 +411,8 @@ static void macos_put_block (int x1, int y1, int x2, int y2)
 	if (x2 >= GFX_WIDTH)  x2 = GFX_WIDTH  - 1;
 	if (y2 >= GFX_HEIGHT) y2 = GFX_HEIGHT - 1;
 
-	SetRect (&r, x1, y1, x2, y2);
+	//SetRect (&r, x1, y1, x2, y2);
+	SetRect (&r, 0, 0, 319, 199);
 
 	CopyBits ((BitMap *)*pix, (BitMap *)*wpix, &r, &r, srcCopy, 0L);
 }

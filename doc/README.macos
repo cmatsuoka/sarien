@@ -3,7 +3,10 @@ Notes on building Sarien using MPW
 ==================================
 
 The supplied Sarien.make makefile uses SC and ILink to build a m68k binary.
-To build Sarien with MPW, run 'make -f Sarien.make' in the MPW Shell.
+To build Sarien with MPW, set the current directory to the top of the sarien
+tree and run 'make -f Sarien.make' in the MPW Shell. Sarien.make must have
+type 'TEXT' and creator ID 'MPS ' (you can use an utility such as FileTyper
+to change the type and creator ID). 
 
 
 Acknowledgments
