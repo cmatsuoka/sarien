@@ -40,17 +40,18 @@ int get_app_dir (char *app_dir, unsigned int size)
 char* get_config_file (void)
 {
 	struct stat st;
+	static char rc_path[MAX_PATH];
 
 #ifdef HAVE_SNPRINTF
-	snprintf (ini_path, MAX_PATH - 1, "%s/.sarienrc", getenv ("HOME"));
+	snprintf (rc_path, MAX_PATH - 1, "%s/.sarienrc", getenv ("HOME"));
 #else
-	sprintf (ini_path, "%s/.sarienrc", getenv ("HOME"));
+	sprintf (rc_path, "%s/.sarienrc", getenv ("HOME"));
 #endif
 
 	if (stat (ini_path, &st) < 0)
-		strcpy (ini_path, "/etc/sarien.conf");
+		strcpy (rc_path, "/etc/sarien.conf");
 
-	return ini_path;
+	return rc_path;
 }
 
 char *get_current_directory ()

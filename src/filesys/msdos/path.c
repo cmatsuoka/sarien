@@ -14,8 +14,6 @@
 #include "sarien.h"
 #include "agi.h"
 
-char ini_path[MAX_PATH];
-
 
 int get_app_dir (char *app_dir, unsigned int size)
 {
@@ -39,6 +37,7 @@ int get_app_dir (char *app_dir, unsigned int size)
 
 char* get_config_file(void)
 {
+	static char ini_path[MAX_PATH];
 	char *q;
 
 	if (getenv ("SARIEN") != NULL) {

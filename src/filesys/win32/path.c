@@ -27,8 +27,6 @@
  * Application Data for NT
  */
 
-char ini_path[MAX_PATH];
-
 int get_app_dir (char *app_dir, unsigned int size)
 {
 	const char *szapp = "AppData";
@@ -55,6 +53,8 @@ int get_app_dir (char *app_dir, unsigned int size)
 /* Fixed by anonymous (bug #478600) */
 char *get_config_file()
 {
+	static char ini_path[MAX_PATH];
+
 	sprintf (ini_path, "%s/sarien.ini", getenv ("SARIEN") != NULL ?
 		getenv ("SARIEN") : ".")
 	
