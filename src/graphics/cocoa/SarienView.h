@@ -23,7 +23,6 @@
 	unichar key_queue[KEY_QUEUE_SIZE];
 	int     key_queue_start;
 	int     key_queue_end;
-	BOOL	key_alt;
 }
 
 - (unsigned int*)screenContent;

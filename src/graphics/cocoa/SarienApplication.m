@@ -19,38 +19,39 @@
 
 - (void)selectDidEnd:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo
 {
-    NSLog(@"selectDidEnd");
+	NSLog(@"selectDidEnd");
 }
+
 
 - (void)finishLaunching
 {
-    NSOpenPanel* panel;
+	NSOpenPanel* panel;
 
-    [super finishLaunching];
-    NSLog(@"SarienApplication finishLaunching");
+	[super finishLaunching];
+	NSLog(@"SarienApplication finishLaunching");
 
-    panel = [NSOpenPanel openPanel];
-    [panel setCanChooseFiles: NO];
-    [panel setCanChooseDirectories: YES];
-    [panel setDirectory:NSHomeDirectory()];
-    
-    if ([panel runModal])
-    {
-        chdir([[panel directory] cString]);
-        [NSThread detachNewThreadSelector:@selector(gameThread:) toTarget:self withObject:self];
-    }
-    else
-    {
-        [NSApp terminate: self];
-    }
+	panel = [NSOpenPanel openPanel];
+	[panel setCanChooseFiles: NO];
+	[panel setCanChooseDirectories: YES];
+	[panel setDirectory:NSHomeDirectory()];
+	
+	if ([panel runModal]) {
+		chdir([[panel directory] cString]);
+		[NSThread detachNewThreadSelector:@selector(gameThread:)
+			toTarget:self withObject:self];
+	} else {
+		[NSApp terminate: self];
+	}
 }
+
 
 - (void)gameThread:(id)info
 {
-    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
+	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 
-    gamemain(__argc, __argv);
-    [pool release];
+	gamemain(__argc, __argv);
+	[pool release];
 }
 
 @end
+

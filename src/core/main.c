@@ -38,6 +38,7 @@ INLINE void _D (char *s, ...) { s = s; }
 #endif
 
 #ifdef MACOSX
+/* real main for OS X is in src/graphics/cocoa/cocoa.m */
 #define main gamemain
 #endif
 

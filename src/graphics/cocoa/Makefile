@@ -9,5 +9,6 @@ LIB	= ../../../lib/libsarien.a
 
 all: $(LIB)
 
+include ../../../Version
 include ../../../Rules
 

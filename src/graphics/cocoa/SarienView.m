@@ -129,13 +129,11 @@
 	length     = [characters length];
     
 	[mutex lock];
-
 	for (i = 0; i < length; i++) {
 		// NSLog(@"Key Down: %d", [characters characterAtIndex: i]);
 		key_queue[key_queue_end++] = [characters characterAtIndex: i];
 		key_queue_end %= KEY_QUEUE_SIZE;
 	}
-
 	[mutex unlock];
 }
 
@@ -170,6 +168,8 @@
 		key_queue_end %= KEY_QUEUE_SIZE;
 		mouse.button = TRUE;
 		break;
+	default:	// address enumeration value not handled warning
+		break;
 	}
 
 	[mutex unlock];
@@ -193,6 +193,8 @@
 	k = key_queue[key_queue_start++];
 	key_queue_start %= KEY_QUEUE_SIZE;
 	[mutex unlock];
+		
+	/* FIXME: check NSAlternateKeyMask to handle Alt+key */
 
 	switch (k) {
 		case NSUpArrowFunctionKey:	return KEY_UP;
@@ -221,6 +223,10 @@
 		case NSF8FunctionKey:		return 0x4200;
 		case NSF9FunctionKey:		return 0x4300;
 		case NSF10FunctionKey:		return 0x4400;
+		case NSF11FunctionKey:		return KEY_STATUSLN;
+		case NSF12FunctionKey:		return KEY_PRIORITY;
+
+		default:			break;
 	}
     
 	return k;

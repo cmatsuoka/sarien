@@ -26,4 +26,6 @@
 - (IBAction)setScale2x:(id)sender;
 - (IBAction)setScale3x:(id)sender;
 - (IBAction)setScale4x:(id)sender;
+
 @end
+
