@@ -768,7 +768,7 @@ void show_pic ()
 #endif
 
 	i = 0;
-	offset = game.status_line ? CHAR_LINES : 0;
+	offset = game.line_min_print * CHAR_LINES;
 	for (y = 0; y < _HEIGHT; y++) {
 		put_pixels_a (0, y + offset, _WIDTH, &game.sbuf[i]);
 		i += _WIDTH;

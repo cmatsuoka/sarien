@@ -551,7 +551,7 @@ void show_hires_pic ()
 	int offset;
 
 	i = 0;
-	offset = game.status_line ? CHAR_LINES : 0;
+	offset = game.line_min_print * CHAR_LINES;
 	for (y = 0; y < _HEIGHT; y++) {
 		put_pixels_hires (0, y + offset, _WIDTH * 2,
 			&game.hires[i]);

@@ -184,7 +184,7 @@ static void objs_restorearea (struct sprite *s)
 	h0 = &game.hires[(s->x_pos + s->y_pos * _WIDTH) * 2];
 	k = s->hires;
 #endif
-	offset = game.status_line ? CHAR_LINES : 0;
+	offset = game.line_min_print * CHAR_LINES;
 	for (y = 0; y < s->y_size; y++) {
 		memcpy (p0, q, s->x_size);
 		put_pixels_a (s->x_pos, s->y_pos + y + offset, s->x_size, p0);
@@ -701,7 +701,7 @@ void commit_block (int x1, int y1, int x2, int y2)
 #ifdef USE_HIRES
 	h = &game.hires[(x1 + _WIDTH * y1) * 2];
 #endif
-	offset = game.status_line ? CHAR_LINES : 0;
+	offset = game.line_min_print * CHAR_LINES;
 	for (i = y1; i <= y2; i++) {
 		put_pixels_a (x1, i + offset, w, q);
 		q += _WIDTH;
