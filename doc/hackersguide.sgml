@@ -290,7 +290,7 @@
     </varlistentry>
 
     <varlistentry>
-      <term><varname role="macro"/DISABLE_COPYPROTECTION/</term>
+      <term><varname role="macro"/PATCH_LOGIC/</term>
       <listitem><para>
         Patch some known AGI scripts to bypass annoying or time-consuming
         sequences during the development of the interpreter.

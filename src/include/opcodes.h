@@ -32,7 +32,7 @@ int	test_if_code	(int);
 void	new_room	(int);
 void	execute_agi_command	(UINT8, UINT8 *);
 
-#ifdef DISABLE_COPYPROTECTION
+#ifdef PATCH_LOGIC
 void	patch_logic	(int);
 #endif
 

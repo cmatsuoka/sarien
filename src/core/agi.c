@@ -212,7 +212,7 @@ int agi_load_resource (int r, int n)
 	int i;
 
 	i = loader->load_resource (r, n);
-#ifdef DISABLE_COPYPROTECTION
+#ifdef PATCH_LOGIC
 	if (r == rLOGIC)
 		patch_logic (n);
 #endif

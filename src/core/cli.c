@@ -178,8 +178,8 @@ int parse_cli (int argc, char **argv)
 		switch (o) {
 		case 'V':
 			printf ("Version : " VERSION " Compiled on " __DATE__ "; " __TIME__ "\n");
-			printf ("Disable Copyprotection is ");
-#ifdef DISABLE_COPYPROTECTION
+			printf ("Logic patching is ");
+#ifdef PATCH_LOGIC
 			printf ("enabled\n");
 #else
 			printf ("disabled\n");

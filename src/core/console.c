@@ -326,7 +326,7 @@ static void ccmd_agiver ()
 	maj = (ver >> 12) & 0xf;
 	min = ver & 0xfff;
 
-	report (maj == 2 ? "%x.%03x\n" : "%x.002.%03x\n", maj, min);
+	report (maj <= 2 ? "%x.%03x\n" : "%x.002.%03x\n", maj, min);
 	return;
 }
 

@@ -130,11 +130,7 @@ extern "C"{
 #define MENU_LINE	0x00		/* Black */
 #define STATUS_FG	0x00		/* Black */
 #define	STATUS_BG	0x0f		/* White */
-
-#ifdef _TRACE
-#define DISABLE_COPYPROTECTION		/* only works on some games */
-#endif
-
+#define PATCH_LOGIC	/* disable copy protection on some games */
 
 UINT8	lohi_getbyte	(UINT8 *);
 UINT16	lohi_getword	(UINT8 *);

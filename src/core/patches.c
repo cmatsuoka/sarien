@@ -14,7 +14,7 @@
 #include "agi.h"
 #include "opcodes.h"
 
-#ifdef DISABLE_COPYPROTECTION
+#ifdef PATCH_LOGIC
 
 #define ip (game.logics[n].cIP)
 #define code (game.logics[n].data)
@@ -57,6 +57,7 @@ static UINT8 grdata_fix[]= {
 	0x0C, 0x0F, 0x12, 0x49
 };
 
+#if 0
 static UINT8 lsl1data_find[]= {
 	0xFF, 0xFD, 0x07, 0x1E, 0xFC, 0x07, 0x6D, 0x01,
 	0x5F, 0x03, 0xFC, 0xFF, 0x12, 0x00, 0x0C, 0x6D,
@@ -74,6 +75,7 @@ static UINT8 lsl1data_fix[]= {
 	0x0C, 0x6D, 0x0D, 0x30, 0x0D, 0x55, 0x78, 0x12,
 	0x0B
 };
+#endif
 
 static UINT8 mh1data_find[]= {
 	0xFF, 0x07, 0x05, 0xFF, 0xE6, 0x00,
@@ -91,6 +93,8 @@ static UINT8 mh1data_fix[]= {
 void patch_logic (int n)
 {
 	switch(n) {
+#if 0
+	/* ALT-Z in the questions takes care of that */
 	case 6:
 		/* lsl1 bypass questions */
 		if (!strcmp (game.id, "LLLLL")) {
@@ -98,6 +102,7 @@ void patch_logic (int n)
 				memmove ((code+ip), lsl1data_fix, 9);
 		}
 		break;
+#endif
 	case 125:
 		/* gold rush code break */
 		if (!strcmp (game.id, "GR")) {
