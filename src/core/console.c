@@ -8,6 +8,7 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
+#include <assert.h>
 #include "sarien.h"
 
 #ifdef USE_CONSOLE
@@ -48,16 +49,21 @@
 
 
 struct console_command {
-	struct console_command *next;
-	char *cmd;
-	char *dsc;
+	char cmd[8];
+	char dsc[40];
 	void (*handler)(void);
 };
 
 struct sarien_console console;
 struct sarien_debug debug;
 
-static struct console_command *ccmd_head = NULL;
+/* This used to be a linked list, but we reduce total memory footprint
+ * by implementing it as a statically allocated array.
+ */
+#define MAX_CCMD 16
+static struct console_command ccmd_list[MAX_CCMD];
+static int num_ccmd = 0;
+
 static UINT8 has_console;
 static UINT8 console_input = 0;
 
@@ -105,7 +111,7 @@ static char *get_last_console_line ()
 static UINT8 console_parse (char *b)
 {
 	struct console_command *d;
-	UINT8 i;
+	int i;
 
 	for (; *b && *b == ' '; b++) {}	/* eat spaces */
 	for (; *b && b[strlen(b) - 1] == ' '; b[strlen(b) - 1] = 0) {}
@@ -163,7 +169,8 @@ static UINT8 console_parse (char *b)
 	if (!_p1) _pn = 0;
 	_D (_D_WARN "number of parameters: %d", _pn);
 
-	for (d = ccmd_head; d; d = d->next) {
+	for (i = 0; i < num_ccmd; i++) {
+		d = &ccmd_list[i];
 		if (!strcmp (_p0, d->cmd) && d->handler) {
 			d->handler ();
 			return 0;
@@ -202,19 +209,19 @@ static UINT8 console_parse (char *b)
 
 static void ccmd_help ()
 {
-	struct console_command *d;
+	int i;
 
 	if (!_p1) {
 		report ("Command Description\n");
 		report ("------- --------------------------------\n");
-		for (d = ccmd_head; d; d = d->next)
-			report ("%-8s%s\n", d->cmd, d->dsc);
+		for (i = 0; i < num_ccmd; i++)
+			report ("%-8s%s\n", ccmd_list[i].cmd, ccmd_list[i].dsc);
 		return;
 	}
 
-	for (d = ccmd_head; d; d = d->next) {
-		if (!strcmp (d->cmd, _p1) && d->handler) { 
-			report ("%s\n", d->dsc);
+	for (i = 0; i < num_ccmd; i++) {
+		if (!strcmp (ccmd_list[i].cmd, _p1) && ccmd_list[i].handler) { 
+			report ("%s\n", ccmd_list[i].dsc);
 			return;
 		}
 	}
@@ -441,21 +448,13 @@ static void ccmd_cont ()
  */
 static void console_cmd (char *cmd, char *dsc, void (*handler)(void))
 {
-	struct console_command *c, *d;
+	assert (num_ccmd < MAX_CCMD);
 
-	c = malloc (sizeof (struct console_command));
-	c->cmd = strdup (cmd);
-	c->dsc = strdup (dsc);
-	c->handler = handler;
-	c->next = NULL;
+	strcpy (ccmd_list[num_ccmd].cmd, cmd);
+	strcpy (ccmd_list[num_ccmd].dsc, dsc);
+	ccmd_list[num_ccmd].handler = handler;
 
-	if (ccmd_head == NULL) {
-		ccmd_head = c;
-		return;
-	}
-
-	for (d = ccmd_head; d->next; d = d->next) {}
-	d->next = c;
+	num_ccmd++;
 }
 
 
