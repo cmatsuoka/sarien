@@ -74,8 +74,12 @@ int view_pictures ()
 		put_screen ();
 		
 update_statusline:
+#ifdef USE_HIRES
 		sprintf (x, "Picture:%3i                  Hi-res: %3s",
 			pic, opt.hires ? " on" : "off");
+#else
+		sprintf (x, "Picture:%3i                  Hi-res: N/A", pic);
+#endif
 		print_text (x, 0, 0, 0, strlen (x) + 1, 0, 15);
 		sprintf (x, "H:Hi-res     P:Vis/Prio    +:Next -:Prev");
 		print_text (x, 0, 0, 23, strlen (x) + 1, 15, 0);

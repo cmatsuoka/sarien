@@ -154,8 +154,8 @@ static void objs_restorearea (struct sprite *s)
 		put_pixels_hires (s->x_pos * 2, s->y_pos + y, s->x_size * 2,h0);
 		k += s->x_size * 2;
 		h0 += _WIDTH * 2;
-	}
 #endif
+	}
 }
 
 
