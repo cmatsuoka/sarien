@@ -278,6 +278,10 @@ cmd(draw) {
 	vt.cel_data_2 = vt.cel_data;
 	erase_upd_sprites ();
 	vt.flags |= DRAWN;
+
+	if (agi_get_release() <= 0x2440)	/* See bug #546562 */
+		vt.flags |= ANIMATED;
+
 	blit_upd_sprites ();
 	vt.flags &= ~DONTUPDATE;
 
