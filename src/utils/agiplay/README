@@ -1,0 +1,13 @@
+
+agiplay is a quick hack to play Sierra AGI sound resources in Linux using
+the OSS /dev/audio device. Just change init_sound(), close_sound() and
+dump_buffer() to port it to other systems.
+
+Updated: added envelope and interpolation from Sarien 0.2.4.7 sound routines.
+
+---
+
+TODO:
+
+Use sarien sound drivers from src/sound/
+
