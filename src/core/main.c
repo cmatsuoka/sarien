@@ -28,7 +28,6 @@ volatile UINT32 clock_ticks;
 volatile UINT32 clock_count;
 
 extern int optind;
-extern UINT8 *cur_font, font_english[];
 
 struct sarien_options opt;
 struct game_id_list game_info;
@@ -79,8 +78,6 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 
 	game.color_fg = 15;
 	game.color_bg = 0;
-
-	cur_font = font_english;
 
 	if (init_video () != err_OK) {
 		ec = err_Unk;

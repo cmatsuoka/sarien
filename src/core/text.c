@@ -341,9 +341,10 @@ void print_status (char *message, ...)
  * @param s  string containing the format specifier
  * @param n  logic number
  */
+#define MAX_LEN 768
 char *agi_sprintf (char *s)
 {
-	static char x[512], y[512];
+	static char x[MAX_LEN], y[MAX_LEN];
 	char z[16], *p;
 	int xx, xy;
 
@@ -407,7 +408,7 @@ char *agi_sprintf (char *s)
 			break;
 
 		default:
-			assert (p < x + 512);
+			assert (p < x + MAX_LEN);
 			*p++ = *s++;
 			*p = 0;
 			break;
