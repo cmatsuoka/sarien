@@ -19,6 +19,7 @@
 #include "agi.h"
 #include "text.h"
 #include "graphics.h"
+#include "sprite.h"
 
 
 #ifndef MACOSX_SDL

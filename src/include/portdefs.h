@@ -20,6 +20,18 @@ char g_gamename[255];
 static char g_vmu_port[2];
 #endif
 
+#ifdef __TURBOC__
+#  undef USE_PCM_SOUND
+#  undef USE_MOUSE
+#endif
+
+#ifdef __MPW__
+#  undef USE_COMMAND_LINE
+#  undef OPT_LIST_OBJECTS
+#  undef OPT_PICTURE_VIEWER
+#  undef OPT_LIST_DICT
+#endif
+
 #ifdef PALMOS
 #  include <PalmOS.h>
 #  undef USE_CONSOLE
@@ -48,10 +60,6 @@ static char g_vmu_port[2];
 #  undef OPT_LIST_DICT
 #endif
 
-#ifdef __TURBOC__
-#  undef USE_PCM_SOUND
-#  undef USE_MOUSE
-#endif
 
 /*
  * Memory allocation
@@ -87,10 +95,6 @@ static char g_vmu_port[2];
 #  define calloc(x,s)	((void *)NewPtrClear ((x) * (s)))
 #  define realloc(x,s)	(x) /* FIXME */
 #  define free(x)	DisposePtr ((Ptr)(x))
-#  undef USE_COMMAND_LINE
-#  undef OPT_LIST_OBJECTS
-#  undef OPT_PICTURE_VIEWER
-#  undef OPT_LIST_DICT
 #endif
 
 #ifdef PALMOS

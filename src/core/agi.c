@@ -84,15 +84,14 @@ int agi_init ()
 
 	/* setup emulation */
 
-	report ("Emulating Sierra AGI v");
 	switch (loader->int_version >> 12) {
 	case 2:
-		report ("%x.%03x\n",
+		report ("Emulating Sierra AGI v%x.%03x\n",
 			(int)(loader->int_version >> 12) & 0xF,
 			(int)(loader->int_version) & 0xFFF);
 		break;
 	case 3:
-		report ("%x.002.%03x\n",
+		report ("Emulating Sierra AGI v%x.002.%03x\n",
 			(int)(loader->int_version >> 12) & 0xF,
 			(int)(loader->int_version) & 0xFFF);
 		break;

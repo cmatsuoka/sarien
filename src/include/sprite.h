@@ -11,6 +11,8 @@
 #ifndef __AGI_SPRITE_H
 #define __AGI_SPRITE_H
 
+int	init_sprites		(void);
+void	deinit_sprites		(void);
 void	erase_upd_sprites	(void);
 void	erase_nonupd_sprites	(void);
 void	erase_both		(void);
