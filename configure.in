@@ -77,7 +77,7 @@ nto*|qnx*)
 	AC_CHECK_HEADERS(Pt.h Ph.h)
 	;;
 cygwin*|mingw*)
-	AC_CHECK_HEADERS(wingdi.h)
+	AC_CHECK_HEADERS(wingdi.h,,,[#include<windows.h>])
 	MAIN_FILE="win32/winmain"
 	with_win32="yes"
 	CORE_ARCH="win32"
