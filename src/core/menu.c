@@ -23,6 +23,7 @@ static struct agi_menu *master_menu;
 struct agi_menu *menu;
 
 extern struct sarien_console console;
+extern struct agi_event events[];
 extern UINT8 clock_enabled;
 extern struct gfx_driver *gfx;
 
