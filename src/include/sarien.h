@@ -82,10 +82,14 @@ extern "C"{
 #  define _D_INFO
 #  define _D_CRIT
 #  define _D_WARN
-#  ifdef _D
-#    undef _D
-#  endif
-void _D(char *, ...);
+#  ifdef __GNUC__
+#    define _D(args...)
+#  else
+#    ifdef _D
+#      undef _D
+#    endif
+     void _D(char *, ...);
+#  endif /* __GNUC__ */
 #endif /* _TRACE */
 
 

@@ -33,7 +33,7 @@ struct sarien_options opt;
 struct game_id_list game_info;
 struct agi_game game;
 
-#ifndef _TRACE
+#if !defined(_TRACE) && !defined(__GNUC__)
 INLINE void _D (char *s, ...) { s = s; }
 #endif
 
