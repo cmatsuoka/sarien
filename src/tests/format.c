@@ -2,6 +2,31 @@
 #include "test.h"
 
 
+static int load_game (char *s)
+{
+	int rc = 0;
+
+	rc = (agi_detect_game (s) == err_OK);
+
+	if (rc) {
+		load_objects (OBJECTS);
+		load_words (WORDS);
+		agi_load_resource (rLOGIC, 0);
+	}
+
+	return rc;
+}
+
+
+static void say (char *s)
+{
+	char input[40];
+
+	strcpy (input, s);
+	dictionary_words (input);
+}
+
+
 static test_result c (char *test, char *expected)
 {
 	char result[MAX_LEN];
@@ -35,21 +60,22 @@ TEST_MODULE(test_format)
 	/*
 	 * load template game resources
 	 */
-	if (st_load_game ("template")) {
-		st_say ("look at this test");
+	if (load_game ("template")) {
 		strcpy (game.strings[1], "a 100% %01 string test");
+		say ("look at this test");
 	} else {
 		test_disable (module, "needs template game");
 	}
 
-	setvar (13,13);
-	setvar (14,14);
-	setvar (15,15);
-
 	TEST("object", c("(%02)", "(test object)"));
 	TEST("texts", c("(%g28)", "(I don't understand \"%w3\")"));
-	TEST("words", c("%w1 %w2 %w3", "look test "));
 	TEST("strings", c("%s1", "a 100% %01 string test"));
+	TEST("words", c("%w1 %w2 %w3", "look test "));
 	TEST("message", c("%m27", "I don't understand \"test\""));
-	TEST("message", c("(%m25)", "( 13:14:15 )"));
+
+	setvar (11,11);
+	setvar (12,12);
+	setvar (13,13);
+
+	TEST("message", c("(%m25)", "( 13:12:11 )"));
 }

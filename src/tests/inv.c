@@ -25,6 +25,8 @@ TEST_MODULE(test_inventory)
 {
 	UINT8 p[10];
 
+	game.num_objects = 5;
+
 	sprintf (p, "%c", 1);
 	TEST ("get", c(0x5c, 1, EGO_OWNED, p));
 	TEST ("drop", c(0x5e, 1, 0, p));
@@ -38,15 +40,11 @@ TEST_MODULE(test_inventory)
 	setvar (101, 2); sprintf (p, "%c%c", 101, 100);
 	TEST ("put.v", c(0x60, 2, 10, p));
 
-	if (test_previous != TEST_OK)
-		test_disable (module, "Previous test failed");
-
+	object_set_location (2,42);
 	setvar (100, 2); sprintf (p, "%c%c", 100, 101);
+	execute_agi_command (0x61, p);
 	TEST ("get.room.v", (test_report ("object %d in room %d", 2,
-		getvar(101)), getvar (101) == 10 ? TEST_OK :
-		(test_report (" [Expected: %d]", 10), TEST_FAIL)));
-
-	test_enable (module);
+		getvar(101)), getvar (101) == 42 ? TEST_OK :
+		(test_report (" [Expected: %d]", 42), TEST_FAIL)));
 }
-
 

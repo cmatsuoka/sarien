@@ -11,30 +11,6 @@ INLINE void _D (char *s, ...) { s = s; }
 #endif
 
 
-int st_load_game (char *s)
-{
-	int rc = 0;
-
-	rc = (agi_detect_game (s) == err_OK);
-
-	if (rc) {
-		load_objects (OBJECTS);
-		load_words (WORDS);
-		agi_load_resource (rLOGIC, 0);
-	}
-
-	return rc;
-}
-
-
-void st_say (char *s)
-{
-	char input[40];
-
-	strcpy (input, s);
-	dictionary_words (input);
-}
-
 
 int main (int argc, char **argv)
 {

@@ -503,7 +503,7 @@ char *agi_sprintf (char *s)
 				i = strtoul (s, NULL, 10);
 				while (*s >= '0' && *s <= '9')
 					s++;
-				sprintf (z, "%03i", getvar(i));
+				sprintf (z, "%015i", getvar(i));
 
 				i = 99;
 				if (*s == '|') {
@@ -516,9 +516,9 @@ char *agi_sprintf (char *s)
 				if (i == 99) {
 					/* remove all leading 0 */
 					/* don't remove the 3rd zero if 000 */
-					for (i = 0; z[i] == '0' && i < 2; i++);
+					for (i = 0; z[i] == '0' && i <= 15; i++);
 				} else {
-					i = 3 - i;
+					i = 15 - i;
 				}
 				safe_strcat(p, z + i);
 				break;
