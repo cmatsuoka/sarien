@@ -253,7 +253,10 @@ void start_sound (int resnum, int flag)
 
 	stop_sound ();
 
-	type = lohi_getword ((UINT8 *)game.sounds[resnum].rdata);
+	if (game.sounds[resnum].rdata == NULL)
+		return;
+
+	type = lohi_getword (game.sounds[resnum].rdata);
 
 	if (type != AGI_SOUND_SAMPLE &&
 		type != AGI_SOUND_MIDI &&
