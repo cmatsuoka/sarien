@@ -203,8 +203,11 @@ static UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 	_D ("path = %s", path);
 
 	if (agid->offset != _EMPTY && (fp = fopen (path, "rb")) != NULL) {
-		_D ("loading resource");
-		fseek (fp, agid->offset, SEEK_SET);
+		_D ("loading resource at offset %d", agid->offset);
+		if (fseek (fp, agid->offset, SEEK_SET) < 0) {
+			agid->offset = _EMPTY;
+			return NULL;
+		}
 		fread (&x, 1, 5, fp);
 		if ((sig = hilo_getword (x)) == 0x1234) {
 			agid->len = lohi_getword (x + 3);
@@ -222,8 +225,8 @@ static UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 			deinit_video_mode ();
 #endif
 			report ("Error: bad signature %04x\n", sig);
-			fprintf (stderr, "ACK! BAD RESOURCE!!!\n");
-			abort ();
+			/* fprintf (stderr, "ACK! BAD RESOURCE!!!\n"); */
+			return 0;
 		}
 		fclose (fp);
 	} else {

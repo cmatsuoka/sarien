@@ -62,8 +62,12 @@ int view_pictures ()
 		}
 		
 		_D ("picture = %d", pic);
-		if ((ec = agi_load_resource (rPICTURE, pic)) != err_OK)
-			continue;
+		if ((ec = agi_load_resource (rPICTURE, pic)) != err_OK) {
+			_D (_D_CRIT "Whoops. bad pic %d", pic);
+			ec = err_OK;
+			pic += dir;
+			goto next_pic;
+		}
 
 		print_text ("[drawing]", 0, 16, 0, strlen (x) + 1, 0, 15);
 
