@@ -9,6 +9,7 @@ Tested ports:
  Linux   |  gcc  |   X11   |OSS,ALSA |   yes   |    no   |   yes   |
  Linux   |  gcc  | SVGAlib |  dummy  |    no   |   yes   |    no   |
  Linux   |  gcc  |   SDL   |   SDL   |   yes   |   yes   |   yes   |
+ FreeBSD |  gcc  |   X11   | freebsd |   yes   |    no   |   yes   |
  NetBSD  |  gcc  |   X11   |   BSD   |   yes   |    no   |    no   |
  Solaris |  gcc  |   X11   | solaris |   yes   |    no   |   yes   |
  AIX 4   |  gcc  |   X11   |  dummy  |   yes   |    no   |    no   |
@@ -35,7 +36,6 @@ Untested, expected to work:
                   Graphics   Sound    Windowed  Fullscreen
          Compiler  Driver    Driver   Graphics  Graphics    Sound
 ---------+-------+---------+---------+---------+---------+---------+
- FreeBSD |  gcc  |   X11   |   OSS   |   yes   |    no   |    no   |
  OpenBSD |  gcc  |   X11   |   BSD   |   yes   |    no   |    no   |
  S/Linux |  gcc  |   X11   |   BSD   |   yes   |    no   |   yes   |
  HP-UX   |  gcc  |   X11   |  dummy  |   yes   |    no   |    no   |
