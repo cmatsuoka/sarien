@@ -25,6 +25,10 @@ void	release_sprites	(void);
 void	draw_sprites	(void);
 void	redraw_sprites	(void);
 
+void	save_screen	(void);
+void	restore_screen	(void);
+void	restore_screen_area	(void);
+
 void	print_character	(int, int, char, int, int);
 
 int	init_video_mode	(void);

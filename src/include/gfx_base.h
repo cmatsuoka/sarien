@@ -45,9 +45,11 @@ void	do_blit		(void);
 int	init_video	(void);
 int	deinit_video	(void);
 void	shake_screen	(int);
-void	save_screen	(void);
-void	restore_screen	(void);
-void	restore_screen_area	(void);
+void	_save_screen	(void);
+void	_restore_screen	(void);
+void	_restore_screen_area	(void);
+void	_flush_screen	(void);
+void	_flush_screen_area	(void);
 void	put_screen	(void);
 void	clear_buffer	(void);
 void	set_block	(int, int, int, int);
@@ -61,5 +63,7 @@ void	print_character	(int, int, char, int, int);
 #ifdef __cplusplus
 };
 #endif
-#endif
+
+#endif /* __AGI_GFX_BASE_H */
+
 

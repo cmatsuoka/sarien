@@ -317,4 +317,26 @@ void put_block_buffer (UINT8 *buff)
 }
 
 
+void save_screen ()
+{
+	_save_screen ();
+}
+
+
+void restore_screen ()
+{
+	_restore_screen ();
+	redraw_sprites ();
+	_flush_screen ();
+	release_sprites ();
+}
+
+
+void restore_screen_area ()
+{
+	_restore_screen_area ();
+	redraw_sprites ();
+	_flush_screen_area ();
+	release_sprites ();
+}
 

@@ -50,8 +50,6 @@ UINT8		txt_char;		/* input character */
 /* for the blitter routine */
 static int x_min = 320, x_max = 0, y_min = 200, y_max = 0;
  
-/* Ugly kludge for nonblocking windows */
-static int k_x1, k_y1, k_x2, k_y2;
 
 extern struct sarien_console console;
 
@@ -110,27 +108,33 @@ void clear_buffer ()
 }
 
 
-/* save_screen and restore_screen work on the 320x200 visible screen */
+/*
+ * Save/restore visible screen framebuffer
+ * Never call these functions directly, use the gfx_agi.h wrappers
+ * instead
+ */
+
 static UINT8 back_buffer[320 * 200];
 
-void save_screen ()
+/* Kludge for nonblocking windows */
+static int k_x1, k_y1, k_x2, k_y2;
+
+void _save_screen ()
 {
 	memcpy (back_buffer, layer1_data, 320 * 200);
 }
 
-
-/* FIXME!! can't call gfx_agi functions from here!! */
-void restore_screen ()
+void _restore_screen ()
 {
 	memcpy (layer1_data, back_buffer, 320 * 200);
-
-	redraw_sprites ();
-	flush_block (0, 0, 319, 199);
-	release_sprites ();
 }
 
+void _flush_screen ()
+{
+	flush_block (0, 0, 319, 199);
+}
 
-void restore_screen_area ()	/* Yuck! */
+void _restore_screen_area ()	/* Yuck! */
 {
 	int i;
 
@@ -141,11 +145,13 @@ void restore_screen_area ()	/* Yuck! */
 		memcpy (&layer1_data[320 * i + k_x1],
 			&back_buffer[320 * i + k_x1],
 			k_x2 - k_x1 + 1);
-
-	redraw_sprites ();
-	flush_block (k_x1, k_y1, k_x2, k_y2);
-	release_sprites ();
 }
+
+void _flush_screen_area ()
+{
+	flush_block (k_x1, k_y1, k_x2, k_y2);
+}
+
 
 
 /* Based on LAGII 0.1.5 by XoXus */
