@@ -31,9 +31,6 @@ extern struct agi_logic logics[];
 extern struct agi_view views[];
 extern struct agi_view_table view_table[];
 
-extern struct gfx_driver *gfx;
-
-
 static void update_objects ()
 {
 	int i, ccel;
@@ -488,7 +485,7 @@ void main_cycle (int accept_key)
 {
 	static UINT32 msg_box_ticks = 0;
 
-	gfx->poll_timer ();	/* msdos driver -> does nothing */
+	poll_timer ();		/* msdos driver -> does nothing */
 	update_timer ();
 
 	poll_keyboard ();

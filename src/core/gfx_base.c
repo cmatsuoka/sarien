@@ -312,3 +312,8 @@ void put_screen ()
 	gfx->put_block (0, 0, 319, 199);
 }
 
+
+void poll_timer ()
+{
+	gfx->poll_timer ();
+}

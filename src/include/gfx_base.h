@@ -60,6 +60,8 @@ void	build_console_layer (void);
 
 void	print_character	(int, int, char, int, int);
 
+void	poll_timer	(void);
+
 #ifdef __cplusplus
 };
 #endif
