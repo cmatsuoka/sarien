@@ -14,10 +14,10 @@ static void put_hires_pixel (int x, int y)
 {
 	UINT8 *p;
 
-	if (x >= (_WIDTH * 4) || y >= (_HEIGHT * 2))
+	if (x < 0 || y < 0 || x >= (_WIDTH * 2) || y >= _HEIGHT)
 		return;
 
-	p = &game.hires[y * (_WIDTH * 4) + x];
+	p = &game.hires[y * (_WIDTH * 2) + x];
 
 	if (pri_on) *p = (pri_colour << 4) | (*p & 0x0f);
 	if (scr_on) *p = scr_colour | (*p & 0xf0);
@@ -38,10 +38,10 @@ static void draw_hires_line (int x1, int y1, int x2, int y2)
 
 	/* CM: Do clipping */
 #define clip(x, y) if((x)>=(y)) (x)=(y)
-	clip (x1, (_WIDTH * 4) - 1);
-	clip (x2, (_WIDTH * 4) - 1);
-	clip (y1, (_HEIGHT * 2) - 1);
-	clip (y2, (_HEIGHT * 2) - 1);
+	clip (x1, (_WIDTH * 2) - 1);
+	clip (x2, (_WIDTH * 2) - 1);
+	clip (y1, _HEIGHT - 1);
+	clip (y2, _HEIGHT - 1);
 
 	/* Vertical line */
 
@@ -52,8 +52,10 @@ static void draw_hires_line (int x1, int y1, int x2, int y2)
 			y2 = y;
 		}
 
-		for ( ; y1 <= y2; y1++)
+		for ( ; y1 <= y2; y1++) {
 			put_hires_pixel (x1, y1);
+			put_hires_pixel (x1 + 1, y1);
+		}
 
 		return;
 	}
@@ -68,7 +70,7 @@ static void draw_hires_line (int x1, int y1, int x2, int y2)
 		}
 
    		for( ; x1 <= x2; x1++)
-   			put_hires_pixel (x1, y1);
+			put_hires_pixel (x1, y1);
 
 		return;
 	}
@@ -117,7 +119,8 @@ static void draw_hires_line (int x1, int y1, int x2, int y2)
 			x += stepX;
 		}
 
-		put_hires_pixel(x, y);
+		put_hires_pixel (x, y);
+		//put_hires_pixel (x + 1, y);
 		i--;
 	} while (i > 0);
 
@@ -133,8 +136,8 @@ static void dynamic_hires_line ()
 {
 	int x1, y1, disp, dx, dy;
 
-	x1 = 4 * next_byte;
-	y1 = 2 * next_byte;
+	x1 = 2 * next_byte;
+	y1 = next_byte;
 
 	put_hires_pixel (x1, y1);
 
@@ -151,8 +154,7 @@ static void dynamic_hires_line ()
 	      	if (dy & 0x08)
 			dy = -(dy & 0x07);
 
-		dx *= 4;
-		dy *= 2;
+		dx *= 2;
 
 		draw_hires_line (x1, y1, x1 + dx, y1 + dy);
 		x1 += dx;
@@ -170,8 +172,8 @@ static void absolute_hires_line ()
 {
 	int x1, y1, x2, y2;
 
-	x1 = 4 * next_byte;
-	y1 = 2 * next_byte;
+	x1 = 2 * next_byte;
+	y1 = next_byte;
 	put_hires_pixel (x1, y1);
 
 	while (42) {
@@ -181,8 +183,7 @@ static void absolute_hires_line ()
 		if ((y2 = next_byte) >= 0xf0)
 			break;
 
-		x2 *= 4;
-		y2 *= 2;
+		x2 *= 2;
 
 		draw_hires_line (x1, y1, x2, y2);
 		x1 = x2;
@@ -202,10 +203,15 @@ static INLINE int hires_fill_here (int x, int y)
 	if (!scr_on && !pri_on)
 		return FALSE;
 
-	p = game.hires[(y * 2) * (_WIDTH * 4) + x * 4];
-	if (scr_on && (p & 0x0f) == scr_colour)
+	if (scr_on && scr_colour == 0x0f)
 		return FALSE;
-	if (pri_on && (p >> 4) == pri_colour)
+	if (pri_on && pri_colour == 0x04)
+		return FALSE;
+
+	p = game.hires[y * (_WIDTH * 2) + x * 2];
+	if (scr_on && (p & 0x0f) != 0x0f)
+		return FALSE;
+	if (pri_on && (p >> 4) != 0x04)
 		return FALSE;
 
 	p = game.sbuf[y * _WIDTH + x];
@@ -216,6 +222,31 @@ static INLINE int hires_fill_here (int x, int y)
 
 	return TRUE;
 }
+
+
+static void fix_pixel_left (int x, int y)
+{
+	UINT8 *p;
+
+	if (!scr_on)
+		return;
+
+	p = &game.hires[y * (_WIDTH * 2) + x * 2 + 1];
+	if ((*p & 0x0f) == 0x0f)
+		put_hires_pixel (2 * x + 1, y);
+	else if ((*p & 0x0f) == (*(p - 1) & 0x0f))
+		put_hires_pixel (2 * x + 1, y);
+}
+
+static void fix_pixel_right (int x, int y)
+{
+	UINT8 p;
+
+	p = game.hires[y * (_WIDTH * 2) + x * 2];
+	if (scr_on && (p & 0x0f) == 0x0f)
+		put_hires_pixel (2 * x, y);
+}
+
 
 /**************************************************************************
 ** agiFill
@@ -236,21 +267,19 @@ static void hiresFill (int x, int y)
 			break;
 
 		if (hires_fill_here (c.x, c.y)) {
-			put_hires_pixel (4 * c.x,     2 * c.y);
-			put_hires_pixel (4 * c.x + 1, 2 * c.y);
-			put_hires_pixel (4 * c.x + 2, 2 * c.y);
-			put_hires_pixel (4 * c.x + 3, 2 * c.y);
-			put_hires_pixel (4 * c.x,     2 * c.y + 1);
-			put_hires_pixel (4 * c.x + 1, 2 * c.y + 1);
-			put_hires_pixel (4 * c.x + 2, 2 * c.y + 1);
-			put_hires_pixel (4 * c.x + 3, 2 * c.y + 1);
+			put_hires_pixel (2 * c.x, c.y);
+			put_hires_pixel (2 * c.x + 1, c.y);
 
 			if (c.x > 0 && hires_fill_here (c.x - 1, c.y)) {
 				c.x--; _PUSH (&c); c.x++;
-    			}
+    			} else {
+				fix_pixel_left (c.x - 1, c.y);
+			}
 			if (c.x < _WIDTH - 1 && hires_fill_here (c.x + 1, c.y)) {
 				c.x++; _PUSH (&c); c.x--;
- 			}
+ 			} else {
+				fix_pixel_right (c.x + 1, c.y);
+			}
 			if (c.y < _HEIGHT - 1 && hires_fill_here (c.x, c.y + 1)) {
 				c.y++; _PUSH (&c); c.y--;
     			}
@@ -273,26 +302,24 @@ static void hires_x_corner ()
 {
 	int x1, x2, y1, y2;
 
-	x1 = 4 * next_byte;
-	y1 = 2 * next_byte;
+	x1 = 2 * next_byte;
+	y1 = next_byte;
    	put_hires_pixel (x1, y1);
 
 	while (42) {
-		x2=next_byte;
+		x2 = next_byte;
 
 		if (x2 >= 0xf0)
 			break;
 
-		x2 *= 4;
+		x2 *= 2;
 
 		draw_hires_line (x1, y1, x2, y1);
 		x1 = x2;
 		y2 = next_byte;
 
-		if (y2 >= 0xF0)
+		if (y2 >= 0xf0)
 			break;
-
-		y2 *= 2;
 
 		draw_hires_line (x1, y1, x1, y2);
 		y1 = y2;
@@ -310,8 +337,8 @@ static void hires_y_corner ()
 {
 	int x1, x2, y1, y2;
 
-	x1 = 4 * next_byte;
-	y1 = 2 * next_byte;
+	x1 = 2 * next_byte;
+	y1 = next_byte;
 	put_hires_pixel (x1, y1);
 
 	while (42) {
@@ -320,16 +347,14 @@ static void hires_y_corner ()
 		if (y2 >= 0xF0)
 			break;
 
-		y2 *= 2;
-
 		draw_hires_line (x1, y1, x1, y2);
 		y1 = y2;
 		x2 = next_byte;
 
-		if (x2 >= 0xF0)
+		if (x2 >= 0xf0)
 			break;
 
-		x2 *= 4;
+		x2 *= 2;
 
 		draw_hires_line (x1, y1, x2, y1);
 		x1 = x2;
@@ -347,8 +372,9 @@ static void hires_fill ()
 {
 	int x1, y1;
 
-	while ((x1 = next_byte) < 0xF0 && (y1 = next_byte) < 0xF0)
+	while ((x1 = next_byte) < 0xf0 && (y1 = next_byte) < 0xf0) {
 		hiresFill (x1, y1);
+	}
 
 	foffs--;
 }
@@ -463,77 +489,6 @@ static void plot_hires_brush ()
    	foffs--;
 }
 
-static void draw_hires_picture ()
-{
-	UINT8 act;
-	unsigned int i;
-	int drawing;
-
- 	patCode = 0;
- 	patNum = 0;
- 	pri_on = scr_on = FALSE;
- 	scr_colour = 0xf;
- 	pri_colour = 0x4;
-
-	drawing = 1;
-
-	stack[0] = calloc (sizeof (struct point_xy), STACK_SEG_SIZE);
-	stack_ptr = stack_seg = 0;
-	stack_num_segs = 1;
-
-	_D (_D_WARN "Drawing picture");
-	for (drawing = 1; drawing && foffs < flen; ) {
-		act = next_byte;
-		switch(act) {
-		case 0xf0:			/* set colour on screen */
-			scr_colour = next_byte;
-			scr_colour &= 0xF;	/* for v3 drawing diff */
-			scr_on = TRUE;
-			break;
-		case 0xf1:			/* disable screen drawing */
-			scr_on = FALSE;
-			break;
-		case 0xf2:			/* set colour on priority */
-			pri_colour = next_byte;
-			pri_colour &= 0xf;	/* for v3 drawing diff */
-			pri_on = TRUE;
-			break;
-		case 0xf3:			/* disable priority screen */
-			pri_on = FALSE;
-			break;
-		case 0xf4:			/* y-corner */
-			hires_y_corner ();
-			break;
-		case 0xf5:			/* x-corner */
-			hires_x_corner ();
-			break;
-		case 0xf6:			/* absolute draw lines */
-			absolute_hires_line ();
-			break;
-		case 0xf7:			/* dynamic draw lines */
-			dynamic_hires_line ();
-			break;
-		case 0xf8:			/* fill */
-			hires_fill ();
-			break;
-		case 0xf9:			/* set pattern */
-			patCode = next_byte;
-			break;
-		case 0xfA:			/* plot brush */
-			plot_hires_brush ();
-			break;
-		case 0xFF:			/* end of pic data */
-		default:
-			drawing = 0;
-			break;
-		}
-	}
-
-	for (i = 0; i < stack_num_segs; i++)
-		free (stack[i]);
-}
-
-
 /**
  * Show AGI picture.
  * This function copies a ``hidden'' AGI picture to the output device.
@@ -545,7 +500,7 @@ void show_hires_pic ()
 	i = 0;
 	for (y = 0; y < _HEIGHT; y++) {
 		put_pixels_hires (0, y, _WIDTH * 2, &game.hires[i]);
-		i += (_WIDTH * 4);
+		i += _WIDTH * 2;
 	}
 
 	flush_screen ();
@@ -554,4 +509,5 @@ void show_hires_pic ()
 #endif /* USE_HIRES */
 
 /* end: hirespic.c */
+
 

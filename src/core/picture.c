@@ -515,11 +515,16 @@ static void plot_brush ()
    	foffs--;
 }
 
+#ifdef USE_HIRES
+#include "hirespic.c"
+#endif
+
 static void draw_picture ()
 {
 	UINT8 act;
 	unsigned int i;
 	int drawing;
+	int save_foffs;
 
  	patCode = 0;
  	patNum = 0;
@@ -535,6 +540,11 @@ static void draw_picture ()
 
 	_D (_D_WARN "Drawing picture");
 	for (drawing = 1; drawing && foffs < flen; ) {
+
+#ifdef USE_HIRES
+		save_foffs = foffs;
+#endif
+
 		act = next_byte;
 		switch(act) {
 		case 0xf0:			/* set colour on screen */
@@ -579,15 +589,60 @@ static void draw_picture ()
 			drawing = 0;
 			break;
 		}
+
+#ifdef USE_HIRES
+		foffs = save_foffs;
+
+		act = next_byte;
+		switch(act) {
+		case 0xf0:			/* set colour on screen */
+			scr_colour = next_byte;
+			scr_colour &= 0xF;	/* for v3 drawing diff */
+			scr_on = TRUE;
+			break;
+		case 0xf1:			/* disable screen drawing */
+			scr_on = FALSE;
+			break;
+		case 0xf2:			/* set colour on priority */
+			pri_colour = next_byte;
+			pri_colour &= 0xf;	/* for v3 drawing diff */
+			pri_on = TRUE;
+			break;
+		case 0xf3:			/* disable priority screen */
+			pri_on = FALSE;
+			break;
+		case 0xf4:			/* y-corner */
+			hires_y_corner ();
+			break;
+		case 0xf5:			/* x-corner */
+			hires_x_corner ();
+			break;
+		case 0xf6:			/* absolute draw lines */
+			absolute_hires_line ();
+			break;
+		case 0xf7:			/* dynamic draw lines */
+			dynamic_hires_line ();
+			break;
+		case 0xf8:			/* fill */
+			hires_fill ();
+			break;
+		case 0xf9:			/* set pattern */
+			patCode = next_byte;
+			break;
+		case 0xfA:			/* plot brush */
+			plot_brush ();
+			break;
+		case 0xFF:			/* end of pic data */
+		default:
+			drawing = 0;
+			break;
+		}
+#endif
 	}
 
 	for (i = 0; i < stack_num_segs; i++)
 		free (stack[i]);
 }
-
-#ifdef USE_HIRES
-#include "hirespic.c"
-#endif
 
 /*
  * Public functions
@@ -660,27 +715,14 @@ int decode_picture (int n, int clear)
 	flen = game.dir_pic[n].len;
 	foffs = 0;
 
-	if (clear)
+	if (clear) {
 		memset (game.sbuf, 0x4f, _WIDTH * _HEIGHT);
+#ifdef USE_HIRES
+		memset (game.hires, 0x4f, _WIDTH * 2 * _HEIGHT);
+#endif
+	}
 
 	draw_picture ();
-
-#ifdef USE_HIRES
-	patCode = 0;
-	patNum = 0;
-	pri_on = scr_on = FALSE;
-	scr_colour = 0xF;
-	pri_colour = 0x4;
-
-	data = game.pictures[n].rdata;
-	flen = game.dir_pic[n].len;
-	foffs = 0;
-
-	if (clear)
-		memset (game.hires, 0x4f, _WIDTH * 4 * _HEIGHT * 2);
-
-	draw_hires_picture ();
-#endif
 
 	return err_OK;
 }

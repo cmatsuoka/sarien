@@ -83,6 +83,7 @@ int main (int argc, char *argv[])
 
 #ifdef OPT_PICTURE_VIEWER
 	if (opt.gamerun == GAMERUN_PICVIEW) {
+		console.y = 0;
 		if (agi_detect_game (argc > 1 ? argv[optind] :
 			get_current_directory ()) == err_OK)
 		{
