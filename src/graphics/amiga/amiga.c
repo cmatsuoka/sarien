@@ -28,6 +28,7 @@
 
 #define NUMCOLS 32
 #define CIAAPRA 0xBFE001
+#define CIAA	0xBFE001
 
 
 extern struct gfx_driver *gfx;
@@ -58,6 +59,7 @@ static struct RastPort *rp;
 static UBYTE *vscreen;
 static UBYTE colors[NUMCOLS];
 static struct CIA *ciamou = (struct CIA *)CIAAPRA;
+static struct CIA *cia = (struct CIA *)CIAA;
 
 extern struct GfxBase *GfxBase;
 extern struct IntuitionBase *IntuitionBase;
@@ -75,10 +77,34 @@ static int key_queue_end = 0;
 #define key_dequeue(k) do { (k) = key_queue[key_queue_start++]; \
 	key_queue_start %= KEY_QUEUE_SIZE; } while (0)
 
+static int keymap[256] = {
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '\'', 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	' ',		/* 0x40 */
+	0, 0,
+	KEY_ENTER,	/* 0x43 */
+	KEY_ENTER,	/* 0x44 */
+	KEY_ESC,	/* 0x45 */
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 0, 0, 0, 0, 0, 0,
+	'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', 0, 0, 0, 0, 0, 0,
+	0, 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
 
 static void process_events ()
 {
 	struct IntuiMessage *message;
+	UINT8 key;
 
 	message = (struct IntuiMessage *)GetMsg (win->UserPort);
 	if (message) {
@@ -92,6 +118,14 @@ static void process_events ()
 	mouse.x = win->MouseX;
 	mouse.y = win->MouseY;
 	mouse.button = !(ciamou->ciapra & 0x0040);
+
+        key = cia->ciasdr ^ 0xFF;
+        key = key & 0x01 ? (key >> 1) + 0x80 : key >> 1;
+        /* if (key == 0x45) exit(0); */
+
+	_D ("%02x %02x %c %c", key, keymap[key], key, keymap[key]);
+	if (~key & 0x80)
+		key_enqueue (keymap[key]);
 }
 
 int init_machine (int argc, char **argv)
@@ -169,6 +203,9 @@ static int amiga_init_vidmode ()
 			OBP_Precision,PRECISION_EXACT,
 			TAG_DONE);
 	}
+
+	/* clear screen */
+	memset (vscreen, colors[0], GFX_WIDTH * GFX_HEIGHT);
 
 	return 0;
 }
