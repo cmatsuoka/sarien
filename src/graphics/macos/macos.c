@@ -127,7 +127,7 @@ static INLINE void putpixel_8 (void *img, int idx, int p)
 #define _putpixels_scale1(d) static void \
 _putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
 	if (w == 0) return; \
-	x += y * GFX_WIDTH; \
+	x += y * GFX_WIDTH + y * 8; \
 	while (w--) { putpixel_##d## (screen_buffer, x++, rgb_palette[*p++]); }\
 }
 
