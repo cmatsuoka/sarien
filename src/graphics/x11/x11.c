@@ -233,7 +233,8 @@ static void process_events ()
 						- 0x41] << 8;
 				break;
 			};
-			_D ("key = 0x%02x ('%c')", key, isprint(key) ? key : '?');
+			_D ("key = 0x%02x ('%c')", key,
+				isprint(key & 0xff) ? key & 0xff: '?');
 			break;
 		case KeyRelease:
 			XLookupString (&event.xkey, buf, 1, &k, NULL);
