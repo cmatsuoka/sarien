@@ -481,10 +481,10 @@ static void update_timer ()
 }
 
 
+UINT32 msg_box_ticks = 0;
+
 void main_cycle (int accept_key)
 {
-	static UINT32 msg_box_ticks = 0;
-
 	poll_timer ();		/* msdos driver -> does nothing */
 	update_timer ();
 

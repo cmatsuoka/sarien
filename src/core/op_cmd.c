@@ -80,6 +80,7 @@ extern struct agi_view_table view_table[];
 extern struct sarien_options opt;
 extern struct sarien_debug debug;
 
+extern UINT32 msg_box_ticks;
 
 void cmd_position (UINT8 entry, UINT8 x, UINT8 y)
 {
@@ -919,7 +920,8 @@ void cmd_print_at (UINT8 logic, UINT8 msg, SINT8 y, SINT8 x, SINT8 len)
 			msg_box_secs2 = getvar (V_window_reset);
 			_D (_D_WARN "msg_box_secs2 = %ld", msg_box_secs2);
 
-			while (getvar (V_window_reset)) {
+			//while (getvar (V_window_reset) > 0) {
+			do {
 				/* FR: The call to main cycle fills the
 				 * keyboard internal buffer!
 				 */
@@ -932,7 +934,8 @@ void cmd_print_at (UINT8 logic, UINT8 msg, SINT8 y, SINT8 x, SINT8 len)
 					setvar (V_window_reset, 0);
 					break;
 				}
-			}
+			//}
+			} while (msg_box_ticks > 0);
 		} else {
 			_D (_D_WARN "f15==0, v21==0 ==> waitkey");
 			setvar (V_key, key = 0);
