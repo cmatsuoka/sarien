@@ -202,8 +202,10 @@ void handle_controller (int key)
 {
 	int i;
 
+#if 0
 	for (i = 0; i < MAX_DIRS; i++)
 		game.events[i].occured = FALSE;
+#endif
 
 	for (i = 0; i < MAX_DIRS; i++){
 		int data = game.events[i].data;

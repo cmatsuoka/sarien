@@ -8,11 +8,11 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
+#include <stdio.h>
+#include <string.h>
 #include "sarien.h"
 #include "agi.h"
 #include "opcodes.h"
-#include <stdio.h>
-#include <string.h>
 
 /*
  * Determine what AGI v2 system to emulate, these are the "majour" version

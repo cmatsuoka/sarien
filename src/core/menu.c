@@ -299,6 +299,7 @@ exit_menu:
 	redraw_sprites ();
 
 	setvar (V_key, 0);
+	game.keypress = 0;
 	game.clock_enabled = clock_val;
 	old_input_mode ();
 	_D (_D_WARN "exit_menu: input mode reset to %d", game.input_mode);
