@@ -388,7 +388,7 @@ draw (smoke);
 </para>
 </sect1>
 
-<sect1 id="bands">
+<sect1 id="priority">
 <title>The priority screen</title>
 
 <para>
@@ -538,7 +538,7 @@ draw (smoke);
 </chapter>
 
 
-<chapter id="agi"><title>AGI internals</title>
+<chapter id="agi-internals"><title>AGI internals</title>
 
 <para>
   This chapter is based on the AGDS documentation, written by Alex Simkin
@@ -1009,9 +1009,9 @@ print ("Message 34 in logic.0 is %g34.");
 <para>
   The start of a loader will look something like this:
 </para><para>
-<programlisting>
+  <programlisting>
 LOADER v3.0 (c) Copyright Sierra On-Line, Inc. 1987 keyOfs
-</programlisting>
+  </programlisting>
 </para><para>
   There are two bytes in between the <literal/"keyOfs"/ string and the start
   of the description string. If the decryption key consists of 128 `k'
@@ -1448,21 +1448,21 @@ if (v7 > 0 && !f6) { .....
   Messages and inventory members may be given in either numerical text
   format:
 </para><para>
-<programlisting>
+  <programlisting>
 print("He's not here.");
 print(m12);
 if (has("Jetpack")) { .....
 if (has(io9)) { .....
-</programlisting>
+  </programlisting>
 </para>
 
 <para>
   Messages can also be split over multiple lines:
 </para><para>
-<programlisting>
+  <programlisting>
 print("This message is split "
       "over multiple lines.");
-</programlisting>
+  </programlisting>
 </para>
 
 <para>
@@ -1471,10 +1471,10 @@ print("This message is split "
   or commas, which could confuse the compiler. This is also the case for
   the <function/said/ command which will be described shortly.
 </para><para>
-<programlisting>
+  <programlisting>
 if (has("Buckazoid(s)")) { .....        // no ambiguity here about where
                                         // the argument ends
-</programlisting>
+  </programlisting>
 </para>
 
 <para>
@@ -1485,18 +1485,18 @@ if (has("Buckazoid(s)")) { .....        // no ambiguity here about where
   in the arguments are the word group numbers from the <filename/words.tok/
   file.
 </para><para>
-<programlisting>
+  <programlisting>
 if (said(4,80)) { .....
-</programlisting>
+  </programlisting>
 </para>
 
 <para>
   Words can also be given in place of the numbers:
 </para><para>
-<programlisting>
+  <programlisting>
 if (said("look")) { .....
 if (said("open","door")) { .....
-</programlisting>
+  </programlisting>
 </para>
 
 <sect2>
@@ -1505,9 +1505,9 @@ if (said("open","door")) { .....
   Labels are given like this:
 
 </para><para>
-<programlisting>
+  <programlisting>
 Label1:
-</programlisting>
+  </programlisting>
 </para>
 
 <para>
@@ -1515,9 +1515,9 @@ Label1:
   and ".". No spaces are allowed.
   The <function/goto/ command takes one parameter, the name of a label.
 </para><para>
-<programlisting>
+  <programlisting>
 goto(Label1);
-</programlisting>
+  </programlisting>
 </para>
 
 <sect2>
@@ -2220,7 +2220,7 @@ goto(Label1);
         Turns on the automatic priority choice for the object <parameter/n/.
         The priority is set depending on the vertical coordinate of the object.
         This way, as an object moves down it approaches the viewer.
-        See <xref linkend="bands"> for a table of y coordinates and the
+        See <xref linkend="priority"> for a table of y coordinates and the
         associated priorities.
       </para></listitem>
     </varlistentry>
@@ -3053,9 +3053,9 @@ show.pic();
      <listitem><para>
    This is a debugging command. It writes a log message in the format
 
-<programlisting>
+  <programlisting>
 Room &lt;current room&gt; Input line &lt;current input line&gt; ... message ...
-</programlisting>
+  </programlisting>
    where the message is given by number <parameter/n/. Output is sent to a file.
 
    <parameter>(Are these debugging commands valid only for AGDS, or they work
@@ -3507,7 +3507,7 @@ unknown170(1);
 <sect2><title>Animating the smoke</title>
 <para>
 From the book:
-<programlisting>
+  <programlisting>
 animate.obj( smoke);
 ignore.horizon( smoke);
 set.view( smoke, v.fish.cabin);
@@ -3518,7 +3518,7 @@ work = 3;
 step.time( smoke, work);
 cycle.time( smoke, work);
 draw( smoke);
-</programlisting>
+  </programlisting>
 
 From the game:
 <programlisting>
@@ -3790,226 +3790,217 @@ if (isset(3)) {     [ hit.special
 </sect1>
 
 
-<chapter id="formats"><title>Formats of the resource files</title>
+<chapter id="formats">
+<title>Formats of the resource files</title>
 
-<sect1 id="dirfmt"><title>Directory files</title>
+<sect1 id="dirfmt">
+<title>Directory files</title>
 <para>
-   Written by <author><firstname/Lance/ <surname/Ewing/</author>,
-   31 August 1997.
+  All AGI games have either one directory file, or more commonly, four.
+  AGI version 2 games will have the files <filename/logdir/,
+  <filename/picdir/, <filename/viewdir/, and <filename/snddir/.
+  Games that use version 3 of the AGI interpreter will have a single
+  file called <filename/*dir/ where the star is the game ID (e.g. BC,
+  GR, MH2, MH1, KQ4). This single file is basically the four version 2
+  files joined together except that it has an 8 byte header giving the
+  position of each directory within the single file.
 </para><para>
-   All AGI games have either one directory file, or more commonly, four.
-   AGI version 2 games will have the files <literal/logdir/, <literal/picdir/,
-   <literal/viewdir/, and <literal/snddir/. Games that use version 3 of the AGI
-   interpreter will have a single file called <literal/*dir/ where the star
-   is the initials of the game (e.g. BC, GR, MH2, MH1, KQ4). This single
-   file is basically the four version 2 files joined together except that
-   it has an 8 byte header giving the position of each directory within
-   the single file.
-</para><para>
-   The directory files give the location of the data types within the VOL
-   files. The type of directory determines the type of data. For example,
-   the <literal/logdir/ gives the locations of the LOGIC files. For a brief
-   introduction to the different data types, see
-   <xref linkend="overview">.
-</para><para>
-   Note: In this description and elsewhere in documents written by me,
-   the AGI data called LOGIC, PICTURE, VIEW, and SOUND data are referred
-   to by me as files even though they are part of a single VOL file. I
-   think of the VOL file as sort of a virtual storage device in itself
-   that holds many files. Some documents call the files contains in VOL
-   files ``resources''.
+  The directory files give the location of the data types within the vol
+  files. The type of directory determines the type of data. For example,
+  <filename/logdir/ gives the locations of the logic resources. For a brief
+  introduction to the different data types, see <xref linkend="overview">.
 </para>
 
-<sect2><title>Version 2 directories</title>
+<sect2>
+<title>Version 2 directories</title>
 <para>
-   Each directory file is of the same format. They contain a finite
-   number of three byte entries, no more than 256. The size will vary
-   depending on the number of files of the type that the directory file
-   is pointing to. Dividing the filesize by three gives the maximum file
-   number of that type of data file. Each entry is of the following
-   format:
+  Each directory file is of the same format. They contain a finite
+  number of three byte entries, no more than 256. The size will vary
+  depending on the number of files of the type that the directory file
+  is pointing to. Dividing the filesize by three gives the maximum file
+  number of that type of data file. Each entry is of the following
+  format:
 </para><para>
-<programlisting>
+  <programlisting>
     Byte 1           Byte 2           Byte 3
 7 6 5 4 3 2 1 0  7 6 5 4 3 2 1 0  7 6 5 4 3 2 1 0
 V V V V P P P P  P P P P P P P P  P P P P P P P P
-</programlisting>
+  </programlisting>
 </para><para>
-   where V = VOL number and P = position (offset into VOL file).
+  where V is the vol number and P is the position (offset into the
+  vol file). The entry number itself gives the number of the data
+  file that it is pointing to. For example, if the following three byte
+  entry is entry number 45 in the sound directory file,
 </para><para>
-   The entry number itself gives the number of the data file that it is
-   pointing to. For example, if the following three byte entry is entry
-   number 45 in the SOUND directory file,
-</para><para>
-<programlisting>
+  <programlisting>
 12 3D FE
-</programlisting>
+  </programlisting>
 </para><para>
-   then <literal/sound.45/ is located at position 0x23DFE in the <literal/vol.1/ file.
-   The first entry number is entry 0.
-
-   If the three bytes contain the value 0xFFFFFF, then the resource does
-   not exist.
+  then <filename/sound.45/ is located at position 0x23DFE in the
+  <filename/vol.1/ file. The first entry number is entry 0.
+  If the three bytes contain the value 0xFFFFFF, then the resource
+  does not exist.
 </para>
 
-<sect2><title>Version 3 directories</title>
+<sect2>
+<title>Version 3 directories</title>
 <para>
-   In the case of version 3 of the AGI interpreter, the <literal/logdir/,
-   <literal/picdir/, <literal/viewdir/, and <literal/snddir/ files are concatenated together
-   in that order with an eight byte header giving the starting offset of
-   each directory.
+  In the case of version 3 of the AGI interpreter, the <filename/logdir/,
+  <filename/picdir/, <filename/viewdir/, and <filename/snddir/ files are
+  concatenated together in that order with an eight byte header giving the
+  starting offset of each directory.
 </para><para>
-   Header
-</para><para>
-<programlisting>
+  <programlisting>
 Byte 0 1 2 3 4 5 6 7
      L L P P V V S S
-</programlisting>
-
-   where L = offset of <literal/logdir/, P = offset of <literal/picdir/, V = offset
-   of <literal/viewdir/ and S = offset of <literal/snddir/.
-
-   Each offset is two bytes in length where the first byte is the low
-   byte and the second byte is the high byte as is the case in the whole
-   AGI system. For example, the first two bytes will always be 0x0800
-   since the header is a fixed size of eight bytes.
-
-   The format of each of the individual directory sections then follows
-   as above for AGI v2.
-
+  </programlisting>
+</para><para>
+  where L is the offset of <filename/logdir/, P is offset of
+  <filename/picdir/, V is the offset of <filename/viewdir/ and S is
+  the offset of <filename/snddir/.
+  Each offset is two bytes in length where the first byte is the low
+  byte and the second byte is the high byte as is the case in the whole
+  AGI system. For example, the first two bytes will always be 0x0800
+  since the header is a fixed size of eight bytes.
+  The format of each of the individual directory sections then follows
+  as above for AGI v2.
 </para>
 </sect1>
 
-<sect1 id="volfmt"><title>Format of Vol files (version 2)</title>
+<sect1 id="volfmt">
+<title>Version 2 volume format</title>
 <para>
-   Written by <author><firstname/Lance/ <surname/Ewing/</author>,
-   31 August 1997.
-</para><para>
-   Vol files are the main data files for AGI games. They contain four
-   types of data: LOGIC, PICTURE, VIEW, and SOUND data. A Vol file is a
-   collection of a large number of these "resource" files which can be in
-   any order. The directory files determine the start of each resource.
-</para><para>
+  Volumes are the main data files for AGI games. They contain four
+  types of data: logic, picture, view, and sound data. A volume is a
+  collection of a large number of resource files which can be in
+  any order. The directory files determine the start of each resource.
+</para>
 
-   The start of every resource file has a five byte header.
-</para><para>
+<para>
+  The start of every resource file has a five byte header:
 
-<programlisting>
-Byte  Meaning
------ -----------------------------------------------------------
- 0-1  Signature (0x12--0x34)
-  2   Vol number that the resource is contained in
- 3-4  Length of the resource taken from after the header
------ -----------------------------------------------------------
-</programlisting>
+  <informaltable>
+    <tgroup cols="2">
+      <thead>
+        <row/ <entry/Offset/ <entry/Description/ /
+      </thead>
+      <tbody>
+        <row/ <entry/0-1/ <entry/Signature (0x12--0x34)//
+        <row/ <entry/ 2 / <entry/Vol number that the resource is contained in//
+        <row/ <entry/3-4/ <entry/Length of the resource without the header//
+      </tbody>
+    </tgroup>
+  </informaltable>
 
-</para><para>
-   The data after the header depends on the type of resource file. These
-   formats are documented elsewhere.
+  The data after the header depends on the type of resource file. These
+  formats are documented elsewhere.
 </para>
 </sect1>
 
-<sect1 id="v3fmt"><title>Version 3 resource storage</title>
+<sect1 id="v3fmt">
+<title>Version 3 resource storage</title>
 <para>
-   Written by <author><firstname/Lance/ <surname/Ewing/</author>,
-   27 January 1997.
+  Version 3 of AGI stores resources in a slightly different way from
+  version 2. The first significant difference is in the length of the
+  resource header which is now seven bytes.
 
-</para><para>
-   AGIv3 stores resources in a slightly different way from AGIv2. The
-   first significant difference is in the length of the resource header
-   which is now seven bytes.
-</para><para>
+  <informaltable>
+    <tgroup cols="2">
+      <thead>
+        <row/ <entry/Offset/ <entry/Description/ /
+      </thead>
+      <tbody>
+        <row/ <entry/0-1/ <entry/Signature (0x12--0x34)//
+        <row/ <entry/ 2 / <entry/Vol number that the resource is contained in//
+        <row/ <entry/3-4/ <entry/Uncompressed payload size (LO-HI)//
+        <row/ <entry/5-6/ <entry/Compressed payload size (LO-HI)//
+      </tbody>
+    </tgroup>
+  </informaltable>
 
-<programlisting>
-Byte  Meaning
------ -----------------------------------------------------------
- 0-1  Signature (0x12--0x34)
-  2   Vol number that the resource is contained in
- 3-4  Uncompressed resource size (LO-HI)
- 5-6  Compressed resource size (LO-HI)
------ -----------------------------------------------------------
-</programlisting>
-
-</para><para>
-   Instead of one resource size as in AGIv2, there are now two sizes.
-   Most of the resources in AGIv3 games are compressed with a form of
-   LZW. Some of them are not though. The interpreter determines whether
-   the resource is compressed by comparing the values of the two sizes
-   given in the header information. If they are equal, then it knows that
-   the resource is stored uncompressed. However, if the sizes do not
-   match, this does not mean that the file is compressed with LZW. If the
-   file is a PICTURE file, then it is stored with its own limited form of
-   compression. This is why the top bit of the third byte in the header
-   is used to tell the interpreter that the resource is a PICTURE file,
-   otherwise it would think that the resource was compressed with LZW.
-</para><para>
-
-   As far as I can tell, none of the PICTUREs are compressed with LZW.
-   This may well be possible though. It could also be possible for the
-   PICTURE to be totally uncompressed (i.e. it wouldn't use the PICTURE
-   compression method), but I haven't seen any examples of either of the
-   above two cases.
+  Instead of one resource size as in version 2, there are now two sizes.
+  Most of the resources in version 3 games are compressed with a form of
+  LZW. Some of them are not though. The interpreter determines whether
+  the resource is compressed by comparing the values of the two sizes
+  given in the header information. If they are equal, then it knows that
+  the resource is stored uncompressed. However, if the sizes do not
+  match, this does not mean that the file is compressed with LZW. If the
+  file is a picture file, then it is stored with its own limited form of
+  compression. This is why the top bit of the third byte in the header
+  is used to tell the interpreter that the resource is a picture file,
+  otherwise it would think that the resource was compressed with LZW.
+  <footnote><para>As far as I can tell, none of the picture
+  resources are compressed with LZW. This may well be possible though.
+  It could also be possible for the picture resource to be totally
+  uncompressed (i.e. it wouldn't use the picture resource compression
+  method), but I haven't seen any examples of either of the above two cases.
+  (L.E.)</para></footnote>
 </para>
 
-<sect2><title>LZW compression</title>
+<sect2>
+<title>LZW compression</title>
 <para>
-   The compression used with version 3 games is an adaptive form of LZW.
-   The LZW algorithm is not explained here, but it basically compresses
-   data by representing previous strings by single codes. When these
-   strings are encountered again, the code can be stored instead. The
-   following information states how the AGIv3 algorithm differs from the
-   standard LZW algorithm. There are plenty of places on the net where
-   you can find a description of the LZW algorithm if you are not
-   familiar with it.
+  The compression used with version 3 games is an adaptive form of LZW.
+  The LZW algorithm is not explained here, but it basically compresses
+  data by representing previous strings by single codes. When these
+  strings are encountered again, the code can be stored instead. The
+  following information states how the version 3 algorithm differs from the
+  standard LZW algorithm. There are plenty of places on the net where
+  you can find a description of the LZW algorithm if you are not
+  familiar with it.
 </para><para>
-   AGIv3 uses an adaptive form of LZW that starts by using 9 bit codes
-   and when the code space is full, it progresses on to 10 bits and so
-   on. As with normal LZW, codes 0-255 represent the standard ASCII
-   characters. The next two codes have a special meaning:
+  AGI version 3 uses an adaptive form of LZW that starts by using 9 bit
+  codes and when the code space is full, it progresses on to 10 bits and so
+  on. As with normal LZW, codes 0-255 represent the standard ASCII
+  characters. The next two codes have a special meaning:
+
+  <itemizedlist>
+    <listitem><para>
+      256 is used as a start over code. The table is cleared, the number
+      of bits set back to 9, and the process begins again with the next code
+      being 258.
+    </para></listitem>
+    <listitem><para>
+      257 tells the interpreter that it has reached the end of the
+      resource.
+    </para></listitem>
+  </itemizedlist>
 </para><para>
-   <simplelist>
-    <member>256 is used as a start over code. The table is cleared, the number
-   of bits set back to 9, and the process begins again with the next code
-   being 258.
-    <member>257 tells the interpreter that it has reached the end of the
-   resource.
-   </simplelist>
-</para><para>
-   Code 256 seems to be the first code stored in all compressed
-   resources. This is probably just to make sure everything is
-   initialized for beginning the compression process. As was mentioned
-   above, the first code used for the LZW table itself is code 258. From
-   there it stores pairs of prefix codes and appended characters for each
-   table entry until it reaches code 512 at which stage it switches to
-   storing the codes using 10 bits and then 11 and so on. It appears that
-   it will never get to 12 bits because code 256 always seems to turn up
-   just before it needs to switch up to 12 bits, i.e. when code 2048 is
-   required. Carl Muckenhoupt's decrypt routine for SCI games specifically
-   prevents it from switching to 12 bits anyway. Whether there is ever a
-   case where code 256 does not intervene, it has not yet been
-   determined.
-</para><para>
-   Note: I should point out that Carl and myself both arrived at the
-   above algorithm independently which confirms that the compression used
-   in the early SCI games was identical to that used in AGIv3.
+  Code 256 seems to be the first code stored in all compressed
+  resources. This is probably just to make sure everything is
+  initialized for beginning the compression process. As was mentioned
+  above, the first code used for the LZW table itself is code 258. From
+  there it stores pairs of prefix codes and appended characters for each
+  table entry until it reaches code 512 at which stage it switches to
+  storing the codes using 10 bits and then 11 and so on. It appears that
+  it will never get to 12 bits because code 256 always seems to turn up
+  just before it needs to switch up to 12 bits, i.e. when code 2048 is
+  required. Carl Muckenhoupt's decrypt routine for SCI games specifically
+  prevents it from switching to 12 bits anyway. Whether there is ever a
+  case where code 256 does not intervene, it has not yet been
+  determined.<footnote><para>I should point out that Carl and myself
+  both arrived at the above algorithm independently which confirms that
+  the compression used in the early SCI games was identical to that used
+  in AGI version 3 (L.E.).</para></footnote>
 </para>
 
-<sect2><title>Picture compression</title>
+<sect2>
+<title>Picture compression</title>
 <para>
-   Pictures in AGI version 3 use a simple form of compression to shrink
-   their size my a tiny amount. It was obviously recognised by the
-   interpreter coders that four bits were being wasted for picture codes
-   0xF0 and 0xF2. These are the two codes that change the visual and the
-   priority colour respectively. Since there are only 16 colours, there
-   need not be a whole byte set aside for storing the colour. All the
-   picture compression does is store these colours in 4 bits rather than 8.
+  Pictures in AGI version 3 use a simple form of compression to shrink
+  their size my a tiny amount. It was obviously recognised by the
+  interpreter coders that four bits were being wasted for picture codes
+  0xF0 and 0xF2. These are the two codes that change the visual and the
+  priority colour respectively. Since there are only 16 colours, there
+  need not be a whole byte set aside for storing the colour. All the
+  picture compression does is store these colours in 4 bits rather than 8.
 </para><para>
-   Example:
+  Example:
 </para><para>
-<programlisting>
-Original picture codes: F0 06 F8 12 45 F0 07 F2 05 F8 14 67 ...
+  <programlisting>
+Original picture codes : F0 06 F8 12 45 F0 07 F2 05 F8 14 67 ...
 Compressed picture code: F0 6F 81 24 5F 07 F2 5F 81 46 7 ...
-</programlisting>
+  </programlisting>
 </para>
 
 </sect1>
@@ -4017,23 +4008,21 @@ Compressed picture code: F0 6F 81 24 5F 07 F2 5F 81 46 7 ...
 </chapter>
 
 
-
-<chapter id="logicres"><title>LOGIC resources</title>
+<chapter id="logic-resources">
+<title>Logic resources</title>
 <para>
-   Lance Ewing, 27 January 1997.
-</para>
 
 <sect1 id="logicfmt"><title>Introduction</title>
 <para>
-   At the heart of Sierra's Adventure Game Interpreter is the LOGIC file.
-   These files contain the code that makes up the game. Each room has a
-   logic script that goes with it. This logic script governs what can
-   take place in that room. Here is an example of what the programmer
-   writes when a game is being created.
+  At the heart of Sierra's Adventure Game Interpreter is the logic file.
+  These files contain the code that makes up the game. Each room has a
+  logic script that goes with it. This logic script governs what can
+  take place in that room. Here is an example of what the programmer
+  writes when a game is being created.
 </para><para>
-   Example 0: KQ4. Room 7.
+  Example: KQ4. Room 7.
 </para><para>
-<programlisting>
+  <programlisting>
 if (said( open, door))       [ must be close enough
 {
    if (posn( ego, 86, 120, 106, 133))
@@ -4062,70 +4051,82 @@ if (said( open, door))       [ must be close enough
       set( notCloseEnough);
    }
 }
-</programlisting>
-
-</para><para>
-   The logic script is not stored like this in the game files though.
-   Instead each AGI command is stored as a bytecode and the resulting data
-   doesn't look much like the above example at all. This document will
-   try to explain each component of a logic script the way it is stored
-   in the actual game data.
-
+  </programlisting>
 </para>
 </sect1>
 
-<sect1 id="cmdlist"><title>Command list and argument types</title>
+<sect1 id="cmdlist">
+<title>Command list and argument types</title>
 <para>
-   Peter Kelly, 3 March 1998.
-
-</para><para>
-   This is a list of all AGI commands and their argument types. The
-   function and name of some of these is not yet known. Check out
-   <literal/agicommands.pas/ in section ``Sample code'' for a Delphi/Pascal
-   unit containing this information.
+  <xref linkend="tab-test-commands"> and <xref linkend="tab-action-commands">
+  show a list of all AGI commands and their argument types. The
+  command names have been taken from debug messages contained in
+  some AGI games.
 </para>
 
-<sect2><title>Text commands</title>
-<para>
-<programlisting>
- #  Name              No.  arg1 arg2 arg3 arg4 arg5 arg6 arg7
-01 equaln              2   var  num
-02 equalv              2   var  var
-03 lessn               2   var  num
-04 lessv               2   var  var
-05 greatern            2   var  num
-06 greaterv            2   var  var
-07 isset               1   flag
-08 issetv              1   var
-09 has                 1   Iobj
-0A obj.in.room         2   Iobj var
-0B posn                5   Sobj num  num  num  num
-0C controller          1   ctr
-0D have.key            0
-0E said                -  ...
-0F compare.strings     2   str  str
-10 obj.in.box          5   Sobj num  num  num  num
-11 center.posn         5   Sobj num  num  num  num
-12 right.posn          5   Sobj num  num  num  num
-</programlisting>
-</para>
 
-<sect2><title>Action commands</title>
-<para>
+<table id="tab-test-commands">
+  <title>Test commands</title>
+  <tgroup cols="8">
+    <thead>
+      <row>
+        <entry/Opcode/ <entry/Command/ <entry/Args/
+        <entry/1/ <entry/2/ <entry/3/ <entry/4/ <entry/5/
+      </row>
+    </thead>
+    <tbody>
+<row/<entry/01/ <entry/<function/equaln//   <entry/2/ <entry/var/ <entry/num//
+<row/<entry/02/ <entry/<function/equalv//   <entry/2/ <entry/var/ <entry/var//
+<row/<entry/03/ <entry/<function/lessn//    <entry/2/ <entry/var/ <entry/num//
+<row/<entry/04/ <entry/<function/lessv//    <entry/2/ <entry/var/ <entry/var//
+<row/<entry/05/ <entry/<function/greatern// <entry/2/ <entry/var/ <entry/num//
+<row/<entry/06/ <entry/<function/greaterv// <entry/2/ <entry/var/ <entry/var//
+<row/<entry/07/ <entry/<function/isset//    <entry/1/ <entry/flag//
+<row/<entry/08/ <entry/<function/issetv//   <entry/1/ <entry/var//
+<row/<entry/09/ <entry/<function/has//      <entry/1/ <entry/item//
+<row/<entry/0A/ <entry/<function/obj.in.room//<entry/2/<entry/item/ <entry/var//
+<row/<entry/0B/ <entry/<function/posn//     <entry/5/ <entry/obj/
+	<entry/num/ <entry/num/ <entry/num/ <entry/num//
+<row/<entry/0C/ <entry/<function/controller//<entry/1/ <entry/ctr//
+<row/<entry/0D/ <entry/<function/have.key// <entry/0//
+<row/<entry/0E/ <entry/<function/said//     <entry/-/ <entry/.../
+<row/<entry/0F/ <entry/<function/compare.strings//<entry/2/
+	<entry/str/ <entry/str//
+<row/<entry/10/ <entry/<function/obj.in.box//<entry/5/ <entry/obj/
+	<entry/num/ <entry/num/ <entry/num/ <entry/num//
+<row/<entry/11/ <entry/<function/center.posn//<entry/5/ <entry/obj/
+	<entry/num/ <entry/num/ <entry/num/ <entry/num//
+<row/<entry/12/ <entry/<function/right.posn//<entry/5/ <entry/obj/
+	<entry/num/ <entry/num/ <entry/num/ <entry/num//
+    </tbody>
+  </tgroup>
+</table> 
+
+<table id="tab-action-commands">
+  <title>Action commands</title>
+  <tgroup cols="10">
+    <thead>
+      <row/ <entry/Opcode/ <entry/Command/ <entry/Args/
+      <entry/1/ <entry/2/ <entry/3/ <entry/4/ <entry/5/ <entry/6/ <entry/7/ /
+    </thead>
+    <tbody>
+<row/<entry/00/ <entry/<function/return//   <entry/0//
+<row/<entry/01/ <entry/<function/increment//<entry/1/ <entry/var//
+<row/<entry/02/ <entry/<function/decrement//<entry/1/ <entry/var//
+<row/<entry/03/ <entry/<function/assignn//  <entry/2/ <entry/var/ <entry/num//
+<row/<entry/04/ <entry/<function/assignv//  <entry/2/ <entry/var/ <entry/var//
+<row/<entry/05/ <entry/<function/addn//     <entry/2/ <entry/var/ <entry/num//
+<row/<entry/06/ <entry/<function/addv//     <entry/2/ <entry/var/ <entry/var//
+<row/<entry/07/ <entry/<function/subn//     <entry/2/ <entry/var/ <entry/num//
+<row/<entry/08/ <entry/<function/subv//     <entry/2/ <entry/var/ <entry/var//
+<row/<entry/09/ <entry/<function/lindirectv//<entry/2/ <entry/var/ <entry/var//
+<row/<entry/0A/ <entry/<function/rindirect//<entry/2/ <entry/var/ <entry/var//
+<row/<entry/0B/ <entry/<function/lindirectn//<entry/2/ <entry/var/ <entry/num//
+    </tbody>
+  </tgroup>
+</table> 
+
 <programlisting>
- #  Name              No.  arg1 arg2 arg3 arg4 arg5 arg6 arg7
-00 return              0
-01 increment           1   var
-02 decrement           1   var
-03 assignn             2   var  num
-04 assignv             2   var  var
-05 addn                2   var  num
-06 addv                2   var  var
-07 subn                2   var  num
-08 subv                2   var  var
-09 lindirectv          2   var  var
-0A rindirect           2   var  var
-0B lindirectn          2   var  num
 0C set                 1   flag
 0D reset               1   flag
 0E toggle              1   flag
@@ -4297,8 +4298,6 @@ B3 unknown179          4   ???  ???  ???  ???
 B4 unknown180          2   ???  ???
 B5 unknown181          0
 </programlisting>
-</para>
-</sect1>
 
 <sect1><title>LOGIC resource format</title>
 <sect2><title>The header</title>
