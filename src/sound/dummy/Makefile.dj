@@ -14,7 +14,7 @@ sound.a: $(OBJS)
 	ar rsv sound.a $(OBJS)
 
 clean:
-	@if exist *.a @del *.a
-	@if exist *.o @del *.o
-	@if exist *.bak @del *.bak
+	@if exist *.a del *.a
+	@if exist *.o del *.o
+	@if exist *.bak del *.bak
 

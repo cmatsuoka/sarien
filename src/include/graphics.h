@@ -50,7 +50,7 @@ extern UINT8	layer1_data[];
 extern UINT8	layer2_data[];
 
 
-void 	put_text_character(int, int, int, int, int, int);
+void 	put_text_character(int, int, int, unsigned int, int, int);
 void	shake_screen	(int);
 void	save_screen	(void);
 void	restore_screen	(void);

@@ -1,6 +1,6 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
  *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
- *  
+ *
  *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -19,10 +19,9 @@
 #include "text.h"
 
 
-static void print_text2 (int l, char *msg, int foff, int xoff, int yoff,
-	int len, int fg, int bg)
+static void print_text2 (int l, unsigned char *msg, int foff, int xoff, int yoff, int len, int fg, int bg)
 {
-	char *m;
+	unsigned char *m;
 	int x1, y1;
 	int maxx, minx, ofoff;
 	int update;
@@ -180,7 +179,7 @@ static void erase_textbox ()
 /**
  * Print text in the Sarien screen.
  */
-void print_text (char *msg, int f, int x, int y, int len, int fg, int bg)
+void print_text (unsigned char *msg, int f, int x, int y, int len, int fg, int bg)
 {
 	f *= CHAR_COLS;
 	x *= CHAR_COLS;

@@ -18,6 +18,6 @@ agi_core.a: $(OBJS)
 	ar rsv agi_core.a $(OBJS)
 
 clean:
-	@if exist *.bak @del *.bak
-	@if exist *.o @del *.o
-	@if exist *.a @del *.a
+	@if exist *.bak rm -rf *.bak
+	@if exist *.o rm -rf *.o
+	@if exist *.a rm -rf *.a

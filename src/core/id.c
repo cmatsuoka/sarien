@@ -25,7 +25,6 @@
  * 0x2936
  */
 
-
 int setup_v2_game(int ver, UINT32 crc);
 int setup_v3_game(int ver, UINT32 crc);
 int v4id_game (UINT32 crc);
@@ -55,17 +54,17 @@ static UINT32 match_crc (UINT32 crc, char *path)
 		}
 
 
-		t = strtok (buf, " \t\n");
+		t = strtok (buf, " \t\r\n");
 		if (t == NULL)
 			continue;
 		id = strtoul (t, NULL, 0);
 
-		t = strtok (NULL, " \t\n");
+		t = strtok (NULL, " \t\r\n");
 		if (t == NULL)
 			continue;
 		ver = strtoul (t, NULL, 0);
 
-		t = strtok (NULL, "\n");
+		t = strtok (NULL, "\n\r");
 
 		if (id == crc) {
 			/* Now we must check options enclosed in brackets
@@ -125,21 +124,22 @@ static UINT32 match_version (UINT32 crc)
 	if (getenv ("SARIEN") != NULL) {
 		sprintf(buf, "%s/%s", getenv("SARIEN"), "sarien.ini");
 	}
-#if 0
+
 	/* FIXME -- set policy for pathnames, etc */
-	else {
+	else
+	{
 		strcpy (buf, exec_name);
 		q = strchr(buf, 0x0);
 		q--;
+
 		while((*q!='\\' && *q!='/') && q>buf)
 			q--;
+
 		if(q!=buf)
 			*q=0x0;
+
 		strcat(buf, "/sarien.ini");
 	}
-#endif
-
-	_D("sarien conf: %s", buf);
 	ver = match_crc (crc, buf);
 #else
 	char buf[256];
@@ -267,7 +267,7 @@ int v4id_game (UINT32 crc)
 		ec = setup_v3_game (ver, crc);
 		break;
 	}
-			
+
 	return ec;
 }
 
@@ -277,7 +277,7 @@ int v4id_game (UINT32 crc)
 int setup_v2_game (int ver, UINT32 crc)
 {
 	int ec=err_OK;
-	
+
 	if (ver == 0) {
 		report ("Unknown v2 Sierra game: %08x\n\n", crc);
 		agi_set_release (0x2917);

@@ -63,6 +63,10 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 "as published by the the Free Software Foundation.\n"
 "\n");
 
+#ifdef __MSDOS__
+	exec_name=strdup(argv[0]);
+#endif
+
 	game.clock_enabled = FALSE;
 	game.state = STATE_INIT;
 
@@ -175,6 +179,9 @@ bail_out:
 
 #ifdef HAVE_ALLEGRO
 	remove_keyboard();
+#endif
+#ifdef __MSDOS__
+	free(exec_name);
 #endif
 
 	return ec;

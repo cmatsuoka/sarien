@@ -1,6 +1,6 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
  *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
- *  
+ *
  *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@ extern "C"{
 int	message_box	(char *);
 void	close_window	(void);
 void	print_status	(char *, ...);
-void	print_text	(char *, int, int, int, int, int, int);
+void	print_text	(unsigned char *, int, int, int, int, int, int);
 void	print_text_console
 			(char *, int, int, int, int, int);
 int	print		(char *, int, int, int);

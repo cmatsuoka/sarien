@@ -14,6 +14,6 @@ driver.a: $(OBJS)
 	ar rsv driver.a $(OBJS)
 
 clean:
-	@if exist *.bak @del *.bak
-	@if exist *.o @del *.o
-	@if exist *.a @del *.a
+	@if exist *.bak del *.bak
+	@if exist *.o del *.o
+	@if exist *.a del *.a

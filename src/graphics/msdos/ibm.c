@@ -20,11 +20,6 @@
 #include "sarien.h"
 #include "graphics.h"
 
-#define KEY_PGUP	0x4A2D	/* keypad + */
-#define KEY_PGDN	0x4E2B  /* keypad - */
-#define KEY_HOME	0x352F  /* keypad / */
-#define KEY_END		0x372A  /* keypad * */
-
 #ifdef __WATCOMC__
 #define __outp(a, b)	outp(a, b)
 #endif
@@ -43,6 +38,7 @@ void DebugBreak(void);
 extern struct gfx_driver *gfx;
 extern struct sarien_options opt;
 
+UINT8	*exec_name;
 UINT8	*screen_buffer;
 
 void	(__interrupt __far *prev_08)	(void);
@@ -205,11 +201,6 @@ static int pc_get_key ()
 #endif
 
 	{
-		case KEY_PGDN:
-		case KEY_PGUP:
-		case KEY_HOME:
-		case KEY_END:
-			break;
 		default:
 			if(r.h.al == 0)
 				key = r.h.ah << 8;
