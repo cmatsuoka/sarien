@@ -53,7 +53,7 @@ void new_room (int n)
 	game.vars[V_border_code] = 0;
 	game.vars[V_ego_view_resource] = game.view_table[0].current_view;
 
-	agi_load_resource (rLOGIC, n);		/*load_logic (n);*/
+	agi_load_resource (rLOGIC, n);
 
 	/* Reposition ego in the new room */
 	switch (game.vars[V_border_touch_ego]) {
@@ -96,7 +96,7 @@ static void interpret_cycle ()
 	old_sound = getflag (F_sound_on);
 	
 	game.exit_all_logics = FALSE;
-	while (run_logic (0) == 0) {
+	while (run_logic (0) == 0 && !game.quit_prog_now) {
 		game.vars[V_word_not_found] = 0;
 		game.vars[V_border_touch_obj] = 0;
 		game.vars[V_border_code] = 0;
@@ -222,7 +222,7 @@ int main_cycle ()
 }
 
 
-int run_game2 ()
+int run_game ()
 {
 	int ec = err_OK;
 	int x, y;
@@ -241,7 +241,6 @@ int run_game2 ()
 	game.input_mode = INPUT_NONE;
 	game.line_user_input = 22;
 
-	report (" \nSarien " VERSION " is ready.\n");
 	report ("Running AGI script.\n");
 
 #ifdef USE_CONSOLE

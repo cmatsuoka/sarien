@@ -26,6 +26,7 @@ struct sarien_console {
 	int input_active;
 	int index;
 	int y;
+	int max_y;
 	int first_line;
 	int count;
 	char *line[CONSOLE_LINES_BUFFER];

@@ -18,7 +18,6 @@
 #include "graphics.h"
 
 
-int	run_game2(void);
 
 /* For the interactive picture viewer */
 UINT8	show_screen_mode = 'x';
@@ -37,34 +36,6 @@ struct agi_game game;
 #ifndef _TRACE
 INLINE void _D (char *s, ...) { }
 #endif
-
-
-static int run_game ()
-{
-	int ec = err_OK;
-
-	_D ("let's go");
-	switch (opt.gamerun) {
-	case gLIST_GAMES:
-	case gCRC:
-		break;
-	case gRUN_GAME:
-		ec = run_game2 ();
-		break;
-#ifdef OPT_LIST_DICT
-	case gSHOW_WORDS:
-		ec = show_words ();
-		break;
-#endif
-#ifdef OPT_LIST_OBJECTS
-	case gSHOW_OBJECTS:
-		ec = show_objects ();
-		break;
-#endif
-	}
-
-	return ec;
-}
 
 
 int main(int argc, char *argv[])
@@ -91,6 +62,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 "\n");
 
 	game.clock_enabled = FALSE;
+	game.state = STATE_INIT;
 
 	if ((ec = parse_cli (argc, argv)) != err_OK)
 		goto bail_out;
@@ -102,76 +74,58 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 
 	font = font_english;
 
-	if (opt.gamerun == gLIST_GAMES) {
-		list_games ();
+	if (agi_detect_game (argc > 1 ? argv[optind] :
+		get_current_directory ()) == err_OK)
+	{
+		game.state = STATE_LOADED;
+	} else if (argc > optind) {
+		ec = err_BadFileOpen;
 		goto bail_out;
 	}
 
-	ec = agi_detect_game (argc > 1 ? argv[optind] : get_current_directory ());
-	if (ec != err_OK) {
-		ec = err_InvalidAGIFile;
+	if (init_video () != err_OK) {
+		ec = err_Unk;
 		goto bail_out;
 	}
 
-	if (opt.gamerun == gCRC) {
-		/* FIXME: broken! */
-		printf("              Game : %s\n", game_info.gName);
-		printf("               CRC : 0x%06x\n", game_info.crc);
-		printf("Pre-built Switches : %s\n",
-			game_info.switches[0] == 0 ? "(none)" :
-			game_info.switches);
-		printf("AGI Interpret Vers : %s%03X\n",
-			game_info.version >= 0x3000 ? "3.002." :
-			"2.", (int)game_info.version & 0xfff);
-		goto bail_out;
-	}
+	report ("Enabling interpreter console\n");
+	console_init ();
+	report ("--- Starting console ---\n\n");
+	if (!opt.gfxhacks)
+		report ("Graphics driver hacks disabled (if any)\n");
+	init_sound ();
 
-	printf("AGI v%i game detected.\n", agi_version ());
-
-	if (opt.gamerun == gRUN_GAME) {
-		if (init_video () != err_OK) {
-			ec = err_Unk;
-			goto bail_out;
-		}
-	}
-
-	if (opt.gamerun == gRUN_GAME) {
-		report ("Enabling interpreter console\n");
-		console_init ();
-		report ("--- Starting console ---\n\n");
-		if (!opt.gfxhacks)
-			report ("Graphics driver hacks disabled (if any)\n");
-		init_sound ();
+	report (" \nSarien " VERSION " is ready.\n");
+	if (game.state < STATE_LOADED) {
+       		console_prompt ();
+		do { main_cycle (); } while (game.state < STATE_RUNNING);
 	}
 
 	/* Execute the game */
-	if (opt.gamerun != gCRC && opt.gamerun != gLIST_GAMES) {
-    		do {
+    	do {
+		if (game.state < STATE_RUNNING) {
     			ec = agi_init ();
+			game.state = STATE_RUNNING;
+		}
 
-    			if (ec == err_OK) {
-    				/* setup machine specific AGI flags, etc */
-    				setvar (V_computer, 0);	/* IBM PC */
-    				setvar (V_soundgen, 1);	/* IBM PC SOUND */
-    				setvar (V_max_input_chars, 38);
-    				setvar (V_monitor, 0x3); /* EGA monitor */
+		if (ec == err_OK) {
+   			/* setup machine specific AGI flags, etc */
+    			setvar (V_computer, 0);	/* IBM PC */
+    			setvar (V_soundgen, 1);	/* IBM PC SOUND */
+    			setvar (V_max_input_chars, 38);
+    			setvar (V_monitor, 0x3); /* EGA monitor */
+   			game.horizon = HORIZON;
+			game.player_control = FALSE;
 
-    				game.horizon = HORIZON;
-    				game.player_control = FALSE;
-    				/* o_status = 5; */	/* FIXME */
+			ec = run_game();
+    		}
 
-    				ec = run_game();
-    			}
+    		/* deinit our resources */
+    		agi_deinit ();
+    	} while (ec == err_RestartGame || game.state == STATE_RUNNING);
 
-    			/* deinit our resources */
-    			agi_deinit ();
-    		} while (ec == err_RestartGame);
-    	}
-
-	if (opt.gamerun == gRUN_GAME) {
-		deinit_sound ();
-		deinit_video ();
-	}
+	deinit_sound ();
+	deinit_video ();
 
 bail_out:
 	if (ec == err_OK || ec == err_DoNothing) {

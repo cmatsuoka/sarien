@@ -42,7 +42,7 @@ int agi_init ()
 
 	/* set the font */
 #ifdef AGDS_SUPPORT
-	font= opt.agds ? font_russian : font_english;
+	font = opt.agds ? font_russian : font_english;
 #else
 	font = font_english;
 #endif

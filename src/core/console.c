@@ -26,7 +26,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-
 #include "agi.h"
 #include "graphics.h"
 #include "text.h"
@@ -191,6 +190,45 @@ static void ccmd_ver ()
 {
 	report (VERSION "\n");
 }
+
+static void ccmd_load ()
+{
+	stop_sound ();
+
+	if (game.state >= STATE_LOADED) {
+		report ("AGI game already loaded.\n");
+		return;
+	}
+
+	report ("Opening \"%s\".\n", _p1);
+	if (agi_detect_game (_p1) == err_OK) {
+		game.state = STATE_RUNNING;
+		report ("AGI game successfully loaded.\n");
+		agi_init ();
+		console_prompt ();
+		return;
+	}
+	
+	report ("AGI game load failed.\n");
+}
+
+#if 0
+static void ccmd_exec ()
+{
+	if (game.state < STATE_LOADED) {
+		report ("No game loaded.\n");
+		return;
+	}
+
+	if (game.state >= STATE_RUNNING) {
+		report ("Game already running.\n");
+		return;
+	}
+
+	report ("Executing AGI game.\n");
+	game.state = STATE_RUNNING;
+}
+#endif
 
 static void ccmd_agiver ()
 {
@@ -366,7 +404,7 @@ static void build_console_lines (int n)
 {
 	int i, j, y1;
 
-	clear_console_screen (200 - n * 10);
+	clear_console_screen (GFX_HEIGHT - n * 10);
 
 	for (j = CONSOLE_LINES_ONSCREEN - n; j < CONSOLE_LINES_ONSCREEN; j++) {
 		i = console.first_line + j;
@@ -400,10 +438,14 @@ int console_init ()
 	console_cmd ("agiver", "Show emulated Sierra AGI version", ccmd_agiver);
 	console_cmd ("cont",   "Resume interpreter execution", ccmd_cont);
 	console_cmd ("debug",  "Stop interpreter execution", ccmd_debug); 
+#if 0
+	console_cmd ("exec",   "Execute loaded AGI game", ccmd_exec);
+#endif
 	console_cmd ("flags",  "Dump all AGI flags", ccmd_flags);
 	console_cmd ("help",   "List available commands", ccmd_help);
 	console_cmd ("inv",    "List current inventory", ccmd_inv);
 	console_cmd ("logic0", "Turn logic 0 debugging on/off", ccmd_logic0);
+	console_cmd ("load",   "Load AGI game", ccmd_load);
 	console_cmd ("objs",   "List all objects and locations", ccmd_objs);
 	console_cmd ("opcode", "Turn opcodes on/off in debug", ccmd_opcode);
 	console_cmd ("say",    "Pass argument to the AGI parser", ccmd_say);
@@ -414,7 +456,8 @@ int console_init ()
 	console.active = 1;
 	console.input_active = 1;
 	console.index = 0;
-	console.y = 150;
+	console.max_y = 150;
+	console.y = console.max_y;
 	console.first_line = CONSOLE_LINES_BUFFER - CONSOLE_LINES_ONSCREEN;
 
 	debug.enabled = 0;
@@ -429,7 +472,7 @@ int console_init ()
 
 static void build_console_layer ()
 {
-	build_console_lines (15);
+	build_console_lines (console.max_y / 10);
 }
 
 
@@ -503,9 +546,15 @@ void report (char *message, ...)
 
 void console_cycle ()
 {
-	static UINT16 old_y = 0;
-	static UINT8 blink = 0;
-	static UINT8 cursor[] = "  ";
+	static int old_y = 0;
+	static int blink = 0;
+	static char cursor[] = "  ";
+
+	/* If no game has been loaded, keep the console visible! */
+	if (game.state < STATE_RUNNING) {
+		console.active = 1;
+		console.count = 10;
+	}
 
 	/* Initial console auto-hide timer */
 	if (console.count > 0)
@@ -516,12 +565,13 @@ void console_cycle ()
 	}
 
 	if (console.active) {
-		if (console.y < 150)
+		if (console.y < console.max_y)
 			console.y += 15;
 		else
-			console.y = 150;
+			console.y = console.max_y;
 	} else {
 		console.count = -1;
+
 		if (console.y > 0)
 			console.y -= 15;
 		else

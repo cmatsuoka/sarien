@@ -119,6 +119,11 @@ struct agi_block {
  * by the interpreter.
  */
 struct agi_game {
+#define STATE_INIT	0x00
+#define STATE_LOADED	0x01
+#define STATE_RUNNING	0x02
+	int state;		/**< state of the interpreter */
+
 	char name[8];		/**< lead in id (e.g. `GR' for goldrush) */
 	char id[8];		/**< game id */	
 	char dir[MAX_PATH];	/**< game dir */

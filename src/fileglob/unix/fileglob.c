@@ -50,7 +50,8 @@ static char *match (char *p, int f)
 	if (!*pattern)
 		return 0;
 
-	d = opendir (dir);
+	if ((d = opendir (dir)) == NULL)
+		return NULL;
 
 	while ((e = readdir (d)) != NULL) {
 		/* check backwards */
