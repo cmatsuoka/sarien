@@ -32,7 +32,7 @@ static void _set_cel (struct vt_entry *v, int n)
 
 static void _set_loop (struct vt_entry *v, int n)
 {
-	_D ("vt entry #%d, loop = %d", v->entry, n);
+	/* _D ("vt entry #%d, loop = %d", v->entry, n); */
 
 	/* Added to avoid crash when leaving the arcade machine in MH1
 	 * -- not in AGI 2.917

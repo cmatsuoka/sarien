@@ -245,7 +245,8 @@ void handle_getstring (int key)
 		break;
 	}
 
-	print_character (stringdata.x + pos+1, stringdata.y,
+	/* print cursor */
+	print_character (stringdata.x + pos + 1, stringdata.y,
 		(char)game.cursor_char, game.color_fg, game.color_bg);
 }
 

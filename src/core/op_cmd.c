@@ -437,7 +437,7 @@ cmd(follow_ego) {
 }
 
 cmd(move_obj) {
-	_D (_D_WARN "o=%d, x=%d, y=%d, s=%d, f=%d", p0, p1, p2, p3, p4);
+	/* _D (_D_WARN "o=%d, x=%d, y=%d, s=%d, f=%d", p0, p1, p2, p3, p4); */
 
 	vt.motion = MOTION_MOVE_OBJ;
 	vt.parm1 = p1;
@@ -637,11 +637,13 @@ cmd(distance) {
 }
 
 cmd(accept_input) {
+	_D (_D_WARN "input normal");
 	new_input_mode (INPUT_NORMAL);
 	game.input_enabled = TRUE;
 }
 
 cmd(prevent_input) {
+	_D (_D_WARN "no input");
 	new_input_mode (INPUT_NONE);
 	game.input_enabled = FALSE;
 }
@@ -656,8 +658,8 @@ cmd(get_string) {
 			p2, len, game.color_fg, game.color_bg);
 		get_string (p3 + len - 1, p2, p4, p0);
 
-		/* SGEO : display input char */
-		print_character ((p3 + len ), p2, game.cursor_char,
+		/* SGEO: display input char */
+		print_character ((p3 + len), p2, game.cursor_char,
 			game.color_fg, game.color_bg);
 	}
 
@@ -676,6 +678,10 @@ cmd(get_num) {
 		print_text (cur_logic->texts[p0 - 1], 0, 0, 22, len,
 			game.color_fg, game.color_bg);
 		get_string (len - 1, 22, 3, MAX_STRINGS);
+
+		/* CM: display input char */
+		print_character ((p3 + len), 22, game.cursor_char,
+			game.color_fg, game.color_bg);
 	}
 
 	do {

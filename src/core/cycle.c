@@ -143,25 +143,43 @@ static void interpret_cycle ()
 /**
  * Print user input prompt.
  */
-static void print_line_prompt ()
+static void print_prompt ()
 {
-	if (!game.input_enabled)
+	int l, fg, bg;
+
+	if (!game.input_enabled || game.input_mode != INPUT_NORMAL)
 		return;
 
-	_D (_D_WARN "input mode = %d", game.input_mode);
-	if (game.input_mode == INPUT_NORMAL) {
-		_D (_D_WARN "prompt = '%s'", agi_sprintf (game.strings[0]));
-		print_text (game.strings[0], 0, 0, game.line_user_input, 1,
-			game.color_fg, game.color_bg);
-		print_text ((char *)game.input_buffer, 0, 1,
-			game.line_user_input, game.cursor_pos + 1,
-			game.color_fg, game.color_bg);
-		print_character (game.cursor_pos + 1, game.line_user_input,
-			game.cursor_char, game.color_fg, game.color_bg);
-		do_update ();	/* synchronous */
-	}
+	l = game.line_user_input;
+	fg = game.color_fg;
+	bg = game.color_bg;
+
+	_D (_D_WARN "prompt = '%s'", agi_sprintf (game.strings[0]));
+	print_text (game.strings[0], 0, 0, l, 1, fg, bg);
+	print_text (game.input_buffer, 0, 1, l, game.cursor_pos + 1, fg, bg);
+	print_character (game.cursor_pos + 1, l, game.cursor_char, fg, bg);
+
+	flush_lines (l, l);
+	do_update ();
 }
 
+/**
+ * Erase user input prompt.
+ */
+static void erase_prompt ()
+{
+	int l = game.line_user_input;
+
+	_D (_D_WARN "erase line %d", l);
+	clear_lines (l, l, game.color_bg);
+	flush_lines (l, l);
+	do_update ();
+}
+
+
+/**
+ * Update AGI interpreter timer.
+ */
 void update_timer ()
 {
 	if (!game.clock_enabled)
@@ -362,9 +380,14 @@ static int play_game ()
 		    (1 + clock_count) % getvar (V_time_delay) == 0)
 		{
 			if (!game.has_prompt && game.input_mode == INPUT_NORMAL) {
-				print_line_prompt ();
+				print_prompt ();
 				game.has_prompt = 1;
+			} else
+			if (game.has_prompt && game.input_mode == INPUT_NONE) {
+				erase_prompt ();
+				game.has_prompt = 0;
 			}
+
 			interpret_cycle ();
 			setflag (F_entered_cli, FALSE);
 			setflag (F_said_accepted_input, FALSE);
