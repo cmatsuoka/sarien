@@ -7,6 +7,7 @@
 #  define VERSION "PocketPC experimental version"
 
 #  undef USE_CONSOLE
+#  define DISABLE_COPYPROTECTION
 
 typedef unsigned char	UINT8;
 typedef signed char		SINT8;
