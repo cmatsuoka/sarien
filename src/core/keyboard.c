@@ -106,7 +106,7 @@ void get_string (int x, int y, int len, int str)
  * It handles console keys and insulates AGI from the console. In the main
  * loop, handle_keys() handles keyboard input and ego movement.
  */
-int poll_keyboard ()
+int do_poll_keyboard ()
 {
 	int key = 0;
 
@@ -327,7 +327,7 @@ int wait_key ()
 	_D (_D_WARN "waiting...");
 	while (42) {
 		poll_timer ();		/* msdos driver -> does nothing */
-		key = poll_keyboard ();
+		key = do_poll_keyboard ();
 		if (!console_keyhandler (key)) {
 			if (key == KEY_ENTER || key == KEY_ESCAPE || key == ' ')
 				break;
@@ -345,7 +345,7 @@ int wait_any_key ()
 	_D (_D_WARN "waiting...");
 	while (42) {
 		poll_timer ();		/* msdos driver -> does nothing */
-		key = poll_keyboard ();
+		key = do_poll_keyboard ();
 		if (!console_keyhandler (key))
 				break;
 		console_cycle ();

@@ -173,7 +173,7 @@ int main_cycle ()
 	poll_timer ();		/* msdos driver -> does nothing */
 	update_timer ();
 
-	key = poll_keyboard ();
+	key = do_poll_keyboard ();
 
 #ifdef USE_CONSOLE
 	if (key == KEY_PRIORITY) {

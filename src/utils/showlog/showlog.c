@@ -532,7 +532,7 @@ FILE *dumpFile;
 
 void newLine(int lineStartPos)
 {
-   //showBracketInfo();
+   /*showBracketInfo();*/
 
    if (topLine == 0)
       lineArray[topLine] = 0;
@@ -624,7 +624,7 @@ void showBracketInfo()
 
    sprintf(tempString, "] %d", bracketCount);
    addToLine(tempString);
-   //newLine(logPos-2);
+   /*newLine(logPos-2);*/
 }
 
 int varCount[256];
@@ -1120,7 +1120,7 @@ for (; opt < argc; opt++) {
 	       addToLine(tempString);
 	       newLine(logPos);
 
-	       //bracketCount = oldCount;
+	       /*bracketCount = oldCount;*/
 	       do {
 		  bracketCount = pop();
 		  numBracketsOpen--;

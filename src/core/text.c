@@ -331,7 +331,7 @@ void print_status (char *message, ...)
 
         print_text (x, 0, game.line_status, 0, 40,
 		STATUS_FG, STATUS_BG);
-	//flush_lines (game.line_status, game.line_status);
+	/*flush_lines (game.line_status, game.line_status);*/
 }
 
 /**

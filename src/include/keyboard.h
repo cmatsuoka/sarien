@@ -44,7 +44,7 @@ extern	UINT8		scancode_table[];
 
 void	init_words	(void);
 void	clean_input	(void);
-int	poll_keyboard	(void);
+int		do_poll_keyboard	(void);
 void	clean_keyboard	(void);
 void	handle_keys	(int);
 void	handle_getstring(int);
