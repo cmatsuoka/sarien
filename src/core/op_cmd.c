@@ -92,7 +92,7 @@ cmd(current_loop)	{ _v[p1] = vt.current_loop; }
 cmd(last_cel)		{ _v[p1] = vt.loop_data->num_cels - 1; }
 cmd(set_cel)		{ set_cel (&vt, p1); vt.flags &= ~DONTUPDATE; }
 cmd(set_cel_f)		{ set_cel (&vt, _v[p1]); vt.flags &= ~DONTUPDATE; }
-cmd(set_view)		{ set_view (&vt, p1); }
+cmd(set_view)		{ _D ("o%d, %d", p0, p1); set_view (&vt, p1); }
 cmd(set_view_f)		{ set_view (&vt, _v[p1]); }
 cmd(set_loop)		{ set_loop (&vt, p1); }
 cmd(set_loop_f)		{ set_loop (&vt, _v[p1]); }
@@ -375,10 +375,14 @@ cmd(reverse_loop) {
 }
 
 cmd(end_of_loop) {
-	_D (_D_WARN "p0 = %d", p0);
+	_D (_D_WARN "o%d, f%d", p0, p1);
 	vt.flags |= (DONTUPDATE|UPDATE|CYCLING);
 	vt.cycle = CYCLE_END_OF_LOOP; 
 	vt.parm1 = p1;
+
+	/* Seems to be necessary in KQ4 (bug #475912) */
+	if (agi_get_release () == 0x3086)
+		vt.current_cel = 0;
 }
 
 cmd(block) {

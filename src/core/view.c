@@ -60,6 +60,7 @@ static void update_view (struct vt_entry *v)
 		break;
 	case CYCLE_END_OF_LOOP:
 		if (cel < last_cel) {
+			_D ("cel %d (last = %d)", cel + 1, last_cel);
 			if (++cel != last_cel)
 				break;
 			setflag (v->parm1, TRUE);

@@ -130,7 +130,7 @@ static int check_priority (struct vt_entry *v)
 
 		
 		if (pri == 2) { 	/* trigger */
-			_D (_D_WARN "stepped on trigger");
+			/* _D (_D_WARN "stepped on trigger"); */
 			trigger = 1;
 		}
 	}
