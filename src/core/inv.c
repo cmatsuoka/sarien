@@ -19,13 +19,13 @@
 #include "text.h"
 #include "keyboard.h"
 
-#define NOTHING_X	15
+#define NOTHING_X	16
 #define NOTHING_Y	3
 #define NOTHING_MSG	"nothing"
 
 #define ANY_KEY_X	4
 #define ANY_KEY_Y	24
-#define ANY_KEY_MSG	"Press a key to return to the game."
+#define ANY_KEY_MSG	"Press a key to return to the game"
 
 #define YOUHAVE_X	11
 #define YOUHAVE_Y	0
@@ -33,7 +33,7 @@
 
 #define SELECT_X	2
 #define SELECT_Y	24
-#define SELECT_MSG	"Press ENTER to select, ESC to cancel."
+#define SELECT_MSG	"Press ENTER to select, ESC to cancel"
 
 
 void inventory ()
@@ -64,7 +64,7 @@ void inventory ()
 			intobj[objcount++] = x;
 
 			print_text (object_name (x), 0,
-				cy % 2 ? 40 - strlen (object_name (x)) : 0,
+				cy % 2 ? 39 - strlen (object_name (x)) : 1,
 				(cy / 2) + 1, 40, STATUS_FG, STATUS_BG);
 
 			cy++;
