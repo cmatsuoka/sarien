@@ -443,7 +443,7 @@ build_list (struct list_head *head, int (*test)(struct vt_entry *))
 	for (j = 0; j < i; j++) {
 		min_y = 0xff;
 		for (k = 0; k < i; k++) {
-			if (y_val[k] <= min_y) {
+			if (y_val[k] < min_y) {
 				min_index = k;
 				min_y = y_val[k];
 			}
