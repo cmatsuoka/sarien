@@ -257,10 +257,9 @@ void draw_frame (int x1, int y1, int x2, int y2, int c)
 	memset (p0, c, w);
 
 	/* side lines */
-	c = (c << 8) | c;
 	for (y = y1; y <= y2; y++) {
-		*(UINT16 *)&sarien_screen[x1 + y * GFX_WIDTH] = c;
-		*(UINT16 *)&sarien_screen[x2 + y * GFX_WIDTH] = c;
+		sarien_screen[x1 + y * GFX_WIDTH] = c;
+		sarien_screen[x2 + y * GFX_WIDTH] = c;
 	}
 }
 

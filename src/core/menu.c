@@ -93,9 +93,10 @@ static void draw_vertical_menu (int h_menu, int cur_men, int max_men)
 		men = men->down;
 	}
 
+	_D ("col = %d, len = %d", col, len);
 	if (len > 40)
 		len = 38;
-	if (col + len > 40 && len < 40)
+	if (col + len > 38)
 		col = 38 - len;
 
 	draw_box (col * CHAR_COLS, lin * CHAR_LINES,
