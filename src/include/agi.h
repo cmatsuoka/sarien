@@ -15,6 +15,18 @@
 extern "C"{
 #endif
 
+struct agi_word {
+	int id;
+	char *word;
+};
+
+int	show_words	(void);
+int	load_words	(char *);
+void	unload_words	(void);
+int	find_word	(char *);
+void	dictionary_words(char *);
+
+
 struct agi_dir {
 	UINT8  volume;
 	UINT32 offset;
@@ -67,6 +79,10 @@ struct agi_game {
 	struct agi_dir dir_pic[MAX_DIRS];
 	struct agi_dir dir_view[MAX_DIRS];
 	struct agi_dir dir_sound[MAX_DIRS];
+
+	/* player command line */
+	struct agi_word ego_words[MAX_WORDS];
+	int num_ego_words;
 
 	int num_objects;
 #if 0

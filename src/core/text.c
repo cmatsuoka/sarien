@@ -20,12 +20,10 @@
 #include "objects.h"
 #include "gfx_base.h"
 #include "text.h"
-#include "words.h"
 
 extern struct gfx_driver *gfx;
 extern struct agi_object *objects;
 extern struct agi_logic logics[];
-extern struct agi_word ego_words[];
 /* FIXME: remove */
 extern    UINT8           strings[MAX_WORDS1][MAX_WORDS2];
 
@@ -285,7 +283,7 @@ char *agi_printf (char *msg, int lognum)
 				strcat(p, logics[0].texts[atol(msg)-1]);
 				break;
 			case 'w':
-				strcat(p, ego_words[atol(msg)-1].word);
+				strcat(p, game.ego_words[atol(msg)-1].word);
 				break;
 			case 's':
 				strcat(p, strings[atol(msg)]);

@@ -473,7 +473,7 @@ void cmd_ignore_objs (UINT8 entry)
 
 void cmd_word_to_string (UINT8 sn, UINT8 wn)
 {
-	strcpy ((char*)strings[sn], (char*)ego_words[wn].word);
+	strcpy (strings[sn], game.ego_words[wn].word);
 }
 
 

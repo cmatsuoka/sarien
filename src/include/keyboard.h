@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -8,11 +8,8 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#ifndef __AGI_KEYBOARD
-#define __AGI_KEYBOARD
-
-#include "words.h"
-
+#ifndef __AGI_KEYBOARD_H
+#define __AGI_KEYBOARD_H
 
 #ifdef __cplusplus
 extern "C"{
@@ -50,8 +47,8 @@ extern	UINT8		scancode_table[];
 extern	UINT16		key;
 
 //extern	struct agi_events	events[];
-extern	struct agi_word	ego_words[];
-extern	int		num_ego_words;
+//extern	struct agi_word	ego_words[];
+//extern	int		num_ego_words;
 extern	UINT8		strings[MAX_WORDS1][MAX_WORDS2];
 
 
@@ -71,4 +68,5 @@ void print_line_prompt(void);
 #ifdef __cplusplus
 };
 #endif
-#endif
+
+#endif /* __AGI_KEYBOARD_H */

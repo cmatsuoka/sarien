@@ -116,7 +116,8 @@ static UINT8 test_obj_right(UINT8 obj, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 /* When player has entered something, it is parsed elsewhere */
 static UINT8 test_said (UINT8 nwords, UINT8 *cc)
 {
-	UINT16	c, z = 0, nEgoWords = num_ego_words;
+	int c, n = game.num_ego_words;
+	UINT16 z = 0;
 
 	if (!getflag (F_entered_cli))
 		return FALSE;
@@ -139,7 +140,7 @@ static UINT8 test_said (UINT8 nwords, UINT8 *cc)
 	 * corrected
 	 */ 
     	
-	for (c = 0; nwords && nEgoWords; c++, nwords--, nEgoWords --) {
+	for (c = 0; nwords && n; c++, nwords--, n--) {
 		z = lohi_getword (cc);
 		cc += 2;
 
@@ -150,14 +151,14 @@ static UINT8 test_said (UINT8 nwords, UINT8 *cc)
 		case 1:			/* any word */
 			break;
 		default:
-			if (ego_words[c].id != z)
+			if (game.ego_words[c].id != z)
 				return FALSE;
 				break;
 			}
 	}
 
 	/* The entry string should be entirely parsed, or last word = 9999 */
-	if ( ( nEgoWords ) && ( z != 9999 ) )
+	if ( ( n ) && ( z != 9999 ) )
 		return FALSE;
 
 	/* The interpreter string shouldn't be entirely parsed, but next

@@ -15,11 +15,12 @@
 
 #include "sarien.h"
 #include "agi.h"
-#include "words.h"
-#include "keyboard.h"
+//#include "words.h"
+//#include "keyboard.h"
 #include "console.h"
 
 struct agi_word *words;			/* words in the game */
+
 static int num_words, num_syns;
 
 
@@ -150,7 +151,7 @@ int find_word (char *word)
 }
 
 
-static void fix_users_words (char *msg)
+void dictionary_words (char *msg)
 {
 	static UINT8 bad_word[256];	/* FIXME: dynamic allocation? */
 	char *p, *q = NULL;
@@ -191,12 +192,12 @@ static void fix_users_words (char *msg)
  			switch (words[wc1].id) {
  			case -1:
  				_D ((": bad word"));
- 				ego_words[num_ego_words].word = strdup(p);
- 				q = ego_words[num_ego_words].word;
- 				ego_words[num_ego_words].id = 19999;
- 				setvar(V_word_not_found, 1+num_ego_words);
- 				num_ego_words++;
- 				p+=strlen((char*)words[wc1].word);
+ 				game.ego_words[game.num_ego_words].word = strdup(p);
+ 				q = game.ego_words[game.num_ego_words].word;
+ 				game.ego_words[game.num_ego_words].id = 19999;
+ 				setvar(V_word_not_found, 1 + game.num_ego_words);
+ 				game.num_ego_words++;
+ 				p += strlen (words[wc1].word);
  				break;
  			case 0:
  				/* ignore this word */
@@ -207,9 +208,9 @@ static void fix_users_words (char *msg)
  			default:
  				/* an OK word */
  				_D ((": ok word (%d)", wc1));
- 				ego_words[num_ego_words].id = words[wc1].id;
- 				ego_words[num_ego_words].word = words[wc1].word;
- 				num_ego_words++;
+ 				game.ego_words[game.num_ego_words].id = words[wc1].id;
+ 				game.ego_words[game.num_ego_words].word = words[wc1].word;
+ 				game.num_ego_words++;
  				p += strlen((char*)words[wc1].word);
  				break;
  			}
@@ -217,11 +218,11 @@ static void fix_users_words (char *msg)
  			/* unknown word */
  			_D ((": unknown word"));
 			strcpy ((char*)bad_word, (char*)p);
- 			ego_words[num_ego_words].word = bad_word;
-			q=ego_words[num_ego_words].word;
- 			ego_words[num_ego_words].id=19999;
- 			setvar(V_word_not_found, 1+num_ego_words);
- 			num_ego_words++;
+ 			game.ego_words[game.num_ego_words].word = bad_word;
+			q = game.ego_words[game.num_ego_words].word;
+ 			game.ego_words[game.num_ego_words].id = 19999;
+ 			setvar (V_word_not_found, 1 + game.num_ego_words);
+ 			game.num_ego_words++;
  			p=(UINT8*)strchr((char*)p, 0x20);
  		}
 
@@ -238,17 +239,8 @@ static void fix_users_words (char *msg)
  			}
  		}
 	}
-}
 
-
-void dictionary_words (char *msg)
-{
-	/* turn all words in msg into ego's words */
-	fix_users_words(msg);
-
-	_D (("num_ego_words = %d", num_ego_words));
-
-	if (num_ego_words > 0) {
+	if (game.num_ego_words > 0) {
 		setflag (F_entered_cli, TRUE);
 		setflag (F_said_accepted_input, FALSE);
 	}

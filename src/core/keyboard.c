@@ -25,9 +25,6 @@
 
 struct agi_event events[MAX_DIRS];	/* keyboard events */
 
-int num_ego_words	;		/* number of words entered */
-struct agi_word ego_words[MAX_WORDS];	/* words entered by player */
-
 UINT8 strings[MAX_WORDS1][MAX_WORDS2];	/* strings */
 
 UINT16 key; 
@@ -88,11 +85,11 @@ void clean_input ()
 	int i;
 
 	for (i = 0; i < MAX_WORDS; i++) {
-		ego_words[i].word = "";
-		ego_words[i].id = 0xffff;
+		game.ego_words[i].word = "";
+		game.ego_words[i].id = 0xffff;
 	}
 
-	num_ego_words = 0;
+	game.num_ego_words = 0;
 }
 
 
@@ -318,9 +315,9 @@ void handle_keys ()
 			}
 			formated_entry[c++] = 0;
 
-			//Only treat the string if it isn't empty...
-			if ( formated_entry[0] ) {
-				strcpy((char *) last_sentence, (char *) formated_entry );
+			/* Handle string only if it's not empty */
+			if (formated_entry[0]) {
+				strcpy (last_sentence, formated_entry);
 				dictionary_words (last_sentence);
 			}
 		}
