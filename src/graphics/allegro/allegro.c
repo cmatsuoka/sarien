@@ -160,18 +160,39 @@ static int gfx_get_key ()
 	else
 		key &= 0x00FF;
 
-	switch (key) {
-	case 0x5200:
+	if (key >= 0x0100 && key <= 0x1a00)	/* ALT-A to ALT-Z */
+		key = scancode_table[(key >> 8) - 1] << 8;
+	else switch (key) {
+	case 0x5200:	/* Left arrow */
+	case 0x2900:	/* Keypad left arrow */
 		key = KEY_LEFT;
 		break;
 	case 0x5300:
+	case 0x2b00:
 		key = KEY_RIGHT;
 		break;
 	case 0x5400:
+	case 0x2d00:
 		key = KEY_UP;
 		break;
 	case 0x5500:
+	case 0x2700:
 		key = KEY_DOWN;
+		break;
+	case 0x2c00:
+		key = KEY_HOME;
+		break;
+	case 0x2e00:
+		key = KEY_PGUP;
+		break;
+	case 0x2a00:	/* Keypad 5 */
+		key = KEY_STATIONARY;
+		break;
+	case 0x2600:
+		key = KEY_END;
+		break;
+	case 0x2800:
+		key = KEY_PGDN;
 		break;
 	case 0x2f00:	/* F1 */
 	case 0x3000:	/* F2 */

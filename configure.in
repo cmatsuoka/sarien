@@ -51,6 +51,7 @@ AC_ARG_WITH(svgalib,[  --with-svgalib          use SVGAlib for graphics])
 AC_ARG_WITH(alsa,   [  --with-alsa             use ALSA for sound output])
 AC_ARG_WITH(win32,  [  --with-win32            use Win32 console/sound drivers])
 AC_ARG_WITH(amiga,  [  --with-amiga            use Amiga console/sound drivers])
+AC_ARG_WITH(allegro,[  --with-allegro          use Allegro console/sound drivers])
 AC_ARG_WITH(cocoa,  [  --with-cocoa            use Cocoa graphics in MacOS X])
 AC_ARG_WITH(directx,[  --with-directx          use DirectX console drivers])
 AC_ARG_WITH(script, [  --with-script           use the scriptable console driver (debug only)])
@@ -207,6 +208,13 @@ dnl		fi
 fi
 
 
+if test "${with_allegro}" = "yes"; then
+	CONSOLE_DRIVER="allegro"
+	CFLAGS="${CFLAGS} -DHAVE_ALLEGRO"
+	LIBS="${LIBS} -lpthread -lm"
+	X_LIBS="-lalleg ${X_LIBS} -lXxf86vm -lXxf86dga"
+fi
+
 dnl ----------------------------------------------
 dnl Check sound support
 dnl ----------------------------------------------
@@ -217,6 +225,8 @@ if test "${with_script}" = "yes"; then
 	SOUND_DRIVER="dummy"
 elif test "${with_sdl}" = "yes"; then
 	SOUND_DRIVER="sdl"
+elif test "${with_allegro}" = "yes"; then
+	SOUND_DRIVER="dummy"
 else case ${host_os} in
 linux*)
 	case ${host_cpu} in
@@ -280,6 +290,12 @@ irix*)
 		LIBS="${LIBS} -laudio"
 	fi
 	;;
+nto*)
+	if test "${ac_cv_header_sys_asoundlib_h}" = "yes"; then
+		SOUND_DRIVER="alsa"
+		AC_CHECK_LIB(asound, snd_pcm_open)
+	fi
+	;;
 cygwin|mingw*)
 	WIN_LDFLAGS="${LDFLAGS} -Wl,--subsystem,windows,-e,_mainCRTStartup"
 	LIBS="-lwinmm ${LIBS}"
@@ -307,14 +323,6 @@ dummy|win32|sdl|freebsd|qnxalsa|amiga|macos|macosx)
 	;;
 esac
 
-case "${host_os}" in
-nto*)
-	if test "${ac_cv_header_sys_asoundlib_h}" = "yes"; then
-		SOUND_DRIVER="alsa"
-		AC_CHECK_LIB(asound, snd_pcm_open)
-	fi
-	;;
-esac
 
 dnl ----------------------------------------------
 dnl Check for file globbing support
