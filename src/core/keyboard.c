@@ -128,13 +128,7 @@ int handle_controller (int key)
 	_D (_D_WARN "key = %04x", key);
 
 	for (i = 0; i < MAX_DIRS; i++) {
-		if (game.ev_scan[i].data == KEY_SCAN(key) && KEY_ASCII(key) == 0) {
-			_D ("event %d: scan code", i);
-			game.ev_scan[i].occured = TRUE;
-			report("event SC:%i occured\n", i);
-			return TRUE;
-		}
-		if (game.ev_keyp[i].data == KEY_ASCII(key) && KEY_SCAN(key) == 0) {
+		if (game.ev_keyp[i].data == key) {
 			_D ("event %d: key press", i);
 			game.ev_keyp[i].occured = TRUE;
 			report ("event AC:%i occured\n", i);

@@ -1,11 +1,11 @@
-/*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+/* Sarien - A Sierra AGI resource interpreter engine
+ * Copyright (C) 1999-2003 Stuart George and Claudio Matsuoka
  *  
- *  $Id$
+ * $Id$
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; see docs/COPYING for further details.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; see docs/COPYING for further details.
  */
 
 #include "sarien.h"
@@ -97,7 +97,6 @@ static void reset_controllers ()
 	int i;
 
 	for (i = 0; i < MAX_DIRS; i++) {
-		game.ev_scan[i].occured = FALSE;
 		game.ev_keyp[i].occured = FALSE;
 	}
 }
@@ -336,9 +335,12 @@ static int play_game ()
 
 	setflag (F_entered_cli, FALSE);
 	setflag (F_said_accepted_input, FALSE);
+	game.vars[V_word_not_found] = 0;
+	game.vars[V_key] = 0;
 
 	_D (_D_WARN "Entering main loop");
 	do {
+	
 		if (!main_cycle ())
 			continue;
 	
@@ -355,8 +357,11 @@ static int play_game ()
 			}
 
 			interpret_cycle ();
+
 			setflag (F_entered_cli, FALSE);
 			setflag (F_said_accepted_input, FALSE);
+			game.vars[V_word_not_found] = 0;
+			game.vars[V_key] = 0;
 		}
 
 		if (game.quit_prog_now == 0xff)

@@ -25,7 +25,7 @@ Revision History
 	- emulating AGI 2.272 move.obj and move.obj.v (closes: #542692)
 	- correctly ordering sprites in the blit list (closes: #539394)
 	- input prompt and user input fixes (closes: #518734, #540840,
-	  #540734, #540843, #540736, #607241, #686123)
+	  #540734, #540843, #540736, #607241, #686123, #607635, #590643)
 	- fixed object position test in cmd_reposition (closes: #518731)
 	- fixed end.of.loop and reverse.loop handling (closes: #475912)
 	- fixed left screen border detection for KQ4 (closes: #590462)
@@ -40,6 +40,7 @@ Revision History
 	- fixed geometry of win32 window (closes: #606452, #604435)
 	- fixed menu controller data corruption (closes: #608671)
 	- enabling menu options on restart (closes: #607643)
+	- fixed keyboard variables handling (closes: #763577)
 	- fixed broken toggle.v AGI command
 	- added "trigger" command to the interpreter console
 	- added CGA palette/color dithering emulation

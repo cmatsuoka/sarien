@@ -450,8 +450,8 @@ int menu_keyhandler (int key)
 					/* activate that option */
 					if (d->enabled) {
 						_D ("event %d registered", d->event);
-	    					game.ev_scan[d->event].occured = TRUE;
-	    					game.ev_scan[d->event].data = d->event;
+	    					game.ev_keyp[d->event].occured = TRUE;
+	    					game.ev_keyp[d->event].data = d->event;
 						goto exit_menu;
 					}
 				}
@@ -480,7 +480,7 @@ int menu_keyhandler (int key)
 		d = get_menu_option (h_cur_menu, v_cur_menu);
 		if (d->enabled) {
 			_D ("event %d registered", d->event);
-    			game.ev_scan[d->event].occured = TRUE;
+    			game.ev_keyp[d->event].occured = TRUE;
 			goto exit_menu;
     		}
     		break;

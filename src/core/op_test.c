@@ -57,12 +57,7 @@ static UINT8 test_keypressed ()
 
 static UINT8 test_controller (UINT8 cont)
 {
-	int r;
-
-	r = game.ev_keyp[cont].occured | game.ev_scan[cont].occured;
-	/*game.ev_keyp[cont].occured = game.ev_scan[cont].occured = FALSE;*/
-
-	return r;
+	return game.ev_keyp[cont].occured;
 }
 
 

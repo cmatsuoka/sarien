@@ -266,7 +266,6 @@ int save_game (char* s, char* d)
 		write_sint16 (f, (SINT16)object_get_location(i));
 
 	/* game.ev_keyp */
-	/* game.ev_scan */
 	for (i = 0; i < MAX_STRINGS; i++)
 		write_string (f, game.strings[i]);
 
@@ -446,7 +445,6 @@ int load_game(char* s)
 
 	/* Those are not serialized */
 	for (i = 0; i < MAX_DIRS; i++) {
-		game.ev_scan[i].occured = FALSE;
 		game.ev_keyp[i].occured = FALSE;
 	}
 

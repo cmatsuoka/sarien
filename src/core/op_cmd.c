@@ -706,18 +706,12 @@ cmd(set_cursor_char) {
 }
 
 cmd(set_key) {
+	int key = 256 * p1 + p0;
+
 	_D ("%d %d %d", p0, p1, p2);
-	if (p0 && p1) {
-		_D (_D_WARN "FIXME: not registered!");
-		return;
-	}
-	if (p0) {		/* keypress */
-		game.ev_keyp[p2].data = p0;
-		game.ev_keyp[p2].occured = FALSE;
-	} else {		/* scancode */
-		game.ev_scan[p2].data = p1;
-		game.ev_scan[p2].occured = FALSE;
-	}
+
+	game.ev_keyp[p2].data = key;
+	game.ev_keyp[p2].occured = FALSE;
 }
 
 cmd(set_string) {
