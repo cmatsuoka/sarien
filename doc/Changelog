@@ -10,6 +10,7 @@ Revision History
 	- unloading non-cached agi resources on new room
 	- using scanline-based flood fill to reduce memory usage
 	- reduced memory allocation in shake.screen
+	- added many options to the configuration script
 
 0.7.0 (20011122)
 	- added QNX4 native sound driver (untested)

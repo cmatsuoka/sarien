@@ -120,27 +120,25 @@ static void process_events ()
 		/* Get the message that's waiting for us */
 		GT_ReplyIMsg(imsg);
 
-		switch (Class)
-		{
+		switch (Class) {
 		case IDCMP_MOUSEBUTTONS:
-			switch (Code)
-			{
-				case IECODE_RBUTTON:
-					key = BUTTON_RIGHT
-					mouse.button = 2;
-					mouse.x = (imsg->MouseX - window->BorderLeft) / opt.scale;
-					mouse.y = (imsg->MouseY - window->BorderTop) / opt.scale;
-					break;
-				case IECODE_LBUTTON:
-					key = BUTTON_LEFT
-					mouse.button = 1;
-					mouse.x = (imsg->MouseX - window->BorderLeft) / opt.scale;
-					mouse.y = (imsg->MouseY - window->BorderTop) / opt.scale;
-					break;
-				case IECODE_LBUTTON | IECODE_UP_PREFIX:
-				case IECODE_RBUTTON | IECODE_UP_PREFIX:
-					mouse.button = FALSE;
-					break;
+			switch (Code) {
+			case IECODE_RBUTTON:
+				key = BUTTON_RIGHT;
+				mouse.button = 2;
+				mouse.x = (imsg->MouseX - window->BorderLeft) / opt.scale;
+				mouse.y = (imsg->MouseY - window->BorderTop) / opt.scale;
+				break;
+			case IECODE_LBUTTON:
+				key = BUTTON_LEFT;
+				mouse.button = 1;
+				mouse.x = (imsg->MouseX - window->BorderLeft) / opt.scale;
+				mouse.y = (imsg->MouseY - window->BorderTop) / opt.scale;
+				break;
+			case IECODE_LBUTTON | IECODE_UP_PREFIX:
+			case IECODE_RBUTTON | IECODE_UP_PREFIX:
+				mouse.button = FALSE;
+				break;
 			}
 			break;
 
@@ -394,9 +392,11 @@ static int Amiga_init_vidmode (void)
 			BIDTAG_NominalHeight,	GFX_HEIGHT * scale,
 			BIDTAG_Depth,		DEPTH,
 			TAG_END);
-		if (AmigaModeID==INVALID_ID) AmigaModeID=0;
 
-		screen = OpenScreenTags(NULL,
+		if (AmigaModeID == INVALID_ID)
+			AmigaModeID = 0;
+
+		screen = OpenScreenTags (NULL,
 			SA_Left,	0,
 			SA_Top,		0,
 			SA_Width,	GFX_WIDTH * scale,
@@ -425,14 +425,11 @@ static int Amiga_init_vidmode (void)
 				WA_CustomScreen,(ULONG) screen,
 				TAG_END);
 		}
-	}
-	else
-	{
+	} else {
 		/* Running in a window */
 		screen = LockPubScreen(PubScreen);
 
-		if (screen)
-		{
+		if (screen) {
 			window = OpenWindowTags(NULL,
 				WA_InnerWidth,	GFX_WIDTH * scale,
 				WA_InnerHeight,	GFX_HEIGHT * scale,
@@ -452,17 +449,14 @@ static int Amiga_init_vidmode (void)
 		}
 	}
 
-	if (!screen)
-	{
+	if (!screen) {
 		fprintf(stderr, "Error opening/locking screen\n");
 		return err_Unk;
 	}
 
-	if (!window)
-	{
+	if (!window) {
 		fprintf(stderr, "Error opening window\n");
-		if (screen)
-		{
+		if (screen) {
 			if (opt.fullscreen)
 				CloseScreen(screen);
 			else
@@ -473,13 +467,11 @@ static int Amiga_init_vidmode (void)
 	}
 
 	/* Setup the temporary rastport required for kickstarts < 3.1 */
-	if (GfxBase->LibNode.lib_Version < 39)
-	{
+	if (GfxBase->LibNode.lib_Version < 39) {
 		int depth;
 		InitBitMap (&video_tmp_bm, 1, (GFX_WIDTH * scale), 1);
 
-		for (depth = 0; depth < DEPTH; depth++)
-		{
+		for (depth = 0; depth < DEPTH; depth++) {
 			if ((video_tmp_bm.Planes[depth] = (PLANEPTR)AllocRaster (GFX_WIDTH * scale, 1)) == NULL)
 			{
 				fprintf(stderr,"AllocRaster failed");
@@ -510,13 +502,10 @@ static int Amiga_deinit_vidmode (void)
 	fprintf (stderr, "amiga: deiniting video mode\n");
 
 	/* Free the temporary rastport required for kickstarts < 3.1 */
-	if (GfxBase->LibNode.lib_Version < 39)
-	{
+	if (GfxBase->LibNode.lib_Version < 39) {
 		int depth;
-		for (depth = 0; depth < DEPTH; depth++)
-		{
-			if (video_tmp_bm.Planes[depth] != NULL)
-			{
+		for (depth = 0; depth < DEPTH; depth++) {
+			if (video_tmp_bm.Planes[depth] != NULL) {
 				FreeRaster (video_tmp_bm.Planes[depth],
 					(GFX_WIDTH * scale), 1);
 				video_tmp_bm.Planes[depth] = NULL;
@@ -524,14 +513,11 @@ static int Amiga_deinit_vidmode (void)
 		}
 	}
 
-	if (opt.fullscreen)
-	{
+	if (opt.fullscreen) {
 		/* release allocated colour pens */
-		if (screen)
-		{
+		if (screen) {
 			int i;
-			for (i=0;i<16;i++)
-			{
+			for (i=0;i<16;i++) {
 				if (rgb_palette[i] >= 0) {
 					ReleasePen (screen->ViewPort.ColorMap,
 						rgb_palette[i]);
@@ -541,16 +527,14 @@ static int Amiga_deinit_vidmode (void)
 		}
 	}
 
-	if (window)
-	{
+	if (window) {
 		if (VisualInfo)
 			FreeVisualInfo(VisualInfo);
 		CloseWindow(window);
 		window = NULL;
 	}
 
-	if (screen)
-	{
+	if (screen) {
 		if (opt.fullscreen)
 			CloseScreen(screen);
 		else
@@ -581,8 +565,7 @@ static void Amiga_blit_block(int x1, int y1, int x2, int y2)
 		y2 = (y2 + 1) * scale - 1;
 	}
 
-	if (GfxBase->LibNode.lib_Version >= 39)
-	{
+	if (GfxBase->LibNode.lib_Version >= 39) {
 		/* Kickstart 3.1+ */
 		static UBYTE *image;
 
@@ -600,9 +583,7 @@ static void Amiga_blit_block(int x1, int y1, int x2, int y2)
 			y2 + window->BorderTop,
 			(UBYTE *) image,
 			GFX_WIDTH * scale);
-	}
-	else
-	{
+	} else {
 		/* Kickstart 2.0 -> 3.0 */
 		/* I don't bother to support these any more :-) */
 	}

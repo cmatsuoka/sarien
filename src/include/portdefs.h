@@ -69,10 +69,6 @@
 #  undef OPT_LIST_DICT
 #endif
 
-#ifdef __AMIGA__
-#  undef USE_HIRES	/* Runs faster with hires disabled */
-#endif
-
 #if defined (NATIVE_WIN32)
 #  define INLINE __inline
 #endif
