@@ -45,11 +45,7 @@ int main(int argc, char *argv[])
 #endif
 
 	printf(
-#ifndef __MPW__
 TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
-#else
-"Sarien - A Sierra AGI resource interpreter engine.\n"
-#endif
 "Copyright (C) 1999-2001 Stuart George\n"
 "Portions Copyright (C) 1998 Lance Ewing, (C) 1999 Felipe Rosinha,\n"
 "(C) 1999-2001 Claudio Matsuoka, (C) 1999-2001 Igor Nesterov\n"
@@ -101,11 +97,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 	_D ("Init sound");
 	init_sound ();
 
-#ifndef __MPW__
 	report (" \nSarien " VERSION " is ready.\n");
-#else
-	report (" \nSarien is ready.\n");
-#endif
 	if (game.state < STATE_LOADED) {
        		console_prompt ();
 		do { main_cycle (); } while (game.state < STATE_RUNNING);

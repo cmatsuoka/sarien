@@ -134,7 +134,7 @@ static char *match (char *p, int f)
 	*path = 0;
 
 	strcpy (s, p);
-	slash = strrchr (s, '/');
+	slash = strrchr (s, ':');
 	if (slash) {
 		*slash = 0;
 		pattern = slash + 1;
@@ -170,7 +170,7 @@ static char *match (char *p, int f)
 		if (i < 0 && j < 0) {
 			if (f) {
 				strcpy (path, dir);
-				strcat (path, "/");
+				strcat (path, ":");
 				strcat (path, e->d_name);
 			} else {
 				strcpy (path, e->d_name);
@@ -204,8 +204,8 @@ char *fixpath (int flag, char *fname)
 	_D ("game.dir = %s", game.dir);
 
 	strcpy (path, game.dir);
-	if (*path && path[strlen (path) - 1] != '/')
-		strcat (path, "/");
+	if (*path && path[strlen (path) - 1] != ':')
+		strcat (path, ":");
 	if (flag)
 		strcat (path, game.name);
 

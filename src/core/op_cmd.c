@@ -502,11 +502,7 @@ cmd(set_menu_item) {
 }
 
 cmd(version) {
-#ifndef __MPW__
 	char ver_msg[] = TITLE " v" VERSION;
-#else
-	char ver_msg[] = "FIXME: version";
-#endif
 	char ver2_msg[] =
 		"\n"
 		"                             \n\n"

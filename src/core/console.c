@@ -188,11 +188,7 @@ static void ccmd_help ()
 
 static void ccmd_ver ()
 {
-#ifdef __MPW__
-	report ("Whoops. FIXME.\n");
-#else
 	report (VERSION "\n");
-#endif
 }
 
 static void ccmd_load ()
