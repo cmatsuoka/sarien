@@ -83,6 +83,9 @@ int init_machine (int argc, char **argv)
 
 	screen_buffer = malloc (GFX_WIDTH * GFX_HEIGHT);
 
+	/* clear out the snow */
+	memset(screen_buffer, 0x0, GFX_WIDTH * GFX_HEIGHT);
+
 	clock_count = 0;
 	clock_ticks = 0;
 
@@ -112,7 +115,7 @@ static int pc_init_vidmode ()
 	r.w.ax = 0x13;
 	int386 (0x10, &r, &r);
 #endif
-	
+
 #ifdef __TURBOC__
 	r.x.ax = 0x13;
 	int86 (0x10, &r, &r);
@@ -200,7 +203,7 @@ static int pc_get_key ()
 	int86 (0x16, &r, &r);
 	switch (key = r.x.ax)
 #endif
-	
+
 	{
 		case KEY_PGDN:
 		case KEY_PGUP:

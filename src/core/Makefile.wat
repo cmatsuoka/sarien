@@ -12,9 +12,10 @@ OBJS =	main.obj global.obj agi_v2.obj agi_v3.obj agi.obj	&
 		cli.obj words.obj objects.obj picture.obj id.obj	&
 		view.obj logic.obj text.obj keyboard.obj rand.obj	&
 		menu.obj lzw.obj getopt.obj getopt1.obj sound.obj	&
-		font.obj op_test.obj op_misc.obj op_dbg.obj		&
+		font.obj op_test.obj op_dbg.obj		&
 		op_cmd.obj savegame.obj silent.obj iff.obj cycle.obj &
-		console.obj inv.obj gfx_agi.obj gfx_base.obj
+		console.obj inv.obj graphics.obj agi_v4.obj checks.obj	&
+		motion.obj patches.obj sprite.obj
 
 all: start agi_core.lib
 

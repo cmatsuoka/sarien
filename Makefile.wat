@@ -13,7 +13,7 @@ drivers: .symbolic
 	cd src\graphics\msdos
 	wmake -h -f makefile.wat HOME=..\..\..
 	@echo Building fileglob driver
-	cd src\fileglob\msdos
+	cd src\filesys\msdos
 	wmake -h -f makefile.wat HOME=..\..\..
 	cd ..\..\..
 	@echo Building sound driver
