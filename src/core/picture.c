@@ -43,14 +43,14 @@ static UINT8 circles[][15] = {		/* agi circle bitmaps */
 	  0xff, 0xff, 0xff, 0x7e, 0x7e, 0x7e, 0x3c, 0x18 }
 };
 
-static UINT8 splatterMap[32] = {	/* splatter brush bitmaps */
+static UINT8 splatter_map[32] = {	/* splatter brush bitmaps */
 	0x20, 0x94, 0x02, 0x24, 0x90, 0x82, 0xa4, 0xa2,
 	0x82, 0x09, 0x0a, 0x22, 0x12, 0x10, 0x42, 0x14,
 	0x91, 0x4a, 0x91, 0x11, 0x08, 0x12, 0x25, 0x10,
 	0x22, 0xa8, 0x14, 0x24, 0x00, 0x50, 0x24, 0x04
 };
 
-static UINT8 splatterStart[128] = {	/* starting bit position */
+static UINT8 splatter_start[128] = {	/* starting bit position */
 	0x00, 0x18, 0x30, 0xc4, 0xdc, 0x65, 0xeb, 0x48,
 	0x60, 0xbd, 0x89, 0x05, 0x0a, 0xf4, 0x7d, 0x7d,
 	0x85, 0xb0, 0x8e, 0x95, 0x1f, 0x22, 0x0d, 0xdf,
@@ -245,11 +245,11 @@ static void draw_line (int x1, int y1, int x2, int y2, int res)
 #endif
 }
 
-/**************************************************************************
-** relativeDraw
-**
-** Draws short lines relative to last position.  (drawing action 0xF7)
-**************************************************************************/
+/**
+ * Draw a relative AGI line.
+ * Draws short lines relative to last position. (drawing action 0xF7)
+ * @param res  horizontal resolution multiplier
+ */
 static void dynamic_draw_line (int res)
 {
 	int x1, y1, disp, dx, dy;
@@ -266,11 +266,8 @@ static void dynamic_draw_line (int res)
 		dx= ((disp & 0xf0) >> 4) & 0x0f;
 		dy= (disp & 0x0f);
 
-	      	if (dx & 0x08)
-			dx = -(dx & 0x07);
-
-	      	if (dy & 0x08)
-			dy = -(dy & 0x07);
+	      	if (dx & 0x08) dx = -(dx & 0x07);
+	      	if (dy & 0x08) dy = -(dy & 0x07);
 
 		dx *= res;
 
@@ -336,7 +333,7 @@ static INLINE int is_ok_fill_here (int x, int y)
 }
 
 /**************************************************************************
-** agiFill
+** agi_fill
 **************************************************************************/
 static void fill_scanline (int x, int y)
 {
@@ -372,7 +369,7 @@ static void fill_scanline (int x, int y)
 	}
 }
 
-static void agiFill (int x, int y)
+static void agi_fill (int x, int y)
 {
 	_PUSH (x + 320 * y);
 
@@ -472,7 +469,7 @@ static void fill ()
 	int x1, y1;
 
 	while ((x1 = next_byte) < 0xF0 && (y1 = next_byte) < 0xf0)
-		agiFill (x1, y1);
+		agi_fill (x1, y1);
 
 	foffs--;
 }
@@ -488,7 +485,7 @@ static void fill ()
 static int plot_pattern_point (int x, int y, int bitpos, int res)
 {
 	if (pat_code & 0x20) {
-		if ((splatterMap[bitpos >> 3] >> (7 - (bitpos & 7))) & 1) {
+		if ((splatter_map[bitpos >> 3] >> (7 - (bitpos & 7))) & 1) {
 #ifdef USE_HIRES
 			if (res > 1) {
 				/* extra randomness in hi-res brush fill
@@ -526,7 +523,7 @@ static int plot_pattern_point (int x, int y, int bitpos, int res)
 static void plot_pattern (int x, int y, int res)
 {
 	SINT32 circlePos = 0;
-	UINT32 x1, y1, pensize, bitpos = splatterStart[pat_num];
+	UINT32 x1, y1, pensize, bitpos = splatter_start[pat_num];
 
 	pensize = (pat_code & 7);
 

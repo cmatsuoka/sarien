@@ -1,0 +1,12 @@
+
+Sarien for PalmOS is under development. You'll be lucky if it
+compiles, luckier if it links.
+
+To build, you need:
+
+1. prc-tools (http://prc-tools.sourceforge.net/)
+2. multilink (http://www.djw.org/product/palm/multilink/)
+
+Copy rulesets/Rules.palmos to Rules and make.
+
+
