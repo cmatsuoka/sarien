@@ -692,10 +692,9 @@ int unload_picture (int n)
  */
 void show_pic ()
 {
-	int i, y; //, y0;
+	int i, y;
 
 	i = 0;
-	//y0 = game.line_min_print ? 8 : 0;
 	for (y = 0; y < _HEIGHT; y++) {
 		put_pixels_a (0, y, _WIDTH, &game.sbuf[i]);
 		i += _WIDTH;

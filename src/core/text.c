@@ -224,11 +224,17 @@ static void textbox (char *p, int y, int x, int len)
 	do_update ();
 }
 
-int message_box (char *p, int y, int x, int len)
+/**
+ * Display a message box.
+ * This function displays the specified message in a text box
+ * centered in the screen and waits until a key is pressed.
+ * @param p The text to be displayed
+ */
+int message_box (char *s)
 {
 	int k;
 
-	textbox (p, y, x, len);
+	textbox (s, -1, -1, -1);
 	k = wait_key ();
 	close_window ();
 

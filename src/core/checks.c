@@ -253,7 +253,6 @@ void fix_position (int n)
 	count = tries = 1;
 
 	while (!check_position(v) || check_clutter(v) || !check_priority(v)) {
-		//_D (_D_WARN "from %d, %d", v->x_pos, v->y_pos);
 		switch (dir) {
 		case 0:			/* west */
 			v->x_pos--;
@@ -278,7 +277,6 @@ void fix_position (int n)
 			tries++;
 			break;
 		}
-		//_D (_D_WARN "to %d, %d", v->x_pos, v->y_pos);
 
 		count = tries;
 	}

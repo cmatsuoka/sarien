@@ -14,7 +14,6 @@
 #include "sarien.h"
 #include "agi.h"
 
-extern struct agi_game game;
 extern int decode_objects(UINT8* mem, UINT32 flen);
 
 /**

@@ -29,8 +29,6 @@
 #define p5	(p[5])
 #define p6	(p[6])
 
-#define CENTER	-1, -1, -1
-
 #define ip	cur_logic->cIP
 #define vt	game.view_table[p0]
 
@@ -147,7 +145,7 @@ cmd(init_disk)		{ /* do nothing */ }
 cmd(log)		{ /* do nothing */ }
 cmd(trace_on)		{ /* do nothing */ }
 cmd(trace_info)		{ /* do nothing */ }
-cmd(show_mem)		{ message_box ("Enough memory", CENTER); }
+cmd(show_mem)		{ message_box ("Enough memory"); }
 cmd(toggle_monitor)	{ report ("Not implemented: toggle.monitor\n"); }
 cmd(init_joystick)	{ report ("Not implemented: init.joystick\n"); }
 cmd(script_size)	{ report ("Not implemented: script.size(%d)\n", p0); }
@@ -159,18 +157,18 @@ cmd(obj_status_v)	{ report ("Not implemented: obj.status.v\n"); }
  * unk_173: Activate keypressed control (ego only moves when a key is pressed)
  * unk_181: Desactivate keypressed control (default control of ego)
  */
-cmd(unk_170)		{ message_box ("cmd_unk_170", CENTER); }
-cmd(unk_171)		{ message_box ("cmd_unk_171", CENTER); }
-cmd(unk_172)		{ message_box ("cmd_unk_172", CENTER); }
-cmd(unk_173)		{ message_box ("cmd_unk_173", CENTER); }
-cmd(unk_174)		{ message_box ("cmd_unk_174", CENTER); }
-cmd(unk_175)		{ message_box ("cmd_unk_175", CENTER); }
-cmd(unk_176)		{ message_box ("cmd_unk_176", CENTER); }
-cmd(unk_177)		{ message_box ("cmd_unk_177", CENTER); }
-cmd(unk_178)		{ message_box ("cmd_unk_178", CENTER); }
-cmd(unk_179)		{ message_box ("cmd_unk_179", CENTER); }
-cmd(unk_180)		{ message_box ("cmd_unk_180", CENTER); }
-cmd(unk_181)		{ message_box ("cmd_unk_181", CENTER); }
+cmd(unk_170)		{ message_box ("cmd_unk_170"); }
+cmd(unk_171)		{ message_box ("cmd_unk_171"); }
+cmd(unk_172)		{ message_box ("cmd_unk_172"); }
+cmd(unk_173)		{ message_box ("cmd_unk_173"); }
+cmd(unk_174)		{ message_box ("cmd_unk_174"); }
+cmd(unk_175)		{ message_box ("cmd_unk_175"); }
+cmd(unk_176)		{ message_box ("cmd_unk_176"); }
+cmd(unk_177)		{ message_box ("cmd_unk_177"); }
+cmd(unk_178)		{ message_box ("cmd_unk_178"); }
+cmd(unk_179)		{ message_box ("cmd_unk_179"); }
+cmd(unk_180)		{ message_box ("cmd_unk_180"); }
+cmd(unk_181)		{ message_box ("cmd_unk_181"); }
 
 
 
@@ -441,7 +439,7 @@ cmd(move_obj_v) {
 	if (p0 == 0)
 		game.player_control = FALSE;
 
-	//move_obj (&vt);
+	move_obj (&vt);
 }
 	
 cmd(wander) {
@@ -464,7 +462,7 @@ cmd(set_game_id) {
 cmd(pause) {
 	int tmp = game.clock_enabled;
 	game.clock_enabled = FALSE;
-	message_box ("    Game is Paused.\nPress ENTER to continue.", CENTER);
+	message_box ("    Game is Paused.\nPress ENTER to continue.");
 	game.clock_enabled = tmp;
 }
 
@@ -504,7 +502,7 @@ cmd(version) {
 
 	strncpy (q+1 + ((r-q > 0 ? r - q : 1) / 4), ver_msg, strlen (ver_msg));
 	sprintf (msg, q, maj, min);
-	message_box (msg, CENTER);
+	message_box (msg);
 }
 
 cmd(config_screen) {
@@ -543,7 +541,7 @@ cmd(quit) {
 		game.quit_prog_now = TRUE;
 	} else {
 		switch (message_box ("   Press ENTER to quit.\n"
-			"Press ESC to keep playing.", CENTER)) {
+			"Press ESC to keep playing.")) {
 		case 'Y':
 		case 'y':
 		case 0x0d:
@@ -556,7 +554,7 @@ cmd(quit) {
 
 cmd(restart_game) {
 	switch (message_box ("Press ENTER to restart the game.\n"
-		"Press ESC to continue this game.", -1, -1, 24)) {
+		"Press ESC to continue this game.")) {
 	case 0x0a:
 	case 0x0d:
 		game.quit_prog_now = 0xFF;

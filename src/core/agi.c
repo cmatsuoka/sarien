@@ -18,12 +18,8 @@
 #include "rand.h"
 #include "menu.h"
 
-
 static struct agi_loader *loader;		/* loader */
 
-struct agi_game game;
-
-//volatile UINT32	msg_box_secs2;		/* message box timeout in sec/2 */
 
 #if !defined PALMOS && !defined FAKE_PALMOS
 extern struct agi_loader agi_v2;
@@ -188,9 +184,7 @@ int agi_deinit ()
 {
 	int ec;
 
-	//reset_graphics ();		/* clean out video memory */
 	clean_input ();			/* remove all words from memory */
-
 	deinit_menus ();		/* unload the menus */
 	unload_resources ();		/* unload resources in memory */
 	ec = loader->deinit ();

@@ -101,17 +101,17 @@ static struct gfx_driver gfx_x11 = {
 /* In the normal 8/15/16/24/32 bpp cases idx indexes the data item directly.
  * x and y are available for the other depths.
  */
-static inline void putpixel_32 (XImage *img, int idx, int p)
+static INLINE void putpixel_32 (XImage *img, int idx, int p)
 {
 	((int *)img->data)[idx] = p;
 }
 
-static inline void putpixel_16 (XImage *img, int idx, int p)
+static INLINE void putpixel_16 (XImage *img, int idx, int p)
 {
 	((short *)img->data)[idx] = p;
 }
 
-static inline void putpixel_8 (XImage *img, int idx, int p)
+static INLINE void putpixel_8 (XImage *img, int idx, int p)
 {
 	((char *)img->data)[idx] = p;
 }

@@ -205,7 +205,6 @@ struct agi_loader {
 
 extern struct agi_game game;
 
-
 int	agi_init		(void);
 int	agi_deinit		(void);
 int	agi_version		(void);

@@ -343,7 +343,8 @@ void print_line_prompt ()
 		print_text (agi_sprintf (game.strings[0], 0), 0, 0,
     			game.line_user_input, 40,
 			game.color_fg, game.color_bg);
-		//flush_lines (game.line_user_input, game.line_user_input);
+		flush_lines (game.line_user_input, game.line_user_input);
+		/** ^ remove? **/
 	}
 }
 

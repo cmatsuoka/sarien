@@ -29,7 +29,6 @@ void new_room (int n)
 
 	_D (_D_WARN "room %d", n);
 	stop_sound ();
-	//clear_memory ();
 
 	i = 0;
 	for_each_vt_entry (v) {
@@ -173,7 +172,6 @@ int main_cycle ()
 {
 	int key, kascii;
 
-	//_D ("main cycle");
 	poll_timer ();		/* msdos driver -> does nothing */
 	update_timer ();
 

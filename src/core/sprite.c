@@ -258,7 +258,6 @@ static void checkmove_sprites (struct list_head *head)
 	list_for_each (h, head, next) {
 		struct sprite *s = list_entry (h, struct sprite, list);
 
-		//put_block (s->v);
 		if (s->v->step_time_count != s->v->step_time)
 			continue;
 
@@ -475,7 +474,7 @@ void show_obj (n)
 
 	objs_savearea (&s);
 	blit_cel (s.x_pos, s.y_pos, 15, c);
-	message_box (game.views[n].descr, -1, -1, -1);
+	message_box (game.views[n].descr);
 	objs_restorearea (&s);
 
 	free (s.buffer);

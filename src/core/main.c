@@ -19,7 +19,6 @@
 
 
 int	run_game2(void);
-/* UINT16	crc_game(void); */
 
 /* For the interactive picture viewer */
 UINT8	show_screen_mode = 'x';
@@ -33,6 +32,7 @@ extern UINT8 *font, font_english[];
 
 struct sarien_options opt;
 struct game_id_list game_info;
+struct agi_game game;
 
 #ifndef _TRACE
 INLINE void _D (char *s, ...) { }
