@@ -60,6 +60,9 @@ static void *pool_alloc (int size)
 {
 	UINT8 *x;
 
+/* Adjust size to 32-bit boundary to prevent data misalignment errors */
+	size = (size+3)&~3;
+
 	x = pool_top;
 	pool_top += size;
 
