@@ -56,7 +56,7 @@ char *get_config_file()
 	static char ini_path[MAX_PATH];
 
 	sprintf (ini_path, "%s/sarien.ini", getenv ("SARIEN") != NULL ?
-		getenv ("SARIEN") : ".")
+		getenv ("SARIEN") : ".");
 	
 	return (char*)ini_path;
 }
