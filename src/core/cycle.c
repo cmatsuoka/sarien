@@ -133,8 +133,15 @@ static void normal_motion (int em, int x, int y)
 	struct agi_view_table *vt_obj;
 	int cel_width;
 
-	if (views[em].loop == NULL || VT_VIEW(view_table[em]).loop == NULL) {
+	if (VT_VIEW(view_table[em]).loop == NULL) {
 		_D(_D_CRIT "Attempt to access NULL view_table[%d].loop", em);
+		return;
+	}
+
+	if (view_table[em].current_cel >= VT_LOOP(view_table[em]).num_cels) {
+		_D(_D_CRIT "Attempt to access cel(%d) >= num_cels(%d) in vt%d",
+			view_table[em].current_cel,
+			VT_LOOP(view_table[em]).num_cels, em);
 		return;
 	}
 
