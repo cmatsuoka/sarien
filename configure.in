@@ -49,6 +49,7 @@ AC_ARG_WITH(amiga,  [  --with-amiga            use Amiga console/sound drivers])
 
 AC_ARG_ENABLE(efence, [  --enable-efence         enable Electric Fence support])
 AC_ARG_ENABLE(dmalloc,[  --enable-dmalloc        enable dmalloc support])
+AC_ARG_ENABLE(trace,  [  --enable-trace          enable trace support])
 
 if test "${GCC-no}" = yes; then
 	CFLAGS="${CFLAGS} -Wall"
@@ -276,6 +277,12 @@ dnl AC_CHECK_FUNC(glob,[FILEIO_DRIVER="unix"])
 dnl ----------------------------------------------
 dnl Enable development configuration options
 dnl ----------------------------------------------
+
+if test "${enable_trace}" = "yes"; then
+	CFLAGS="${CFLAGS} -D_TRACE"
+else
+	CFLAGS="${CFLAGS} -U_TRACE"
+fi
 
 if test "${enable_efence}" = "yes"; then
 	LIBS="${LIBS} -lefence"
