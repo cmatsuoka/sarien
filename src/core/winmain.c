@@ -31,16 +31,16 @@ void _D (char *s, ...) { }
 #endif
 
 
-BOOL CheckForOVL(char *szDir)
+BOOL CheckForGame(char *szDir)
 {
 	WIN32_FIND_DATA ffd;
 	HANDLE hFind;
-	CHAR szDirLocal[MAX_PATH];
-	CHAR szFullPath[MAX_PATH];
+	CHAR szDirLocal[MAX_PATH]	= {0};
+	CHAR szFullPath[MAX_PATH]	= {0};
 	BOOL bFound = FALSE;
 	DWORD dwFileInfo;
 
-	sprintf(szDirLocal, "%s\\*.ovl", szDir);
+	sprintf(szDirLocal, "%s\\words.tok", szDir);
 	
 	ZeroMemory(&ffd, sizeof(WIN32_FIND_DATA));
 
@@ -80,7 +80,7 @@ int CALLBACK BrowseCallbackProc(HWND hwnd,UINT uMsg,LPARAM lp, LPARAM pData)
 		if (SHGetPathFromIDList((LPITEMIDLIST) lp ,szDir)) 
 
 		{
-			if(CheckForOVL(szDir))
+			if(CheckForGame(szDir))
 			{
 				SendMessage(hwnd, BFFM_ENABLEOK, 0, TRUE);
 				SendMessage(hwnd,BFFM_SETSTATUSTEXT,0,(LPARAM)szDir);

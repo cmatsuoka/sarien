@@ -222,19 +222,19 @@ void decode_sound (int resnum)
 	struct sound_iigs_sample *smp;
 
 	_D ("(%d)", resnum);
-	type = lohi_getword (sounds[resnum].rdata);
+	type = lohi_getword (game.sounds[resnum].rdata);
 
 	if (type == AGI_SOUND_SAMPLE) {
 		/* Convert sample data to 16 bit signed format
 		 */
-		smp = (struct sound_iigs_sample *)sounds[resnum].rdata;
+		smp = (struct sound_iigs_sample *)game.sounds[resnum].rdata;
 		size = ((int)smp->size_hi << 8) + smp->size_lo;
-		src = (UINT8 *)sounds[resnum].rdata;
+		src = (UINT8 *)game.sounds[resnum].rdata;
 		buf = calloc (1, 54 + (size << 1) + 100);	/* FIXME */
 		memcpy (buf, src, 54);
 		for (; size--; buf[size + 54] =
 			((SINT16)src[size + 54] - 0x80) << 4); /* FIXME */
-		sounds[resnum].rdata = (UINT8 *)buf;
+		game.sounds[resnum].rdata = (UINT8 *)buf;
 		free (src);
 	}
 #endif /* USE_IIGS_SOUND */

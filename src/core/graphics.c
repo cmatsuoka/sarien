@@ -139,7 +139,8 @@ struct gfx_driver *gfx;			/* graphics driver */
 static void put_pixels (const int x, const int y, const int w, UINT8 *p)
 {
 	int i;
-	UINT8 _b[GFX_WIDTH], *b, *c;
+	UINT8 _b[GFX_WIDTH]	= {0};
+	UINT8 *b, *c		= NULL;
 
 	if (console.y <= y) {
 		gfx->put_pixels (x, y, w, p);
