@@ -1,5 +1,5 @@
 /* Sarien - A Sierra AGI resource interpreter engine
- * Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ * Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  * $Id$
  *
@@ -224,7 +224,7 @@ static void process_events ()
 				key = 0x1b;
 				break;
 			default:
-				if (!isalpha (key))
+				if (!isalpha (key & 0xff))
 					break;
 				if (key_control)
 					key = (key & ~0x20) - 0x40;

@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -23,10 +23,60 @@ extern struct agi_loader *loader;
 struct agi_view_table view_table[MAX_VIEWTABLE];/* 32 animated objects/views */
 struct agi_view	views[MAX_DIRS];		/* max views */
 
-void decode_cel (struct view_cel *ptrViewCel, UINT8 *data);
-void mirror_cel (struct view_cel *ptrViewCel);
 
 UINT8 old_prio = 0;
+
+
+static void mirror_cel (struct view_cel *ptrViewCel)
+{
+	UINT8 *p;
+	int x, y, z, temp;
+
+	p = ptrViewCel->data;
+
+	for (y = 0; y < ptrViewCel->height; y++) {
+		x = 0;
+		z = ptrViewCel->width-1;
+
+		while(42) {
+			temp = p[(y*ptrViewCel->width) + x];
+			p[(y * ptrViewCel->width) + x] =
+				p[(y * ptrViewCel->width) + z];
+			p[(y*ptrViewCel->width) + z]=temp;
+
+			if (++x > --z)
+				break;
+		}
+	}
+}
+
+
+static void decode_cel (struct view_cel *ptrViewCel, UINT8 *data)
+{
+	int h, w, c, l, d;
+	UINT8 *p;
+
+	p = ptrViewCel->data;
+	memset (p, ptrViewCel->transparency,
+		ptrViewCel->height * ptrViewCel->width);
+
+	if (ptrViewCel->width == 0 || ptrViewCel->height == 0)
+		return;
+
+	for (d = h = 0; h < ptrViewCel->height; h++) {
+		w = 0;
+		p = ptrViewCel->data + (h * ptrViewCel->width);
+
+		while(42) {
+			if ((l = data[d++]) == 0)
+				break;
+			c = (l >> 4) & 0xf;
+			l = l & 0xf;
+			memset (p, c, l);
+			p += l;
+		}
+	}
+}
 
 
 void init_view_table ()
@@ -72,7 +122,6 @@ void reset_views ()
 {
 	int i;
 
-	_D (("()"));
 	for (i = 0; i < MAX_DIRS; i++) 
 		loader->unload_resource (rVIEW, i);
 
@@ -531,61 +580,3 @@ int decode_view (int resnum)
 }
 
 
-void decode_cel(struct view_cel *ptrViewCel, UINT8 *data)
-{
-	int h, w;
-	int c;
-	int l;
-	int	d;
-
-	UINT8 	*p;
-
-	p=ptrViewCel->data;
-	memset(p, ptrViewCel->transparency, ptrViewCel->height*ptrViewCel->width);
-
-	if(ptrViewCel->width==0 || ptrViewCel->height==0)
-		return;
-
-	d=0;
-
-	for(h=0; h<ptrViewCel->height; h++) {
-		w=0;
-		p=ptrViewCel->data + (h * ptrViewCel->width);
-
-		while(42) {
-			l=data[d++];
-			if(l==0)
-				break;
-
-			c=(l>>4)&0xF;
-			l=l&0xF;
-			memset(p, c, l);
-			p+=l;
-		}
-	}
-}
-
-
-void mirror_cel(struct view_cel *ptrViewCel)
-{
-	UINT8	*p;
-	int		x, y, z, temp;
-
-	p=ptrViewCel->data;
-
-	for(y=0; y<ptrViewCel->height; y++) {
-		x=0;
-		z=ptrViewCel->width-1;
-		while(42) {
-			temp=p[(y*ptrViewCel->width) + x];
-			p[(y*ptrViewCel->width) + x]=p[(y*ptrViewCel->width) + z];
-			p[(y*ptrViewCel->width) + z]=temp;
-
-			x++;
-			z--;
-
-			if(x>z)
-				break;
-		}
-	}
-}

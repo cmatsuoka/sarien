@@ -190,11 +190,7 @@ static int agi_v2_unload_resource (int restype, int resnum)
 		unload_view (resnum);
 		break;
 	case rSOUND:
-		if (game.dir_sound[resnum].flags & RES_LOADED) {
-			unload_sound (resnum);
-			free (sounds[resnum].rdata);
-			game.dir_sound[resnum].flags &= ~RES_LOADED;
-		}
+		unload_sound (resnum);
 		break;
 	}
 

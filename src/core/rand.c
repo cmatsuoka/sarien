@@ -12,7 +12,7 @@
 #include "sarien.h"
 #include "rand.h"
 
-SINT32	rnd_seed;
+SINT32 rnd_seed;
 
 void set_rnd_seed(void)
 {

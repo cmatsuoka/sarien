@@ -11,6 +11,7 @@ Revision History
 	  * reducing number of typedefs and global variables
 	- merged Jeremy Penner's Photon graphics driver
 	- fixed X11 24 bpp support (console now looks right)
+	- fixed X11 backspace key handling
 	- made GNU makefiles the default Makefiles
 	- fixed sound resources deallocation in agi_v2.c
 	- added AGI specs SGML documentation; currently converting from

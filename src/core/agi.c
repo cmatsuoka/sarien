@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -197,23 +197,6 @@ int agi_deinit ()
 
 	reset_graphics ();		/* clean out video memory */
 	clean_input ();			/* remove all words from memory */
-
-#if 0
-	/* release game ID if one is present */
-	if (gid != NULL) {
-		free(gid);
-		gid=NULL;
-	}
-#endif
-
-#if 0
-	/* release game name if present */
-	/* ack. v3 needs this no restart.. */
-	if(gname!=NULL) {
-		free(gname);
-		gname=NULL;
-	}
-#endif
 
 	deinit_menus ();		/* unload the menus */
 	unload_resources ();		/* unload resources in memory */

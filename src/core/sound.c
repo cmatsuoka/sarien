@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -146,14 +146,16 @@ void unload_sound (int resnum)
 {
 	_D (("(%d)", resnum));
 
-	if (sounds[resnum].flags & SOUND_PLAYING)
-		/* Stop playing */
-		;
+	if (game.dir_sound[resnum].flags & RES_LOADED) {
+		if (sounds[resnum].flags & SOUND_PLAYING)
+			/* FIXME: Stop playing */
+			;
 
-	/* Release RAW data for sound */
-	if(sounds[resnum].rdata!=NULL)
+		/* Release RAW data for sound */
 		free(sounds[resnum].rdata);
-	sounds[resnum].rdata=NULL;
+		sounds[resnum].rdata=NULL;
+      		game.dir_sound[resnum].flags &= ~RES_LOADED;
+	}
 }
 
 
