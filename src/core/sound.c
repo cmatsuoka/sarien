@@ -601,7 +601,7 @@ UINT32 mix_sound (void)
 			b += ((src[((p >> 8) + 1) % chn[c].size] -
 				src[p >> 8]) * (p & 0xff)) >> 8;
 #endif
-			snd_buffer[i] += (b * m) >> 8;
+			snd_buffer[i] += (b * m) >> 3;
 
 			p += (UINT32)11860 * 4 / chn[c].freq;
 
@@ -621,9 +621,6 @@ UINT32 mix_sound (void)
 		if (chn[c].env > chn[c].vol * ENV_SUSTAIN)
 			chn[c].env -= ENV_DECAY;
 	}
-
-	for (i = 0; i < BUFFER_SIZE; i++)
-		snd_buffer[i] <<= 5;
 
 	return BUFFER_SIZE;
 }
