@@ -5,7 +5,7 @@ Quick notes - see docs/README.* for detailed information
 Directories:
 
 ./VC++6.0		Visual C++ files
-./docs			Documentation
+./doc			Documentation
 ./etc			Configuration files
 ./rulesets		Extra rulesets for different architectures
 ./src/core		AGI interpreter core files
@@ -19,7 +19,11 @@ the appropriate ruleset from rulesets/ to ./Rules.
 
 To build using VC++, check the files in the appropriate directory.
 
+The list of known bugs can be browsed at
+http://sourceforge.net/tracker/?group_id=24759&atid=382570
+
 The code is currently under a cleanup/redesign process, in order to modularize
 and remove global data mess. The graphics layer will probably need a rewrite.
-Contact the maintainer (claudio@helllabs.org) to see how you can help.
+Check the project page at sourceforge (http://sourceforge.net/projects/sarien/)
+to see how you can help.
 
