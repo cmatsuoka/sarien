@@ -184,8 +184,14 @@ void unload_view (int n)
 {
 	int x;
 
+	_D("discard view %d", n);
 	if (~game.dir_view[n].flags & RES_LOADED)
 		return;
+
+	/* Rebuild sprite list, see bug #779302 */
+	erase_both();
+	blit_both();
+	commit_both();
 
 	/* free all the loops */
 	for (x = 0; x < game.views[n].num_loops; x++)

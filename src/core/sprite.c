@@ -354,6 +354,10 @@ static LIST_HEAD(spr_nonupd_head);
  */
 static int test_updating (struct vt_entry *v)
 {
+	/* Sanity check (see bug #779302) */
+	if (~game.dir_view[v->current_view].flags & RES_LOADED)
+		return 0;
+
 	return (v->flags & (ANIMATED|UPDATE|DRAWN)) ==
 		(ANIMATED|UPDATE|DRAWN);
 }
@@ -363,6 +367,10 @@ static int test_updating (struct vt_entry *v)
  */
 static int test_not_updating (struct vt_entry *v)
 {
+	/* Sanity check (see bug #779302) */
+	if (~game.dir_view[v->current_view].flags & RES_LOADED)
+		return 0;
+
 	return (v->flags & (ANIMATED|UPDATE|DRAWN)) == (ANIMATED|DRAWN);
 }
 
