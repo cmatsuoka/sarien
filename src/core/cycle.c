@@ -181,7 +181,7 @@ static void normal_motion (int em, int x, int y)
 		return;
 	}
 
-	if (y < horizon && (dir == 1 || dir == 2 || dir == 8)) {
+	if (y < game.horizon && (dir == 1 || dir == 2 || dir == 8)) {
 		if (!e)
 			setvar (V_border_code, em);
 		setvar (v, 1);
@@ -229,7 +229,7 @@ static void normal_motion (int em, int x, int y)
 	}
 
 	for (i = x + vt_obj->x_size - 1; i >= x; i--) {
-		if (y < horizon || y >= _HEIGHT || i < 0 || i >= _WIDTH)
+		if (y < game.horizon || y >= _HEIGHT || i < 0 || i >= _WIDTH)
 			return;
 
 		/* Whats this? nobody crosses conditionals?

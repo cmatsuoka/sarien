@@ -312,7 +312,7 @@ void cmd_object_on_water (UINT8 entry)
 
 void cmd_set_horizon (UINT8 h)
 {
-	horizon = h;
+	game.horizon = h;
 }
 
 
@@ -2234,8 +2234,8 @@ int run_logic (int lognum)
 	}
 
 	if (getflag (F_new_room_exec)) {
-		if (view_table[EGO_VIEW_TABLE].y_pos <= horizon)
-			view_table[EGO_VIEW_TABLE].y_pos = horizon + 1;
+		if (view_table[EGO_VIEW_TABLE].y_pos <= game.horizon)
+			view_table[EGO_VIEW_TABLE].y_pos = game.horizon + 1;
 	}
 
 	saved_ip = logics[lognum].cIP;

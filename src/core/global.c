@@ -74,7 +74,7 @@ UINT32 lohi_getdword (UINT8 *mem)
 
 int getflag (int n)
 {
-	UINT8 *set = (UINT8*)&flags;
+	UINT8 *set = (UINT8*)&game.flags;
 
 	set += n >> 3;
 	return (*set & (1 << (n & 0x07))) != 0;
@@ -83,7 +83,7 @@ int getflag (int n)
 
 void setflag (int n, int v)
 {
-	UINT8 *set = (UINT8*)&flags;
+	UINT8 *set = (UINT8*)&game.flags;
 
 	set += n >> 3;
 	if (v)
@@ -95,7 +95,7 @@ void setflag (int n, int v)
 
 void flipflag (int n)
 {
-	UINT8 *set = (UINT8*)&flags;
+	UINT8 *set = (UINT8*)&game.flags;
 
 	set += n >> 3;
 	*set ^= 1 << (n & 0x07);			/* flip bit */
@@ -104,13 +104,13 @@ void flipflag (int n)
 
 void setvar (int var, int val)
 {
-	vars[var] = val;
+	game.vars[var] = val;
 }
 
 
 int getvar (int var)
 {
-    return vars[var];
+    return game.vars[var];
 }
 
 

@@ -38,13 +38,13 @@ struct agi_game {
 	char dir[8];		/* game dir (for v3 games, eg GR<dir> */
 	char id[8];		/* game id */	
 
-#if 0
 	/* game flags and variables */
-	UINT8 flags[MAX_FLAGS/CHAR_BIT];	/* 256 bit flags */
+	UINT8 flags[MAX_FLAGS / 8];		/* 256 bit flags */
 	UINT8 vars[MAX_VARS];			/* 256 byte variables */
 
 	/* internal variables */
 	int horizon;		/* horizon marker */
+#if 0
 	int line_status;	/* line num to put status on */
 	int line_user_input;	/* line to put user input on */
 	int line_min_print;	/* num lines to print on */
@@ -91,21 +91,25 @@ struct agi_loader {
 
 
 #if 0
+Moved to struct agi_game above
 extern	UINT8	*gdir;
 extern	UINT8	*gname;
 extern	UINT8	*gid;
 #endif
 
 extern	UINT8	path[];
-extern	UINT8	horizon;
 
 extern	struct agi_dir	dir_logic[];
 extern	struct agi_dir	dir_pic[];
 extern	struct agi_dir	dir_view[];
 extern	struct agi_dir	dir_sound[];
 
+#if 0
+Moved to struct agi_game above
+extern	UINT8	horizon;
 extern	UINT8		flags[];
 extern	UINT8		vars[];
+#endif
 
 extern	UINT16		ego_in_new_room;
 extern	UINT8		control_mode;
