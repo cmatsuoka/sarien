@@ -75,10 +75,10 @@ int agi_v3_detect_game (UINT8 *gn)
 }
 
 
-int agi_v3_load_dir (struct agi_dir *agid, FILE *fp, UINT32 offs, UINT32 len)
+static int agi_v3_load_dir (struct agi_dir *agid, FILE *fp, UINT32 offs, UINT32 len)
 {
 	UINT8 *mem;
-	int ec=err_OK;
+	int ec = err_OK;
 	int i;
 
 	fseek (fp, offs, SEEK_SET);
@@ -93,8 +93,8 @@ int agi_v3_load_dir (struct agi_dir *agid, FILE *fp, UINT32 offs, UINT32 len)
 
 		/* build directory entries */
 		for(i = 0; i < len; i += 3) {
-			agid[i/3].volume = hilo_getbyte (mem + i) >> 4;
-			agid[i/3].offset = hilo_getpword (mem+i) & _EMPTY;
+			agid[i / 3].volume = hilo_getbyte (mem + i) >> 4;
+			agid[i / 3].offset = hilo_getpword (mem+i) & _EMPTY;
 		}
 
 		free(mem);
@@ -115,13 +115,15 @@ int agi_v3_init (void)
 {
 	int ec = err_OK;
 	struct agi3vol agi_vol3[4];
-	int i, xd[4];
+	int i;
+	UINT16 xd[4];
 	FILE *fp;
 
 	fixpath (GAMEDIR, DIR);
 
-	if ((fp = fopen((char*)path, "rb")) != NULL) {
+	if ((fp = fopen(path, "rb")) != NULL) {
 		/* build offset table for v3 directory format */
+		/* FIXME: not endian aware! */
 		fread (&xd, 1, 8, fp);
 		fseek (fp, 0, SEEK_END);
 
