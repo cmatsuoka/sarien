@@ -569,7 +569,7 @@ void commit_block (int x1, int y1, int x2, int y2)
 	if (y1 >= _HEIGHT) y1 = _HEIGHT - 1;
 	if (y2 >= _HEIGHT) y2 = _HEIGHT - 1;
 
-	_D ("%d, %d, %d, %d", x1, y1, x2, y2);
+	/* _D ("%d, %d, %d, %d", x1, y1, x2, y2); */
 
 	w = x2 - x1 + 1;
 	q = &game.sbuf[x1 + _WIDTH * y1];

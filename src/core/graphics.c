@@ -138,8 +138,8 @@ struct gfx_driver *gfx;			/* graphics driver */
 static void put_pixels (const int x, const int y, const int w, UINT8 *p)
 {
 	int i;
-	UINT8 _b[GFX_WIDTH]	= {0};
-	UINT8 *b, *c		= NULL;
+	UINT8 _b[GFX_WIDTH] = { 0 };
+	UINT8 *b, *c = NULL;
 
 	if (console.y <= y) {
 		gfx->put_pixels (x, y, w, p);
@@ -445,7 +445,7 @@ void do_update ()
 /**
  * Updates a block of the framebuffer with contents of the Sarien screen.
  * This function updates a block in the output device with the contents of
- * the AGI screen, handling console transparency.
+ * the Sarien screen, handling console transparency.
  * @param x1 x coordinate of the upper left corner of the block
  * @param y1 y coordinate of the upper left corner of the block
  * @param x2 x coordinate of the lower right corner of the block

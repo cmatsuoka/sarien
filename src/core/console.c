@@ -592,7 +592,6 @@ void console_cycle ()
 			/* going up */
 			y = old_y;
 		} 
-		commit_both(); /* XXX */
 		flush_block (0, 0, GFX_WIDTH - 1, y);
 		old_y = console.y;
 	}

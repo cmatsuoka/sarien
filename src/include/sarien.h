@@ -40,6 +40,9 @@ extern "C"{
 #  undef USE_CONSOLE
 #  undef USE_PCM_SOUND
 #  undef AGDS_SUPPORT
+#  undef OPT_LIST_OBJECTS
+#  undef OPT_PICTURE_VIEWER
+#  undef OPT_LIST_DICT
 #endif
 
 /*
