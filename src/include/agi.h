@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -44,7 +44,6 @@ struct agi_game {
 
 	/* internal variables */
 	int horizon;		/* horizon marker */
-#if 0
 	int line_status;	/* line num to put status on */
 	int line_user_input;	/* line to put user input on */
 	int line_min_print;	/* num lines to print on */
@@ -57,6 +56,8 @@ struct agi_game {
 	int status_line;	/* status line on/off */
 	int allow_kyb_input;	/* allow keyboard input */
 	int clock_enabled;	/* clock is on/off */
+#define ID_AGDS		0x00000001
+#define ID_AMIGA	0x00000002
 	int game_flags;		/* game flags!! (important) */
 
 	/* directory entries for resources */
@@ -65,6 +66,7 @@ struct agi_game {
 	struct agi_dir dir_view[MAX_DIRS];
 	struct agi_dir dir_sound[MAX_DIRS];
 
+#if 0
 	/* resources */
 	struct agi_picture pictures[MAX_DIRS];
 	struct agi_logic logics[MAX_DIRS];
@@ -99,30 +101,30 @@ extern	UINT8	*gid;
 
 extern	UINT8	path[];
 
+#if 0
+Moved to struct agi_game above
 extern	struct agi_dir	dir_logic[];
 extern	struct agi_dir	dir_pic[];
 extern	struct agi_dir	dir_view[];
 extern	struct agi_dir	dir_sound[];
 
-#if 0
-Moved to struct agi_game above
 extern	UINT8	horizon;
 extern	UINT8		flags[];
 extern	UINT8		vars[];
-#endif
+extern	UINT8		line_status;
+extern	UINT8		line_user_input;
+extern	UINT8		line_min_print;
+extern	UINT16		message_box_key;
 
 extern	UINT16		ego_in_new_room;
 extern	UINT8		control_mode;
 extern	UINT8		quit_prog_now;
 extern	UINT8		status_line;
-extern	UINT8		line_status;
-extern	UINT8		line_user_input;
-extern	UINT8		line_min_print;
 extern	UINT8		allow_kyb_input;
 extern	UINT8		clock_enabled;
 extern	UINT8		timed_message_box;
-extern	UINT16		message_box_key;
 extern	UINT32		game_flags;
+#endif
 
 int	agi_init	(void);
 int	agi_deinit	(void);

@@ -102,14 +102,14 @@ void print_line_prompt ()
 {
 	int k;
 
-	if (allow_kyb_input) {
+	if (game.allow_kyb_input) {
 		/* Command prompt */
 		print_text (agi_printf (strings[0], 0), 0, 0,
-			line_user_input * 8, 40, txt_fg, txt_bg );
+			game.line_user_input * 8, 40, txt_fg, txt_bg );
 
 		/* internal keyboard buffer */
 		for (k = 0; buffer[k]; k++) {
-			print_character ((k + 1) * 8, line_user_input * 8,
+			print_character ((k + 1) * 8, game.line_user_input * 8,
 				buffer[k], txt_fg, txt_bg );
 		}
 
@@ -118,7 +118,7 @@ void print_line_prompt ()
 			print_character (xInput + ((k + 1) * 8), yInput,
 				txt_char, txt_fg, txt_bg );		
 		} else {
-			print_character ((k + 1) * 8, line_user_input * 8,
+			print_character ((k + 1) * 8, game.line_user_input * 8,
 				txt_char, txt_fg, txt_bg );
 		}
 	}
@@ -131,10 +131,10 @@ void print_line_prompt ()
  */
 UINT8 *get_string (int x, int y, int len)
 {
-	UINT8 old_kyb_input = allow_kyb_input;
+	UINT8 old_kyb_input = game.allow_kyb_input;
 	UINT8 old_max_chars = getvar (V_max_input_chars);
 
-	allow_kyb_input = TRUE;
+	game.allow_kyb_input = TRUE;
 	setvar( V_max_input_chars, len );
 
 	xInput = x;
@@ -145,7 +145,7 @@ UINT8 *get_string (int x, int y, int len)
 	while (IsGetString)
 		main_cycle(TRUE);
 
-	allow_kyb_input = old_kyb_input;
+	game.allow_kyb_input = old_kyb_input;
 	setvar (V_max_input_chars, old_max_chars);
 
 	return (UINT8 *) last_sentence;
@@ -272,7 +272,7 @@ void poll_keyboard (void)
 		key = 0;
 	} else {
 		/*
-		if (!allow_kyb_input)
+		if (!game.allow_kyb_input)
 			return;
 		*/
 
@@ -350,7 +350,8 @@ void handle_keys ()
 				txt_char, txt_bg, txt_bg );
 		} else {
 			print_character ((bufindex + 1) * 8,
-				line_user_input * 8, txt_char, txt_bg, txt_bg);
+				game.line_user_input * 8,
+				txt_char, txt_bg, txt_bg);
 		}
 
 		bufindex--;
@@ -365,34 +366,38 @@ void handle_keys ()
 			buffer[bufindex]=0;
 
 			if (IsGetString) {
-				print_character (xInput + (bufindex * 8), yInput, buffer[bufindex - 1], txt_fg, txt_bg );
+				print_character (xInput + (bufindex * 8),
+					yInput, buffer[bufindex - 1],
+					txt_fg, txt_bg );
 			} else {
-				print_character( bufindex * 8, line_user_input * 8, buffer[bufindex - 1], txt_fg, txt_bg );
+				print_character (bufindex * 8,
+					game.line_user_input * 8,
+					buffer[bufindex - 1], txt_fg, txt_bg);
 			}
 		}
 		break;
 	}
 
-	if (old_keyboard_status != allow_kyb_input) {
-		old_keyboard_status = allow_kyb_input;
+	if (old_keyboard_status != game.allow_kyb_input) {
+		old_keyboard_status = game.allow_kyb_input;
 
-		if (allow_kyb_input) {
+		if (game.allow_kyb_input) {
 			print_line_prompt();
 		} else {
-			cmd_clear_lines (line_user_input,
-				line_user_input, txt_bg);
+			cmd_clear_lines (game.line_user_input,
+				game.line_user_input, txt_bg);
 		}
-	} else if (allow_kyb_input) {
+	} else if (game.allow_kyb_input) {
 		if (new_line) {
 			new_line = 0;
 
 			/* TODO: Should handle IsGetString */
 
            		if (!IsGetString) {
-	   			cmd_clear_lines (line_user_input,
-					line_user_input, txt_bg);
+	   			cmd_clear_lines (game.line_user_input,
+					game.line_user_input, txt_bg);
 	   			print_text (agi_printf (strings[0], 0), 0, 0,
-					line_user_input * 8,
+					game.line_user_input * 8,
 					40, txt_fg, txt_bg);
        			}
 		}
@@ -403,7 +408,7 @@ void handle_keys ()
 				yInput, txt_char, txt_fg, txt_bg);
 		} else {
 			print_character ((bufindex + 1) * 8,
-				line_user_input * 8, txt_char,
+				game.line_user_input * 8, txt_char,
 				txt_fg, txt_bg );
 		}
 	}

@@ -175,7 +175,7 @@ void shake_screen (int n)
 
 void put_pixel_buffer (int x, int y, int c)
 {
-	if (line_min_print > 0)
+	if (game.line_min_print > 0)
 		y += 8;
 	x <<= 1;
 	put_pixel (x, y, c);
@@ -280,7 +280,7 @@ void draw_box (int x1, int y1, int x2, int y2, int colour1, int colour2, int f)
 		}
 	}
 
-	y = line_min_print ? 8 : 0;
+	y = game.line_min_print ? 8 : 0;
 	set_block (x1, y1 + y, x2, y2 + y);
 }
 
@@ -322,7 +322,7 @@ void put_bitmap (UINT8 *dst, UINT8 *src, int x1, int y1, int w, int h, int trans
 		}
 	}
 
-	y = line_min_print ? 8 : 0;
+	y = game.line_min_print ? 8 : 0;
 	set_block (x1, y1 + y, x1 + w, y1 + y + h);
 }
 
@@ -365,7 +365,7 @@ void agi_put_bitmap (UINT8 *src, int x1, int y1, int w, int h, int trans, int pr
 			screen2[yy+xx] = c;
 		}
 	}
-	y = line_min_print ? 8 : 0;
+	y = game.line_min_print ? 8 : 0;
 	set_block (x1, y1 + y, x1 + w, y1 + h + y);
 }
 
@@ -524,7 +524,7 @@ void redraw_sprites ()
 
 void print_character (int x, int y, char c, int fg, int bg)
 {
-	if (allow_kyb_input) {
+	if (game.allow_kyb_input) {
 		put_text_character( 0, x, y, c, fg, bg );
 		/* CM: the extra pixel in y is for the underline cursor */
 		gfx->put_block (x, y, x + 7, y + 8); 

@@ -198,12 +198,12 @@ void message_box (char *message, ...)
 	/* FR:
 	 * Messy...
 	 */
-	allow_kyb_input = FALSE;
+	game.allow_kyb_input = FALSE;
 
 	textbox (x, -1, -1, -1);
-	message_box_key = wait_key();
+	game.message_box_key = wait_key();
 
-	allow_kyb_input = TRUE;
+	game.allow_kyb_input = TRUE;
 
 	release_sprites ();
 	restore_screen ();
@@ -225,6 +225,6 @@ void print_status (char *message, ...)
 
 	va_end (args);
 
-        print_text (x, 0, line_status, 0, 41, STATUS_FG, STATUS_BG);
+        print_text (x, 0, game.line_status, 0, 41, STATUS_FG, STATUS_BG);
 	gfx->put_block (0, 0, 319, 8);
 }

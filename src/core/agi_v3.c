@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -141,21 +141,21 @@ int agi_v3_init (void)
 		fseek(fp, 0, SEEK_SET);
 
 		/* read in directory files */
-  		ec = agi_v3_load_dir (dir_logic, fp, agi_vol3[0].sddr,
+  		ec = agi_v3_load_dir (game.dir_logic, fp, agi_vol3[0].sddr,
 			agi_vol3[0].len);
 
   		if(ec == err_OK) {
-	  		ec = agi_v3_load_dir (dir_pic, fp, agi_vol3[1].sddr,
+	  		ec = agi_v3_load_dir (game.dir_pic, fp, agi_vol3[1].sddr,
 				agi_vol3[1].len);
 		}
 
   		if(ec == err_OK) {
-	  		ec = agi_v3_load_dir (dir_view, fp, agi_vol3[2].sddr,
+	  		ec = agi_v3_load_dir (game.dir_view, fp, agi_vol3[2].sddr,
 				agi_vol3[2].len);
 		}
 
   		if(ec == err_OK) {
-	  		ec = agi_v3_load_dir (dir_sound, fp, agi_vol3[3].sddr,
+	  		ec = agi_v3_load_dir (game.dir_sound, fp, agi_vol3[3].sddr,
 				agi_vol3[3].len);
 		}
 	} else {
@@ -197,10 +197,10 @@ int agi_v3_unload_resource (int restype, int resnum)
 		unload_view (resnum);
 		break;
 	case rSOUND:
-		if (dir_sound[resnum].flags & RES_LOADED) {
+		if (game.dir_sound[resnum].flags & RES_LOADED) {
 			unload_sound(resnum);
 			free(sounds[resnum].rdata);
-			dir_sound[resnum].flags &= ~RES_LOADED;
+			game.dir_sound[resnum].flags &= ~RES_LOADED;
 		}
 		break;
 	}
@@ -294,12 +294,12 @@ int agi_v3_load_resource (int restype, int resnum)
 		/* load resource into memory, decrypt messages at the end
 		 * and build the message list (if logic is in memory)
 		 */
-		if (dir_logic[resnum].flags & RES_LOADED) {
+		if (game.dir_logic[resnum].flags & RES_LOADED) {
 			/* if logic is already in memory, unload it */
 			agi_v3.unload_resource (rLOGIC, resnum);
 
 			/* load raw resource into data */
-			data = agi_v3_load_vol_res (&dir_logic[resnum]);
+			data = agi_v3_load_vol_res (&game.dir_logic[resnum]);
 			logics[resnum].data=data;
 
 			/* uncompressed logic files need to be decrypted */
@@ -330,26 +330,26 @@ int agi_v3_load_resource (int restype, int resnum)
 		/* if picture is currently NOT loaded *OR* cacheing is off,
 		 * unload the resource (caching==off) and reload it
 		 */
-		if (dir_pic[resnum].flags & RES_LOADED) {
+		if (game.dir_pic[resnum].flags & RES_LOADED) {
 			agi_v3.unload_resource (rPICTURE, resnum);
-			data = agi_v3_load_vol_res (&dir_pic[resnum]);
+			data = agi_v3_load_vol_res (&game.dir_pic[resnum]);
 			if (data != NULL) {
 				data = convert_v2_v3_pic (data,
-					dir_pic[resnum].len);
+					game.dir_pic[resnum].len);
 				pictures[resnum].rdata = data;
-				dir_pic[resnum].flags |= RES_LOADED;
+				game.dir_pic[resnum].flags |= RES_LOADED;
 			} else {
 				ec=err_BadResource;
 			}
 		}
 		break;
 	case rSOUND:
-		if (dir_sound[resnum].flags & RES_LOADED)
+		if (game.dir_sound[resnum].flags & RES_LOADED)
 			break;
 
-		if ((data = agi_v3_load_vol_res (&dir_sound[resnum])) != NULL) {
+		if ((data = agi_v3_load_vol_res (&game.dir_sound[resnum])) != NULL) {
 			sounds[resnum].rdata = data;
-			dir_sound[resnum].flags |= RES_LOADED;
+			game.dir_sound[resnum].flags |= RES_LOADED;
 			decode_sound (resnum);
 		} else {
 			ec = err_BadResource;
@@ -361,13 +361,13 @@ int agi_v3_load_resource (int restype, int resnum)
 		 * cache the view? or must we reload it all the time?
 		 */
 		/* load a raw view from a VOL file into data */
-		if (dir_view[resnum].flags & RES_LOADED)
+		if (game.dir_view[resnum].flags & RES_LOADED)
 			break;
 		
 		agi_v3.unload_resource (rVIEW, resnum);
-		if ((data = agi_v3_load_vol_res (&dir_view[resnum])) != NULL) {
+		if ((data = agi_v3_load_vol_res (&game.dir_view[resnum])) != NULL) {
 			views[resnum].rdata = data;
-			dir_view[resnum].flags |= RES_LOADED;
+			game.dir_view[resnum].flags |= RES_LOADED;
 			ec = decode_view(resnum);
 		} else {
 			ec = err_BadResource;

@@ -900,7 +900,7 @@ int decode_picture (int resnum)
 	pri_colour = 0x4;
 
 	data = pictures[resnum].rdata;
-	flen = dir_pic[resnum].len;
+	flen = game.dir_pic[resnum].len;
 	foffs = 0;
 
 	pictures[resnum].sdata = malloc (_WIDTH * _HEIGHT);
@@ -928,15 +928,15 @@ int decode_picture (int resnum)
 int unload_picture (int resnum)
 {
 	/* remove visual buffer & priority buffer if they exist */
-	if (dir_pic[resnum].flags & RES_LOADED) {
-		if (~dir_pic[resnum].flags & 0x80) {
+	if (game.dir_pic[resnum].flags & RES_LOADED) {
+		if (~game.dir_pic[resnum].flags & 0x80) {
 			free (pictures[resnum].pdata);	/* free priority image */
 			free (pictures[resnum].sdata);	/* free screen image */
 			free (pictures[resnum].cdata);	/* free control image */
 			free (pictures[resnum].xdata);	/* free p+c image */
 		}
 		free (pictures[resnum].rdata);	
-		dir_pic[resnum].flags &= ~RES_LOADED;
+		game.dir_pic[resnum].flags &= ~RES_LOADED;
 	}
 
 	return err_OK;

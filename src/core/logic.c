@@ -39,7 +39,7 @@ int decode_logic (int resnum)
 	/* if the logic was not compressed, decrypt the text messages
 	 * only if there are more than 0 messages
 	 */
-	if ((~dir_logic[resnum].flags & RES_COMPRESSED) && mc > 0)
+	if ((~game.dir_logic[resnum].flags & RES_COMPRESSED) && mc > 0)
 		decrypt (m0 + mstart, mend - mstart);	/* decrypt messages */
 
 	/* build message list */
@@ -66,7 +66,7 @@ int decode_logic (int resnum)
 			logics[resnum].texts[mc] = mend ?  m0+mend-2 : "";
 		}
 		/* set loaded flag now its all completly loaded */
-		dir_logic[resnum].flags|=RES_LOADED;
+		game.dir_logic[resnum].flags|=RES_LOADED;
 	} else {
 		/* unload data
 		 * blah DF YA WANKER!!@!@# frag. i'm so dumb. not every logic
@@ -82,12 +82,12 @@ int decode_logic (int resnum)
 
 void unload_logic (int resnum)
 {
-	if (dir_logic[resnum].flags & RES_LOADED) {
+	if (game.dir_logic[resnum].flags & RES_LOADED) {
 		free (logics[resnum].data);
 		if (logics[resnum].num_texts)
 			free (logics[resnum].texts);
 		logics[resnum].num_texts = 0;
-		dir_logic[resnum].flags &= ~RES_LOADED;
+		game.dir_logic[resnum].flags &= ~RES_LOADED;
 	}
 	/* if cached, we end up here */
 	logics[resnum].sIP = 2;

@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -132,16 +132,16 @@ void unload_resources ()
 	int i;
 
 	for(i = 0; i < MAX_DIRS; i++) {
-		dir_view[i].flags &= ~RES_CACHED;	/* clear cache flag */
+		game.dir_view[i].flags &= ~RES_CACHED;	/* clear cache flag */
 		loader->unload_resource (rVIEW, i);	/* free view */
 
-		dir_pic[i].flags &= ~RES_CACHED;	/* clear cache flag */
+		game.dir_pic[i].flags &= ~RES_CACHED;	/* clear cache flag */
 		loader->unload_resource (rPICTURE, i);	/* free resource */
 
-		dir_logic[i].flags &= ~RES_CACHED;	/* clear cache flag */
+		game.dir_logic[i].flags &= ~RES_CACHED;	/* clear cache flag */
 		loader->unload_resource (rLOGIC, i);	/* free resource */
 
-		dir_sound[i].flags &= ~RES_CACHED;	/* clear cache flag */
+		game.dir_sound[i].flags &= ~RES_CACHED;	/* clear cache flag */
 		loader->unload_resource (rSOUND, i);	/* free resource */
 	}
 }
@@ -177,7 +177,7 @@ void update_status_line (int force)
 		o_status = FALSE;
 
 	/* If it's already there and we're not forcing, don't write */
-   	if (!force && o_status == status_line &&
+   	if (!force && o_status == game.status_line &&
 		o_score == getvar (V_score) && 
 		o_max_score == getvar (V_max_score),
 		o_sound == getflag (F_sound_on))
@@ -192,15 +192,15 @@ void update_status_line (int force)
          * reason to re-erase the status line here. Allow force, though...
          */
 
-	if (!force && o_status == status_line && !status_line)
+	if (!force && o_status == game.status_line && !game.status_line)
 		return;
 
-   	o_status = status_line;
+   	o_status = game.status_line;
 
-	if (line_min_print == 0)
+	if (game.line_min_print == 0)
 		return;
 
-	if (!status_line) {
+	if (!game.status_line) {
 		//print_status ("                                        ");
 	} else {
 		sprintf (x, " Score:%i of %03i", o_score, getvar(V_max_score));

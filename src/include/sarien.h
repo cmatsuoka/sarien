@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -163,10 +163,6 @@ char* get_current_directory (void);
 
 extern	void list_games(void);
 
-#define ID_NONE		0x00000000
-#define ID_AGDS		0x00000001
-#define ID_AMIGA	0x00000002
-
 #ifdef __cplusplus
 extern "C"{
 #endif
@@ -284,8 +280,8 @@ enum {
 };
 
 enum {
-	player_control = 1,
-	program_control
+	CONTROL_PLAYER = 1,
+	CONTROL_PROGRAM
 };
 
 enum {

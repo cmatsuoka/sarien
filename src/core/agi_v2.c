@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -122,13 +122,13 @@ static int agi_v2_init ()
 	int ec = err_OK;
 
 	/* load directory files */
-	ec = agi_v2_load_dir (dir_logic, (UINT8*)LOGDIR);
+	ec = agi_v2_load_dir (game.dir_logic, (UINT8*)LOGDIR);
 	if (ec == err_OK)
-		ec = agi_v2_load_dir (dir_pic, (UINT8*)PICDIR);
+		ec = agi_v2_load_dir (game.dir_pic, (UINT8*)PICDIR);
 	if (ec == err_OK)
-		ec = agi_v2_load_dir (dir_view, (UINT8*)VIEWDIR);
+		ec = agi_v2_load_dir (game.dir_view, (UINT8*)VIEWDIR);
 	if (ec == err_OK)
-		ec = agi_v2_load_dir (dir_sound, (UINT8*)SNDDIR);
+		ec = agi_v2_load_dir (game.dir_sound, (UINT8*)SNDDIR);
 
 	return ec;
 }
@@ -190,10 +190,10 @@ static int agi_v2_unload_resource (int restype, int resnum)
 		unload_view (resnum);
 		break;
 	case rSOUND:
-		if (dir_sound[resnum].flags & RES_LOADED) {
+		if (game.dir_sound[resnum].flags & RES_LOADED) {
 			unload_sound (resnum);
 			free (sounds[resnum].rdata);
-			dir_sound[resnum].flags &= ~RES_LOADED;
+			game.dir_sound[resnum].flags &= ~RES_LOADED;
 		}
 		break;
 	}
@@ -255,10 +255,10 @@ int agi_v2_load_resource (int restype, int resnum)
 
 	switch (restype) {
 	case rLOGIC:
-		if (~dir_logic[resnum].flags & RES_LOADED) {
+		if (~game.dir_logic[resnum].flags & RES_LOADED) {
 			agi_v2.unload_resource (rLOGIC, resnum);
 			/* load raw resource into data */
-			data = agi_v2_load_vol_res (&dir_logic[resnum]);
+			data = agi_v2_load_vol_res (&game.dir_logic[resnum]);
 
 			ec = (logics[resnum].data = data) ?
 				decode_logic (resnum) : err_BadResource;
@@ -279,26 +279,26 @@ int agi_v2_load_resource (int restype, int resnum)
 		 * unload the resource (caching == off) and reload it
 		 */
 
-		if (dir_pic[resnum].flags & RES_LOADED)
+		if (game.dir_pic[resnum].flags & RES_LOADED)
 			break;
 
 		/* if loaded but not cached, unload it */
 		/* if cached but not loaded, etc */
 		agi_v2.unload_resource (rPICTURE, resnum);
-		if ((data = agi_v2_load_vol_res (&dir_pic[resnum])) != NULL) {
+		if ((data = agi_v2_load_vol_res (&game.dir_pic[resnum])) != NULL) {
 			pictures[resnum].rdata = data;
-			dir_pic[resnum].flags |= RES_LOADED;
+			game.dir_pic[resnum].flags |= RES_LOADED;
 		} else {
 			ec = err_BadResource;
 		}
 		break;
 	case rSOUND:
-		if (dir_sound[resnum].flags & RES_LOADED)
+		if (game.dir_sound[resnum].flags & RES_LOADED)
 			break;
 
-		if ((data = agi_v2_load_vol_res (&dir_sound[resnum])) != NULL) {
+		if ((data = agi_v2_load_vol_res (&game.dir_sound[resnum])) != NULL) {
 			sounds[resnum].rdata = data;
-			dir_sound[resnum].flags |= RES_LOADED;
+			game.dir_sound[resnum].flags |= RES_LOADED;
 			decode_sound (resnum);
 		} else {
 			ec=err_BadResource;
@@ -311,11 +311,11 @@ int agi_v2_load_resource (int restype, int resnum)
 		 * the time?
 		 */
 
-		if (~dir_view[resnum].flags & RES_LOADED) {
+		if (~game.dir_view[resnum].flags & RES_LOADED) {
     			agi_v2.unload_resource (rVIEW, resnum);
-    			if ((data = agi_v2_load_vol_res (&dir_view[resnum]))) {
+    			if ((data = agi_v2_load_vol_res (&game.dir_view[resnum]))) {
     				views[resnum].rdata = data;
-    				dir_view[resnum].flags |= RES_LOADED;
+    				game.dir_view[resnum].flags |= RES_LOADED;
     				ec = decode_view (resnum);
     			} else {
     				ec=err_BadResource;

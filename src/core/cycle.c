@@ -385,7 +385,7 @@ static void interpret_cycle (void)
 {
 	int line_prompt = FALSE;
 
-	if(control_mode == program_control)
+	if (game.control_mode == CONTROL_PROGRAM)
 		view_table[EGO_VIEW_TABLE].direction = getvar (V_ego_dir);
 	else
 		setvar (V_ego_dir, view_table[EGO_VIEW_TABLE].direction);
@@ -415,7 +415,7 @@ static void interpret_cycle (void)
 		setflag (F_status_selects_items, FALSE);	/* 12? */
 
 
-		if (control_mode == program_control) {
+		if (game.control_mode == CONTROL_PROGRAM) {
 			view_table[EGO_VIEW_TABLE].direction =
 				getvar (V_ego_dir);
 		} else {
@@ -431,17 +431,17 @@ static void interpret_cycle (void)
 			opt.debug = TRUE;
 #endif
 
-		if (quit_prog_now)
+		if (game.quit_prog_now)
 			break;
 
 		update_status_line (FALSE);
 
-		if (ego_in_new_room) {
+		if (game.ego_in_new_room) {
 			new_room (new_room_num);
 //			--exit_all_logics = FALSE;
 //			--ego_in_new_room = TRUE;
 			update_status_line (TRUE);
-			ego_in_new_room = FALSE;
+			game.ego_in_new_room = FALSE;
 			line_prompt     = TRUE;
 		} else {
 			if (screen_mode == GFX_MODE) {
@@ -463,7 +463,7 @@ static void interpret_cycle (void)
 
 static void update_timer ()
 {
-	if (!clock_enabled)
+	if (!game.clock_enabled)
 		return;
 
 	clock_count++;
@@ -531,11 +531,11 @@ int run_game2 ()
 	setflag (F_sound_on, TRUE);		/* enable sound */
 	setvar (V_time_delay, 2);		/* "normal" speed */
 
-	allow_kyb_input = FALSE;
+	game.allow_kyb_input = FALSE;
 	new_room_num = 0;
-	quit_prog_now = FALSE;
-	clock_enabled = TRUE;
-	ego_in_new_room = FALSE;
+	game.quit_prog_now = FALSE;
+	game.clock_enabled = TRUE;
+	game.ego_in_new_room = FALSE;
 	exit_all_logics = FALSE;
 
 	report (" \nSarien " VERSION " is ready.\n");
@@ -561,11 +561,11 @@ int run_game2 ()
 
 		do_blit ();
 
-		if (quit_prog_now == 0xFF) {
+		if (game.quit_prog_now == 0xFF) {
 			ec = err_RestartGame;
 			break;
 		}
-	} while (!quit_prog_now);
+	} while (!game.quit_prog_now);
 
 	stop_sound ();
 	clear_buffer ();

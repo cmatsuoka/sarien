@@ -50,9 +50,9 @@ UINT16		ego_in_new_room;	/* new room flag */
 UINT8		control_mode;		/* who's in control */
 UINT8		quit_prog_now;		/* quit now */
 UINT8		status_line;		/* status line on/off */
-UINT8		line_status;		/* line num to put status on */
-UINT8		line_user_input;	/* line to put user input on */
-UINT8		line_min_print;		/* num lines to print on */
+//UINT8		line_status;		/* line num to put status on */
+//UINT8		line_user_input;	/* line to put user input on */
+//UINT8		line_min_print;		/* num lines to print on */
 UINT8		allow_kyb_input;	/* allow keyboard input */
 UINT8		clock_enabled;		/* clock is on/off */
 //UINT8		timed_message_box;	/* timed message box */
@@ -225,9 +225,9 @@ int agi_deinit ()
 	control_mode = 0;
 	quit_prog_now = 0;
 	status_line = FALSE;
-	line_status = 0;
-	line_user_input = 0;
-	line_min_print = 0;
+	game.line_status = 0;
+	game.line_user_input = 0;
+	game.line_min_print = 0;
 	allow_kyb_input = 0;
 	clock_enabled = 0;
 	//timed_message_box = 0;

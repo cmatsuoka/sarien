@@ -28,7 +28,7 @@ int load_objects (char *fname)
 	UINT32 flen;
 	UINT8 *mem;
 
-	padsize = game_flags & ID_AMIGA ? 4 : 3;
+	padsize = game.game_flags & ID_AMIGA ? 4 : 3;
 
 	num_objects = 0;
 	objects = NULL;

@@ -161,7 +161,7 @@ void cmd_new_room (UINT8 room)
 {
 	_D (("(%d) -------------------------- ", room));
 	new_room_num = room;
-	ego_in_new_room = TRUE;
+	game.ego_in_new_room = TRUE;
 	clear_buffer ();
 	window_nonblocking = 0;	/***************************/
 	exit_all_logics = TRUE;
@@ -716,13 +716,13 @@ void cmd_shake_screen (UINT8 n)
 
 void cmd_accept_input ()
 {
-	allow_kyb_input = TRUE;
+	game.allow_kyb_input = TRUE;
 }
 
 
 void cmd_stop_input ()
 {
-	allow_kyb_input = FALSE;
+	game.allow_kyb_input = FALSE;
 
 	/* Clear the area of the user input (the +1 is for the last line)*/
 	/* CM: produces white strip at bottom of larry demo! */
@@ -730,7 +730,7 @@ void cmd_stop_input ()
 	cmd_clear_lines ( line_user_input, line_user_input + 1, txt_bg );
 #endif
 	/* CM: Maybe this workaround could work... */
-	cmd_clear_lines ( line_user_input, line_user_input + 1, 0 );
+	cmd_clear_lines (game.line_user_input, game.line_user_input + 1, 0 );
 }
 
 
@@ -774,9 +774,9 @@ void cmd_get_string (UINT8 logic, UINT8 str, UINT8 msg, UINT8 y, UINT8 x, UINT8 
 
 void cmd_config_screen (UINT8 mpl, UINT8 upl, UINT8 sl)
 {
-	line_status    =sl;
-	line_user_input=upl;
-	line_min_print =mpl;
+	game.line_status = sl;
+	game.line_user_input = upl;
+	game.line_min_print = mpl;
 }
 
 
@@ -842,7 +842,7 @@ void cmd_status ()
 
 void cmd_status_line_on ()
 {
-	status_line = TRUE;
+	game.status_line = TRUE;
 
 	/* MK: I re-inserted (un-commented) the call to update_status_line
 	 * here (and in cmd_status_line_off()), because any AGI script call to
@@ -857,7 +857,7 @@ void cmd_status_line_on ()
 
 void cmd_status_line_off ()
 {
-	status_line = FALSE;
+	game.status_line = FALSE;
 	update_status_line (TRUE);
 }
 
@@ -1034,7 +1034,7 @@ void cmd_show_obj (UINT8 n)
 	x = _WIDTH - w_;
 	x_ = x / 2;
 	y_ = 120;
-	y = line_min_print ? y_ + 8 : y_;
+	y = game.line_min_print ? y_ + 8 : y_;
 	bg = malloc (w * h);
 
 
@@ -1145,17 +1145,17 @@ void cmd_show_mem ()
 void cmd_quit (UINT8 f)
 {
 	if (f) {
-		quit_prog_now = TRUE;
+		game.quit_prog_now = TRUE;
 	} else {
 		message_box ((UINT8*)"   Press ENTER to quit.\n"
 			"Press ESC to keep playing.");
 
-		switch (message_box_key & 0xFF) {
+		switch (game.message_box_key & 0xFF) {
 		case 'Y':
 		case 'y':
 		case 0x0d:
 		case 0x0a:
-			quit_prog_now = TRUE;
+			game.quit_prog_now = TRUE;
 			break;
 		}
 	}
@@ -1178,14 +1178,14 @@ void cmd_display (UINT8 logic, UINT8 y, UINT8 x, UINT8 msg)
 /* CM: why are these reversed ?? */
 void cmd_ego_control ()
 {
-	view_table[0].flags|=MOTION;
-	control_mode=program_control;
+	view_table[0].flags |= MOTION;
+	game.control_mode = CONTROL_PROGRAM;
 }
 
 
 void cmd_prog_control ()
 {
-	control_mode = player_control;
+	game.control_mode = CONTROL_PLAYER;
 }
 
 
@@ -1419,7 +1419,7 @@ void cmd_restart_game ()
 	{
 	case 0x0A:
 	case 0x0D:
-		quit_prog_now=0xFF;
+		game.quit_prog_now = 0xFF;
 		setflag (F_restart_game, TRUE);
 		break;
 	default:
@@ -1513,10 +1513,10 @@ void cmd_pause ()
 {
 	int clock;
 
-	clock = clock_enabled;
-	clock_enabled = FALSE;
+	clock = game.clock_enabled;
+	game.clock_enabled = FALSE;
 	message_box ("    Game is Paused.\nPress ENTER to continue.");
-	clock_enabled=clock;
+	game.clock_enabled = clock;
 }
 
 
@@ -2225,7 +2225,7 @@ int run_logic (int lognum)
 
 
 	/* If logic not loaded, load it */
-	if ((dir_logic[lognum].flags & RES_LOADED) != RES_LOADED) {
+	if ((game.dir_logic[lognum].flags & RES_LOADED) != RES_LOADED) {
 		loader->load_resource (rLOGIC, lognum);
 		temp_logic = TRUE;
 #ifdef DISABLE_COPYPROTECTION
@@ -2242,7 +2242,7 @@ int run_logic (int lognum)
 	logics[lognum].cIP = logics[lognum].sIP;
 	last_ip = ip;
 
-	while (run_flag && ip < logics[lognum].size && !quit_prog_now)
+	while (run_flag && ip < logics[lognum].size && !game.quit_prog_now)
 	{
 		if (debug.enabled) {
 			if (debug.steps > 0) {

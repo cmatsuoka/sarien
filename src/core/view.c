@@ -87,7 +87,7 @@ void unload_view (int n)
 	int x, y;
 
 	_D (("(%d)", n));
-	if (~dir_view[n].flags & RES_LOADED)
+	if (~game.dir_view[n].flags & RES_LOADED)
 		return;
 
 	/* free all the loops */
@@ -118,7 +118,7 @@ void unload_view (int n)
 	/* release RAW data for view */
 	free (views[n].rdata);
 
-	dir_view[n].flags &= ~RES_LOADED;
+	game.dir_view[n].flags &= ~RES_LOADED;
 }
 
 
@@ -127,7 +127,7 @@ void add_view_table (int entry, int vw)
 	_D (("(%d, %d)", entry, vw));
 
 	/* To prevent Larry explosion in room 11 after hooker */
-	if (~dir_view[vw].flags & RES_LOADED) {
+	if (~game.dir_view[vw].flags & RES_LOADED) {
 		report ("Parachute deployed: view %d not loaded\n", vw);
 		loader->load_resource (rVIEW, vw);
 	}
