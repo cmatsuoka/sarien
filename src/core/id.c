@@ -120,11 +120,14 @@ static UINT32 match_version (UINT32 crc)
 	int ver;
 	char *q;
 
-	if (getenv ("SARIEN")!=NULL) {
+	if (getenv ("SARIEN") != NULL) {
 		sprintf(buf, "%s/%s", getenv("SARIEN"), "sarien.ini");
-	} else {
-		strcpy(buf, exec_name);
-		q=strchr(buf, 0x0);
+	}
+#if 0
+	/* FIXME -- set policy for pathnames, etc */
+	else {
+		strcpy (buf, exec_name);
+		q = strchr(buf, 0x0);
 		q--;
 		while((*q!='\\' && *q!='/') && q>buf)
 			q--;
@@ -132,8 +135,9 @@ static UINT32 match_version (UINT32 crc)
 			*q=0x0;
 		strcat(buf, "/sarien.ini");
 	}
+#endif
 
-	_D("sarien conf : (%s)", buf);
+	_D("sarien conf: %s", buf);
 	ver = match_crc (crc, buf);
 #else
 	char buf[256];
