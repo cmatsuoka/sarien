@@ -12,7 +12,7 @@ static int c (char *test, char *expected)
 		test_report (" [Expected: %s]", expected);
 	}
 
-	return match;
+	return match ? TEST_OK : TEST_FAIL;
 }
 
 

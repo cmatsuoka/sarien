@@ -133,6 +133,9 @@ int main (int argc, char **argv)
 	struct list_head *h;
 	int total;
 
+	game.sbuf = malloc (_WIDTH * _HEIGHT);
+	game.hires = malloc (_WIDTH * 2 * _HEIGHT);
+
 	time (&t0);
 
 	printf ("Sarien %s tests (build %s %s)\n", VERSION, __DATE__, __TIME__);
@@ -147,6 +150,7 @@ int main (int argc, char **argv)
 	new_suite (&test_list, test_flag, "flag operations");
 	new_suite (&test_list, test_arith, "arithmetic operations");
 	new_suite (&test_list, test_format, "string formatting");
+	new_suite (&test_list, test_picture, "picture drawing");
 
 	list_for_each (h, &test_list, next) {
 		struct test_suite *s = list_entry (h, struct test_suite, list);
@@ -155,7 +159,7 @@ int main (int argc, char **argv)
 
 	list_for_each (h, &test_list, next) {
 		struct test_suite *s = list_entry (h, struct test_suite, list);
-		printf ("\n>>> Running test suite: %s\n", s->name);
+		printf ("\n>>> Running test: %s\n", s->name);
 		test_enable (s);
 		s->suite (s);
 		printf ("<<< Test results: %d succeeded, %d failed, "
@@ -185,6 +189,9 @@ int main (int argc, char **argv)
 		num_skipped, 100 * num_skipped / total);
 
 	printf ("\n*** Elapsed time: %ds\n", (int)(t1 - t0));
+
+	free (game.sbuf);
+	free (game.hires);
 
 	return 0;
 }

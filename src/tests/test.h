@@ -41,5 +41,6 @@ int	test_report	(char *fmt, ...);
 TEST_SUITE(test_format);
 TEST_SUITE(test_arith);
 TEST_SUITE(test_flag);
+TEST_SUITE(test_picture);
 
 

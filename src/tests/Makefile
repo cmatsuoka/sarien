@@ -2,10 +2,10 @@
 
 XCFLAGS	= -I../include
 XLDFLAGS=
-OBJS	= format.o arith.o flag.o
+OBJS	= format.o arith.o flag.o picture.o
 DFILES	= Makefile $(TESTS:.=.c)
 CFILES	=
-DDIRS	=
+DDIRS	= data
 XLIBS	= -L../../lib -lagi -lsarien
 LIB	=
 

@@ -19,7 +19,7 @@ static int c (int cmd, char *test, char *res, int expected, UINT8 *p)
 		test_report (" [Expected: %d]", expected);
 	}
 
-	return match;
+	return match ? TEST_OK : TEST_FAIL;
 }
 
 TEST_SUITE(test_arith)

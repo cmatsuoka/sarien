@@ -14,11 +14,11 @@ static int c (int cmd, int expected)
 
 		if (!(expected == getflag(i))) {
 			test_report (" [Expected: %d]", expected);
-			return 0;
+			return TEST_FAIL;
 		}
 	}
 
-	return 1;
+	return TEST_OK;
 }
 
 static int d (int cmd, int expected)
@@ -35,11 +35,11 @@ static int d (int cmd, int expected)
 
 		if (!(expected == getflag(i))) {
 			test_report (" [Expected: %d]", expected);
-			return 0;
+			return TEST_FAIL;
 		}
 	}
 
-	return 1;
+	return TEST_OK;
 }
 
 TEST_SUITE(test_flag)

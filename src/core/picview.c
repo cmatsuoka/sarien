@@ -42,6 +42,16 @@ static int picviewer_get_key ()
 }
 
 
+static void screen_dump ()
+{
+	FILE *f;
+
+	f = fopen ("screen.raw", "wb");
+	fwrite (game.sbuf, _HEIGHT, _WIDTH, f);
+	fclose (f);
+}
+
+
 int view_pictures ()
 {
 	int ec = err_OK;
@@ -90,9 +100,9 @@ update_statusline:
 		sprintf (x, "Picture:%3i                  Hi-res: N/A", pic);
 #endif
 		print_text (x, 0, 0, 0, strlen (x) + 1, 0, 15);
-		sprintf (x, "H:Hi-res     P:Vis/Prio    +:Next -:Prev");
+		sprintf (x, "H:Hi-res    P:Vis/Prio   +:Next   -:Prev");
 		print_text (x, 0, 0, 23, strlen (x) + 1, 15, 0);
-		sprintf (x, "R:Redraw     D:Show drawing       Q:Quit");
+		sprintf (x, "R:Redraw      D:Screen dump       Q:Quit");
 		print_text (x, 0, 0, 24, strlen (x) + 1, 15, 0);
 
 		while (42) {
@@ -117,6 +127,7 @@ update_statusline:
     				break;
 			case 'd':
 				/*opt.showscreendraw = !opt.showscreendraw;*/
+				screen_dump();
 				goto update_statusline;
 			case 'r':
 				goto next_pic;
