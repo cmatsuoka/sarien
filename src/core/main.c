@@ -368,6 +368,6 @@ bail_out:
 
 	deinit_machine ();
 
-	exit (ec);	/* this is for the memory system  (CM: huh?) */
+	return ec;
 }
 
