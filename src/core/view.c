@@ -396,11 +396,10 @@ void draw_obj (int vt)
 	cel_height = VT_HEIGHT(view_table[vt]);
 
 	/* DF: CLIPPING (FIXES OP:RECON BUG !! (speach bubbles) */
-
+#if 0
 	if (v->x_pos + cel_width > _WIDTH)
 		v->x_pos = _WIDTH - cel_width;
 
-#if 0
 	//if(v->y_pos + cel_height > _HEIGHT)
 	//      v->y_pos=_HEIGHT - cel_height;
 
@@ -424,16 +423,16 @@ void draw_obj (int vt)
 	get_bitmap (v->bg_scr, screen2, v->bg_x, v->bg_y,
 		v->bg_x_size, v->bg_y_size);
 
-	/* copy background (priority map) */ 
+	/* copy background (priority map) */
 	v->bg_pri = (UINT8*)malloc(v->bg_x_size * v->bg_y_size);
 	get_bitmap (v->bg_pri, priority_data, v->bg_x, v->bg_y, v->bg_x_size,
 		v->bg_y_size);
 
 	/* FR:
-	 * Sierra logo didn't appear in demos because 
+	 * Sierra logo didn't appear in demos because
 	 * (v->y_pos - cel_height) < 0 and agi_put_bimap receive
 	 * only unsigned values!
-	 * 
+	 *
 	 * This work-around only creates more bugs!
 	 */
 	agi_put_bitmap (VT_CEL(view_table[vt]).data,
@@ -444,12 +443,6 @@ void draw_obj (int vt)
 		VT_CEL(view_table[vt]).transparency & 0xf,
 		v->priority);
 }
-
-
-#ifdef __WATCOMC__
-void DebugBreak(void);
-#pragma aux DebugBreak = "int 3" parm[];
-#endif
 
 int decode_view (int resnum)
 {
@@ -462,10 +455,6 @@ int decode_view (int resnum)
 	SINT16		intCurCel;
 	struct view_cel	*ptrViewCel;
 	UINT8		*ptrCelData;
-
-#ifdef __WATCOMC__
-	DebugBreak();
-#endif
 
 	_D ("(%d)", resnum);
 	ptrView = views[resnum].rdata;
