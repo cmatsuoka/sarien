@@ -385,5 +385,3 @@ int wait_any_key ()
 	return key;
 }
 
-
-

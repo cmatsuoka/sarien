@@ -80,7 +80,7 @@ static void draw_menu_bar ()
 	struct agi_menu *m;
 
 #ifdef FANCY_BOX
-	draw_box (0, 0, GFX_WIDTH - 1, 12, MENU_BG, MENU_LINE);
+	draw_box (0, 0, GFX_WIDTH - 1, 12, MENU_BG, MENU_LINE, 0);
 #else
 	clear_lines (0, 0, MENU_BG);
 #endif
@@ -108,7 +108,7 @@ static void draw_menu_hilite (int cur_menu)
 #ifdef FANCY_BOX
 	draw_box (m->col * CHAR_COLS - 4, 1, (m->col + strlen (m->text)) *
 		CHAR_COLS + 2, 11, MENU_BG, MENU_LINE);
-	draw_text (m->text, 0, m->col * CHAR_COLS, 3, 40, MENU_FG, MENU_BG);
+	draw_text (m->text, 0, m->col * CHAR_COLS, 3, 40, MENU_FG, MENU_BG, 0);
 #else
 	print_text (m->text, 0, m->col, 0, 40, MENU_BG, MENU_FG);
 #endif
@@ -130,7 +130,7 @@ static void draw_menu_option (int h_menu)
 		1 * CHAR_LINES + 4,
 		(m->wincol + m->width + 2) * CHAR_COLS - 3,
 		(1 + m->height + 1) * CHAR_LINES + 1 + m->height * 2,
-		MENU_BG, MENU_LINE);
+		MENU_BG, MENU_LINE, 0);
 
 	list_for_each (h, &m->down, next) {
 		d = list_entry (h, struct agi_menu_option, list);
@@ -140,7 +140,7 @@ static void draw_menu_option (int h_menu)
 #else
 	draw_box (m->wincol * CHAR_COLS, 1 * CHAR_LINES,
 		(m->wincol + m->width + 2) * CHAR_COLS,
-		(1 + m->height + 2) * CHAR_LINES, MENU_BG, MENU_LINE);
+		(1 + m->height + 2) * CHAR_LINES, MENU_BG, MENU_LINE, 0);
 
 	list_for_each (h, &m->down, next) {
 		d = list_entry (h, struct agi_menu_option, list);
@@ -163,7 +163,7 @@ static void draw_menu_option_hilite (int h_menu, int v_menu)
 		(v_menu + 2) * CHAR_LINES - 2 + v_menu * 2,
 		(m->wincol + m->width + 1) * CHAR_COLS + 3,
 		(v_menu + 2) * CHAR_LINES + 9 + v_menu * 2,
-		MENU_BG, MENU_LINE);
+		MENU_BG, MENU_LINE, 0);
 	draw_text (d->text, 0, (m->wincol + 1) * CHAR_COLS,
 		(v_menu + 2) * CHAR_LINES + v_menu * 2, m->width + 2,
 		MENU_FG, MENU_BG);

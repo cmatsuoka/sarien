@@ -289,8 +289,13 @@ static void draw_frame (int x1, int y1, int x2, int y2, int c1, int c2)
 }
 
 
-void draw_box (int x1, int y1, int x2, int y2, int colour1, int colour2)
+void draw_box (int x1, int y1, int x2, int y2, int colour1, int colour2, int m)
 {
+	x1 += m;
+	y1 += m;
+	x2 -= m;
+	y2 -= m;
+
 #ifdef FANCY_BOX
 	draw_rectangle (x1, y1, x2, y2, 7);
 	draw_frame (x1, y1, x2, y2, 15, 8);

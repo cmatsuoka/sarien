@@ -147,7 +147,7 @@ static void blit_textbox (char *p, int y, int x, int len)
 		game.window.y2, game.window.buffer);
 
 	draw_box (game.window.x1, game.window.y1, game.window.x2,
-		game.window.y2, MSG_BOX_COLOUR, MSG_BOX_LINE);
+		game.window.y2, MSG_BOX_COLOUR, MSG_BOX_LINE, 2);
 
 	print_text2 (2, msg, 0, CHAR_COLS + xoff, CHAR_LINES + yoff, len + 1,
 		MSG_BOX_TEXT, MSG_BOX_COLOUR);
