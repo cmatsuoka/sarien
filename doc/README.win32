@@ -8,9 +8,11 @@ game folder onto the Sarien executable.
 
 To compile the SDL version, check README.sdl for more information.
 
-To build the native Win32 version using Mingw32 or Cygwin, copy
-Rules.mingw32 or Rules.cygwin from rulesets\ to the toplevel folder,
-rename it "Rules" and run "make".
+To build the native Win32 version using Mingw32, copy Rules.mingw32
+from rulesets\ to the toplevel folder, rename it "Rules" and run
+"make".
+
+To build using Cygwin, run "autoconf", "./configure", then "make".
 
 To build using Visual C++ 6.0, use the project files in the VC++6.0
 directory.

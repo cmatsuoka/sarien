@@ -457,7 +457,7 @@ int loadgame_dialog ()
 	sprintf (path, "%s/" DATA_DIR "/%s/%08d.iff",
 		home, game.id, slot);
 	if ((rc = load_game (path)) == err_OK) {
-		message_box ("Gamed loaded.");
+		message_box ("Game loaded.");
 		/* FIXME: restore at correct point instead of using the
 		 *	  new.room hack
 		 */
