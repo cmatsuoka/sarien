@@ -12,6 +12,7 @@
 #include <string.h>
 #include "sarien.h"
 #include "agi.h"
+#include "keyboard.h"		/* for clean_input() */
 
 static struct agi_word *words;			/* words in the game */
 extern int decode_words(UINT8* mem, UINT32 flen);
@@ -171,26 +172,9 @@ void dictionary_words (char *msg)
 	char *q = NULL;
 	int wc1;
 
-	_D ("(\"%s\")", msg);
+	_D ("msg = \"%s\"", msg);
 
-	/* FR
-	 * This shouldn't be here!
-	 *
-	 *	memmove((char*)x, (char*)msg, 127);
-	 *
-	 * for (p=(UINT8*)x; *msg!=0; msg++) {
-	 *		if(*msg==0x20 || isalnum(*msg)) {
-	 *			if(*msg!=0x20 || last!=0x20) {
-	 *				*p=tolower(*msg);
-	 *				last=*p;
-	 *				p++;
-	 *			}
-	 *		}
-	 * }
-	 */
-	clean_input();
-
-	_D (_D_WARN "p = msg = \"%s\"", msg);
+	clean_input ();
 
 	for (p = msg; p && *p && getvar(V_word_not_found)==0; ) {
 		if (*p == 0x20)
