@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2002 Stuart George and Claudio Matsuoka
  *
  *  $Id$
  *
@@ -106,10 +106,10 @@ int main (int argc, char *argv[])
 	/* printf() breaks GCC 3.0 build */
 	fprintf (stdout,
 TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
-"Copyright (C) 1999-2001 Stuart George\n"
+"Copyright (C) 1999-2002 Stuart George\n"
 "Portions Copyright (C) 1998 Lance Ewing, (C) 1999 Felipe Rosinha,\n"
-"(C) 1999-2001 Claudio Matsuoka, (C) 1999-2001 Igor Nesterov,\n"
-"(C) 2001 Vasyl Tsvirkunov, (C) 2001 Thomas Akesson\n"
+"(C) 1999-2002 Claudio Matsuoka, (C) 1999-2001 Igor Nesterov,\n"
+"(C) 2001,2002 Vasyl Tsvirkunov, (C) 2001,2002 Thomas Akesson\n"
 #ifndef HAVE_GETOPT_LONG
 "Portions Copyright (C) 1989-1997 Free Software Foundation, Inc.\n"
 #endif
@@ -156,7 +156,9 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 
 	deinit_sound ();
 	deinit_video ();
+#ifdef USE_HIRES
 	free (game.hires);
+#endif
 
 bail_out:
 	if (ec == err_OK || ec == err_DoNothing) {

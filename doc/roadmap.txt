@@ -32,10 +32,10 @@ Extra features:
 
 0.8.0:
 
-* Sierra v3 games finishable					40%
+* Sierra v3 games finishable					60%
 * Sierra v2 games accurate					60%
 * Multi-slot savegames						90%
-* Fix quit/restart problems					80%
+* Fix quit/restart problems					OK
 * Major homemade games finishable				 0%
 * Macintosh port						70%
 * unk commands implemented					90%

@@ -75,28 +75,14 @@ UINT8 scancode_table[26] = {
 
 void init_words ()
 {
-	int i;
-
-	for (i = 0; i < MAX_WORDS; i++) {
-		game.ego_words[i].word = NULL;
-		game.ego_words[i].id = 0xffff;
-	}
 	game.num_ego_words = 0;
 }
 
 
 void clean_input ()
 {
-	int i;
-
-	for (i = 0; i < MAX_WORDS; i++) {
-		if (game.ego_words[i].word != NULL) {
-			free (game.ego_words[i].word);
-			game.ego_words[i].word = NULL;
-		}
-		game.ego_words[i].id = 0xffff;
-	}
-	game.num_ego_words = 0;
+	while (game.num_ego_words)
+		free (game.ego_words[--game.num_ego_words].word);
 }
 
 

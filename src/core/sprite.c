@@ -116,13 +116,15 @@ blit_pixel (UINT8 *p, UINT8 *end, UINT8 col, int spr, int width, int *hidden)
 	 *     bug #451768, and should not affect Sierra games because
 	 *     sprites shouldn't have priority 15 (like the AGI Mouse
 	 *     demo "mouse pointer")
+	 *
+	 * Update: this solution breaks other games, and can't be used.
 	 */
 
 	/* Check if we're on a control line */
 	if ((pr = *p & 0xf0) < 0x30) {
 		UINT8 *p1;
 		/* Yes, get effective priority going down */
-		for (p1 = p; (epr = *p1 & 0xf0) < 0x30 || epr == 0xf0; p1 += width) {
+		for (p1 = p; (epr = *p1 & 0xf0) < 0x30; p1 += width) {
 			if (p1 >= end) {
 				epr = 0x40;
 				break;
@@ -141,9 +143,12 @@ blit_pixel (UINT8 *p, UINT8 *end, UINT8 col, int spr, int width, int *hidden)
 
 		/* Except if our priority is 15, which should never happen
 		 * (fixes bug #451768)
+		 *
+		 * Update: breaks other games, can't be used
+		 *
+		 * if (spr == 0xf0)
+		 *	*p = spr | col;
 		 */
-		if (spr == 0xf0)
-			*p = spr | col;
 	}
 }
 
