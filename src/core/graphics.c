@@ -188,7 +188,6 @@ static void init_console ()
 /* Based on LAGII 0.1.5 by XoXus */
 void shake_screen (int n)
 {
-#if !defined (__TURBOC__) && !defined (__DICE__)
 #define MAG 3
 	int i;
 	UINT8 *b, *c;
@@ -219,7 +218,6 @@ void shake_screen (int n)
 	free (c);
 	free (b);
 #undef MAG
-#endif
 }
 
 
