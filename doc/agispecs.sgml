@@ -6207,7 +6207,7 @@ Code  Color             R    G    B
    not a fault in this algorithm, but somewhere else in the code.
 </para><para>
    Note that Sarien (see <xref linkend="otheragi" name="Other interpreters">)
-   use a different line drawing algorithm written by Joshua Neal and
+   use a more efficient line drawing algorithm written by Joshua Neal and
    Stuart George.
 </para><para>
 <programlisting>
@@ -6327,7 +6327,8 @@ Tool:Line V:A P:o C:o X=199 Y=55 Pri:2
 
 <sect1 id="piccode"><title>Sample code</title>
 <para>
-   The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
+   The following examples are available in the
+   <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
 
    <simplelist>
     <member><literal><ulink name="examples/picture/picv3-v2.c"/picv3-v2.c/</literal>
@@ -6343,30 +6344,30 @@ Tool:Line V:A P:o C:o X=199 Y=55 Pri:2
 
 <chapter id="view"><title>VIEW resources</title>
 <para>
-<emphasis>
-Written by <ulink name="mailto:ptrkelly@ozemail.com.au" name="Peter Kelly">, with modifications by <ulink name="mailto:claudio@helllabs.org"/Claudio Matsuoka/
-(Last updated: 22 May 1999).
-</emphasis>
+  Peter Kelly, modified Claudio Matsuoka, updated 22 May 1999.
 </para>
 
 <sect1><title>Introduction</title>
 <para>
-   VIEW resources contain some of the graphics for the game. Unlike the
+   View resources contain some of the graphics for the game. Unlike the
    picture resources which are full-screen background images, view
-   resources are smaller <emphasis/sprites/ used in the game, such as animations
-   and objects. They are also stored as bitmaps, whereas pictures are
-   stored in vector format.
-
-   Each view resource consists of one or more <emphasis/loops/. Each loop in the
-   resource consists of one or more <emphasis/cels/ (frames). Thus several
-   animations can be stored in one view, or a view can just be used for a
-   single image. The maximum number of loops supported by the interpreter
-   is 255 (0-254) and the maximum number of cels in each is 255 (0-254).
-
-   Note: Except when noted otherwise, 16 bit data is stored in little endian
-   format (i.e. the value has the least significant byte stored first, and
-   the most significant byte stored second). Most word values in AGI are
-   stored like this, but not all.
+   resources are smaller <emphasis/sprites/ used in the game, such as
+   animations and objects. They are also stored as bitmaps, whereas
+   pictures are stored in vector format.
+</para><para>
+   Each view resource consists of one or more <emphasis/loops/. Each loop
+   in the resource consists of one or more <emphasis/cels/ (frames).
+   Thus several animations can be stored in one view, or a view can just
+   be used for a single image. The maximum number of loops supported by
+   the interpreter is 255 (0-254) and the maximum number of cels in each
+   is 255 (0-254).
+</para><para>
+   <warning>
+    Except when noted otherwise, 16 bit data is stored in little endian
+    format (i.e. the value has the least significant byte stored first, and
+    the most significant byte stored second). Most word values in AGI are
+    stored like this, but not all.
+   </warning>
 </para>
 
 <sect1><title>VIEW resource format</title>
@@ -6387,9 +6388,11 @@ Byte  Meaning
  ...  ...
 ----- -----------------------------------------------------------
    </programlisting>
-
-   Note: Two of these loop references CAN point to the same place. This
-   is done when you want to use mirroring (more on this later).
+</para><para>
+   <warning>
+    Two of these loop references CAN point to the same place. This
+    is done when you want to use mirroring (more on this later).
+   </warning>
 </para>
 
 <sect2><title>Loop header (3+ bytes)</title>
@@ -6417,14 +6420,14 @@ Byte  Meaning
   2   Transparency and cel mirroring
 ----- -----------------------------------------------------------
    </programlisting>
-
+</para><para>
    The first four bits of this byte tell the interpreter how to handle
    the mirroring of this cel (explained later).
-
+</para><para>
    The last four bits represent the transparent color. When the cel is
    drawn on the screen, any pixels of this color will show through to the
    background.
-
+</para><para>
    All cels have a transparent color, so if you want an opaque cel then
    you must set the transparent color to one that is not used in the cel.
 </para>
@@ -6436,19 +6439,19 @@ Byte  Meaning
    each single pixel (or 1/2 byte as you would use for 16 colors), each
    byte specifies how many pixels there are to be in a row and what
    colour they are. I will refer to these groups of pixels as ``chunks''.
-
+</para><para>
    This method of compression is not very efficient if there is a lot of
    single pixels in the image (e.g. a view showing static on a TV
    screen), but in most cases it does save a fair amount of space.
-
+</para><para>
    Each line (not to be confused with a chunk) in the cel consists of
    several bytes of pixel data, then a 0 to end the line. Each byte of
    pixel data represents one chunk. The first four bits determine the
    colour, and the last four bits determine the number of pixels in the
    chunk.
-
+</para><para>
    Example: <literal/AX BY CZ 00/
-
+</para><para>
    This line will have:
    <simplelist>
     <member>X pixels of colour A (<literal/AX/)
@@ -6456,11 +6459,11 @@ Byte  Meaning
     <member>Z pixels of colour C (<literal/CZ/)
     <member>(then that will be the end of the line) (<literal/00/)
    </simplelist>
-
+</para><para>
    If the color of the last chunk on the line is the transparent color,
    there is no need to store this. For example, if C was the transparent
-   color in the above example, you could just write <literal/AX BY 00/. This also
-   saves some space.
+   color in the above example, you could just write <literal/AX BY 00/.
+   This also saves some space.
 </para>
 
 <sect2><title>Mirroring</title>
@@ -6479,13 +6482,12 @@ Byte  Meaning
    days, but back when AGI was written the games were designed to run on
    256K systems which meant that memory had to be used as efficiently as
    possible.
-</para>
-<para>
+</para><para>
    Mirroring is done by having both loops share the same cel data -- you
    saw above that you can have two loop references pointing to the same
    place. The first four bits of the 3rd byte in the header of each cel
    tell the interpreter what is mirrored:
-
+</para><para>
    <programlisting>
  Bit  Meaning
 ----- -----------------------------------------------------------
@@ -6495,6 +6497,7 @@ Byte  Meaning
 ----- -----------------------------------------------------------
    </programlisting>
 
+</para><para>
    When the interpreter goes to display a loop, it looks at the bit 0 and
    sees if it is mirrored or not. If it is, then it checks the loop
    number -- if this is NOT the same as the current loop, then it flips
@@ -6521,16 +6524,12 @@ Byte  Meaning
    looks at this number the next time for a different loop, it will see
    that the cel is not the right way round for that loop and mirror it
    again.
-</para>
-
-<para>
+</para><para>
    This process seems very inefficient to me. I don't know why it doesn't
    just draw the chunks of color on the screen back to front. But since
    it does it this way we have to make sure that there is enough room for
    the flipped cel.
-</para>
-
-<para>
+</para><para>
    It seems that not all versions of the interpreter require this,
    however -- I was working with version 2.917 when I was testing this
    out, but I noticed that versoin 2.440 did not require this. I will
@@ -6548,20 +6547,15 @@ Byte  Meaning
    first cel of the first loop of this view and the description of the
    object they are examining. This is brought up using the <literal/show.obj/
    command.
-</para>
-
-<para>
+</para><para>
    The description is stored in plain text, and terminated by a null
    character. Lines are separated by an 0x0A.
 </para>
 
 <sect1><title>VIEW table</title>
 <para>
-<emphasis>
-Written by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/
-(Last updated: 31 August 1997).
-</emphasis>
-
+  Lance Ewing, 31 August 1997.
+</para><para>
    Firstly we should note that there is a difference between a VIEW and a
    VIEW object. A VIEW is a collection of animated sequences that are
    stored in a VOL file. When a view is loaded into memory, it is then
@@ -6574,26 +6568,26 @@ Written by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/
    possible to have five or more hungry crocodiles swimming in a moat
    each which have there own VIEW table entries, all of which point to
    the same VIEW data.
-
+</para><para>
    View objects appear to have the following properties:
-
-   <simplelist>
-    <member>x position
-    <member>y position
-    <member>current view
-    <member>current loop
-    <member>current cel
-    <member>priority
-    <member>cycle time (1/n gives the fraction of the maximum speed)
-    <member>step time (1/n gives the fraction of the maximum speed)
-    <member>x size (in pixels)
-    <member>y size (in pixels)
-    <member>step size
-    <member>direction
-    <member>number of loops
-    <member>number of cels
-   </simplelist>
-
+</para><para>
+   <itemizedlist>
+    <listitem>x position
+    <listitem>y position
+    <listitem>current view
+    <listitem>current loop
+    <listitem>current cel
+    <listitem>priority
+    <listitem>cycle time (1/n gives the fraction of the maximum speed)
+    <listitem>step time (1/n gives the fraction of the maximum speed)
+    <listitem>x size (in pixels)
+    <listitem>y size (in pixels)
+    <listitem>step size
+    <listitem>direction
+    <listitem>number of loops
+    <listitem>number of cels
+   </itemizedlist>
+</para><para>
    There are probably other properties that aren't listed here which they
    also possess. In an object oriented environment such as SCI, these
    properties are stored as instance variables (or selectors) as part of
@@ -6640,9 +6634,9 @@ Byte  Meaning
 25-26 View flags (see below)
 ----- -----------------------------------------------------------
    </programlisting>
-
+</para><para>
 View flags:
-
+</para><para>
    <programlisting>
  Bit  Meaning
 ----- -----------------------------------------------------------
@@ -6669,37 +6663,42 @@ View flags:
 ----- -----------------------------------------------------------
    </programlisting>
 
-   Note: The above format structure is simply the way in which Sierra's
-   AGI interpreter stores information about VIEW objects. In attempting
-   to write an AGI interpreter, you would not have to restrict yourself
-   to this format, just as long as you store this information in some
-   manner that the interpreter can have access to.
+</para><para>
+   <warning>
+    The above format structure is simply the way in which Sierra's
+    AGI interpreter stores information about VIEW objects. In attempting
+    to write an AGI interpreter, you would not have to restrict yourself
+    to this format, just as long as you store this information in some
+    manner that the interpreter can have access to.
+   </para>
 </para>
 </sect1>
 
 <sect1><title>VIEW test commands</title>
 <para>
-<emphasis>
-Written by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/
-(Last updated: 31 August 1997).
-</emphasis>
+   Lance Ewing, 31 August 1997.
+</para><para>
 
-   There are four LOGIC test commands that are to do with VIEWS. These are:
+   There are four LOGIC test commands that are to do with views. These are:
+</para><para>
    <programlisting>
 obj.in.box()
 posn()
 right.posn()
 centre.posn()
    </programlisting>
+</para><para>
 
    All of these commands are for testing whether a VIEW object is within
    a given rectangle on the screen. All of them take the same parameters
    and apart from a slight change in each case, they do exactly the same
    thing and even share about 95% of their code. The general form is the
    following:
+</para><para>
    <programlisting>
-command(VIEW object num, left, top, right, bottom)
+command (VIEW object num, left, top, right, bottom)
    </programlisting>
+</para><para>
 
    A VIEW has a position stored in its VIEW table entry that says where
    abouts on the screen the view object is at the present time. The
@@ -6711,8 +6710,10 @@ command(VIEW object num, left, top, right, bottom)
    in the bottom row is the actual position. Sierra must have faced this
    problem or they wouldn't have provided four commands for achieving
    essentially the same thing.
+</para><para>
 
    By default the position hot spot in a VIEW is the bottom left pixel.
+</para><para>
    <programlisting>
 .........
 .........
@@ -6723,20 +6724,23 @@ command(VIEW object num, left, top, right, bottom)
 X........
    </programlisting>
 
+</para><para>
    This is the location that gets stored in the VIEW object table. The
    difference between the test commands given above is how they adjust
    the x position before testing it against the rectangle border lines.
-   <literal/posn/ Leaves the x position as it is (left side). <literal/right.posn/ adds
-   (xsize-1) to the x position giving the right side. <literal/center.posn/ adds
-   (xsize/2) to the x position giving the centre. <literal/obj.in.box/ tests both
-   the left and right sides which essentially tests whether the whole
-   bottom row of pixels is in the ``box''.
+   <function/posn/ leaves the x position as it is (left side).
+   <function/right.posn/ adds (xsize - 1) to the x position giving the
+   right side. <function/center.posn/ adds (xsize / 2) to the x position
+   giving the centre. <function/obj.in.box/ tests both the left and right
+   sides which essentially tests whether the whole bottom row of pixels
+   is in the ``box''.
 
+</para><para>
    The test is TRUE if
+</para><para>
    <programlisting>
 (X1 >= left) && (y >= top) && (X2 <= right) && (y <= bottom).
    </programlisting>
-
 </para>
 </sect1>
 
@@ -6753,11 +6757,7 @@ X........
 
 <chapter id="res_sound"><title>SOUND resources</title>
 <para>
-<emphasis>
-Written by <ulink name="mailto:lance.e@ihug.co.nz" name="Lance Ewing">, with additions/modifications by <ulink name="mailto:claudio@helllabs.org" name="Claudio Matsuoka">, <ulink name="mailto:paul123@freenet.tlh.fl.us"/Paul Lunga/
-and <ulink name="mailto:irsman@iag.net"/Ian Schmidt/
-(Last updated: 22 May 1999).
-</emphasis>
+   Written by Lance Ewing, modified by Claudio Matsuoka, 22 May 1999.
 </para>
 
 <sect1><title>Introduction</title>
@@ -6770,7 +6770,7 @@ and <ulink name="mailto:irsman@iag.net"/Ian Schmidt/
    so all AGI games for the PC play the melody by itself. The Apple IIgs
    version has much more sophisticated sound: 16 channel wavetable based
    MIDI songs for the soundtracks, and digitally sampled PCM sound effects.
-
+</para><para>
    According to Donald B. Trivette, author of ``The Official Book of King's
    Quest'', a year before the IBM PCjr was announced IBM asked Sierra to
    create a game that would show off the new computers color graphics
@@ -6805,6 +6805,7 @@ and <ulink name="mailto:irsman@iag.net"/Ian Schmidt/
    address specifies which voice the tone will be produced on. This is
    done through port 192 on the IBM PCjr by sending it 2 bytes in the
    following format:
+</para><para>
 <programlisting>
 First Byte
 7  6  5  4  3  2  1  0
@@ -6827,15 +6828,18 @@ R0      R1      R2
  0       1       0          Holds voice 2 frequency number.
  1       0       0          Holds voice 3 frequency number.
 </programlisting>
-
+ 
+</para><para>
    The actual frequency produced is the 10-bit frequency divisor given by
    F0 to F9 divided into 1/32 of the system clock frequency (3.579 MHz)
    which turns out to be 111,860 Hz. Keeping all this in mind, the
    following is the formula for calculating the frequency:
+</para><para>
 <programlisting>
 f = 111860 / (((Byte2 & 0x3F) << 4) + (Byte1 & 0x0F))
 </programlisting>
 
+</para><para>
    Note: The order of the bytes are reversed for AGI sound data.
 </para>
 
@@ -6846,6 +6850,7 @@ f = 111860 / (((Byte2 & 0x3F) << 4) + (Byte1 & 0x0F))
    softening. There are four bits uses to control the volume. These bits,
    labeled A0 through A3, can be set independently or added together to
    produce sixteen volume levels as shown below.
+</para><para>
 <programlisting>
 A0 A1 A2 A3        Value        Attenuation (decibels)
 
@@ -6856,12 +6861,14 @@ A0 A1 A2 A3        Value        Attenuation (decibels)
  1  1  1  1                           Volume off
 </programlisting>
 
+</para><para>
    When a bit is set on, the sound is attenuated (reduced) by a specific
    amount: either 2, 4, 8, or 16 decibels. When all four bits are set on,
    the sound is turned completely off. When all four bits are off, the
    sound is at
    its fullest volume.
 
+</para><para>
    The attenuation is set by sending a byte of the following format to
    the T1 sound chip:
 <programlisting>
@@ -6889,12 +6896,14 @@ R0      R1      R2
    two modes are controlled by a bit known as the FB bit. When FB is 0,
    the periodic noise is generated; when FB is 1, the white noise is
    produced.
+</para><para>
 
    Two bits, known as NF0 and NF1, control the frequency at which the
    noise generator works. Three of the four possible combinations of NF0
    and NF1 set an independent noise frequency based on the timer. The
    fourth combination borrows the frequency from the third of the three
    pure voices made by the tone generators.
+</para><para>
 <programlisting>
  NF0  NF1       Noise Frequency
 
@@ -6902,9 +6911,11 @@ R0      R1      R2
   0    1         1,193,180 / 1024 = 1165
   1    0         1,193,180 / 2048 = 583
 </programlisting>
+</para><para>
 
    The noise frequency is set by sending a byte of the following format
    to the T1 sound chip:
+</para><para>
 <programlisting>
 7  6  5  4  3  2  1  0
 
@@ -6924,16 +6935,16 @@ R0      R1      R2
    its own dedicated RAM (much like the Gravis Ultrasound card for the
    IBM PC). Thanks to the 5503, AGI games for the IIgs have a much richer
    sound than the PC, Mac or Tandy versions.
+</para><para>
 
    Follows an excerpt of the Apple II Sound and Music FAQ, version 1.7.
 </para>
 
 <sect2><title>Technical Specs for the GS Ensoniq chip</title>
 <para>
-<emphasis>
-Written by <ulink name="mailto:irsman@iag.net"/Ian Schmidt/ (Last updated: 3 November 1997).
-</emphasis>
+   Ian Schmidt, 3 November 1997.
 
+</para><para>
    The 5503 Ensoniq Digital Oscillator Chip (DOC) contains 32 fundamental
    sound-generator units, known as ``oscillators''. Each oscillator is
    capable of either making an independent tone by itself, or of being
@@ -6941,6 +6952,7 @@ Written by <ulink name="mailto:irsman@iag.net"/Ian Schmidt/ (Last updated: 3 Nov
    ``generator''. The generator arrangement is used by most programs, for
    it allows more flexibility and a thicker, lusher sound.
 
+</para><para>
    The DOC plays 8-bit waveforms, with the centerline at 0x80 (128
    decimal). This format is known as ``8-bit unsigned''. 0x00 (0 decimal
    too) is reserved for `stop'. If a sample value of 0 is encountered by
@@ -6950,11 +6962,13 @@ Written by <ulink name="mailto:irsman@iag.net"/Ian Schmidt/ (Last updated: 3 Nov
    (the `space' between the softest and loudest sounds it can produce) is
    approximately 42 dB, or about on par with an average cassette tape.
 
+</para><para>
    Each oscillator has it's own 16 bit frequency register, ranging from 0
    to 65535. In a normal DOC configuration, each step of the frequency
    register increases the play rate by 51 Hz, and computing the maximum
    theoretical play rate is left as an exercise for the student.
 
+</para><para>
    When oscillators are paired to create generators, there are 4 possible
    modes:
    <simplelist>
@@ -6971,6 +6985,7 @@ Written by <ulink name="mailto:irsman@iag.net"/Ian Schmidt/ (Last updated: 3 Nov
        causing a louder and more 'solid' sound.
    </simplelist>
 
+</para><para>
    Oscillators play waves stored in up to 128k of DRAM. This DRAM is not
    directly visible from the GS's 65816 CPU, but can be accessed (slowly)
    via services supplied by the Sound GLU chip. Note that no widely
@@ -6978,6 +6993,7 @@ Written by <ulink name="mailto:irsman@iag.net"/Ian Schmidt/ (Last updated: 3 Nov
    DOC can see. Conversely, no synthesizer Ensoniq made using the DOC had
    anything less than the full 128k.
 
+</para><para>
    The output of an oscillator can be directed to any one of 16 possible
    channels. Apple only makes 8 channels avalible via the 3 bits on the
    sound expansion connector, and all current stereo cards limit this to
@@ -6990,19 +7006,19 @@ Written by <ulink name="mailto:irsman@iag.net"/Ian Schmidt/ (Last updated: 3 Nov
 
 <sect1><title>Sound in other platforms</title>
 <para>
-   According to <ulink name="mailto:paul123@freenet.tlh.fl.us"/Paul Lunga/, sound in the Macintosh and Tandy versions of
+   According to Paul Lunga, sound in the Macintosh and Tandy versions of
    the AGI games are pretty much the same as the PCjr version (three
    sound channels plus noise). AIFF files of AGI music in these platforms
-   are available at <ulink name="http://agi.helllabs.org/sound"
-   name="http://agi.helllabs.org/sound">.
+   are available at <ulink name="http://agi.helllabs.org/sound">
 </para>
 
-<sect1><title>SOUND resource format (PCjr version)</title>
+<sect1><title>Sound resource format (PCjr version)</title>
 <para>
    We now know enough about the PCjr's T1 sound chip to discuss the AGI
    sound format. The sound is stored as four separate units of data, one
    for each voice. Each sound file stored in the VOL files has an 8-bit
    header which contains offsets into file. The format is as follows:
+</para><para>
 <programlisting>
 Byte  Meaning
 ----- -----------------------------------------------------------
@@ -7012,10 +7028,12 @@ Byte  Meaning
  6-7  Offset of noise voice data
 ----- -----------------------------------------------------------
 </programlisting>
+</para><para>
 
    The data starting at each voice offset is stored as 5-byte notes which
    give the frequency and duration of a note played on that voice. The 5
    bytes have the following meanings:
+</para><para>
 
 <programlisting>
 Byte  Meaning
@@ -7028,10 +7046,12 @@ Byte  Meaning
 ----- -----------------------------------------------------------
 </programlisting>
 
+</para><para>
    Note that the last three bytes were around the other way in version 1
    of the AGI interpreter. The above order is opposite from the order
    that would be output to the T1 sound chip.
 
+</para><para>
    Each voice's data section in the SOUND resource file is usually
    terminated by two consecutive 0xFF codes. Another way of checking for
    the end is to see if it has reached the start of the next voice
@@ -7045,6 +7065,7 @@ Byte  Meaning
    relevant voice. The note data for a voice consists entirely of five-byte
    note entries of the following format:
 
+</para><para>
    <simplelist>
     <member>First and second byte: Note duration
     <member>Third byte
@@ -7132,72 +7153,86 @@ NF0  NF1       Noise Frequency
    still uses the PCjr format for the note data but it does not store the
    duration as a separate field. The best way to describe it is by an
    example:
+</para><para>
 <programlisting>
 90 80 16 B0 A0 15 D0 C0 0E FF E4 00 80 17 A0 16 C0 11 00
 80 16 B1 A0 14 C0 12 00 80 16 B2 A0 16 C0 13 00 ...
 </programlisting>
 
+</para><para>
    The first thing to point out is that the PCjr note data is in the
    opposite order to AGIv2. Secondly, all four parts are included
    together rather than in separate sections. Taking the above example,
    lets look at the first note and show the equivalent AGIv2 notation.
+</para><para>
 <programlisting>
 90 80 16 --> 03 00 16 80 90
 </programlisting>
 
+</para><para>
    Now, the duration isn't immediately obvious, but we will come to that
    in a short while. The followint three bytes give the first note for
    the second part, the third part, and the noise part (at least as far
    as this example is concerned).
+</para><para>
 <programlisting>
 B0 A0 15 --> 03 00 15 A0 B0
 D0 C0 0E --> 03 00 0E C0 D0
 FF E4 00 --> 33 00 00 E4 FF
 </programlisting>
 
+</para><para>
    The data that follows after these initial four starting notes is
    basically any changes in the note value which each 3 duration step.
    For example,
+</para><para>
 <programlisting>
 80 17 --> 03 00 17 80 90
 </programlisting>
 
+</para><para>
    Note that 0x90 doesn't need to be stored because that byte has
    retained its value. Every 0x00 byte that is encountered is the end of
    one set of note changes. Each set of note changes is the equivalent of
    a duration of 3 in the AGIv2 format. Continuing with our example,
+</para><para>
 <programlisting>
 A0 16 --> 03 00 16 A0 B0
 C0 11 --> 03 00 11 C0 D0
 </programlisting>
 
+</para><para>
    The example now encounters a 0x00 byte which means that the noise
    voice isn't changed at this point. In fact, from the AGIv2 equivalent
    note above, you will see that the noise note will not change until 49
    (or 0x33) sets of note changes have been processed.
+</para><para>
 <programlisting>
 80 16    --> 03 00 16 80 90
 B1 A0 14 --> 03 00 14 A0 B1
 C0 12    --> 03 00 12 C0 D0
 </programlisting>
 
+</para><para>
    How exactly the AGIv1.12 interpreter knows which voice is having its
    notes changed, and which bytes of the note are being changed, is not
    yet certain. On some occassion a sets of changes will contain only one
    byte which corresponds to one of the bytes which makes up one of the
    voices note value, but how it knows which one is a mystery to me.
 
+</para><para>
    On other occassions, there could be a whole chain of 0x00 bytes which
    means that during that whole time, none of the voices are changing
    their notes value.
 </para>
 
-<sect1><title>SOUND resource format (IIgs version)</title>
+<sect1><title>Sound resource format (IIgs version)</title>
 <para>
    There are two types of SOUND resources in the IIgs AGI games: PCM
    samples (used for sound effects) and MIDI sequences. The first
    two bytes can tell what type of resource we have:
 
+</para><para>
 <programlisting>
 Byte  Meaning
 ----- -----------------------------------------------------------
@@ -7211,6 +7246,7 @@ Byte  Meaning
    Sampled sounds (resource type 01) are stored in 8 bit, unsigned format
    after a 54 byte header described below.
 
+</para><para>
 <programlisting>
 Byte  Meaning
 ----- -----------------------------------------------------------
@@ -7224,13 +7260,13 @@ Byte  Meaning
 
 <sect2><title>MIDI sequences</title>
 <para>
-<emphasis>
-Written by <ulink name="mailto:irsman@iag.net"/Ian Schmidt/ (Last updated: 3 April 1999).
-</emphasis>
+   Ian Schmidt, 3 April 1999.
 
+</para><para>
    MIDI songs have a stram of MIDI data following the resource type.
    The following dump shows the MIDI data in the King's Quest I opening
    theme resource:
+</para><para>
 
 <programlisting>
 02 00		Type: MIDI sequence
@@ -7258,14 +7294,17 @@ Written by <ulink name="mailto:irsman@iag.net"/Ian Schmidt/ (Last updated: 3 Apr
 02 90 48 40
 </programlisting>
 
+</para><para>
    The patch number is mapped to a sound sample stored in the
    <filename/sierrastandard/ file in a more complicated way. The IIgs
    interpreter uses the patch number as a lookup into a list of
    instrument definitions, which are stored in a format used by an
    API called the ``Note Synthesizer''.
 
+</para><para>
    For example, here's instrument 0 from Police Quest, as dumped out of the
-   <literal/pq.sys16/ file:
+   <filename/pq.sys16/ file:
+</para><para>
 
 <programlisting>
 INST #000:
@@ -7284,13 +7323,16 @@ A wave count: 1, B wave count: 1
 [B 1 of 1] top: 7f, wave address: 50, size: 12 mode: 00, relPitch: 00fe
 </programlisting>
 
+</para><para>
    Now, that's a bit scary looking, but all the important information is
    there :-)
 
+</para><para>
    Basically the Note Synth API groups 2 5503 voices together to make 1 voice,
    and this has all the data you need to control it. Let me rephrase some
    info from my dusty old ``IIgs Toolbox Reference, Volume 3''.
 
+</para><para>
    The envelope is first: for each segment there's a breakpoint (target
    volume, which is on a logarithmic scale in 6 decibel units) and an
    Increment (a 8.8 fixed point number telling how much to adjust the volume
@@ -7315,6 +7357,7 @@ A wave count: 1, B wave count: 1
    In this case there's only 1 possible wavelist so <emphasis/top/ is naturally 0x7f,
    the highest possible numbered MIDI note.
 
+</para><para>
    Once you've picked a wavelist using the note, the other information is all
    there.  Wave address is the offset in 256-byte pages into the 64k
    <literal/sierrastandard/ image (ie, (Wave Address)&lt;&lt;8 gives a true offset).
@@ -7322,9 +7365,11 @@ A wave count: 1, B wave count: 1
    mask off all but the lowest 3 bits and it gives you the basic wave size as
    follows:
 
+</para><para>
    Case the wave starts 0x5000 bytes into the image: For size you mask off
    all but the lowest 3 bits and it gives you the basic wave size as follows:
 
+</para><para>
    <simplelist>
     <member>%000 = 1 page (256 bytes)
     <member>%001 = 2 pages (512 bytes)
@@ -7336,9 +7381,11 @@ A wave count: 1, B wave count: 1
     <member>%111 = 128 pages (32k bytes)
    </simplelist>
 
+</para><para>
    Note that if a zero is encountered in the wave before that size you still
    stop at the zero.
 
+</para><para>
    <emphasis/Mode/ is the 5503 oscillator mode for the voice in the bits 1 and 2.
    The lowest bit (bit 0) is a ``halt'' flag.
    0 is looping, 1 is oneshot (play once), 2 is sync/AM (which nobody uses, but
@@ -7349,14 +7396,18 @@ A wave count: 1, B wave count: 1
    loop continuously - this setup is often used to have a sampled ``attack'' on
    an instrument followed by a loop.
 
+</para><para>
    The top 4 bits of the mode is the stereo channel where even numbers are
    right and odd numbers are left, I believe (no real harm in reversing them).
 
+</para><para>
    The full bitmap for the control register is:
+</para><para>
 <programlisting>
 % cccc 0mmh
 </programlisting>
 
+</para><para>
    Where:
    <simplelist>
     <member><literal/c/ - stereo output channel. Odd values mean left, even mean right.
@@ -7367,18 +7418,22 @@ A wave count: 1, B wave count: 1
 
    <emphasis/relPitch/ is the fine-tune value in 8.8 fixed point, given in semitones.
 
+</para><para>
    So you'd then start 2 voices using the appropriate A and B wavelist entries
    and handle them accordingly.
 
+</para><para>
    The full structures look like this:
    (there is no structure padding on the IIgs - all bytes are jammed right
    together!)
 
+</para><para>
    In Police Quest these structures start at offset 0x8469 in PQ.SYS16.
    <emphasis>(The same offset is used for KQ1 --CM)</emphasis> I can't find any of my
    other old disks with AGI games to locate their offsets. PQ only defines
    28 instruments.
 
+</para><para>
 <programlisting>
 ENVELOPE:
 
@@ -7423,10 +7478,8 @@ Byte  Meaning
 
 <sect1><title>Playing the sounds on a sound card</title>
 <para>
-<emphasis>
-Written by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/ (Last updated: 18 August 1997)
-</emphasis>
-
+   Lance Ewing, 18 August 1997
+</para><para>
    Writing a program to play the tunes will require four pointers which
    keep track of where in each voice segment the program currently is
    since all four voices are played simultaneously. The first voice is
@@ -7435,6 +7488,7 @@ Written by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/ (Last updated: 1
    imagine that other platforms such as the Amiga and Macintosh would
    probably play all three voices.
 
+</para><para>
    A program would start by reading each of the four offsets in the
    header. It would then go through a loop which begins by reading the
    first note of each voice section. The duration's are then monitored
@@ -7444,6 +7498,7 @@ Written by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/ (Last updated: 1
    This will usually occur for each voice at the same time but not
    necessarily I don't think.
 
+</para><para>
    Then of course you could always convert the AGI SOUND to a MIDI file
    and play that which will sound a hundred times better :)
 </para>
@@ -7456,9 +7511,11 @@ Written by <ulink name="mailto:lance.e@ihug.co.nz"/Lance Ewing/ (Last updated: 1
 f = 111860 / (((Byte2 & 0x3F) << 4) + (Byte3 & 0x0F))
 </programlisting>
 
+</para><para>
    The 111860 comes from the PCjr discussion above. Note that the bytes
    are in the opposite order from that mentioned in the PCjr information.
 
+</para><para>
    Remember also that the SOUND format includes volume information for
    each voice. The exact conversion from the decible values to the volume
    control on todays sound cards is uncertain at this stage.
@@ -7468,6 +7525,7 @@ f = 111860 / (((Byte2 & 0x3F) << 4) + (Byte3 & 0x0F))
 <para>
    The following examples are available in the <ulink name="http://agi.helllabs.org/agispecs/"/distribution package/:
 
+</para><para>
    <simplelist>
     <member><literal><ulink name="examples/sound/adlib.c"/adlib.c/</literal>
       by Kevin A. Lee: low level adlib routines
@@ -9040,7 +9098,7 @@ A:   ..............
       Drawing an animation, use colour reference points in each cel. Use
       the fact that as cels are changed the cursor stays where it was in
       the previous cel.<footnote>He means changing cels in the editor, not
-      during playback by the interpreter. (VM)</footnote>
+      during playback by the interpreter. (VB)</footnote>
     </para></listitem>
 
     <listitem><para>
