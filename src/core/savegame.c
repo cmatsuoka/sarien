@@ -203,12 +203,12 @@ int save_game (char *s, char *d)
 	return err_OK;
 }
 
-static UINT32 read_num(UINT8 *x)
+static UINT32 read_num(UINT8 **x)
 {
 	UINT32 a;
 
-	a = hilo_getdword (x);
-	x += 4;
+	a = hilo_getdword (*x);
+	*x += 4;
 
 	return a;
 }
@@ -228,7 +228,7 @@ static void get_view (UINT32 size, UINT8 *b)
 	UINT32 i;
 	struct vt_entry *v;
 
-	i = read_num (b);
+	i = read_num (&b);
 	_D ("(%d, %p) entry = %d", size, b, i);
 
 	if (i > MAX_VIEWTABLE)
@@ -237,31 +237,31 @@ static void get_view (UINT32 size, UINT8 *b)
 	v = &game.view_table[i];
 
 	v->entry		= i;
-	v->step_time		= read_num (b);
-	v->step_time_count	= read_num (b);
-	v->x_pos		= read_num (b);
-	v->y_pos		= read_num (b);
-	v->current_view		= read_num (b);
-	v->current_loop		= read_num (b);
-	v->num_loops		= read_num (b);
-	v->current_cel		= read_num (b);
-	v->num_cels		= read_num (b);
-	v->x_pos2		= read_num (b);
-	v->y_pos2		= read_num (b);
-	v->x_size		= read_num (b);
-	v->y_size		= read_num (b);
-	v->step_size		= read_num (b);
-	v->cycle_time		= read_num (b);
-	v->cycle_time_count	= read_num (b);
-	v->direction		= read_num (b);
-	v->motion		= read_num (b);
-	v->cycle		= read_num (b);
-	v->priority		= read_num (b);
-	v->flags		= read_num (b);
-	v->parm1		= read_num (b);
-	v->parm2		= read_num (b);
-	v->parm3		= read_num (b);
-	v->parm4		= read_num (b);
+	v->step_time		= read_num (&b);
+	v->step_time_count	= read_num (&b);
+	v->x_pos		= read_num (&b);
+	v->y_pos		= read_num (&b);
+	v->current_view		= read_num (&b);
+	v->current_loop		= read_num (&b);
+	v->num_loops		= read_num (&b);
+	v->current_cel		= read_num (&b);
+	v->num_cels		= read_num (&b);
+	v->x_pos2		= read_num (&b);
+	v->y_pos2		= read_num (&b);
+	v->x_size		= read_num (&b);
+	v->y_size		= read_num (&b);
+	v->step_size		= read_num (&b);
+	v->cycle_time		= read_num (&b);
+	v->cycle_time_count	= read_num (&b);
+	v->direction		= read_num (&b);
+	v->motion		= read_num (&b);
+	v->cycle		= read_num (&b);
+	v->priority		= read_num (&b);
+	v->flags		= read_num (&b);
+	v->parm1		= read_num (&b);
+	v->parm2		= read_num (&b);
+	v->parm3		= read_num (&b);
+	v->parm4		= read_num (&b);
 
 #if 0
 	/* commented to prevent crash with uninitalized entries! */
