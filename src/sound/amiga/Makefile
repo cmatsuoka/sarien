@@ -1,5 +1,3 @@
-# $Id$
-
 XCFLAGS	= -I../../include
 OBJS	= sound_ahi.o
 DFILES	= Makefile $(OBJS:.o=.c)

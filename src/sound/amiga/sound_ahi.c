@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -8,73 +8,187 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
+/*
+ * Amiga sound driver by Paul Hill <paul@lagernet.clara.co.uk>
+ * Based on the BSD sound driver by Claudio Matsuoka <claudio@helllabs.org>
+ * and the Basilisk II Amiga AHI audio driver by Christian Bauer
+ */
+
+#include <stdio.h>
+#include <exec/types.h>
+#include <exec/memory.h>
 #include <devices/ahi.h>
-#include <exec/exec.h>
-#if 0
-#include <proto/ahi.h>
-#endif
-#include <proto/dos.h>
 #include <proto/exec.h>
+#include <proto/ahi.h>
+#include <proto/dos.h>
+#include <proto/alib.h>
+
 #include "sarien.h"
-#include "console.h"
 #include "sound.h"
 
-static int ahi_init_sound (SINT16 *buffer);
-static void ahi_close_sound (void);
+static int ahi_init_sound (SINT16 *b);
+void ahi_close_sound();
 
 static struct sound_driver sound_ahi = {
-	"AHI sound driver",
+	"amiga /dev/audio sound output",
 	ahi_init_sound,
-	ahi_close_sound
+	ahi_close_sound,
 };
 
+struct Library      *AHIBase = NULL;
+struct MsgPort      *AHImp     = NULL;
+struct AHIRequest   *AHIio     = NULL;
+BYTE                 AHIDevice = -1;
 
-static struct Library      *AHIBase;
-static struct MsgPort      *AHImp    = NULL;
-static struct AHIRequest   *AHIio    = NULL;
-static BYTE                AHIDevice = -1;
-static struct AHIAudioCtrl *actrl    = NULL;
-static BOOL                DBflag    = FALSE;	/**< double buffer flag */
-static ULONG               BUFFER_SIZE = NULL;
+// Global variables
+static ULONG ahi_id = AHI_DEFAULT_ID;			// AHI audio ID
+static struct AHIAudioCtrl *ahi_ctrl = NULL;
+static struct AHISampleInfo sample[2];			// Two sample infos for double-buffering
+static struct Hook sf_hook;
+static int play_buf = 0;						// Number of currently played buffer
 
+// Prototypes
+static __saveds __attribute__((regparm(3))) ULONG audio_callback(struct Hook *hook /*a0*/, struct AHISoundMessage *msg /*a1*/, struct AHIAudioCtrl *ahi_ctrl /*a2*/);
 
+static SINT16 *buffer;
 
-static struct AHISampleInfo Sample0 = {
-	AHIST_M16S,
-	NULL,
-	NULL,
-};
- 
-static struct AHISampleInfo Sample1 = {
-	AHIST_M16S,
-	NULL,
-	NULL,
-};
- 
-__asm __saveds ULONG SoundFunc (
-	register __a0 struct Hook *hook,
-	register __a2 struct AHIAudioCtrl *actrl,
-	register __a1 struct AHISoundMessage *smsg)
+/*
+ *  Initialization
+ */
+
+int AudioInit(void)
 {
-	if (DBflag = !DBflag)		/* Flip and test */
-		AHI_SetSound (0, 1, 0, 0, actrl, NULL);
-	else
-		AHI_SetSound (0, 0, 0, 0, actrl, NULL);
+//	int audio_frames_per_block;
+	printf("** AudioInit()\n");
+	sample[0].ahisi_Address = sample[1].ahisi_Address = NULL;
 
-	play_sound ();
-	mix_sound ();
-	/* FIXME: copy sound to buffer */
-	
-	Signal (actrl->ahiac_UserData, (1L<<signal));
-	return NULL;
+	// Sound disabled in prefs? Then do nothing
+	//	if (PrefsFindBool("nosound")) return 0;
+
+	// AHI available?
+	if (AHIBase == NULL)
+	{
+		printf("No AHI!\n");
+		return 0;
+	}
+
+	// Initialize callback hook
+	sf_hook.h_Entry = (HOOKFUNC)audio_callback;
+
+	// Read "sound" preferences
+	//	const char *str = PrefsFindString("sound");
+	//	if (str)
+	//		sscanf(str, "ahi/%08lx", &ahi_id);
+
+	// Open audio control structure
+	if ((ahi_ctrl = AHI_AllocAudio(
+		AHIA_AudioID, ahi_id,
+		AHIA_Channels, 1,
+		AHIA_Sounds, 2,
+		AHIA_SoundFunc, (ULONG)&sf_hook,
+		TAG_END)) == NULL) {
+		printf("No AHI control!\n");
+		return 0;
+	}
+
+	// Prepare SampleInfos and load sounds (two sounds for double buffering)
+	sample[0].ahisi_Type = AHIST_M16S;
+	sample[0].ahisi_Length = BUFFER_SIZE;
+	sample[0].ahisi_Address = AllocVec(BUFFER_SIZE * 2, MEMF_PUBLIC | MEMF_CLEAR);
+	sample[1].ahisi_Type = AHIST_M16S;
+	sample[1].ahisi_Length = BUFFER_SIZE;
+	sample[1].ahisi_Address = AllocVec(BUFFER_SIZE * 2, MEMF_PUBLIC | MEMF_CLEAR);
+	if (sample[0].ahisi_Address == NULL || sample[1].ahisi_Address == NULL) return 0;
+	AHI_LoadSound(0, AHIST_DYNAMICSAMPLE, &sample[0], ahi_ctrl);
+	AHI_LoadSound(1, AHIST_DYNAMICSAMPLE, &sample[1], ahi_ctrl);
+
+	// Set parameters
+	play_buf = 0;
+	AHI_SetVol(0, 0x10000, 0x8000, ahi_ctrl, AHISF_IMM);
+	AHI_SetFreq(0, 22050, ahi_ctrl, AHISF_IMM);
+	AHI_SetSound(0, play_buf, 0, 0, ahi_ctrl, AHISF_IMM);
+
+	// Everything OK
+	return 1;
 }
 
-static struct Hook SoundHook = {
-  0,0,
-  (ULONG (* )()) SoundFunc,
-  NULL,
-  NULL,
-};
+
+/*
+ *  Deinitialization
+ */
+
+void AudioExit(void)
+{
+	// Free everything
+	if (ahi_ctrl)
+	{
+		AHI_ControlAudio(ahi_ctrl, AHIC_Play, FALSE, TAG_END);
+		AHI_FreeAudio(ahi_ctrl);
+		ahi_ctrl = NULL;
+	}
+
+	if (sample[0].ahisi_Address)
+	{
+		FreeVec(sample[0].ahisi_Address);
+		sample[0].ahisi_Address = NULL;
+	}
+	if (sample[1].ahisi_Address)
+	{
+		FreeVec(sample[1].ahisi_Address);
+		sample[1].ahisi_Address = NULL;
+	}
+}
+
+
+/*
+ *  AHI sound callback, request next buffer
+ */
+
+static __saveds __attribute__((regparm(3))) ULONG audio_callback(struct Hook *hook /*a0*/, struct AHISoundMessage *msg /*a1*/, struct AHIAudioCtrl *ahi_ctrl /*a2*/)
+{
+	play_buf ^= 1;
+
+	memcpy(sample[play_buf].ahisi_Address, buffer, BUFFER_SIZE * 2);
+
+	// Play next buffer
+	AHI_SetSound(0, play_buf, 0, 0, ahi_ctrl, 0);
+
+	// Mix the next buffer...
+	play_sound ();
+	mix_sound ();
+
+	return 0;
+}
+
+
+BOOL OpenAHI(void)
+{
+	if ((AHImp = CreateMsgPort()))
+	{
+		if ((AHIio = (struct AHIRequest *)CreateIORequest(AHImp,sizeof(struct AHIRequest))))
+		{
+			AHIio->ahir_Version = 4;
+			if(!(AHIDevice = OpenDevice(AHINAME, AHI_NO_UNIT, (struct IORequest *) AHIio,NULL))) {
+				AHIBase = (struct Library *) AHIio->ahir_Std.io_Device;
+				return TRUE;
+			}
+		}
+	 }
+	return FALSE;
+}
+
+
+void CloseAHI(void)
+{
+	if(!AHIDevice) CloseDevice((struct IORequest *)AHIio);
+	AHIDevice = -1;
+
+	if (AHIio) DeleteIORequest((struct IORequest *)AHIio);
+	AHIio = NULL;
+
+	if (AHImp) DeleteMsgPort(AHImp);
+	AHImp = NULL;
+}
 
 void __init_sound ()
 {
@@ -82,71 +196,37 @@ void __init_sound ()
 }
 
 
-static int ahi_init_sound (SINT16 *buffer)
+static int ahi_init_sound (SINT16 *b)
 {
-	report ("sound_ahi: initializing AHI\n");
+	buffer = b;
+	printf("** ahi_init_sound()\n");
 
-	AHImp = CreateMsgPort();
-	if (AHImp == NULL) {
-		report ("sound_ahi: error: CreateMsgPort()\n");
-		goto err1;
+	report ("Amiga sound driver written by Paul Hill\n");
+
+	if (OpenAHI())
+	{
+		printf("** AHI open\n");
+		if (AudioInit())
+		{
+			printf("** starting audio\n");
+			AHI_ControlAudio(ahi_ctrl, AHIC_Play, TRUE, TAG_END);
+
+			return err_OK;
+		}
+		report ("sound_ahi: error initialising audio\n");
+		return err_Unk;
 	}
-
-	AHIio = (struct AHIRequest *)CreateIORequest (AHImp,
-		sizeof (struct AHIRequest)));
-	if (AHIio == NULL) {
-		report ("sound_ahi: error: CreateIORequest()\n");
-		goto err2;
-	}
-	
-	AHIio->ahir_Version = 4;
-
-	AHIDevice = OpenDevice (AHINAME, AHI_NO_UNIT,
-		(struct IORequest *)AHIio, NULL);
-	if (AHIDevice != 0) {
-		report ("sound_ahi: error: OpenDevice()\n");
-		goto err3;
-	}
-
-	AHIBase = (struct Library *)AHIio->ahir_Std.io_Device;
-
-	actrl = AHI_AllocAudio(
-		AHIA_AudioID,   AHI_DEFAULT_ID,
-		AHIA_MixFreq,   22050,
-		AHIA_Channels,  1,
-		AHIA_Sounds,    2,
-		AHIA_SoundFunc, &SoundHook,
-		AHIA_UserData,	FindTask (NULL),
-		TAG_DONE);
-
-	Sample0.ahisi_Length = BUFFER_SIZE;
-	Sample0.ahisi_Address = AllocVec (BUFFER_SIZE * 2,
-		MEMF_PUBLIC | MEMF_CLEAR);
-
-	Sample1.ahisi_Length = BUFFER_SIZE;
-	Sample1.ahisi_Address = AllocVec (BUFFER_SIZE * 2,
-		MEMF_PUBLIC | MEMF_CLEAR);
-
-	return 0;
-
-err3:
-	DeleteIORequest ((struct IORequest *)AHIio);
-err2:
-	DeleteMsgPort (AHImp);
-err1:
-	AHI_FreeAudio (actrl);
-	return -1;
+	report ("sound_ahi: error initialising AHI\n");
+	return err_Unk;
 }
 
-static void ahi_close_sound ()
-{
-	Flush (Output ());
-	AHI_ControlAudio(actrl, AHIC_Play, FALSE, TAG_DONE);
-	AHI_FreeAudio (actrl);
-	CloseDevice((struct IORequest *)AHIio);
-	DeleteIORequest ((struct IORequest *)AHIio);
-	DeleteMsgPort (AHImp);
-	FreeVec (Sample1);
-	FreeVec (Sample0);
-}
 
+void ahi_close_sound()
+{
+	printf("** ahi_close_sound()\n");
+
+	Delay(10);
+	AudioExit();
+	Delay(10);
+	CloseAHI();
+}
