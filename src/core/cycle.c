@@ -375,7 +375,6 @@ static void interpret_cycle ()
 {
 	int line_prompt = FALSE;
 
-	_D ("F5 = %d", getflag (5));
 	if (game.control_mode == CONTROL_PROGRAM)
 		view_table[EGO_VIEW_TABLE].direction = getvar (V_ego_dir);
 	else

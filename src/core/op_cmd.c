@@ -112,7 +112,6 @@ void cmd_call (UINT8 log)
 	UINT16 oip;
 	UINT16 osp;
 
-	_D (_D_WARN "F5 = %d", getflag (5));
 #ifndef NO_DEBUG
 	if (opt.debug == 4)
 		opt.debug = TRUE;
