@@ -232,13 +232,8 @@ void handle_getstring (int key)
 		if (!pos)
 			break;
 
-		/* Print cursor */
-		/*
 		print_character (stringdata.x + (pos + 1), stringdata.y,
-			game.cursor_char, game.color_bg, game.color_bg );
-		*/
-
-		print_character (stringdata.x + (pos + 1), stringdata.y, ' ', game.color_fg, game.color_bg);
+			' ', game.color_fg, game.color_bg);
 
 		pos--;
 		buf[pos] = 0;
@@ -260,7 +255,6 @@ void handle_getstring (int key)
 		break;
 	}
 
-	/* SGEO */
 	print_character (stringdata.x + pos+1, stringdata.y,
 		(char)game.cursor_char, game.color_fg, game.color_bg);
 }

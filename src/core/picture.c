@@ -92,7 +92,8 @@ static void put_virt_pixel (int x, int y, int res)
 
 /* For the flood fill routines */
 
-#define STACK_SIZE 128
+/* MH2 needs stack size > 300 */
+#define STACK_SIZE 512
 static unsigned int stack_ptr;
 static UINT16 stack[STACK_SIZE];
 
