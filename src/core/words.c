@@ -30,7 +30,6 @@ int load_words (char *fname)
 	UINT32 flen;
 	UINT8 *mem, x[128], c;
 
-	/* _D (("(\"%s\")", fname)); */
 	num_words = 0;
 	num_syns = 0;
 	words = NULL;
@@ -59,7 +58,7 @@ int load_words (char *fname)
 
 #ifdef AGDS_SUPPORT
 	/* AGDS kludge for bad word file :( */
-	if(woff > flen)
+	if (woff > flen)
 		return err_OK;
 #endif
 
@@ -68,7 +67,7 @@ int load_words (char *fname)
 		c = hilo_getbyte (mem + woff);
 		woff++;
 
-		if(c > 0x80) {
+		if (c > 0x80) {
 			wc++;
 			wid = hilo_getword (mem+woff);
 			woff += 2;
@@ -80,7 +79,7 @@ int load_words (char *fname)
 	num_syns = sc;
 
 	/* scan for first words entry */
-	for(wc = woff = 0; woff == 0; wc+=2)
+	for(wc = woff = 0; woff == 0; wc += 2)
 		woff = hilo_getword(mem+wc);
 
 	/* alloc word memory */
@@ -96,27 +95,26 @@ int load_words (char *fname)
 		wid = c;
 		while (c < 0x80) {
 			c = hilo_getbyte (mem + woff); woff++;
-			x[wid] = ((c^0x7F) & 0x7F); wid++;
+			x[wid] = ((c ^ 0x7F) & 0x7F); wid++;
 		}
-		x[wid] = 0x0;
+		x[wid] = 0;
 
-		(words+wc)->id = hilo_getword (mem + woff); woff+=2;
-		(words+wc)->word = strdup (x);
+		(words + wc)->id = hilo_getword (mem + woff); woff+=2;
+		(words + wc)->word = strdup (x);
 	}
 
 	return err_OK;
 }
 
 
-void unload_words(void)
+void unload_words ()
 {
-	UINT16	c;
+	int i;
 
-	if(words!=NULL)
-	{
-		for(c=0; c<num_words; c++)
-			free(words[c].word);
-		free(words);
+	if (words != NULL) {
+		for (i = 0; i < num_words; i++)
+			free (words[i].word);
+		free (words);
 	}
 }
 
@@ -127,34 +125,19 @@ void unload_words(void)
  */
 int find_word (char *word)
 {
-	SINT16	offs;
-	UINT16	id;
-	SINT16	val;
-	UINT16	lid;
-	UINT16	llen;
-	UINT16	count;
-
-	offs=0;
-	/* flag=0; */
-	id=0;
-	lid=0;
-	llen=0;
-
-	_D (("(\"%s\")", word));
+	int i, offs = 0, id = 0, val, lid = 0, llen = 0;
 
 	for (; offs < num_words && words[offs].word[0] != word[0]; offs++);
-
-	for (; offs < num_words && words[offs].word[0]==word[0]; offs++)
-	{
-		count = strlen ((char*)words[offs].word);
+	for (; offs < num_words && words[offs].word[0] == word[0]; offs++) {
+		i = strlen ((char*)words[offs].word);
 		val = 1;
 
-		if (strlen((char*)word) >= count) {
+		if (strlen((char*)word) >= i) {
 			val = strncmp ((char*)words[offs].word,
-				(char*)word, count);
+				(char*)word, i);
 		}
 
-		if(val==0 && (word[count]==0 || word[count]==0x20)) {
+		if (val == 0 && (word[i] == 0 || word[i] == 0x20)) {
 			id = strlen((char*)words[offs].word);
 			if(id > llen) {
 				llen=id;
@@ -163,17 +146,15 @@ int find_word (char *word)
 		}
 	}
 
-	return llen ? lid : (SINT16)-1;
+	return llen ? lid : -1;
 }
 
 
 static void fix_users_words (char *msg)
 {
-/*	UINT8	*x = msg; */
+	static UINT8 bad_word[256];	/* FIXME: dynamic allocation? */
 	char *p, *q = NULL;
-	/* UINT8	last=0;*/
-	SINT16	wc1;
-	static	UINT8 bad_word[256];	/* FIXME: dynamic allocation? */
+	int wc1;
 
 	_D (("(\"%s\")", msg));
 
@@ -262,22 +243,10 @@ static void fix_users_words (char *msg)
 
 void dictionary_words (char *msg)
 {
-	_D (("(\"%s\")", msg));
-
 	/* turn all words in msg into ego's words */
 	fix_users_words(msg);
 
 	_D (("num_ego_words = %d", num_ego_words));
-#ifdef _TRACE
-	{
-		int i;
-
-		for (i = 0; i < num_ego_words; i++) {
-			printf ("*\tego_words[%d].word = \"%s\"\n",
-				i, ego_words[i].word);
-		}
-	}
-#endif
 
 	if (num_ego_words > 0) {
 		setflag (F_entered_cli, TRUE);
