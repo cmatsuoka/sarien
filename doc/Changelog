@@ -24,6 +24,7 @@ Revision History
 	- added Mike Montague's DirectX driver
 	- added runtime option settings to MacOS port
 	- emulating AGI 2.440 animated sprites behaviour (closes: #546562)
+	- emulating AGI 2.272 move.obj and move.obj.v (closes: #542692)
 	- correctly ordering sprites in the blit list (closes: #539394)
 	- input prompt and user input fixes (closes: #518734, #540840,
 	  #540734, #540843, #540736)

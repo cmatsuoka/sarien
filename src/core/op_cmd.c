@@ -457,7 +457,9 @@ cmd(move_obj) {
 	if (p0 == 0)
 		game.player_control = FALSE;
 
-	move_obj (&vt);
+	/* AGI 2.272 (ddp, xmas) doesn't call move_obj! */
+	if (agi_get_release() > 0x2272)
+		move_obj (&vt);
 }
 
 cmd(move_obj_f) {
@@ -476,7 +478,9 @@ cmd(move_obj_f) {
 	if (p0 == 0)
 		game.player_control = FALSE;
 
-	move_obj (&vt);
+	/* AGI 2.272 (ddp, xmas) doesn't call move_obj! */
+	if (agi_get_release() > 0x2272)
+		move_obj (&vt);
 }
 	
 cmd(wander) {

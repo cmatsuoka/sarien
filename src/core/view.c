@@ -327,11 +327,12 @@ void update_viewtable ()
 			}
 		}
 
-		if (v->step_time_count == 1 &&
-			loop != 4 &&
-			loop != v->current_loop)
-		{
-			set_loop (v, loop);
+		/* AGI 2.272 (ddp, xmas) doesn't test step_time_count! */
+		if (loop != 4 && loop != v->current_loop) {
+			if (agi_get_release() <= 0x2272 ||
+			    v->step_time_count == 1) {
+				set_loop (v, loop);
+			}
 		}
 
 		if (~v->flags & CYCLING)
