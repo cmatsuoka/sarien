@@ -140,6 +140,7 @@ struct agi_game {
 	int line_min_print;	/**< num lines to print on */
 	int cursor_pos;		/**< column where the input cursor is */
 	UINT8 input_buffer[40];	/**< buffer for user input */
+	UINT8 echo_buffer[40];	/**< buffer for echo.line */
 	int keypress;
 #define INPUT_NORMAL	0x01
 #define INPUT_GETSTRING	0x02

@@ -260,6 +260,7 @@ void handle_keys (int key)
 
 		/* Handle string only if it's not empty */
 		if (formated_entry[0]) {
+			strcpy (game.echo_buffer, game.input_buffer);
 			strcpy (last_sentence, formated_entry);
 			dictionary_words (last_sentence);
 		}

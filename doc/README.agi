@@ -32,19 +32,17 @@ Command Line Switches
   -A --amiga         Forces the game to be seen as an Amiga word padded game.
 * -d --list-dictionary
                      List dictionary words.
-* -D --debug         Turn on debugging.
   -E --emulate-sound {type}
                      Emulate the sound of Sierra AGI running in different
                      computers. Valid emulations are: pc, tandy and mac
   -F --full-screen   Run in full-screen mode if allowed by the graphics device
   -g --dga           Use XFree86 DGA extension (if available).
   -h --help          Display this help screen.
+  -L --list-games    Display a list of all know AGI games.
   -n --no-sound      Disable sound output.
 * -o --list-objects  List objects.
-* -p --picture-viewer
+  -p --picture-viewer
                      Interactive picture viewer.
-* -ps --show-drawing Show screen as its drawn.
-* -pk --wait-key     Wait for keypress on each action. (forces -ps)
   -r --fix-aspect-ratio
                      Emulate IBM PC EGA 320x200 4:3 aspect ratio. Not
                      supported in all drivers.

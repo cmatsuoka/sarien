@@ -38,7 +38,7 @@ static struct agi_logic *cur_logic;
 #define cmd(x) static void cmd_##x (UINT8 *p)
 
 cmd(increment)		{ if (_v[p0] != 0xff) ++_v[p0]; }
-cmd(decrement)		{ if (_v[p0] != 0) --_v [p0]; }
+cmd(decrement)		{ if (_v[p0] != 0) --_v[p0]; }
 cmd(assignn)		{ _v[p0] = p1; }
 cmd(addn)		{ _v[p0] += p1; }
 cmd(subn)		{ _v[p0] -= p1; }
@@ -147,7 +147,6 @@ cmd(show_mem)		{ message_box ("Enough memory"); }
 cmd(toggle_monitor)	{ report ("toggle.monitor\n"); }
 cmd(init_joy)		{ report ("init.joystick\n"); }
 cmd(script_size)	{ report ("script.size(%d)\n", p0); }
-cmd(echo_line)		{ report ("echo.line\n"); }
 cmd(cancel_line)	{ report ("cancel.line\n"); }
 cmd(obj_status_f)	{ report ("obj.status.v\n"); }
 
@@ -700,6 +699,12 @@ cmd(clear_text_rect) {
 
 	draw_rectangle (x1, y1, x2, y2, c);
 	flush_block (x1, y1, x2, y2);
+}
+
+cmd(echo_line) {
+	strcpy (game.input_buffer, game.echo_buffer);
+	game.cursor_pos = strlen (game.input_buffer);
+	game.has_prompt = 0;
 }
 
 cmd(clear_lines) {

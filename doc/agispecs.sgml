@@ -18,7 +18,7 @@
     <firstname>Peter</firstname>
     <surname>Kelly</surname>
     <affiliation>
-      <jobtitle>Author of MEKA and AGI Studio</jobtitle>
+      <jobtitle>Author of the AGI Studio, MEKA developer</jobtitle>
     </affiliation>
   </author>
 
@@ -26,7 +26,7 @@
     <firstname>Lance</firstname>
     <surname>Ewing</surname>
     <affiliation>
-      <jobtitle>Author of MEKA and The Ruby Cast</jobtitle>
+      <jobtitle>Author of The Ruby Cast, MEKA developer</jobtitle>
     </affiliation>
   </author>
 
@@ -407,7 +407,10 @@ draw (smoke);
   The screen has about eleven even sized invisible bands across the
   screen called priority bands. When ego walks up and down the screen,
   he or she will move from one priority band into the next priority band.
-  This is used to give the affect of ego moving behind trees and rocks etc.
+  This is used to give the affect of ego moving behind objects or
+  scenario elements. <xref linkend="fig-visible-screen"> shows a
+  scene of King's Quest 4, and <xref linkend="fig-priority-screen">
+  shows its priority data.
 </para><para>
   Although the priority bands are invisible in the finished product, the
   artist must use them like a horizontal grid as he draws the room.
@@ -533,30 +536,42 @@ draw (smoke);
 
 <chapter id="agi"><title>AGI internals</title>
 
-<sect1 id="intworks"><title>How the interpreter works</title>
+<sect1 id="intworks">
+<title>How the interpreter works</title>
+
 <para>
-(From the AGDS documentation, translated by Vassili Bykov)
-</para><para>
-   The AGI interpreter contains:
-   <itemizedlist>
-    <listitem>
-     <para>256 8 bit variables, numbered from 0 to 255;</para>
-    </listitem>
-    <listitem>
-     <para>256 flags, numbered from 0 to 255;</para>
-    </listitem>
-    <listitem>
-     <para>a number of objects controlled by the interpreter, one of which
-     (the object 0) may be controlled by the player using the keyboard;</para>
-    </listitem>
-    <listitem>
-     <para>a number of inventory members;</para>
-    </listitem>
-    <listitem>
-     <para>12 40-character string variables).</para>
-    </listitem>
-   </itemizedlist>
-</para><para>
+  (Based on the AGDS documentation, translated by Vassili Bykov)
+</para>
+
+<para>
+  The script language used in AGI provides a number of variables,
+  (strings, numerical and boolean), objects, items and messages:
+</para>
+
+<itemizedlist>
+  <listitem><para>
+    256 8 bit variables, numbered from 0 to 255;
+  </para></listitem>
+
+  <listitem><para>
+    256 flags, numbered from 0 to 255;
+  </para></listitem>
+
+  <listitem><para>
+    A number of objects controlled by the interpreter, one of which
+    (the ego) may be controlled by the player;
+  </para></listitem>
+
+  <listitem><para>
+    A number of inventory items;
+  </para></listitem>
+
+  <listitem><para>
+    12 40-character string variables.
+  </para></listitem>
+</itemizedlist>
+
+<para>
    Some variables (0 - 26) and flags (0 - 15) are reserved by the
    interpreter, all others are available to be used by the programmer.
 </para><para>
