@@ -81,21 +81,12 @@ static void draw_menu_bar ()
 	struct list_head *h;
 	struct agi_menu *m;
 
-#ifdef FANCY_BOX
-	draw_box (0, 0, GFX_WIDTH - 1, 12, MENU_BG, MENU_LINE, 0);
-#else
 	clear_lines (0, 0, MENU_BG);
 	flush_lines (0, 0);
-#endif
 
 	list_for_each (h, &menubar, next) {
 		m = list_entry (h, struct agi_menu, list);
-#ifdef FANCY_BOX
-		draw_text (m->text, 0, m->col * CHAR_COLS,
-			3, 40, MENU_FG, MENU_BG);
-#else
 		print_text (m->text, 0, m->col, 0, 40, MENU_FG, MENU_BG);
-#endif
 	}
 
 }
@@ -106,13 +97,7 @@ static void draw_menu_hilite (int cur_menu)
 
 	m = get_menu (cur_menu);
 	_D ("[%s]", m->text);
-#ifdef FANCY_BOX
-	draw_box (m->col * CHAR_COLS - 4, 1, (m->col + strlen (m->text)) *
-		CHAR_COLS + 2, 11, MENU_BG, MENU_LINE, 0);
-	draw_text (m->text, 0, m->col * CHAR_COLS, 3, 40, MENU_FG, MENU_BG);
-#else
 	print_text (m->text, 0, m->col, 0, 40, MENU_BG, MENU_FG);
-#endif
 	flush_lines (0, 0);
 }
 
@@ -126,20 +111,6 @@ static void draw_menu_option (int h_menu)
 	/* find which vertical menu it is */
 	m = get_menu (h_menu);
 
-#ifdef FANCY_BOX
-	draw_box (m->wincol * CHAR_COLS + 2,
-		1 * CHAR_LINES + 4,
-		(m->wincol + m->width + 2) * CHAR_COLS - 3,
-		(1 + m->height + 1) * CHAR_LINES + 1 + m->height * 2,
-		MENU_BG, MENU_LINE, 0);
-
-	list_for_each (h, &m->down, next) {
-		d = list_entry (h, struct agi_menu_option, list);
-		draw_text (d->text, 0, (m->wincol + 1) * CHAR_COLS,
-			(d->index + 2) * CHAR_LINES + d->index * 2,
-			m->width + 2,
-			d->enabled ? MENU_FG : MENU_DISABLED, MENU_BG);
-#else
 	draw_box (m->wincol * CHAR_COLS, 1 * CHAR_LINES,
 		(m->wincol + m->width + 2) * CHAR_COLS,
 		(1 + m->height + 2) * CHAR_LINES, MENU_BG, MENU_LINE, 0);
@@ -149,7 +120,6 @@ static void draw_menu_option (int h_menu)
 		print_text (d->text, 0, m->wincol + 1, d->index + 2,
 			m->width + 2,
 			d->enabled ? MENU_FG : MENU_DISABLED, MENU_BG);
-#endif
 	}
 }
 
@@ -161,20 +131,8 @@ static void draw_menu_option_hilite (int h_menu, int v_menu)
 	m = get_menu (h_menu);
 	d = get_menu_option (h_menu, v_menu);
 
-#ifdef FANCY_BOX
-	draw_box (m->wincol * CHAR_COLS + 4,
-		(v_menu + 2) * CHAR_LINES - 2 + v_menu * 2,
-		(m->wincol + m->width + 1) * CHAR_COLS + 3,
-		(v_menu + 2) * CHAR_LINES + 9 + v_menu * 2,
-		MENU_BG, MENU_LINE, 0);
-
-	draw_text (d->text, 0, (m->wincol + 1) * CHAR_COLS,
-		(v_menu + 2) * CHAR_LINES + v_menu * 2, m->width + 2,
-		MENU_FG, MENU_BG);
-#else
 	print_text (d->text, 0, m->wincol + 1, v_menu + 2, m->width + 2,
-		MENU_BG, MENU_FG);
-#endif
+		MENU_BG, d->enabled ? MENU_FG : MENU_DISABLED);
 }
 
 
@@ -195,19 +153,11 @@ static int mouse_over_text (unsigned int line, unsigned int col, char *s)
 	if (mouse.x > (col + strlen (s)) * CHAR_COLS)
 		return FALSE;
 
-#ifdef FANCY_BOX
-	if ((mouse.y + 4) < line * (CHAR_LINES + 2))
-		return FALSE;
-
-	if ((mouse.y + 4) >= (line + 1) * (CHAR_LINES + 2))
-		return FALSE;
-#else
 	if (mouse.y < line * CHAR_LINES)
 		return FALSE;
 
 	if (mouse.y >= (line + 1) * CHAR_LINES)
 		return FALSE;
-#endif
 
 	return TRUE;
 }
