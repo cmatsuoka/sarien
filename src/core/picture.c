@@ -703,16 +703,19 @@ void show_pic ()
 	}
 
 #if 0
-	/* IIgs-style transitions. Too slow, and annoying after a few rooms */
-	for (i = 0; i < 4000; i++) {
-		int bx = rnd (GFX_WIDTH / 8) * 8;
-		int by = rnd (GFX_HEIGHT / 4) * 4;
-		flush_block (bx, by, bx + 8 - 1, by + 4 - 1);
+	/* Amiga/IIgs transitions. Too slow, and annoying after a few rooms */
+#define BRICK_W 4
+#define BRICK_H 2
+	for (i = 0; i < 20000; i++) {
+		int bx = rnd (GFX_WIDTH / BRICK_W) * BRICK_W;
+		int by = rnd (GFX_HEIGHT / BRICK_H) * BRICK_H;
+		flush_block (bx, by, bx + BRICK_W - 1, by + BRICK_H - 1);
 		do_update ();
 	}
 #endif
 
 	flush_screen ();
 }
+
 
 /* end: picture.c */

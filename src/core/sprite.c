@@ -9,6 +9,7 @@
  */
 
 #include <assert.h>
+#include <string.h>	/* for memcpy() */
 #include "sarien.h"
 #include "list.h"
 #include "agi.h"
@@ -141,6 +142,17 @@ static int test_not_updating (struct vt_entry *v)
  */
 static INLINE int prio_to_y (int p)
 {
+	int i;
+
+	if (game.alt_pri) {		/* set.pri.base used */
+		if (p == 0)
+			return -1;
+		for (i = 168; i; i--) {
+			if (game.pri_table[i] < p)
+				return i;
+		}
+	}
+
 	return (p - 5) * 12 + 48;
 }
 

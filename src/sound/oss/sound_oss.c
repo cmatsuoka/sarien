@@ -82,7 +82,7 @@ static int oss_init_sound (SINT16 *b)
 	report ("Using %d fragments of %d bytes.\n",
 		info.fragstotal, info.fragsize);
 
-	i = AFMT_S16_LE;
+	i = AFMT_S16_NE;
 	ioctl (audio_fd, SNDCTL_DSP_SETFMT, &i);
 	i = 0;
 	ioctl (audio_fd, SNDCTL_DSP_STEREO, &i);

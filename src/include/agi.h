@@ -160,6 +160,10 @@ struct agi_game {
 #define ID_AMIGA	0x00000002
 	int game_flags;		/**< Sarien options flags */
 
+	/* priority table */
+	int alt_pri;
+	UINT8 pri_table[_HEIGHT];
+
 	/* windows */
 	UINT32 msg_box_ticks;	/**< timed message box tick counter */
 	struct agi_block block;

@@ -30,6 +30,22 @@ extern struct agi_loader agi_v4;
 #endif
 
 
+static void init_pri_bands ()
+{
+	int i, p, y = 0;
+
+#if 0
+	if (*game.pri_table != 0xff)
+		return;
+#endif
+
+	for (p = 1; p < 15; p++) {
+		for (i = 0; i < 12; i++) {
+			game.pri_table[y++] = p < 4 ? 4 : p;
+		}
+	}
+}
+
 int agi_init ()
 {
 	int ec, i;
@@ -53,6 +69,7 @@ int agi_init ()
 	init_words ();
 	set_rnd_seed ();
 	init_menus ();
+	init_pri_bands ();
 
 	/* clear string buffer */
 	for (i = 0; i < MAX_WORDS1; i++)

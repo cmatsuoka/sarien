@@ -1595,46 +1595,6 @@ XM86	?.??	AGI	2.272		Unknown
 </programlisting>
 </para>
 
-<sect2><title>Sorted by Int. Ver.</title>
-<para>
-<programlisting>
-Game	Ver.	Int	Int. Ver.	Date
-------- ------- ------- --------------- ---------
-SQ1	1.0X	AGI	2.089		Unknown
-KQ1	1.0U	AGI	2.272		Unknown
-KQ3	1.01	AGI	2.272		11/08/86
-XM86	?.??	AGI	2.272		Unknown
-KQ2	2.1	AGI	2.411		Unknown
-KQ1	2.0F	AGI	2.425		??/??/87
-KQ2	2.2	AGI	2.426		Unknown
-SQ1	2.2	AGI	2.426		??/??/??
-KQ3	2.00	AGI	2.435		05/25/87
-BC	2.00	AGI	2.439		06/14/87
-LSL1	1.00	AGI	2.440		06/01/87
-AGID	?.?	AGI	2.915		??/??/??
-MG	?.??	AGI	2.915		Unknown
-SQ2	2.0C	AGI	2.915		??/??/87
-KQ1	2.0F	AGI	2.917		Unknown
-KQ2	2.2	AGI	2.917		??/??/87
-LSL1	1.0	AGI	2.917		06/01/87
-PQ1	2.0G	AGI	2.917		12/03/87
-SQ1	2.2	AGI	2.917		??/??/??
-SQ1	2.2	AGI	2.917		??/??/87
-SQ2	2.0C	AGI	2.917		Unknown
-KQ3	2.14	AGI	2.936		03/15/88
-SQ2	2.0D	AGI	2.936		Unknown
-SQ2	2.0F	AGI	2.936		Unknown
-KQ4	2.0	AGI	3.002.086	07/27/88
-BC	2.10	AGI	3.002.098	11/10/88
-KQ4D	?.??	AGI	3.002.102	??/??/??
-MH1	1.22	AGI	3.002.102	08/30/88
-MH1	1.22	AGI	3.002.107	08/31/88
-GR	2.01	AGI	3.002.149	12/22/88
-MH2	3.02B	AGI	3.002.149	07/26/89
-MH2	3.03	AGI	3.002.149	08/17/89
-</programlisting>
-</para>
-
 </sect1>
 
 <sect1 id="verdif"><title>Version differences</title>

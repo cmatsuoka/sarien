@@ -82,7 +82,6 @@ void new_room (int n)
 	/* function 0x38d5 */
 }
 
-
 static void interpret_cycle ()
 {
 	int old_sound, old_score;

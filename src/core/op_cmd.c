@@ -144,12 +144,12 @@ cmd(log)		{ /* do nothing */ }
 cmd(trace_on)		{ /* do nothing */ }
 cmd(trace_info)		{ /* do nothing */ }
 cmd(show_mem)		{ message_box ("Enough memory"); }
-cmd(toggle_monitor)	{ report ("Not implemented: toggle.monitor\n"); }
-cmd(init_joy)		{ report ("Not implemented: init.joystick\n"); }
-cmd(script_size)	{ report ("Not implemented: script.size(%d)\n", p0); }
-cmd(echo_line)		{ report ("Not implemented: echo.line\n"); }
-cmd(cancel_line)	{ report ("Not implemented: cancel.line\n"); }
-cmd(obj_status_f)	{ report ("Not implemented: obj.status.v\n"); }
+cmd(toggle_monitor)	{ report ("toggle.monitor\n"); }
+cmd(init_joy)		{ report ("init.joystick\n"); }
+cmd(script_size)	{ report ("script.size(%d)\n", p0); }
+cmd(echo_line)		{ report ("echo.line\n"); }
+cmd(cancel_line)	{ report ("cancel.line\n"); }
+cmd(obj_status_f)	{ report ("obj.status.v\n"); }
 
 /* unknown commands:
  * unk_170: Force savegame name -- j5
@@ -160,19 +160,18 @@ cmd(obj_status_f)	{ report ("Not implemented: obj.status.v\n"); }
  * unk_177: Disable menus completely -- j5
  * unk_181: Deactivate keypressed control (default control of ego)
  */
-cmd(set_simple)		{ report ("Not implemented: set.simple\n"); }
-cmd(push_script)	{ report ("Not implemented: push.script\n"); }
-cmd(pop_script)		{ report ("Not implemented: pop.script\n"); }
-cmd(hold_key)		{ report ("Not implemented: hold.key\n"); }
-cmd(set_pri_base)	{ report ("Not implemented: set.pri.base\n"); }
-cmd(discard_sound)	{ report ("Not implemented: discard.sound\n"); }
-cmd(hide_mouse)		{ report ("Not implemented: hide.mouse\n"); }
-cmd(allow_menu)		{ report ("Not implemented: allow.menu\n"); }
-cmd(show_mouse)		{ report ("Not implemented: show.mouse\n"); }
-cmd(fence_mouse)	{ report ("Not implemented: fence.mouse\n"); }
-cmd(mouse_posn)		{ report ("Not implemented: mouse.posn\n"); }
-cmd(release_key)	{ report ("Not implemented: release.key\n"); }
-cmd(adj_ego_move_to_xy)	{ report ("Not implemented: adj.ego.move.to.xy\n"); }
+cmd(set_simple)		{ report ("set.simple\n"); }
+cmd(push_script)	{ report ("push.script\n"); }
+cmd(pop_script)		{ report ("pop.script\n"); }
+cmd(hold_key)		{ report ("hold.key\n"); }
+cmd(discard_sound)	{ report ("discard.sound\n"); }
+cmd(hide_mouse)		{ report ("hide.mouse\n"); }
+cmd(allow_menu)		{ report ("allow.menu\n"); }
+cmd(show_mouse)		{ report ("show.mouse\n"); }
+cmd(fence_mouse)	{ report ("fence.mouse\n"); }
+cmd(mouse_posn)		{ report ("mouse.posn\n"); }
+cmd(release_key)	{ report ("release.key\n"); }
+cmd(adj_ego_move_to_xy)	{ report ("adj.ego.move.to.xy\n"); }
 
 
 
@@ -706,12 +705,26 @@ cmd(clear_text_rect) {
 	flush_block (x1, y1, x2, y2);
 }
 
-/* FIXME: should call function in gfx_agi.h */
 cmd(clear_lines) {
 	clear_lines (p0, p1, p2);
 	flush_lines (p0, p1);
 }
 
+cmd(set_pri_base) {
+	int i, x, pri;
+
+	report ("Priority base set to %d\n", p0);
+
+	game.alt_pri = TRUE;
+	x = (_HEIGHT - p0) * _HEIGHT / 10;
+
+	for (i = 0; i < _HEIGHT; i++) {
+		pri = (i - p0) < 0 ? 4 : (i - p0) * _HEIGHT / x + 5;
+		if (pri > 15)
+			pri = 15;
+		game.pri_table[i] = pri;
+	}
+}
 
 static void (*agi_command[183])(UINT8 *) = {
 	NULL,				/* 0x00 */
