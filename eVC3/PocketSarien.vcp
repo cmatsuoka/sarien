@@ -4177,6 +4177,7 @@ DEP_CPP_SOUND=\
 	"..\src\include\console.h"\
 	"..\src\include\logic.h"\
 	"..\src\include\picture.h"\
+	"..\src\include\rand.h"\
 	"..\src\include\sarien.h"\
 	"..\src\include\sound.h"\
 	"..\src\include\view.h"\
@@ -4213,6 +4214,7 @@ DEP_CPP_SOUND=\
 	"..\src\include\console.h"\
 	"..\src\include\logic.h"\
 	"..\src\include\picture.h"\
+	"..\src\include\rand.h"\
 	"..\src\include\sarien.h"\
 	"..\src\include\sound.h"\
 	"..\src\include\view.h"\
@@ -4926,6 +4928,10 @@ SOURCE=.\PocketSarien.rc
 # End Source File
 # Begin Source File
 
+SOURCE=..\bin\sarien.ico
+# End Source File
+# Begin Source File
+
 SOURCE=.\SarienImages.bmp
 # End Source File
 # End Group
@@ -5000,8 +5006,10 @@ DEP_CPP_BROWS=\
 
 DEP_CPP_BROWS=\
 	".\browse.h"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
+	
+NODEP_CPP_BROWS=\
+	".\ipapi.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "PocketSarien - Win32 (WCE x86em) Release"
@@ -5368,7 +5376,7 @@ DEP_CPP_PATH_=\
 # End Source File
 # Begin Source File
 
-SOURCE=.\sound_wince.c
+SOURCE=..\src\sound\win32\sound_win32.c
 
 !IF  "$(CFG)" == "PocketSarien - Win32 (WCE MIPS) Release"
 
@@ -5574,9 +5582,11 @@ DEP_CPP_WINCE=\
 	"..\src\include\keyboard.h"\
 	"..\src\include\sarien.h"\
 	"..\src\include\win32.h"\
+	
+NODEP_CPP_WINCE=\
 	".\gapi\inc\gx.h"\
-	{$(INCLUDE)}"aygshell.h"\
-	{$(INCLUDE)}"sipapi.h"\
+	".\ipapi.h"\
+	".\ygshell.h"\
 	
 
 !ELSEIF  "$(CFG)" == "PocketSarien - Win32 (WCE x86em) Release"
@@ -5602,6 +5612,7 @@ DEP_CPP_WINCE=\
 	"..\src\include\keyboard.h"\
 	"..\src\include\sarien.h"\
 	"..\src\include\win32.h"\
+	".\gapi\inc\gx.h"\
 	{$(INCLUDE)}"aygshell.h"\
 	{$(INCLUDE)}"sipapi.h"\
 	

@@ -193,10 +193,6 @@ SOURCE=..\src\core\rand.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\src\core\sarienmain.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\src\core\savegame.c
 # End Source File
 # Begin Source File

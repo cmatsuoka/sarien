@@ -86,7 +86,7 @@ static int win32_init_sound (SINT16 *b)
 		return -1;
 	}
 
-	if (waveOutGetDevCaps((UINT) hSoundDevice, &waveCaps, sizeof(waveCaps))
+	if (waveOutGetDevCaps(WAVE_MAPPER, &waveCaps, sizeof(waveCaps))
 		!= MMSYSERR_NOERROR)
 	{
 		report("sound_win32: waveOutGetDevCaps() error.\n");

@@ -149,6 +149,7 @@ static int wince_init_vidmode()
 	SetWindowPos(hwndMain, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOSIZE);
 	SetForegroundWindow(hwndMain);
 	SHFullScreen(hwndMain, SHFS_SHOWSIPBUTTON);
+	SHFullScreen(hwndMain, SHFS_HIDETASKBAR);
 	SHSipPreference(hwndMain, SIP_UP);
 
 	gxdp = GXGetDisplayProperties();
@@ -208,7 +209,6 @@ static void wince_new_timer()
 }
 
 #define REPEATED_KEYMASK	(1<<30)
-#define EXTENDED_KEYMASK	(1<<24)
 #define KEY_QUEUE_SIZE		16
 
 static struct{
@@ -229,24 +229,10 @@ static struct{
 } while (0)
 
 
-/* Hack for lame keyboard code that disregards keyboard queueing */
-/* Note that there is something weird about keyboard processing code
-   in Sarien. I was able to break Larry's world position by manipulating
-   with wince_keypress return value. */
-
-static int key_skip = 0;
-
 static int wince_keypress(void)
 {
-	int b;
-	if(key_skip)
-	{
-		key_skip = 0;
-		return 0;
-	}
 	process_events();
-	b = g_key_queue.start != g_key_queue.end;
-	return b;
+	return (g_key_queue.start != g_key_queue.end);
 }
 
 static int wince_get_key(void)
@@ -255,7 +241,6 @@ static int wince_get_key(void)
 	while (!wince_keypress())
 		wince_new_timer();
 	key_dequeue(k);
-	key_skip = 1; /* break silly keyboard poll loop in core code */
 	return k;
 }
 
@@ -330,6 +315,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 	int          key = 0;
 	static		 SHACTIVATEINFO sai;
 	int x, y;
+	RECT		 rc;
 
 	switch (nMsg) {
 	case WM_CREATE:
@@ -339,6 +325,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		wince_deinit_vidmode ();
 		exit (-1);
 		return 0;
+	case WM_ERASEBKGND:
+		{
+			GetClientRect(hwnd, &rc);
+			rc.top = 200;
+			hDC = GetDC(hwnd);
+			if(rc.top < rc.bottom)
+				FillRect(hDC, &rc, (HBRUSH)GetStockObject(BLACK_BRUSH));
+			ReleaseDC(hwnd, hDC);
+		}
+		return 1;
 	case WM_PAINT:
 		hDC = BeginPaint (hwndMain, &ps);
 		EndPaint (hwndMain, &ps);
@@ -350,6 +346,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			GXResume();
 			SetForegroundWindow(hwndMain);
 			SHFullScreen(hwndMain, SHFS_SHOWSIPBUTTON);
+			SHFullScreen(hwndMain, SHFS_HIDETASKBAR);
 		}
 		SHHandleWMActivate(hwnd, wParam, lParam, &sai, 0);
 		SHSipPreference(hwndMain, SIP_UP);
@@ -371,13 +368,14 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			SHSipPreference(hwndMain, SIP_DOWN);
 			GXSuspend();
 			active = false;
-			MessageBox(hwndMain, TEXT("Pocket Sarien 0.6.2\n\nPorted by Vasyl Tsvirkunov\nhttp://pocketatari.retrogames.com"),
-				TEXT("Pocket Sarien"), MB_OK);
+			MessageBox(hwndMain, TEXT("Pocket Sarien rev.2\n\nPorted by Vasyl Tsvirkunov\nhttp://pocketatari.retrogames.com"),
+				TEXT("Pocket Sarien"), MB_OK|MB_APPLMODAL);
 			active = true;
 			GXResume();
 			wince_put_block(0, 0, 319, 199);
 			SetForegroundWindow(hwndMain);
 			SHFullScreen(hwndMain, SHFS_SHOWSIPBUTTON);
+			SHFullScreen(hwndMain, SHFS_HIDETASKBAR);
 			SHSipPreference(hwndMain, SIP_UP);
 			break;
 		case IDC_EXIT:
@@ -395,29 +393,30 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case WM_LBUTTONDOWN:
-		{
-			x = LOWORD(lParam);
-			y = HIWORD(lParam);
-			if(x >= 80 && x <= 160 && y >= 70 && y <= 130)
-				key_enqueue(KEY_ENTER);
-			else
-			{
-				if(x < 80)
-					key_enqueue(KEY_LEFT);
-				else if(x > 160)
-					key_enqueue(KEY_RIGHT);
-				else if(y < 70)
-					key_enqueue(KEY_UP);
-				else if(y > 130)
-					key_enqueue(KEY_DOWN);
-			}
-		}
+		key = BUTTON_LEFT;
+		mouse.button = TRUE;
+		mouse.x = LOWORD(lParam)*4/3;
+		mouse.y = HIWORD(lParam);
+		break;
+
+	case WM_RBUTTONDOWN:
+		key = BUTTON_RIGHT;
+		mouse.button = TRUE;
+		mouse.x = LOWORD(lParam)*4/3;
+		mouse.y = HIWORD(lParam);
+		break;
+
+	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
+		mouse.button = FALSE;
+		return 0;
+
+	case WM_MOUSEMOVE:
+		mouse.x = LOWORD(lParam)*4/3;
+		mouse.y = HIWORD(lParam);
 		return 0;
 
 	case WM_KEYDOWN:
-		if (lParam & REPEATED_KEYMASK)
-			return 0;
-
 		/* Keycode debug:
 		 * report ("%02x\n", (int)wParam);
 		 */
@@ -428,28 +427,36 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			key = 0;
 			break;
 		case VK_UP:
-			key = KEY_UP;
+			if(!(lParam & REPEATED_KEYMASK))
+				key = KEY_UP;
 			break;
 		case VK_LEFT:
-			key = KEY_LEFT;
+			if(!(lParam & REPEATED_KEYMASK))
+				key = KEY_LEFT;
 			break;
 		case VK_DOWN:
-			key = KEY_DOWN;
+			if(!(lParam & REPEATED_KEYMASK))
+				key = KEY_DOWN;
 			break;
 		case VK_RIGHT:
-			key = KEY_RIGHT;
+			if(!(lParam & REPEATED_KEYMASK))
+				key = KEY_RIGHT;
 			break;
 		case VK_HOME:
+			if(!(lParam & REPEATED_KEYMASK))
 			key = KEY_UP_LEFT;
-			break;
+				break;
 		case VK_PRIOR:
-			key = KEY_UP_RIGHT;
+			if(!(lParam & REPEATED_KEYMASK))
+				key = KEY_UP_RIGHT;
 			break;
 		case VK_NEXT:
-			key = KEY_DOWN_RIGHT;
+			if(!(lParam & REPEATED_KEYMASK))
+				key = KEY_DOWN_RIGHT;
 			break;
 		case VK_END:
-			key = KEY_DOWN_LEFT;
+			if(!(lParam & REPEATED_KEYMASK))
+				key = KEY_DOWN_LEFT;
 			break;
 		case VK_RETURN:
 			key = KEY_ENTER;
@@ -463,6 +470,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		case VK_SUBTRACT:
 			key = '-';
 			break;
+/*
 		case VK_F1:
 			key = 0x3b00;
 			break;
@@ -496,19 +504,24 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		case VK_SNAPSHOT:
 			key = KEY_PRIORITY;
 			break;
+*/
 		case VK_BACKSLASH:
 		case VK_ESCAPE:
-			key = 0x1b;
+			key = KEY_ESCAPE;
 			break;
-		case 0xbc:
-			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '<' : '.';
+		case VK_COMMA:
+			key = GetKeyState (VK_SHIFT) & 0x8000 ? '<' : ',';
 			break;
-		case 0xbe:
-			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '>' : '.';
+		case VK_PERIOD:
+			key = GetKeyState (VK_SHIFT) & 0x8000 ? '>' : '.';
 			break;
-		case 0xbf:
-			key = GetAsyncKeyState (VK_SHIFT) & 0x8000 ? '?' : '/';
+		case VK_SLASH:
+			key = GetKeyState (VK_SHIFT) & 0x8000 ? '?' : '/';
 			break;
+		case VK_SPACE:
+			key = ' ';
+			break;
+/*
 #ifdef USE_CONSOLE
 		case 192:
 			key = CONSOLE_ACTIVATE_KEY;
@@ -517,6 +530,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			key = CONSOLE_SWITCH_KEY;
 			break;
 #endif
+*/
 		default:
 			if(key == gxkl.vkA)
 			{
@@ -533,16 +547,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 				key = CONSOLE_ACTIVATE_KEY;
 				break;
 			}
-			if (!isalpha (key))
+			if (!isprint(key))
 				break;
 
 
 			/* Must exist a better way to do that! */
 			if (GetKeyState (VK_CAPITAL) & 0x1) {
-				if (GetAsyncKeyState (VK_SHIFT) & 0x8000)
+				if (GetKeyState (VK_SHIFT) & 0x8000)
 					key = key + 32;
 			} else {
-				if (!(GetAsyncKeyState (VK_SHIFT) & 0x8000))
+				if (!(GetKeyState (VK_SHIFT) & 0x8000))
 					key = key + 32;
 			}
 #if 0
