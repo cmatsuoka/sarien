@@ -1014,9 +1014,8 @@ int run_logic (int n)
 			/* +2 covers goto size */
 			ip += 2 + ((SINT16)lohi_getword (code + ip));
 			/* timer must keep running even in goto loops */
-			/*poll_timer ();*/
-			update_timer ();
-			console_cycle ();
+			/*poll_timer ();
+			 *update_timer ();*/
 			break;
 		case 0x00:			/* return */
 			return 1;
