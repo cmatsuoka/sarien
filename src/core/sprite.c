@@ -431,8 +431,8 @@ build_list (struct list_head *head, int (*test)(struct vt_entry *))
 	for_each_vt_entry(v) {
 		if (test (v)) {
 			entry[i] = v;
-			y_val[i] = v->flags & UPDATE ? v->y_pos :
-				prio_to_y (v->priority);
+			y_val[i] = v->flags & FIXED_PRIORITY ?
+				prio_to_y (v->priority) : v->y_pos;
 			i++;
 		}
 	}

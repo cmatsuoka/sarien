@@ -107,6 +107,7 @@ static void interpret_cycle ()
 		game.view_table[0].direction = game.vars[V_ego_dir];
 
 	check_all_motions ();
+
 	old_score = game.vars[V_score];
 	old_sound = getflag (F_sound_on);
 	
@@ -350,8 +351,6 @@ static int play_game ()
 				game.has_prompt = 1;
 			}
 			interpret_cycle ();
-			setflag (F_entered_cli, FALSE);
-			setflag (F_said_accepted_input, FALSE);
 		}
 
 		if (game.quit_prog_now == 0xff)
