@@ -353,6 +353,9 @@ static void free_list (struct list_head *head)
 		s = list_entry (h, struct sprite, list);
 		list_del (h);
 		free (s->buffer);
+#ifdef USE_HIRES
+		free (s->hires);
+#endif
 		if (h->prev != head)
 			free (list_entry (h->prev, struct sprite, list));
 	}
