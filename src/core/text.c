@@ -255,7 +255,7 @@ void close_window ()
 	erase_upd_sprites ();
 	erase_textbox ();		/* remove window, if any */
 	blit_upd_sprites ();
-	commit_both ();			/* redraw sprites */
+	commit_upd_sprites ();		/* redraw sprites */
 	game.has_window = FALSE;
 }
 

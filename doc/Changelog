@@ -20,7 +20,7 @@ Revision History
 	- using table instead of computed values for priority bands
 	- implemented set.pri.base (used in KQ4)
 	- implemented echo.line (to repeat last input line with F3)
-	- implemented adj.ego.move.to.xy (for click-to-walk interface)
+	- implemented adj.ego.move.to.x.y (for click-to-walk interface)
 	- added mouse event support to the X11, SDL and Win32 drivers
 	- added debug info on status line (activated with key F11)
 	- implemented click-to-walk mouse interface
@@ -37,6 +37,7 @@ Revision History
 	- implemented invisible ego signaling
 	- fixed command get.num
 	- fixed controller reset (moved to the end of the cycle)
+	- fixed v3 game loading in big-endian machines
 
 0.6.2 (20010826)
 	- fixed cmd_clear_rect() to prevent crash with the IIgs demo

@@ -299,6 +299,8 @@ void draw_box (int x1, int y1, int x2, int y2, int colour1, int colour2, int m)
 #ifdef FANCY_BOX
 	draw_rectangle (x1, y1, x2, y2, 7);
 	draw_frame (x1, y1, x2, y2, 15, 8);
+	if (m > 0)
+		draw_frame (x1 + 3, y1 + 3, x2 - 3, y2 - 3, 8, 15);
 	flush_block (x1, y1, x2, y2);
 #else
 	draw_rectangle (x1, y1, x2, y2, colour1);

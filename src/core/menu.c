@@ -107,8 +107,8 @@ static void draw_menu_hilite (int cur_menu)
 	_D ("[%s]", m->text);
 #ifdef FANCY_BOX
 	draw_box (m->col * CHAR_COLS - 4, 1, (m->col + strlen (m->text)) *
-		CHAR_COLS + 2, 11, MENU_BG, MENU_LINE);
-	draw_text (m->text, 0, m->col * CHAR_COLS, 3, 40, MENU_FG, MENU_BG, 0);
+		CHAR_COLS + 2, 11, MENU_BG, MENU_LINE, 0);
+	draw_text (m->text, 0, m->col * CHAR_COLS, 3, 40, MENU_FG, MENU_BG);
 #else
 	print_text (m->text, 0, m->col, 0, 40, MENU_BG, MENU_FG);
 #endif
