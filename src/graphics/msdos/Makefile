@@ -1,8 +1,8 @@
+# $Id $
 
 XCFLAGS	= -I../../include
 OBJS	=
-DFILES	= Makefile Makefile.wat ibm.c ibm.h djgpp.c djgpp.h watcom.dep \
-	  Makefile.dj
+DFILES	= Makefile Makefile.wat ibm.c ibm.h djgpp.c djgpp.h Makefile.dj
 CFILES	=
 DDIRS	=
 XDFILES	=
