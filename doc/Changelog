@@ -7,9 +7,10 @@ Revision History
 	- sprites are RLE-encoded to reduce memory usage
 	- sprites use a pre-allocated buffer to store backgrounds
 	- encoding flood fill coordinates in a 16-bit integer
+	- unloading non-cached agi resources on new room
 
 0.7.0 (20011122)
-	- added QNX native sound driver (untested)
+	- added QNX4 native sound driver (untested)
 	- ported to DOS 16-bit using Turbo C++
 	- started MacOS port using MPW (incomplete)
 	- changed palette to use Amiga-ish colors instead of PC EGA

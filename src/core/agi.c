@@ -119,6 +119,7 @@ int agi_init ()
 		game.dir_logic[0].flags |= RES_CACHED;	/* keep this one cached */
 	}
 
+#if 0
 	/* if cached, enable caching options */
 	if (opt.cache) {
 		for (i = 0; i < MAX_DIRS; i++) {
@@ -138,31 +139,41 @@ int agi_init ()
 		}
 		printf("\n");
 	}
+#endif
 
 	return ec;
 }
 
-
-/* unload all resources */
-static void unload_resources ()
+static void unload_all_resources ()
 {
 	int i;
 
 	for(i = 0; i < MAX_DIRS; i++) {
-		game.dir_view[i].flags &= ~RES_CACHED;	/* clear cache flag */
-		loader->unload_resource (rVIEW, i);	/* free view */
-
-		game.dir_pic[i].flags &= ~RES_CACHED;	/* clear cache flag */
-		loader->unload_resource (rPICTURE, i);	/* free resource */
-
-		game.dir_logic[i].flags &= ~RES_CACHED;	/* clear cache flag */
-		loader->unload_resource (rLOGIC, i);	/* free resource */
-
-		game.dir_sound[i].flags &= ~RES_CACHED;	/* clear cache flag */
-		loader->unload_resource (rSOUND, i);	/* free resource */
+		game.dir_view[i].flags &= ~RES_CACHED;
+		game.dir_pic[i].flags &= ~RES_CACHED;
+		game.dir_logic[i].flags &= ~RES_CACHED;
+		game.dir_sound[i].flags &= ~RES_CACHED;
 	}
+
+	agi_unload_resources ();
 }
 
+/*
+ * Public functions
+ */
+
+
+void agi_unload_resources ()
+{
+	int i;
+
+	for(i = 0; i < MAX_DIRS; i++) {
+		loader->unload_resource (rVIEW, i);
+		loader->unload_resource (rPICTURE, i);
+		loader->unload_resource (rLOGIC, i);
+		loader->unload_resource (rSOUND, i);
+	}
+}
 
 int agi_deinit ()
 {
@@ -170,7 +181,7 @@ int agi_deinit ()
 
 	clean_input ();			/* remove all words from memory */
 	deinit_menus ();		/* unload the menus */
-	unload_resources ();		/* unload resources in memory */
+	unload_all_resources ();	/* unload resources in memory */
 	ec = loader->deinit ();
 	unload_objects();
 	unload_words();

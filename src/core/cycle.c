@@ -47,7 +47,7 @@ void new_room (int n)
 		v->step_size = 1;
 	}
 	
-	/* function 0x10d0 */
+	agi_unload_resources ();
 
 	game.player_control = TRUE;
 	game.block.active = FALSE;

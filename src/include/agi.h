@@ -239,6 +239,7 @@ void	agi_set_release		(int);
 int	agi_detect_game		(char *);
 int	agi_load_resource	(int, int);
 int	agi_unload_resource	(int, int);
+void	agi_unload_resources	(void);
 
 /* words */
 int	show_words	(void);
