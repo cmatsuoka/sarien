@@ -72,7 +72,7 @@ static void pc_timer ()
 {
 	static UINT32 cticks = 0;
 
-	//while (cticks == clock_ticks);
+	while (cticks == clock_ticks);
 	cticks = clock_ticks;
 }
 
@@ -87,7 +87,7 @@ int init_machine (int argc, char **argv)
 	clock_ticks = 0;
 
 	prev_08 = _dos_getvect (0x08);
-	//_dos_setvect (0x08, tick_increment);
+	_dos_setvect (0x08, tick_increment);
 
 	return err_OK;
 }
@@ -119,7 +119,7 @@ static int pc_init_vidmode ()
 #endif
 
 	__outp (0x3c8, 0);
-	for (i = 0; i < 16 * 3; i++)
+	for (i = 0; i < 32 * 3; i++)
 		__outp (0x3c9, palette[i]);
 
 	return err_OK;
@@ -150,7 +150,6 @@ static int pc_deinit_vidmode ()
 static void pc_put_block (int x1, int y1, int x2, int y2)
 {
 	unsigned int h, w, p;
-	UINT8 far *vmem = 0xa0000;
 
 	if (x1 >= GFX_WIDTH)  x1 = GFX_WIDTH  - 1;
 	if (y1 >= GFX_HEIGHT) y1 = GFX_HEIGHT - 1;
@@ -162,7 +161,13 @@ static void pc_put_block (int x1, int y1, int x2, int y2)
 	p = GFX_WIDTH * y1 + x1;
 
 	while (h--) {
-		_fmemcpy (vmem + p, screen_buffer + p, w);
+#ifdef __WATCOMC__
+		/* Watcom uses linear 0xa0000 address */
+		memcpy ((UINT8 *)0xa0000 + p, screen_buffer + p, w);
+#else
+		/* Turbo C wants 0xa0000000 in seg:ofs format */
+		_fmemcpy ((UINT8 far *)0xa0000000 + p, screen_buffer + p, w);
+#endif
 		p += 320;
 	}
 }

@@ -89,7 +89,7 @@ static int agi_v2_load_dir (struct agi_dir *agid, char *fname)
 	/* build directory entries */
 	for (i = 0; i < flen; i+=3) {
 		agid[i/3].volume = hilo_getbyte (mem+i) >> 4;
-		agid[i/3].offset = hilo_getpword (mem+i) & _EMPTY;
+		agid[i/3].offset = hilo_getpword (mem+i) & (UINT32)_EMPTY;
 	}
 
 	free (mem);
@@ -185,11 +185,12 @@ static int agi_v2_unload_resource (int t, int n)
  * routine. NULL is returned if unsucsessfull.
  */
 
-UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
+static UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 {
 	UINT8 *data = NULL;
 	char x[MAX_PATH], *path;
 	FILE *fp;
+	unsigned int sig;
 
 	sprintf (x, "vol.%i", agid->volume);
 	path = fixpath (NO_GAMEDIR, x);
@@ -199,7 +200,7 @@ UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 		_D ("loading resource");
 		fseek (fp, agid->offset, SEEK_SET);
 		fread (&x, 1, 5, fp);
-		if (hilo_getword (x) == 0x1234) {
+		if ((sig = hilo_getword (x)) == 0x1234) {
 			agid->len = lohi_getword (x + 3);
 			data = calloc (1, agid->len + 32);
 			if (data != NULL)
@@ -211,6 +212,7 @@ UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 			 */
 			deinit_video_mode ();
 #endif
+			report ("Error: bad signature %04x\n", sig);
 			fprintf (stderr, "ACK! BAD RESOURCE!!!\n");
 			exit (0);
 		}
