@@ -20,12 +20,18 @@ extern "C"{
 #define USE_PCM_SOUND
 #define USE_IIGS_SOUND
 #define AGDS_SUPPORT
+#define OPT_LIST_OBJECTS
+#define OPT_PICTURE_VIEWER
+#define OPT_LIST_DICT
 
 #ifdef PALMOS
 #  include <PalmOS.h>
 #  undef USE_CONSOLE
 #  undef USE_PCM_SOUND
 #  undef AGDS_SUPPORT
+#  undef OPT_LIST_OBJECTS
+#  undef OPT_PICTURE_VIEWER
+#  undef OPT_LIST_DICT
 #else
 #  include <stdlib.h>
 #endif
@@ -50,6 +56,9 @@ extern "C"{
 #  undef USE_CONSOLE
 #  undef USE_PCM_SOUND
 #  undef AGDS_SUPPORT
+#  undef OPT_LIST_OBJECTS
+#  undef OPT_PICTURE_VIEWER
+#  undef OPT_LIST_DICT
 #endif
 
 /*
@@ -171,15 +180,8 @@ extern "C"{
 #define STATUS_FG_CLEAN	0x00		/* Black */
 
 
-#if !defined PALMOS && !defined FAKE_PALMOS && !defined __TURBOC__
-#  define OPT_LIST_OBJECTS
-#  define OPT_PICTURE_VIEWER
-#  define OPT_LIST_DICT
-#endif
-
 #define DISABLE_COPYPROTECTION		/* only works on some games */
 
-#undef OPT_PICTURE_VIEWER
 
 /* You'll need an ANSI terminal to use these :\ */
 

@@ -455,28 +455,32 @@ void blit_both ()
  */
 void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 {
-	struct view_cel	*c	= NULL;
-	int x1, y1;
+	struct view_cel	*c = NULL;
+	int x1, y1, x2, y2;
 	UINT8 *p;
 
-	_D ("v=%d, l=%d, c=%d, x=%d, y=%d, p=%d", view, loop, cel, x, y, pri); 
+	_D ("v=%d, l=%d, c=%d, x=%d, y=%d, p=%d, m=%d",
+		view, loop, cel, x, y, pri, mar); 
+
 	if (pri == 0)
 		pri = 8;		/* ??!? */
 
 	c = &game.views[view].loop[loop].cel[cel];
 
-	/* Adjust reference to upper-left corner and do clipping */
-	_D ("y = %d, height = %d", y, c->height);
-	y = y - c->height + 1;
-	if (y < 0)
-		y = 0;
-	if (x + c->width >= _WIDTH)
-		x = _WIDTH - c->width;
+	x1 = x;
+	y1 = y - c->height + 1;
+	x2 = x + c->width - 1;
+	y2 = y;
+
+	if (x1 < 0) x1 = 0;
+	if (y1 < 0) y1 = 0;
+	if (x2 >= _WIDTH) x2 = _WIDTH - c->width;
+	if (y2 >= _HEIGHT) y2 = _HEIGHT - c->height;
 
 	erase_both ();
 
 	_D (_D_WARN "blit_cel (%d, %d, %d, c)", x, y, pri);
-	blit_cel (x, y, pri, c);
+	blit_cel (x1, y1, pri, c);
 
 	/* If margin is 0, 1, 2, or 3, the base of the cel is
 	 * surrounded with a rectangle of the corresponding priority.
@@ -486,10 +490,9 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 		/* add rectangle around object, don't clobber control
 		 * info in priority data
 		 */
-		for (y1 = y; y1 < c->height; y1++) {
-			for (x1 = x; x1 < c->width; x1++) {
-				int idx = y1 * _WIDTH + x1;
-				p = &game.sbuf[idx];
+		for (y = y2 - 14; y <= y2; y++) {
+			for (x = x1; x <= x2; x++) {
+				p = &game.sbuf[x + y * _WIDTH];
 				if ((*p >> 4) >= 4)
 					*p = (mar << 4) | (*p & 0x0f);
 			}
@@ -498,7 +501,7 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 
 	blit_both ();
 
-	commit_block (x, y, x + c->width - 1, y + c->height - 1);
+	commit_block (x1, y1, x2, y2);
 }
 
 /**
@@ -556,7 +559,7 @@ void commit_block (int x1, int y1, int x2, int y2)
 	if (y1 >= _HEIGHT) y1 = _HEIGHT - 1;
 	if (y2 >= _HEIGHT) y2 = _HEIGHT - 1;
 
-	_D ("%d, %d, %d, %d", x1, y1, x2, y2);
+	/* _D ("%d, %d, %d, %d", x1, y1, x2, y2); */
 
 	w = x2 - x1 + 1;
 	q = &game.sbuf[x1 + _WIDTH * y1];

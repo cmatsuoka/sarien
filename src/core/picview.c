@@ -8,6 +8,8 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
+#ifdef OPT_PICTURE_VIEWER
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -109,4 +111,6 @@ next_pic:
 end_view:
 	return ec;
 }
+
+#endif /* OPT_PICTURE_VIEWER */
 

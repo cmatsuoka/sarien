@@ -58,6 +58,10 @@ static void help (int argc, char **argv)
 "                     Disable optimized graphic driver hacks (if available).\n"
 "  -h --help          Display this help screen.\n"
 "  -n --no-sound      Disable sound output.\n"
+#ifdef OPT_PICTURE_VIEWER
+"  -p --picture-viewer\n"
+"                     Interactive picture viewer.\n"
+#endif
 #ifdef OPT_LIST_OBJECTS
 "  -o --list-objects  List objects.\n"
 #endif
@@ -123,6 +127,9 @@ int parse_cli (int argc, char **argv)
 		{ "no-sound",		0, 0, 'n' },
 #ifdef OPT_LIST_OBJECTS
 		{ "list-objects",	0, 0, 'o' },
+#endif
+#ifdef OPT_PICTURE_VIEWER
+		{ "picture-viewer",     0, 0, 'p' },                            
 #endif
 		{ "emulate-sound",	1, 0, 'E' },
 		{ "wait-key",		0, 0, 'k' },
