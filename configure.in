@@ -38,7 +38,7 @@ beos*)
 	CPPFLAGS="$CPPFLAGS -I/boot/develop/tools/gnupro/include"
 	with_sdl="yes"
 	;;
-qnx*)
+nto*)
 	AC_CHECK_HEADERS(Pt.h Ph.h)
 	;;
 cygwin*|mingw*)
@@ -73,7 +73,7 @@ AC_CHECKING([for graphics support])
 CONSOLE_DRIVER="none"
 
 if test "${ac_cv_header_Ph_h}" = "yes"; then
-	CONSOLE_DRIVER="ph"
+	CONSOLE_DRIVER="photon"
 	LIBS="${LIBS} -lph -lphrender"
 elif test "${with_win32}" = "yes"; then
 	CONSOLE_DRIVER="win32"

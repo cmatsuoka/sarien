@@ -52,11 +52,11 @@ static int key_queue_end = 0;
 
 static int	init_vidmode	(void);
 static int	deinit_vidmode	(void);
-static void	put_block	(int, int, int, int);
-static void	put_pixels	(int, int, int, UINT8*);
-static int	keypress	(void);
-static int	get_key		(void);
-static void	new_timer	(void);
+static void	ph_put_block	(int, int, int, int);
+static void	ph_put_pixels	(int, int, int, UINT8*);
+static int	ph_keypress	(void);
+static int	ph_get_key	(void);
+static void	ph_new_timer	(void);
 
 void		photon_thread	(void *);
 static void	ph_raw_draw_cb	(PtWidget_t *, PhTile_t *);
@@ -77,11 +77,11 @@ static int ph_chid;
 static struct gfx_driver GFX_ph = {
 	init_vidmode,
 	deinit_vidmode,
-	put_block,
-	put_pixels,
-	new_timer,
-	keypress,
-	get_key
+	ph_put_block,
+	ph_put_pixels,
+	ph_new_timer,
+	ph_keypress,
+	ph_get_key
 };
 
 
@@ -91,7 +91,7 @@ int init_machine (int argc, char **argv)
 
 	__argc = argc;
 	__argv = argv;
-	scale = optScale;
+	scale = opt.scale;
 
 	return err_OK;
 }
@@ -109,14 +109,13 @@ static int init_vidmode (void)
 
 	fprintf (stderr, "ph: Photon support by jeremy@astra.mb.ca\n");
 
-	if (optFullScreen) { // We can implement later.
-		optFullScreen = FALSE;
-	}
+	opt.fullscreen = FALSE;		// We can implement later.
 
-	for (i = 0; i < 32; i ++)
+	for (i = 0; i < 32; i ++) {
 		ph_pal[i] = (palette[i * 3] << 18) + 
 			    (palette[i * 3 + 1] << 10) +
-			    palette[i * 3 + 2] << 2;
+			    (palette[i * 3 + 2] << 2);
+	}
 
 	pthread_barrier_init(&barrier, NULL, 2);
 
@@ -131,11 +130,8 @@ static int init_vidmode (void)
 
 static int deinit_vidmode ()
 {
-
 	fprintf (stderr, "ph: deiniting video mode\n");
-
 	pthread_cancel (ph_tid);
-
 	PhReleaseImage(phimage);
 
 	return err_OK;
@@ -143,7 +139,7 @@ static int deinit_vidmode ()
 
 
 /* put a block onto the screen */
-static void put_block (int x1, int y1, int x2, int y2)
+static void ph_put_block (int x1, int y1, int x2, int y2)
 {
 	PhRect_t rect;
 
@@ -173,41 +169,45 @@ static void put_block (int x1, int y1, int x2, int y2)
 
 
 /* put pixel routine */
-static void put_pixels (int x, int y, int w, char *p)
+static void ph_put_pixels (int x, int y, int w, UINT8 *p)
 {
 	register int i, j;
 
 	pthread_mutex_lock (&mut_image);
 
-	/* CM: this is only a kludge to use the new interface.
-	 *     please fix it properly to take advantage of the
-	 *     driver interface change.
-	 */
-while (w--) {
-	int c = *p++;
-
-	if (scale == 1) {
-		PiSetPixel (phimage, x, y, c);
-	} else if (scale == 2) {
+	switch (scale) {
+	case 1:
+		while (w--) PiSetPixel (phimage, x++, y, *p++);
+		break;
+	case 2:
 		x <<= 1;
 		y <<= 1;
-		PiSetPixel (phimage, x, y, c);
-		PiSetPixel (phimage, x, y + 1, c);
-		PiSetPixel (phimage, x + 1, y, c);
-		PiSetPixel (phimage, x + 1, y + 1, c);
-	} else {
+		while (w--) {
+			int c = *p++;
+			PiSetPixel (phimage, x, y, c);
+			PiSetPixel (phimage, x++, y + 1, c);
+			PiSetPixel (phimage, x, y, c);
+			PiSetPixel (phimage, x++, y + 1, c);
+		}
+		break;
+	default:
 		x *= scale;
 		y *= scale;
-		for (i = 0; i < scale; i++)
-			for (j = 0; j < scale; j++)
-				PiSetPixel (phimage, x + i, y + j, c);
+		while (w--) {
+			int c = *p++;
+			for (i = 0; i < scale; i++) {
+				for (j = 0; j < scale; j++)
+					PiSetPixel (phimage, x + i, y + j, c);
+			}
+			x += scale;
+		}
 	}
-}
+
 	pthread_mutex_unlock (&mut_image);
 }
 
 
-static int keypress ()
+static int ph_keypress ()
 {
 	int retcode;
 
@@ -219,7 +219,7 @@ static int keypress ()
 }
 
 
-static int get_key (void)
+static int ph_get_key (void)
 {
 	int k;
 
@@ -234,7 +234,7 @@ static int get_key (void)
 	return k;
 }
 
-static void new_timer ()
+static void ph_new_timer ()
 {
 	struct timeval tv;
 	struct timezone tz;
@@ -256,14 +256,14 @@ static void new_timer ()
 
 // PHOTON THREAD //
 
-void photon_thread(void *pidarg)
+void photon_thread (void *pidarg)
 {
 	PtArg_t args[4];
 	PtWidget_t *window;
 	PhDim_t dim;
 	PhArea_t area;
 	PtRawCallback_t keycb[] = {{ Ph_EV_KEY , ph_keypress_cb, NULL }};
-	int recpid = pidarg;
+	int recpid = (int)pidarg;
 
 	dim.w = GFX_WIDTH * scale;
 	dim.h = GFX_HEIGHT * scale;
@@ -464,9 +464,7 @@ static int ph_keypress_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 						- 0x41] << 8;
 				break;
 		}
-	}
-	else
-	{
+	} else {
 		switch (key_event->key_cap) {
 			case Pk_Control_L:
 				key_control &= ~1;
@@ -484,8 +482,7 @@ static int ph_keypress_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 	}
 
 
-	if (key)
-	{
+	if (key) {
 		pthread_sleepon_lock();
 
 		key_enqueue (key);
