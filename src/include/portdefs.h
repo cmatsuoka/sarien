@@ -5,6 +5,15 @@
  * set a different include path to override definitions in sarien.h
  */
 
+#ifdef DREAMCAST
+#define DC_BASE_PATH	"/cd"
+#define DC_GFX_PATH		"/cd/gfx"
+#undef USE_COMMAND_LINE
+#define UNKNOWN_GAME	"Unknown"
+char g_gamename[255];
+//char g_vmu_port[2];
+#endif
+
 #ifdef PALMOS
 #  include <PalmOS.h>
 #  undef USE_CONSOLE

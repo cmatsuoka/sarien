@@ -149,6 +149,9 @@ static UINT32 match_crc (UINT32 crc, char *path)
 
 			report ("AGI game detected: %s\n\n", t);
 			fclose (f);
+#ifdef DREAMCAST
+			strcpy(g_gamename, t);
+#endif
 			return ver;
 		}
 	}

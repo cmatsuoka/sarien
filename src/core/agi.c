@@ -162,6 +162,10 @@ int agi_detect_game (char *gn)
 {
 	int ec = err_OK;
 
+#ifdef DREAMCAST
+	strcpy(g_gamename, UNKNOWN_GAME);
+#endif
+
 	_D ("(gn = %s)", gn);
 	if (gn == NULL)		/* assume current directory */
 		gn = get_current_directory ();
