@@ -1,0 +1,6 @@
+
+#define ICON_MAIN	1
+#define MENU_MAIN	100
+#define ITEM_FILE_OPEN	1001
+#define ITEM_FILE_EXIT	1002
+#define ITEM_HELP_ABOUT	1003

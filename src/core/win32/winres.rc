@@ -1,1 +1,24 @@
-1 Icon "sarien.ico"
+
+#include <windows.h>
+#include "resource.h"
+
+
+ICON_MAIN Icon "sarien.ico"
+
+
+MENU_MAIN MENU
+BEGIN
+	POPUP "&File"
+	BEGIN
+		MENUITEM "&Open...", ITEM_FILE_OPEN
+		MENUITEM SEPARATOR
+		MENUITEM "E&xit", ITEM_FILE_EXIT
+	END
+
+	POPUP "&Help"
+	BEGIN
+		MENUITEM "A&bout Sarien...", ITEM_HELP_ABOUT
+	END
+END
+
+

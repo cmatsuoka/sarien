@@ -33,6 +33,7 @@ int get_app_dir (char *app_dir, unsigned int size)
 	}
 
 	_D ("app_dir = %s", app_dir);
+report (":%s\n", app_dir);
 
 	return x ? 0 : -1;
 }

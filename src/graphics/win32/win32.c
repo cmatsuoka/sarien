@@ -28,6 +28,7 @@
 #include "keyboard.h"
 #include "console.h"
 #include "win32.h"
+#include "../../core/win32/resource.h"
 
 #define TICK_SECONDS		18
 #define TICK_IN_MSEC		(1000 / (TICK_SECONDS))
@@ -472,6 +473,7 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 static int init_vidmode ()
 {
 	int i;
+	HANDLE hMenu;
 
 #if 0
 	/* FIXME: place this in an "About" box or something... */
@@ -492,12 +494,14 @@ static int init_vidmode ()
 	wndclass.style         = CS_HREDRAW | CS_VREDRAW;
 	wndclass.lpfnWndProc   = MainWndProc;
 	wndclass.hInstance     = GetModuleHandle(NULL);
-	wndclass.hIcon         = LoadIcon (NULL, IDI_APPLICATION);
+	/* wndclass.hIcon         = LoadIcon (NULL, IDI_APPLICATION); */
+	wndclass.hIcon         = LoadIcon (NULL, "ICON_MAIN");
 	wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW);
 	wndclass.hbrBackground = GetStockObject (BLACK_BRUSH);
 
-	if (!RegisterClass(&wndclass)) 
-	{
+	hMenu = LoadMenu (GetModuleHandle(NULL), "MENU_MAIN");	
+
+	if (!RegisterClass(&wndclass)) {
 		OutputDebugString("win32.c: init_vidmode(): can't register class");
 		g_err = err_Unk;
 		goto exx;
@@ -513,13 +517,12 @@ static int init_vidmode ()
 		ysize + GetSystemMetrics (SM_CYCAPTION) +
 			GetSystemMetrics (SM_CYFRAME),
 		NULL,
-		NULL,
+		hMenu,
 		NULL,
 		NULL 
 	);
 
-	if (NULL == hwndMain)
-	{
+	if (NULL == hwndMain) {
 		OutputDebugString("win32.c: init_vidmode(): can't register class");
 		g_err = err_Unk;
 		goto exx;
@@ -592,6 +595,7 @@ static int init_vidmode ()
 			break;
 		}
 	}
+
 exx:
 
 	return g_err;	
