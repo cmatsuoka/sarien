@@ -11,8 +11,7 @@ Directories:
 ./src/core		AGI interpreter core files
 ./src/graphics		Graphic drivers
 ./src/sound		Sound drivers
-./src/fileglob		Fileglobbing drivers
-./src/utils		Lance Ewing's AGI utilities
+./src/filesys		Filesystem access drivers
 
 The following compilers/environments can be used to build sarien:
 

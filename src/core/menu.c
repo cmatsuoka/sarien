@@ -22,22 +22,22 @@
 
 
 struct menu {
-	struct list_head list;
-	struct list_head down;
-	int index;
-	int width;
-	int height;
-	int col;
-	int wincol;
-	char *text;			/**< text of menu item */
+	struct list_head list;		/**< list head for menubar list */
+	struct list_head down;		/**< list head for menu options */
+	int index;			/**< number of menu in menubar */
+	int width;			/**< width of menu in characters */
+	int height;			/**< height of menu in characters */
+	int col;			/**< column of menubar entry */
+	int wincol;			/**< column of menu window */
+	char *text;			/**< menu name */
 };
 
 struct menu_option {
-	struct list_head list;
+	struct list_head list;		/**< list head for menu options */
 	int enabled;			/**< option is enabled or disabled */
 	int event;			/**< menu event */
-	int index;
-	char *text;			/**< text of menu item */
+	int index;			/**< number of option in this menu */
+	char *text;			/**< text of menu option */
 };
 
 static LIST_HEAD(menubar);
@@ -181,6 +181,22 @@ void init_menus ()
 
 void deinit_menus ()
 {
+	struct list_head *h, *v;
+	struct menu *m = NULL;
+	struct menu_option *d = NULL;
+
+	/* scan all menus for event number # */
+
+	list_for_each (h, &menubar, next) {
+		m = list_entry (h, struct menu, list);
+		list_for_each (v, &m->down, next) {	
+			d = list_entry (v, struct menu_option, list);
+			list_del (v);
+			free (d);
+		}
+		list_del (h);
+		free (m);
+	}
 }
 
 
@@ -250,6 +266,9 @@ int menu_keyhandler (int key)
 	static int v_cur_menu = 0;
 	static int menu_active = FALSE;
 	struct menu_option *d;
+	struct list_head *h;
+	struct menu *m;
+	static int button_used = 0;
 
 	if (!getflag (F_menus_work)) 
 		return FALSE;
@@ -264,11 +283,11 @@ int menu_keyhandler (int key)
 	 * Mouse handling
 	 */
 	if (mouse.button) {
-		struct list_head *h;
-		struct menu *m;
 		int hmenu, vmenu;
 
+		button_used = 1;	/* Button has been used at least once */
 		if (mouse.y <= CHAR_LINES) {
+			/* on the menubar */
 			hmenu = 0;
 
 			list_for_each (h, &menubar, next) {
@@ -282,12 +301,13 @@ int menu_keyhandler (int key)
 	
 			if (hmenu <= h_max_menu) {
 				if (h_cur_menu != hmenu) {
-					v_cur_menu = 0;
+					v_cur_menu = -1;
 					new_menu_selected (hmenu);
 				}
 				h_cur_menu = hmenu;
 			}
 		} else {
+			/* not in menubar */
 			struct menu_option *d;
 
 			vmenu = 0;
@@ -313,19 +333,42 @@ int menu_keyhandler (int key)
 				v_cur_menu = vmenu;
 			}
 		}
+	} else if (button_used) {
+		/* Button released */
+
+		_D (_D_WARN "button released!");
+
+		if (v_cur_menu < 0)
+			v_cur_menu = 0;
+
+		draw_menu_option_hilite (h_cur_menu, v_cur_menu);
+
+		if (mouse.y <= CHAR_LINES) {
+			/* on the menubar */
+		} else {
+			/* see which option we selected */
+			m = get_menu (h_cur_menu);
+			list_for_each (h, &m->down, next) {	
+				d = list_entry (h, struct menu_option, list);
+				if (mouse_over_text (2 + d->index, m->wincol + 1, d->text)) {
+					/* activate that option */
+					if (d->enabled) {
+						_D ("event %d registered", d->event);
+	    					game.ev_scan[d->event].occured = TRUE;
+	    					game.ev_scan[d->event].data = d->event;
+						goto exit_menu;
+					}
+				}
+			}
+			goto exit_menu;
+		}
 	}
-#if 0
-	else {
-		goto exit_menu;
-	}
-#endif
 
 	if (!menu_active) {
- 		/* calc size of vertical menus */
    		if (h_cur_menu >= 0) {
 			draw_menu_hilite (h_cur_menu);
-   			draw_menu_option (h_cur_menu);
-			if (v_cur_menu >= 0)
+			draw_menu_option (h_cur_menu);
+   			if (!button_used && v_cur_menu >= 0)
    				draw_menu_option_hilite(h_cur_menu, v_cur_menu);
 		}
 		menu_active = TRUE;
@@ -375,6 +418,7 @@ int menu_keyhandler (int key)
 	return TRUE;
 
 exit_menu:
+	button_used = 0;
 	show_pic ();
 	write_status ();
 
