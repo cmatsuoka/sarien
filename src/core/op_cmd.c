@@ -554,7 +554,7 @@ cmd(graphics_mode) {
 
 cmd(status) {
 	inventory();
-	setvar (V_sel_item, 0xff);
+/*	setvar (V_sel_item, 0xff); */
 }
 
 cmd(quit) {
