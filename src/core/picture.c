@@ -413,7 +413,7 @@ static INLINE int is_ok_fill_here (int x, int y)
 	if (pri_on && !scr_on && pri_colour != 4)
 		return get_pri_pixel (x, y) == 4;
 
-	return (get_scr_pixel (x, y) == 15 && scr_colour != 15);
+	return (scr_on && get_scr_pixel (x, y) == 15 && scr_colour != 15);
 }
 
 /**************************************************************************
