@@ -33,7 +33,7 @@ static char g_vmu_port[2];
 #else
 #  include <stdlib.h>
 #  include <assert.h>
-   typedef unsigned int Err;
+   typedef signed int Err;
 #endif
 
 #ifdef FAKE_PALMOS
