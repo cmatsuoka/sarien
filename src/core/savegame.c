@@ -100,12 +100,12 @@ void replay_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3, SINT16
 
 static char* strSig = "Sarien:";
 
-void write_uint8(FILE* f, SINT8 val)
+static void write_uint8(FILE* f, SINT8 val)
 {
 	fwrite(&val, 1, 1, f);
 }
 
-void write_sint16(FILE* f, SINT16 val)
+static void write_sint16(FILE* f, SINT16 val)
 {
 	static UINT8 buf[2];
 	buf[0] = (UINT8)((val>>8)&255);
@@ -113,7 +113,7 @@ void write_sint16(FILE* f, SINT16 val)
 	fwrite(buf, 1, 2, f);
 }
 
-void write_uint16(FILE* f, UINT16 val)
+static void write_uint16(FILE* f, UINT16 val)
 {
 	static UINT8 buf[2];
 	buf[0] = (UINT8)((val>>8)&255);
@@ -121,21 +121,21 @@ void write_uint16(FILE* f, UINT16 val)
 	fwrite(buf, 1, 2, f);
 }
 
-UINT8 read_uint8(FILE* f)
+static UINT8 read_uint8(FILE* f)
 {
 	static UINT8 buf[1];
 	fread(buf, 1, 1, f);
 	return buf[0];
 }
 
-UINT16 read_uint16(FILE* f)
+static UINT16 read_uint16(FILE* f)
 {
 	static UINT8 buf[2];
 	fread(buf, 1, 2, f);
 	return (buf[0]<<8)|buf[1];
 }
 
-SINT16 read_sint16(FILE* f)
+static SINT16 read_sint16(FILE* f)
 {
 	static UINT8 buf[2];
 	fread(buf, 1, 2, f);
@@ -143,28 +143,29 @@ SINT16 read_sint16(FILE* f)
 }
 
 
-void write_string(FILE* f, char* s)
+static void write_string(FILE* f, char* s)
 {
 	write_sint16(f, (SINT16)strlen(s));
 	fwrite(s, 1, strlen(s), f);
 }
 
-void read_string(FILE* f, char* s)
+static void read_string(FILE* f, char* s)
 {
 	SINT16 size = read_sint16(f);
 	fread(s, 1, size, f);
 	s[size] = (char)0;
 }
 
-void write_bytes(FILE* f, char* s, SINT16 size)
+static void write_bytes(FILE* f, char* s, SINT16 size)
 {
 	fwrite(s, 1, size, f);
 }
 
-void read_bytes(FILE* f, char* s, SINT16 size)
+static void read_bytes(FILE* f, char* s, SINT16 size)
 {
 	fread(s, 1, size, f);
 }
+
 
 int save_game(char* s, char* d)
 {
