@@ -153,6 +153,13 @@ int handle_controller (int key)
 		}
 	}
 
+	if (key == BUTTON_LEFT) {
+		if (getflag (F_menus_work) && mouse.y <= CHAR_LINES) {
+			new_input_mode (INPUT_MENU);
+			return TRUE;
+		}
+	}
+
 	if (game.player_control) {
 		int d = 0;
 
@@ -170,12 +177,7 @@ int handle_controller (int key)
 		}
 
 		/* Handle mouse button events */
-		switch (key) {
-		case BUTTON_LEFT:
-			if (mouse.y <= CHAR_LINES) {
-				new_input_mode (INPUT_MENU);
-				return TRUE;
-			}
+		if (key == BUTTON_LEFT) {
 			v->flags |= ADJ_EGO_XY;
 			v->parm1 = WIN_TO_PIC_X(mouse.x);
 			v->parm2 = WIN_TO_PIC_Y(mouse.y);
