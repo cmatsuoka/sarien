@@ -17,6 +17,7 @@
 
 #include "sarien.h"
 #include "agi.h"
+#include "rand.h"
 
 #define SOUND_PLAYING   0x01
 #define WAVEFORM_SIZE   64
@@ -287,7 +288,7 @@ void start_sound (int resnum, int flag)
 
 		for (i = 0; i < NUM_CHANNELS; i++) {
 			chn[i].flags = AGI_SOUND_LOOP | AGI_SOUND_ENVELOPE;
-			chn[i].ins = waveform;
+			chn[i].ins = waveform;	/* FIXME */
 			chn[i].size = WAVEFORM_SIZE;
 			chn[i].vol = 0;
 			chn[i].end = 0;
@@ -516,7 +517,7 @@ void play_agi_sound ()
 {
 	int i, freq;
 
-	for (playing = i = 0; i < (opt.soundemu == SOUND_EMU_PC ? 1 : 3); i++) {
+	for (playing = i = 0; i < (opt.soundemu == SOUND_EMU_PC ? 1 : 4); i++) {
 		playing |= !chn[i].end;
 
 		if (chn[i].end)
@@ -622,6 +623,21 @@ UINT32 mix_sound (void)
 			chn[c].env -= ENV_DECAY;
 	}
 
+	if (chn[3].vol) {
+		c = 3;
+		m = chn[c].flags & AGI_SOUND_ENVELOPE ?
+			chn[c].vol * chn[c].env >> 16 :
+			chn[c].vol;
+
+		for (i = 0; i < BUFFER_SIZE; i++) {
+			b = rnd(256) - 128;
+			snd_buffer[i] += (b * m) >> 3;
+		}
+
+		if (chn[c].env > chn[c].vol * ENV_SUSTAIN)
+			chn[c].env -= ENV_DECAY;
+	}
+
 	return BUFFER_SIZE;
 }
 
@@ -637,10 +653,10 @@ int load_instruments (char *fname)
 	char *path;
 
 	path = fixpath (NO_GAMEDIR, "sierrast");
-	/* report ("Loading samples: %s\n", path); */
 
 	if ((fp = fopen (path, "rb")) == NULL)
 		return err_BadFileOpen;
+	report ("Loading samples: %s\n", path);
 
 	if ((wave = malloc (0x10000)) == NULL)
 		return err_NotEnoughMemory;

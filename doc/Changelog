@@ -32,6 +32,7 @@ Revision History
 	- Merged Richard Houle's MacOS X port
 	- Merged Paul Hill's Amiga port
 	- Merged Vasyl Tsvirkunov's PocketPC port
+	- Added experimental support to noise channel
 
 0.6.2 (20010826)
 	- fixed cmd_clear_rect() to prevent crash with the IIgs demo

@@ -6,6 +6,7 @@ Directories:
 
 ./VC++6.0		Visual C++ files
 ./OSX-ProjectBuilder	MacOS X files
+./eVC3			PocketPC files
 ./doc			Documentation
 ./etc			Configuration files
 ./rulesets		Extra rulesets for different architectures
