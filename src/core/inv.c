@@ -131,7 +131,7 @@ void inventory ()
 					lx1 = joffs;
 					ly1 = cy;
 					lx2 = joffs+(jlen*8);
-					ls = fsel+1;		// ls ALWAYS >0
+					ls = fsel+1;		/* ls ALWAYS >0 */
 
 					print_text (object_name (intobj[fsel]),
 						0, lx1, (((cy/2)+1)<<3), 40,
@@ -142,11 +142,10 @@ void inventory ()
 			}
 
 			/* DF : FIXME : get_key() is not console aware */
-			//switch(wait_key())
+			/* switch(wait_key()) */
 
 			switch(get_key()) {
 			case KEY_ENTER:
-				//message_box ("Selected item %i", intobj[fsel]);
 				setvar(V_sel_item, intobj[fsel]);
 				report("show_obj() -> %i\n", intobj[fsel]);
 				setvar(25, intobj[fsel]);

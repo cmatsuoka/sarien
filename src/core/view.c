@@ -202,8 +202,6 @@ void add_view_table (int entry, int vw)
 			case 0:
 			case 1:
 			case 5:
-				// set_loop (entry, 0);
-				// In this case the loop number is retained from the previous object
 				break;
 			case 2:
 			case 3:
@@ -219,8 +217,12 @@ void add_view_table (int entry, int vw)
 		} else if (views[vw].num_loops == 4) {
 			switch(view_table[entry].direction) {
 			case 0:
-				// set_loop (entry, 0);
-				// In this case the loop number is retained from the previous object
+				/*
+				 * WRONG: set_loop (entry, 0);
+				 *
+				 * In this case the loop number is retained
+				 * from the previous object
+				 */
 				break;
 			case 1:
 				set_loop (entry, 3);
@@ -243,7 +245,7 @@ void add_view_table (int entry, int vw)
 			/* CM: Can't set loop to zero here, it produces
 			 * the SSSRA bug.
 			 *
-			 * set_loop (entry, 0);	// Default loop?
+			 * WRONG: set_loop (entry, 0);
 			 */
 		}
 
@@ -271,7 +273,6 @@ void add_view_table (int entry, int vw)
 
 void set_cel (int entry, int cel)
 {
-	//_D ("(entry = %d, cel = %d)", entry, cel);
 	if (cel >= VT_LOOP(view_table[entry]).num_cels) {
 		report ("Oops! attempt to set cel(=%d) > num_cels(=%d)\n",
 			cel, VT_LOOP(view_table[entry]).num_cels);
@@ -404,12 +405,12 @@ void draw_obj (int vt)
 	if (v->x_pos + cel_width > _WIDTH)
 		v->x_pos = _WIDTH - cel_width;
 
-	//if(v->y_pos + cel_height > _HEIGHT)
-	//      v->y_pos=_HEIGHT - cel_height;
+	if(v->y_pos + cel_height > _HEIGHT)
+	      v->y_pos=_HEIGHT - cel_height;
 
 	/* this also breaks kq2 intro etc!! hmmmm */
-	//if(v->y_pos + cel_height > 200)	// _HEIGHT=168, breaks op:recon
-	//      v->y_pos=200- cel_height;
+	if(v->y_pos + cel_height > 200)	/* _HEIGHT=168, breaks op:recon */
+	      v->y_pos=200- cel_height;
 #endif
 
 	/* save bg co-ords */
@@ -460,7 +461,6 @@ int decode_view (int resnum)
 	_D ("(%d)", resnum);
 	v = views[resnum].rdata;
 
-	//views[resnum].loop = NULL;
 	views[resnum].num_loops = 0;
 
 	if (v == NULL)
@@ -485,7 +485,6 @@ int decode_view (int resnum)
 	/* clean out all our loop data */
 	for(loop=0; loop<views[resnum].num_loops; loop++) {
 		views[resnum].loop[loop].num_cels = 0;
-		//views[resnum].loop[loop].cel = NULL;
 	}
 
 	/* decode all of the loops in this view */
@@ -501,7 +500,6 @@ int decode_view (int resnum)
 		if (vl->cel == NULL) {
 			free (views[resnum].loop);
 			views[resnum].num_loops = 0;
-			//views[resnum].loop=NULL;
 			return err_NotEnoughMemory;
 		}
 
@@ -529,7 +527,6 @@ int decode_view (int resnum)
     					free(views[resnum].loop[loop].cel);
 
     				free(views[resnum].loop);
-    				//views[resnum].loop=NULL;
     				views[resnum].num_loops = 0;
     				return err_NotEnoughMemory;
     			}

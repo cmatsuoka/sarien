@@ -221,8 +221,6 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 
 	init_machine (argc, argv);
 	screen_mode = GFX_MODE;
-	//clock_count = 0;
-	//clock_ticks = 0;
 
 	font = font_english;
 
@@ -280,7 +278,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 
     				game.horizon = HORIZON;
     				game.control_mode = CONTROL_PROGRAM;
-    				//o_status = 5;	/* FIXME */
+    				/* o_status = 5; */	/* FIXME */
 
     				ec = run_game();
     			}

@@ -348,9 +348,7 @@ void update_status_line (int force)
 	if (game.line_min_print == 0)
 		return;
 
-	if (!game.status_line) {
-		//print_status ("                                        ");
-	} else {
+	if (game.status_line) {
 		char x[64];
 		sprintf (x, " Score:%i of %03i", o_score, getvar(V_max_score));
 		print_status ("%-17s             Sound:%s ", x,

@@ -311,7 +311,7 @@ void handle_keys ()
 
 		/* remove all the crap from their strings */
 		p = (UINT8*) buffer;
-		while ( (*p == 0x20) && (*p) )	//Remove all leading spaces
+		while ((*p == 0x20) && (*p))	/* Remove all leading spaces */
 			p++;
 
 		if ( IsGetString ) {

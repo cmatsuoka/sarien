@@ -1537,7 +1537,8 @@ void cmd_version ()
 	char ver3_msg[]=
     		"\n"
        		"                             \n\n"
-       		"  Emulating AGI v%x.002.%03x\n"; // no Sierra as it wraps textbox
+       		"  Emulating AGI v%x.002.%03x\n";
+		/* no Sierra as it wraps textbox */
 	char *p, *q;
 	int ver, maj, min;
 

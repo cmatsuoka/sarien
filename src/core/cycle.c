@@ -53,7 +53,7 @@ static void update_objects ()
 			VT.cycle_time_count++;
 
 			if (VT.cycle_time_count <= VT.cycle_time) {
-				//--draw_obj(i);
+				/* --draw_obj(i); */
 				continue;
 			}
 

@@ -103,10 +103,12 @@ int agi_init ()
 	if (game.game_flags & ID_AGDS)
 		printf ("AGDS mode enabled\n");
 
-	//screen_mode=GFX_MODE;
+#if 0
+	screen_mode=GFX_MODE;
 	/*allow_kyb_input=__FALSE;*/
-	//txt_fg=0xF;
-	//txt_bg=0x0;
+	txt_fg=0xF;
+	txt_bg=0x0;
+#endif
 
 	ec = loader->init ();		/* load vol files, etc */
 

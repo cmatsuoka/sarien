@@ -214,7 +214,7 @@ void do_menus ()
 	release_sprites ();
 	save_screen ();
 	redraw_sprites ();
-	//put_block (0, 0, GFX_WIDTH - 1, console.y);
+	/* put_block (0, 0, GFX_WIDTH - 1, console.y); */
 	put_screen ();
 
 	/* calc size of horizontal menu */
@@ -263,7 +263,7 @@ void do_menus ()
 			release_sprites ();
 			restore_screen_area ();
 			redraw_sprites ();
-			//put_block (0, 0, GFX_WIDTH - 1, console.y);
+			/* put_block (0, 0, GFX_WIDTH - 1, console.y); */
 			put_screen ();
 
 			/* calc size of vertical menus */
@@ -281,7 +281,7 @@ void do_menus ()
 			release_sprites ();
 			restore_screen_area ();
 			redraw_sprites ();
-			//put_block (0, 0, GFX_WIDTH - 1, console.y);
+			/* put_block (0, 0, GFX_WIDTH - 1, console.y); */
 			put_screen ();
 
 			/* calc size of vertical menus */

@@ -352,7 +352,7 @@ int load_game (char *s)
 	fclose (f);
 
 	cmd_draw_pic (getvar (V_cur_room));
-	//redraw_sprites ();
+	/* redraw_sprites (); */
 	game.new_room_num = getvar (V_cur_room);
 	game.ego_in_new_room = TRUE;
 	game.exit_all_logics = TRUE;

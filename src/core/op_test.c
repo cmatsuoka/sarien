@@ -26,7 +26,6 @@ extern struct agi_logic logics[];
 extern struct agi_view views[];
 extern struct agi_view_table view_table[];
 
-//UINT16	test_if_code	(UINT16);
 static UINT8	test_obj_right	(UINT8, UINT8, UINT8, UINT8, UINT8);
 static UINT8	test_obj_centre	(UINT8, UINT8, UINT8, UINT8, UINT8);
 static UINT8	test_obj_in_box	(UINT8, UINT8, UINT8, UINT8, UINT8);
