@@ -42,15 +42,13 @@ static void help (int argc, char **argv)
 #endif
 "  -E --emulate-sound {type}\n"
 "                     Emulate the sound of Sierra AGI running in different\n"
-"                     computers. Valid emulations are pc and mac\n"
+"                     computers. Valid emulations are pc, mac and amiga\n"
 #if 0
 "  -l -force-loading  Force loading of all volume information at start of\n"
 "                     game which will give you faster play, this also implies\n"
 "                     the caching.\n"
 #endif
-#if 0
 "  -L --list-games    List all the games in the ID file\n"
-#endif
 "  -F --full-screen   Run in full-screen mode if allowed by the graphics device\n"
 "  -g --no-gfx-optimizations\n"
 "                     Disable optimized graphic driver hacks (if available).\n"
@@ -197,6 +195,8 @@ int parse_cli (int argc, char **argv)
 				opt.soundemu = SOUND_EMU_PC;
 			else if (!strcmp (optarg, "mac"))
 				opt.soundemu = SOUND_EMU_MAC;
+			else if (!strcmp (optarg, "amiga"))
+				opt.soundemu = SOUND_EMU_AMIGA;
 			else {
 				fprintf (stderr, "Sound emulation \"%s\" is "
 					"unknown\n", optarg);

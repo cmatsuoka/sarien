@@ -15,6 +15,7 @@ Revision History
 	- unk_xxx command names changed to official names
 	- added Amiga Gold Rush! 2.05 game ID
 	- added support to Amiga v3 games
+	- added support to Amiga sound emulation
 
 0.6.1 (20010722)
 	- fixed QNX build and Photon driver

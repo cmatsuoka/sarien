@@ -368,6 +368,7 @@ int init_sound ()
 		waveform = waveform_ramp;
 		env = TRUE;
 		break;
+	case SOUND_EMU_AMIGA:
 	case SOUND_EMU_PC:
 		waveform = waveform_square;
 		break;
