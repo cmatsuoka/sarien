@@ -94,7 +94,7 @@ void patch_logic (int n)
 {
 	switch(n) {
 #if 0
-	/* ALT-Z in the questions takes care of that */
+	/* ALT-X in the questions takes care of that */
 	case 6:
 		/* lsl1 bypass questions */
 		if (!strcmp (game.id, "LLLLL")) {
