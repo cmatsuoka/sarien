@@ -136,7 +136,7 @@ dnl		AC_CHECK_HEADERS(X11/extensions/xf86dga.h \
 dnl			X11/extensions/xf86vmode.h)
 
 		if test "${ac_cv_header_X11_extensions_XShm_h}" = "yes"; then
-			CFLAGS="${CFLAGS} -DMITSHM -D_XOPEN_SOURCE -DBSD_SOURCE"
+			CFLAGS="${CFLAGS} -DMITSHM -D_XOPEN_SOURCE -D_BSD_SOURCE"
 			X_LIBS="${X_LIBS} -lXext -lX11"
 		else
 			X_LIBS="${X_LIBS} -lX11"
