@@ -717,7 +717,7 @@ static int ph_mouse_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb)
 	}
 
         /* If all buttons released */
-	if (cb->event->type == Ph_EV_BUT_RELEASE)
+	if (cb->event->type == Ph_EV_BUT_RELEASE && mouse_event->button_state == 0)
 		ph_mouse.sarien_mouse.button = FALSE;
 
 	ph_mouse.sarien_mouse.x = PhGetRects(cb->event)->ul.x / opt.scale;
