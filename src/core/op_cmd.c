@@ -767,8 +767,13 @@ cmd(echo_line) {
 }
 
 cmd(clear_lines) {
-	clear_lines (p0, p1, p2);
-	flush_lines (p0, p1);
+	UINT8 l;
+
+	/* Residence 44 calls clear.lines(24,0,0), see bug #558423 */
+	l = p1 ? p1 : p0;
+
+	clear_lines (p0, l, p2);
+	flush_lines (p0, l);
 }
 
 cmd(print) {
