@@ -22,20 +22,16 @@ static UINT8 *words;		/* words in the game */
 static UINT32 words_flen;	/* length of word memory */
 
 
-#ifdef HAVE_STRNDUP
-
-char*	strndup		(const char *s, size_t n);
-
-#else
-
-static char *strndup (char* src, int n)
+/*
+ * Local implementation to avoid problems with strndup() used by
+ * gcc 3.2 Cygwin (see #635984)
+ */
+static char *my_strndup (char* src, int n)
 {
 	char *tmp = strncpy (malloc(n + 1), src, n);
 	tmp[n] = 0;
 	return tmp;
 }
-
-#endif
 
 
 int load_words (char *fname)
@@ -184,7 +180,7 @@ void dictionary_words (char *msg)
  			/* an OK word */
  			/* _D (_D_WARN "ok word (%d)", wc1); */
  			game.ego_words[game.num_ego_words].id = wid;
- 			game.ego_words[game.num_ego_words].word = strndup(p, wlen);
+ 			game.ego_words[game.num_ego_words].word = my_strndup(p, wlen);
  			game.num_ego_words++;
  			p += wlen;
  			break;

@@ -368,7 +368,7 @@ AC_PROG_GCC_TRADITIONAL
 AC_FUNC_MEMCMP
 dnl AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS(strndup vsnprintf gettimeofday getopt_long)
+AC_CHECK_FUNCS(vsnprintf gettimeofday getopt_long)
 
 AC_MSG_RESULT([----------------------------------------------------------])
 AC_MSG_RESULT([using console driver: ${CONSOLE_DRIVER}])
