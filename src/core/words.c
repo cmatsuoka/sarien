@@ -201,10 +201,8 @@ int show_words ()
 	unsigned char x[128];
 	unsigned char c;
 	int	num_words;
-	int num_syns;
 
 	num_words=0;
-	num_syns=0;
 
 	/* scan for first entry with words */
 	for (wc = woff = 0; woff == 0 && woff < words_flen; wc += 2)
@@ -215,13 +213,11 @@ int show_words ()
 		return err_OK;
 
 	/* count all the words in the list */
-	for(sc=0, wc=0; woff<words_flen; )
-	{
+	for(sc=0, wc=0; woff<words_flen; ) {
 		c = hilo_getbyte (words+woff);
 		woff++;
 
-		if(c > 0x80)
-		{
+		if(c > 0x80) {
 			wc++;
 			wid = hilo_getword (words+woff);
 			woff += 2;
@@ -230,7 +226,6 @@ int show_words ()
 		}
 	}
 	num_words = wc;
-	num_syns = sc;
 
 	/* scan for frist words entry */
 	for(wc=0, woff=0; woff==0; wc+=2)

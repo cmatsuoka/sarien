@@ -92,14 +92,9 @@ static int show_items ()
 
 static void select_items (int n)
 {
-	unsigned int cy;
 	int fsel = 0;
 
-	cy = 2;
-
 	while (42) {
-		cy = 2 + fsel;
-
 		if (n > 0)
 			print_item (fsel, STATUS_BG, STATUS_FG);
 

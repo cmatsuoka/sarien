@@ -28,14 +28,14 @@
 #define TABLE_SIZE	18041		/* strange number */
 #define START_BITS	9
 
-SINT32	BITS, MAX_VALUE, MAX_CODE;
-UINT32	*prefix_code;
-UINT8	*append_character;
-UINT8	*decode_stack;
+static SINT32	BITS  /*, MAX_VALUE, MAX_CODE*/;
+static UINT32	*prefix_code;
+static UINT8	*append_character;
+static UINT8	*decode_stack;
 static SINT32 input_bit_count=0;	/* Number of bits in input bit buffer */
 static UINT32 input_bit_buffer=0L;
 
-void initLZW ()
+static void initLZW ()
 {
 	decode_stack = calloc (1, 8192);
 	prefix_code= malloc (TABLE_SIZE * sizeof(UINT32));
@@ -44,13 +44,14 @@ void initLZW ()
 	input_bit_buffer = 0L;
 }
 
-void closeLZW ()
+static void closeLZW ()
 {
 	free (decode_stack);
 	free (prefix_code);
 	free (append_character);
 }
 
+#if 0
 /***************************************************************************
 ** setBITS
 **
@@ -68,6 +69,7 @@ int setBITS (SINT32 value)
 
 	return FALSE;
 }
+#endif
 
 /***************************************************************************
 ** decode_string
@@ -76,7 +78,7 @@ int setBITS (SINT32 value)
 ** represents. The string is returned as a stack, i.e. the characters are
 ** in reverse order.
 ***************************************************************************/
-UINT8 *decode_string(UINT8 *buffer, UINT32 code)
+static UINT8 *decode_string(UINT8 *buffer, UINT32 code)
 {
 	UINT32 i;
 
@@ -98,7 +100,7 @@ UINT8 *decode_string(UINT8 *buffer, UINT32 code)
 **
 ** Purpose: To return the next code from the input buffer.
 ***************************************************************************/
-UINT32 input_code (UINT8 **input)
+static UINT32 input_code (UINT8 **input)
 {
 	UINT32 r;
 
@@ -127,13 +129,14 @@ UINT32 input_code (UINT8 **input)
 ***************************************************************************/
 void LZW_expand(UINT8 *in, UINT8 *out, SINT32 len)
 {
-	SINT32 lzwnext, lzwnew, lzwold;
-	SINT32 c, bits;
+	SINT32 c, lzwnext, lzwnew, lzwold;
 	UINT8 *s, *end;
 
 	initLZW();
 
+#if 0
 	bits = setBITS(START_BITS);	/* Starts at 9-bits */
+#endif
 	lzwnext = 257;			/* Next available code to define */
 
 	end = (unsigned char *)((long)out + (long)len);
@@ -146,7 +149,9 @@ void LZW_expand(UINT8 *in, UINT8 *out, SINT32 len)
 		if (lzwnew == 0x100) {
 			/* Code to "start over" */
 			lzwnext = 258;
+#if 0
 			bits = setBITS(START_BITS);
+#endif
 			lzwold = input_code(&in);
 			c = lzwold;
 			*out++ = (char)c;
@@ -167,8 +172,10 @@ void LZW_expand(UINT8 *in, UINT8 *out, SINT32 len)
 			while (s >= decode_stack)
 				*out++ = *s--;
 
+#if 0
 			if (lzwnext > MAX_CODE)
 				bits = setBITS(BITS + 1);
+#endif
 
 			prefix_code[lzwnext] = lzwold;
 			append_character[lzwnext] = c;
