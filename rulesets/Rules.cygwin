@@ -1,0 +1,75 @@
+# $Id$
+
+prefix		= /usr/local
+exec_prefix 	= /usr/local
+BIN_DIR		= ${exec_prefix}/bin
+LIB_DIR		= ${exec_prefix}/lib
+MAN_DIR		= ${prefix}/man/man1
+
+CC		= gcc
+CFLAGS      = -g -O2 -Wall -DINLINE=inline -DSTDC_HEADERS=1 -DHAVE_STRING_H=1 -DHAVE_GETOPT_H=1 -DHAVE_DIRENT_H=1 -DHAVE_TIME_H=1 -DX_DISPLAY_MISSING=1 -DTIME_WITH_SYS_TIME=1 -DHAVE_VPRINTF=1 -DHAVE_VSNPRINTF=1 -DHAVE_GETTIMEOFDAY=1 -DHAVE_GETOPT_LONG=1  -DVERSION='"$(VERSION)"' -U_TRACE
+LD		= gcc
+LDFLAGS     = -o $@ -Wl,--subsystem,windows,-e,_mainCRTStartup
+LIBS     = -lgdi32 -lcomdlg32 -lwinmm #-lefence
+RANLIB		= ranlib
+INSTALL		= /usr/bin/install -c
+#X11CFLAGS   = 
+#X11LIBS     =  -lX11 
+SHELL		= /bin/sh
+MAKEFILE	= Makefile
+STRIP		= strip
+
+SOUND_DRIVER   = win32
+CONSOLE_DRIVER = win32
+FILEIO_DRIVER	= unix
+MAIN_FILE	= winmain
+
+#
+# Ideally it should not be necessary to tweak parameters below this line
+#
+
+.c.o:
+	$(CC) -c $(CFLAGS) $(XCFLAGS) -o $@ $<
+
+.o.so:
+	ld -shared -o $@ $<
+
+dummy:
+
+clean distclean::
+	rm -f *.o errlist depend $(BIN) $(CFILES)
+ifdef DDIRS
+	@for i in $(DDIRS); do \
+		(cd $$i; [ -f $(MAKEFILE) ] && $(MAKE) $@) \
+	done; true
+endif
+
+distclean::
+	rm -f $(DCFILES)
+
+depend:       
+	@echo Building dependencies...
+	@$(CC) $(CFLAGS) $(XCFLAGS) -M $(OBJS:.o=.c) $(XDEPS:.o=.c) >$@
+
+$(OBJS): $(MAKEFILE)
+
+$(LIB): $(LIB)($(OBJS) $(XOBJS))
+	$(RANLIB) $(LIB)
+
+subdist:
+	cp -dp $(DFILES) $(XDFILES) $(DISTDIR)
+ifdef DDIRS
+	for i in $(DDIRS); do \
+		mkdir $(DISTDIR)/$$i; \
+		( cd $$i; \
+		if [ -f $(MAKEFILE) ]; then \
+			$(MAKE) VERSION=$(VERSION) DISTDIR=../$(DISTDIR)/$$i \
+			subdist; \
+		else \
+			for j in *; do \
+				[ -f $$j ] && cp -dp $$j ../$(DISTDIR)/$$i; \
+			done; \
+		fi; ) \
+	done
+endif
+
