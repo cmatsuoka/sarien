@@ -34,7 +34,7 @@ int agi_init ()
 {
 	int ec, i;
 
-	_D("()");
+	_D("initializing");
 
 	/* reset all flags to false and all variables to 0 */
 	for (i = 0; i < MAX_FLAGS; i++)

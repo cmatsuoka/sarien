@@ -79,7 +79,6 @@ int decode_logic (int n)
 
 void unload_logic (int n)
 {
-	_D (_D_WARN "unload logic %d", n);
 	if (game.dir_logic[n].flags & RES_LOADED) {
 		free (game.logics[n].data);
 		if (game.logics[n].num_texts)

@@ -64,6 +64,7 @@ int agi_v3_detect_game (char *gn)
 		agi_v3.int_version = 0x3149;	/* setup for 3.002.149 */
 		ec = v3id_game();
 	} else {
+		_D (_D_CRIT "not found");
 		ec = err_InvalidAGIFile;
 	}
 

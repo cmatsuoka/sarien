@@ -116,11 +116,19 @@ char *fixpath (int flag, char *fname)
 
 	if (path[strlen (path) - 1] == '.')
 		path[strlen (path) - 1] = 0;
+	_D ("path = %s", path);
 
-	if ((s = match (path, 1)) != NULL)
+	if ((s = match (path, 1)) != NULL) {
 		strcpy (path, s);
-	else
-		path[0] = 0;
+	} else {
+		/* For amiga games */
+		strcat (path, "s");
+		if ((s = match (path, 1)) != NULL) {
+			strcpy (path, s);
+		} else {
+			path[0] = 0;
+		}
+	}
 	
 	_D ("fixed path = %s", path);
 

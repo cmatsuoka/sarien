@@ -13,6 +13,8 @@ Revision History
 	- reimplemented options -C (show game CRC), -L (list games)
 	  and -P (picture viewer)
 	- unk_xxx command names changed to official names
+	- added Amiga Gold Rush! 2.05 game ID
+	- added support to Amiga v3 games
 
 0.6.1 (20010722)
 	- fixed QNX build and Photon driver
