@@ -114,7 +114,7 @@ int decode_view (int n)
 	assert (v != NULL);
 
 	game.views[n].descr = lohi_getword (v + 3) ?
-		strdup ((char*)v + lohi_getword (v + 3)) : strdup ("");
+		(char*)(v + lohi_getword (v + 3)) : (char*)(v+3);
 
 	/* if no loops exist, return! */
 	if ((game.views[n].num_loops = lohi_getbyte (v + 2)) == 0)
@@ -186,7 +186,6 @@ void unload_view (int n)
 	}
 
 	free (game.views[n].loop);
-	free (game.views[n].descr);
 	free (game.views[n].rdata);
 
 	game.dir_view[n].flags &= ~RES_LOADED;
