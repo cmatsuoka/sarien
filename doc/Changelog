@@ -8,6 +8,8 @@ Revision History
 	- sprites use a pre-allocated buffer to store backgrounds
 	- encoding flood fill coordinates in a 16-bit integer
 	- unloading non-cached agi resources on new room
+	- using scanline-based flood fill to reduce memory usage
+	- reduced memory allocation in shake.screen
 
 0.7.0 (20011122)
 	- added QNX4 native sound driver (untested)

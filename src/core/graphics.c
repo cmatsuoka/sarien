@@ -185,41 +185,60 @@ static void init_console ()
 
 
 
-
-/* Based on LAGII 0.1.5 by XoXus */
+/* FIXME:  main_cycle() calls shouldn't be here! */
 void shake_screen (int n)
 {
 #define MAG 3
-	int i;
-	UINT8 *b, *c;
+	int i, j;
+	UINT8 *h, *v;
 
-	if ((b = (UINT8*)malloc(GFX_WIDTH*GFX_HEIGHT)) == NULL)
+	if ((h = malloc (GFX_WIDTH * MAG)) == NULL)
 		return;
 
-	if ((c = (UINT8*)malloc(GFX_WIDTH*GFX_HEIGHT)) == NULL) {
-		free (b);
+	if ((v = malloc (MAG * (GFX_HEIGHT - MAG))) == NULL) {
+		free (h);
 		return;
 	}
+	
+	for (i = 0; i < GFX_HEIGHT - MAG; i++)
+		memcpy (v + i * MAG, sarien_screen + i * GFX_WIDTH, MAG);
 
+	for (i = 0; i < MAG; i++) {
+		memcpy (h + i * GFX_WIDTH, sarien_screen + i * GFX_WIDTH,
+			GFX_WIDTH);
+	}
+ 
 	commit_both ();		/* Fixed SQ1 demo */
 
-	memset (c, 0, GFX_WIDTH * GFX_HEIGHT);
-	memcpy (b, sarien_screen, GFX_WIDTH * GFX_HEIGHT);
-	for (i = 0; i < (GFX_HEIGHT - MAG); i++)
-		memcpy (&c[GFX_WIDTH * (i + MAG) + MAG],
-			&b[GFX_WIDTH * i], GFX_WIDTH - MAG);
+	for (j = 0; j < (2 * n); j++) {
+		for (i = 0; i < (GFX_HEIGHT - MAG); i++) {
+			memmove (&sarien_screen[GFX_WIDTH * i],
+				&sarien_screen[GFX_WIDTH * (i + MAG) + MAG],
+				GFX_WIDTH - MAG);
+		}
 
-	for (i = 0; i < (2 * n); i++) {
-		main_cycle ();
-		memcpy (sarien_screen, c, GFX_WIDTH * GFX_HEIGHT);
 		flush_block (0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
 		main_cycle ();
-		memcpy (sarien_screen, b, GFX_WIDTH * GFX_HEIGHT);
+
+		for (i = GFX_HEIGHT - MAG - 1; i >= 0; i--) {
+			memmove (&sarien_screen[GFX_WIDTH * (i + MAG) + MAG],
+				&sarien_screen[GFX_WIDTH * i], GFX_WIDTH - MAG);
+		}
+
 		flush_block (0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
+		main_cycle ();
 	}
 
-	free (c);
-	free (b);
+	for (i = 0; i < GFX_HEIGHT - MAG; i++)
+		memcpy (sarien_screen + i * GFX_WIDTH, v + i * MAG, MAG);
+
+	for (i = 0; i < MAG; i++) {
+		memcpy (sarien_screen + i * GFX_WIDTH,
+			h + i * GFX_WIDTH, GFX_WIDTH);
+	}
+
+	free (v);
+	free (h);
 #undef MAG
 }
 
