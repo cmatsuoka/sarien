@@ -50,9 +50,6 @@ static int key_control = 0;
 static int key_alt = 0;
 static unsigned int rgb_palette[32];
 
-static int __argc;
-static char **__argv;
-
 #ifdef __DICE__
 extern struct GfxBase *GfxBase;
 #endif
@@ -319,27 +316,12 @@ printf("..................................................\n");
 int init_machine (int argc, char **argv)
 {
 	gfx = &GFX_amiga;
-
-	/* Open the Amiga's timer.device */
-	opentimer();			/* !!! check result! */
-
-	__argc = argc;
-	__argv = argv;
-	scale = opt.scale;
-
-	/* ximage will be used to hold the chunky gfx data */
-	ximage = malloc ((GFX_WIDTH * scale) * (GFX_HEIGHT * scale));
-	if (!ximage) return err_Unk;
-
 	return err_OK;
 }
 
 
 int deinit_machine(void)
 {
-	if (ximage) free (ximage);
-	ximage = NULL;
-	closetimer();
 	return err_OK;
 }
 
@@ -381,8 +363,16 @@ static int Amiga_init_vidmode (void)
 	char *PubScreen=NULL;
 	int i;
 
-	if (opt.fullscreen)
-	{
+	scale = opt.scale;
+
+	/* Open the Amiga's timer.device */
+	opentimer();			/* !!! check result! */
+
+	/* ximage will be used to hold the chunky gfx data */
+	ximage = malloc ((GFX_WIDTH * scale) * (GFX_HEIGHT * scale));
+	if (!ximage) return err_Unk;
+
+	if (opt.fullscreen) {
 		ULONG AmigaModeID=-1;	/* Amiga screen ID    */
 		/* Running full screen */
 		AmigaModeID = BestModeID (
@@ -541,6 +531,10 @@ static int Amiga_deinit_vidmode (void)
 			UnlockPubScreen(NULL,screen);
 		screen = NULL;
 	}
+
+	if (ximage) free (ximage);
+	ximage = NULL;
+	closetimer();
 
 	return err_OK;
 }

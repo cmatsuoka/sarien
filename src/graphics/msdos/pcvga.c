@@ -74,24 +74,12 @@ static void pc_timer ()
 int init_machine (int argc, char **argv)
 {
 	gfx = &gfx_pcvga;
-
-	screen_buffer = calloc (GFX_WIDTH, GFX_HEIGHT);
-
-	clock_count = 0;
-	clock_ticks = 0;
-
-	prev_08 = _dos_getvect (0x08);
-	_dos_setvect (0x08, tick_increment);
-
 	return err_OK;
 }
 
 
 int deinit_machine ()
 {
-	free (screen_buffer);
-	_dos_setvect (0x08, prev_08);
-
 	return err_OK;
 }
 
@@ -100,6 +88,14 @@ static int pc_init_vidmode ()
 {
 	union REGS r;
 	int i;
+
+	clock_count = 0;
+	clock_ticks = 0;
+
+	screen_buffer = calloc (GFX_WIDTH, GFX_HEIGHT);
+
+	prev_08 = _dos_getvect (0x08);
+	_dos_setvect (0x08, tick_increment);
 
 	memset (&r, 0x0, sizeof(union REGS));
 #ifdef __WATCOMC__
@@ -135,6 +131,9 @@ static int pc_deinit_vidmode ()
 	r.x.ax = 0x03;
 	int86 (0x10, &r, &r);
 #endif
+
+	free (screen_buffer);
+	_dos_setvect (0x08, prev_08);
 
 	return err_OK;
 }

@@ -80,25 +80,12 @@ static void pc_timer ()
 int init_machine (int argc, char **argv)
 {
 	gfx = &gfx_pccga;
-
-	screen_buffer = calloc (GFX_WIDTH / 4, GFX_HEIGHT);
-
-	clock_count = 0;
-	clock_ticks = 0;
-
-	prev_08 = _dos_getvect (0x08);
-	_dos_setvect (0x08, tick_increment);
-	opt.cgaemu = TRUE;
-
 	return err_OK;
 }
 
 
 int deinit_machine ()
 {
-	free (screen_buffer);
-	_dos_setvect (0x08, prev_08);
-
 	return err_OK;
 }
 
@@ -107,6 +94,15 @@ static int pc_init_vidmode ()
 {
 	union REGS r;
 	int i;
+
+	clock_count = 0;
+	clock_ticks = 0;
+
+	screen_buffer = calloc (GFX_WIDTH / 4, GFX_HEIGHT);
+
+	prev_08 = _dos_getvect (0x08);
+	_dos_setvect (0x08, tick_increment);
+	opt.cgaemu = TRUE;
 
 	memset (&r, 0x0, sizeof(union REGS));
 	r.x.ax = 0x4;
@@ -123,6 +119,9 @@ static int pc_deinit_vidmode ()
 	memset (&r, 0x0, sizeof(union REGS));
 	r.x.ax = 0x03;
 	int86 (0x10, &r, &r);
+
+	free (screen_buffer);
+	_dos_setvect (0x08, prev_08);
 
 	return err_OK;
 }

@@ -35,7 +35,14 @@ BIN	= ..\bin\sarien.exe
 
 #		*Explicit Rules*
 
-binary: sarien.cfg $(LIB)
+vga: sarien.cfg $(LIB) pcvga.obj
+	$(TLIB) $(LIB) /C -pccga.obj
+	$(TLIB) $(LIB) /C +lib\pcvga.obj
+	$(CC) -e$(BIN) lib\main.obj $(LIB)
+
+cga: sarien.cfg $(LIB) pccga.obj
+	$(TLIB) $(LIB) /C -pcvga.obj
+	$(TLIB) $(LIB) /C +lib\pccga.obj
 	$(CC) -e$(BIN) lib\main.obj $(LIB)
 
 $(LIB): sarien.cfg $(OBJS) main.obj
@@ -201,6 +208,9 @@ dummy.obj: sarien.cfg src\sound\dummy\dummy.c
 
 pcvga.obj: sarien.cfg src\graphics\msdos\pcvga.c 
 	$(CC) -c src\graphics\msdos\pcvga.c
+
+pccga.obj: sarien.cfg src\graphics\msdos\pccga.c 
+	$(CC) -c src\graphics\msdos\pccga.c
 
 #		*Compiler Configuration File*
 #

@@ -278,7 +278,7 @@ static void ccmd_load ()
 static void ccmd_quit ()
 {
 	deinit_video ();
-	deinit_machine ();
+	/* deinit_machine (); */
 	exit (0);
 }
 

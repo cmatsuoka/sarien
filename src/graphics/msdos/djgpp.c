@@ -59,6 +59,20 @@ END_OF_FUNCTION (tick_increment);
 int init_machine (int argc, char **argv)
 {
 	gfx = &gfx_pcdos;
+	return err_OK;
+}
+
+
+int deinit_machine ()
+{
+	return err_OK;
+}
+
+
+static int init_vidmode ()
+{
+	int i;
+	RGB p;
 
 	install_keyboard();
 	install_timer();
@@ -73,26 +87,6 @@ int init_machine (int argc, char **argv)
 
 	clock_count = 0;
 	clock_ticks = 0;
-
-	return err_OK;
-}
-
-
-int deinit_machine ()
-{
-	destroy_bitmap (screen_buffer);
-	remove_int (tick_increment);
-
-	allegro_exit();
-
-	return err_OK;
-}
-
-
-static int init_vidmode ()
-{
-	int i;
-	RGB p;
 
 	set_gfx_mode(GFX_VGA, GFX_WIDTH, GFX_HEIGHT, 0, 0);
 
@@ -110,6 +104,11 @@ static int init_vidmode ()
 static int deinit_vidmode (void)
 {
 	set_gfx_mode (GFX_TEXT, 0, 0, 0, 0);
+	destroy_bitmap (screen_buffer);
+	remove_int (tick_increment);
+
+	allegro_exit();
+
 	return err_OK;
 }
 

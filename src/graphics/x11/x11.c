@@ -52,9 +52,6 @@ static int key_control = 0;
 static int key_alt = 0;
 static unsigned int rgb_palette[32];
 
-static int __argc;
-static char **__argv;
-
 
 #define KEY_QUEUE_SIZE 16
 
@@ -553,6 +550,8 @@ static int init_vidmode ()
 
 	_D ("()");
 
+	scale = opt.scale;
+
 	fprintf (stderr, "x11: X11 support by claudio@helllabs.org\n");
 
 	if ((display = XOpenDisplay (NULL)) == NULL) {
@@ -604,8 +603,8 @@ static int init_vidmode ()
 	hints.input = 1;
 	classhint.res_name = "sarien";
 	classhint.res_class = "Sarien";
-	XSetWMProperties (display, window, &appname, &iconname, __argv,
-		__argc, &sizehints, &hints, &classhint);
+	XSetWMProperties (display, window, &appname, &iconname, NULL, 0,
+		&sizehints, &hints, &classhint);
 
 	gc = XCreateGC (display, window, 0, NULL);
 
@@ -843,11 +842,6 @@ static void x11_timer ()
 int init_machine (int argc, char **argv)
 {
 	gfx = &gfx_x11;
-
-	__argc = argc;
-	__argv = argv;
-	scale = opt.scale;
-
 	return err_OK;
 }
 
