@@ -273,11 +273,9 @@ struct sarien_options {
 	int amiga;		/**< enable Amiga mode */
 	int fullscreen;		/**< use full screen mode if available */
 	int nosound;		/**< disable sound */
+	int egapal;		/**< use PC EGA palette */
 #ifdef MITSHM
 	int mitshm;		/**< use shared memory extension */
-#endif
-#ifdef XF86DGA
-	int dga;		/**< use XFree86 DGA extension */
 #endif
 #ifdef USE_HIRES
 	int hires;		/**< use hi-res pictures */

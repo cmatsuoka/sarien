@@ -434,6 +434,9 @@ int print (char *p, int lin, int col, int len)
 	return 0;
 }
 
+/**
+ *
+ */
 void print_status (char *message, ...)
 {
 	char x[42];
@@ -542,7 +545,7 @@ char *agi_sprintf (char *s)
 }
 
 /**
- *
+ * Write the status line.
  */
 void write_status ()
 {

@@ -46,13 +46,12 @@ static UINT8 console_screen[GFX_WIDTH * GFX_HEIGHT];
 
 #endif
 
-#ifdef USE_EGA_PALETTE
 /**
  * 16 color RGB palette (plus 16 transparent colors).
  * This array contains the 6-bit RGB values of the EGA palette exported
  * to the console drivers.
  */
-UINT8 palette [32 * 3]= {
+UINT8 ega_palette [16 * 3]= {
 	0x00, 0x00, 0x00,
 	0x00, 0x00, 0x2a,
 	0x00, 0x2a, 0x00,
@@ -70,8 +69,6 @@ UINT8 palette [32 * 3]= {
 	0x3f, 0x3f, 0x15,
 	0x3f, 0x3f, 0x3f
 };
-
-#else
 
 /**
  * 16 color amiga-ish palette.
@@ -94,9 +91,6 @@ UINT8 palette [32 * 3]= {
 	0x3b, 0x3b, 0x00,
 	0x3F, 0x3F, 0x3F
 };
-
-#endif
-
 
 
 struct update_block {
@@ -460,6 +454,12 @@ int init_video ()
 	fprintf (stderr, "Initializing graphics: %dx%d (scale = %d)\n",
 		GFX_WIDTH, GFX_HEIGHT, opt.scale);
 #endif
+
+	if (opt.egapal) {
+		int i;
+		for (i = 0; i < 48; i++)
+			palette[i] = ega_palette[i];
+	}
 
 	init_console ();
 	return gfx->init_video_mode ();

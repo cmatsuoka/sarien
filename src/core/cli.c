@@ -46,6 +46,7 @@ static void help (int argc, char **argv)
 "                     Emulate the sound of Sierra AGI running in different\n"
 "                     computers. Valid emulations are pc, mac and amiga\n"
 #endif
+"  -e --ega-palette   Use PC EGA palette instead of amiga-ish palette\n"
 "  -L --list-games    List all the games in the ID file\n"
 "  -F --full-screen   Run in full-screen mode if allowed by the graphics device\n"
 "  -g --no-gfx-optimizations\n"
@@ -108,7 +109,7 @@ int parse_cli (int argc, char **argv)
 		{0x0, (UINT8*)""}
 	};
 	int o, optidx = 0;
-#define OPTIONS "AaCDdE:FgH:hLlmnopr:skS:Vv:x"
+#define OPTIONS "AaCDdE:eFgH:hLlmnopr:skS:Vv:x"
 	static struct option lopt[] = {
 		{ "version",		0, 0, 'V' },
 		{ "help",		0, 0, 'h' },
@@ -123,6 +124,10 @@ int parse_cli (int argc, char **argv)
 		{ "list-dictionary",	0, 0, 'd' },
 #endif
 		{ "debug",		0, 0, 'D' },
+#ifndef __MSDOS__
+		{ "emulate-sound",	1, 0, 'E' },
+#endif
+		{ "ega-palette",	0, 0, 'e' },
 		{ "full-screen",	0, 0, 'F' },
 #ifdef USE_HIRES
 		{ "hires",		1, 0, 'H' },
@@ -134,7 +139,6 @@ int parse_cli (int argc, char **argv)
 #ifdef OPT_PICTURE_VIEWER
 		{ "picture-viewer",     0, 0, 'p' },                            
 #endif
-		{ "emulate-sound",	1, 0, 'E' },
 		{ "wait-key",		0, 0, 'k' },
 		{ "no-x-shm",		0, 0, 'x' },
 		{ "aspect-ratio",       1, 0, 'r' },
@@ -192,11 +196,6 @@ int parse_cli (int argc, char **argv)
 #else
 			printf("disabled\n");
 #endif
-#ifdef USE_EGA_PALETTE
-			printf("Using EGA colour palette\n");
-#else
-			printf("Using AMIGA colour palette\n");
-#endif
 			exit (0);
 		case 'A':
 			opt.amiga = TRUE;
@@ -224,6 +223,9 @@ int parse_cli (int argc, char **argv)
 					"unknown\n", optarg);
 				exit (0);
 			}
+			break;
+		case 'e':
+			opt.egapal = TRUE;
 			break;
 		case 'F':
 			opt.fullscreen = TRUE;
