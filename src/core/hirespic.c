@@ -551,7 +551,8 @@ void show_hires_pic ()
 
 	i = 0;
 	for (y = 0; y < _HEIGHT; y++) {
-		put_pixels_hires (0, y, _WIDTH * 2, &game.hires[i]);
+		put_pixels_hires (0, y + game.offset, _WIDTH * 2,
+			&game.hires[i]);
 		i += _WIDTH * 2;
 	}
 

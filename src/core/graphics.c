@@ -385,12 +385,12 @@ int deinit_video ()
  */
 void put_pixels_a (int x, int y, int n, UINT8 *p)
 {
+	/* y += CHAR_LINES; */
 #ifdef FAKE_PALMOS
-	for (y += CHAR_LINES; n--; p++, x ++) {
+	for (; n--; p++, x ++) {
 		*(UINT8 *)&sarien_screen[x + DEV_Y(y) * GFX_WIDTH] = *p & 0x0f;
 	}
 #else
-	y += CHAR_LINES;
 	for (x *= 2; n--; p++, x += 2) {
 		register UINT16 q = ((UINT16)*p << 8) | *p;
 #ifdef USE_CONSOLE
@@ -405,7 +405,7 @@ void put_pixels_a (int x, int y, int n, UINT8 *p)
 
 void put_pixels_hires (int x, int y, int n, UINT8 *p)
 {
-	y += CHAR_LINES;
+	/* y += CHAR_LINES; */
 	for (; n--; p++, x++) {
 		UINT8 q = *p;
 		if (debug.priority) q >>= 4;
@@ -494,8 +494,8 @@ void flush_block (int x1, int y1, int x2, int y2)
  */
 void flush_block_a (int x1, int y1, int x2, int y2)
 {
-	y1 += 8;
-	y2 += 8;
+	/* y1 += 8;
+	   y2 += 8; */
 	flush_block (DEV_X0(x1), DEV_Y(y1), DEV_X1(x2), DEV_Y(y2));
 }
 

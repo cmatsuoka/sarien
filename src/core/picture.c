@@ -759,6 +759,8 @@ void show_pic ()
 {
 	int i, y;
 
+	game.offset = getflag (F_menus_work) ? CHAR_LINES : 0;
+
 #ifdef USE_HIRES
 	if (opt.hires) {
 		show_hires_pic ();
@@ -768,7 +770,7 @@ void show_pic ()
 
 	i = 0;
 	for (y = 0; y < _HEIGHT; y++) {
-		put_pixels_a (0, y, _WIDTH, &game.sbuf[i]);
+		put_pixels_a (0, y + game.offset, _WIDTH, &game.sbuf[i]);
 		i += _WIDTH;
 	}
 

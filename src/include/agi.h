@@ -159,6 +159,7 @@ struct agi_game {
 	int exit_all_logics;	/**< break cycle after new.room */
 	int picture_shown;	/**< show.pic has been issued */
 	int has_prompt;		/**< input prompt has been printed */
+	int offset;		/**< menu offset for the current pic */
 #define ID_AGDS		0x00000001
 #define ID_AMIGA	0x00000002
 	int game_flags;		/**< Sarien options flags */

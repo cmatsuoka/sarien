@@ -787,7 +787,7 @@ draw (smoke);
     <tbody>
       <row/ <entry/0/  <entry/Ego's base line is completely on water//
       <row/ <entry/1/  <entry/Ego is completely obscured by another object//
-      <row/ <entry/2/  <entry/the player has entered a command//
+      <row/ <entry/2/  <entry/The player has entered a command//
       <row/ <entry/3/  <entry/Ego touched a trigger line//
       <row/ <entry/4/  <entry/<function/said/ accepted user input//
       <row/ <entry/5/  <entry/Room script executed for the first time//

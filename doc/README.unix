@@ -19,8 +19,8 @@ Building
 ========
 
 Run "./configure", then "make". Should any problems happen, have a look
-at the generated Makefile, config.h and machine.h. And drop me a note
-so I could fix it in future versions.
+at the generated Rules file and drop me a note so I could fix it in
+future versions.
 
 
 Problems
