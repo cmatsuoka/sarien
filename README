@@ -11,11 +11,12 @@ Directories:
 ./src/core		AGI interpreter core files
 ./src/graphics		Graphic drivers
 ./src/sound		Sound drivers
+./src/fileglob		Fileglobbing drivers
 ./src/utils		Lance Ewing's AGI utilities
 
 To build in UNIX platforms, run './configure; make'. ./configure --help
 will show the build options. If you're using mingw32, go32 or djgpp, copy
-the appropriate ruleset from rulesets/ to ./Rules. 
+the appropriate ruleset from rulesets/ to ./Rules.
 
 To build using VC++, check the files in the appropriate directory.
 
