@@ -124,12 +124,11 @@ int agi_v3_init (void)
 		return err_BadFileOpen;
 	}
 	/* build offset table for v3 directory format */
-	/* FIXME: not endian aware! */
 	fread (&xd, 1, 8, fp);
 	fseek (fp, 0, SEEK_END);
 
 	for(i = 0; i < 4; i++)
-		agi_vol3[i].sddr = xd[i];
+		agi_vol3[i].sddr = lohi_getword((UINT8 *)&xd[i]);
 
 	agi_vol3[0].len = agi_vol3[1].sddr - agi_vol3[0].sddr;
 	agi_vol3[1].len = agi_vol3[2].sddr - agi_vol3[1].sddr;
