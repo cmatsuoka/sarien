@@ -14,16 +14,14 @@
  */
 
 #include <windows.h>
-#include <shlobj.h>
-#include <stdio.h>
+//#include <stdio.h>
 #include "sarien.h"
 #include "agi.h"
 #include "sprite.h"
-#include "text.h"
 #include "graphics.h"
 #include "browse.h"
 
-#ifndef _TRACE
+#ifndef _D
 void _D (char *s, ...) { }
 #endif
 
@@ -34,9 +32,8 @@ volatile UINT32 clock_count;
 //extern "C" UINT8 *font, font_english[];
 
 struct sarien_options opt;
-struct game_id_list game_info;
+//struct game_id_list game_info;
 struct agi_game game;
-
 
 static bool open_file (HINSTANCE hThisInst, char *s)
 {
@@ -198,6 +195,9 @@ bail_out2:
 bail_out:
 	deinit_machine ();
 
+	exit(0); /* Workaround for bad bug in WinCE. The app will leak
+			    all static memory and won't unload DLLs properly.
+				In most cases that means reboot. */
 	return ec;
 }
 

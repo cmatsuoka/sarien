@@ -28,6 +28,7 @@
 #include "gx.h"
 
 #include "sarien.h"
+#include "agi.h"
 #include "graphics.h"
 #include "keyboard.h"
 #include "console.h"
@@ -97,6 +98,7 @@ extern "C" struct gfx_driver *gfx;
 int init_machine(int argc, char **argv)
 {
 	gfx = &gfx_wince;
+	clock_count = 0;
 	return err_OK;
 }
 
@@ -506,10 +508,10 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		memset(&sai, 0, sizeof(sai));
 		SHSipPreference(hwnd, SIP_INPUTDIALOG);
 		return 0;
-	case WM_DESTROY:
-		wince_deinit_vidmode ();
-		exit (-1);
-		return 0;
+//	case WM_DESTROY:
+//		wince_deinit_vidmode ();
+//		exit (-1);
+//		return 0;
 	case WM_ERASEBKGND:
 		{
 			GetClientRect(hwnd, &rc);
@@ -561,7 +563,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 						"http://sarien.sourceforge.net");
 			break;
 		case IDC_EXIT:
-			DestroyWindow(hwndMain);
+			game.quit_prog_now = TRUE;
+//			DestroyWindow(hwndMain);
 			break;
 		}
 		return 0;
