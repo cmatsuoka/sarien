@@ -466,9 +466,7 @@ static int init_vidmode ()
 		ximage->data = malloc (ximage->bytes_per_line * ximage->height);
 	}
 
-	/*ximage2 = malloc (ximage->bytes_per_line * ximage->height);*/
-
-	if (!ximage /* || !ximage2*/) {
+	if (!ximage) {
 		fprintf (stderr, "x11: can't create image\n");
 		return err_Unk;
 	}
@@ -507,8 +505,6 @@ static int deinit_vidmode ()
 #endif
 	XDestroyImage (ximage);
 	XCloseDisplay (display);
-
-	/*free (ximage2);*/
 
 	screen_mode = TXT_MODE;
 

@@ -106,7 +106,7 @@ void agi_put_bitmap (UINT8 *src, int x1, int y1, int w, int h, int trans, int pr
 				int k;
 				for (k = y1 + y; k < _HEIGHT; k++) {
 					if (prio < xdata_data[k * _WIDTH + xx])
-						continue;
+						goto end_of_loop;
 					if (xdata_data[k * _WIDTH + xx] >= 4)
 						break;
 				}
@@ -128,6 +128,7 @@ void agi_put_bitmap (UINT8 *src, int x1, int y1, int w, int h, int trans, int pr
 				put_pixel_buffer (xx, y + y1, c);
 
 			screen2[yy + xx] = c;
+end_of_loop:
 		}
 	}
 	y = game.line_min_print ? 8 : 0;
