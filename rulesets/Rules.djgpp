@@ -34,6 +34,7 @@ FILEIO_DRIVER	= msdos
 
 dummy:
 
+
 clean distclean::
 	rm -f *.o core errlist depend $(BIN) $(CFILES)
 ifdef DDIRS
