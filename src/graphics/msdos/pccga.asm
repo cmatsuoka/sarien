@@ -41,6 +41,8 @@ gfx_pccga	label	word
 cga_map	label	byte
 	db	0, 1, 1, 1, 2, 2, 2, 3
 	db	0, 1, 1, 1, 2, 2, 2, 3
+
+screen_buffer	db	16000 dup (?)
 _DATA	ends
 
 
@@ -96,6 +98,7 @@ pc_timer	endp
 ; int init_machine (int argc, char **argv)
 ;-------------------------------------------------------------------------
 	assume	cs:PCCGA_TEXT
+
 _init_machine	proc	far
 	push	bp
 	mov	bp,sp
@@ -165,8 +168,8 @@ _init_machine	endp
 ;-------------------------------------------------------------------------
 ; int deinit_machine ()
 ;-------------------------------------------------------------------------
-
 	assume	cs:PCCGA_TEXT
+
 _deinit_machine	proc	far
 	push	bp
 	mov	bp,sp
@@ -224,7 +227,7 @@ pc_deinit_vidmode	endp
 ;-------------------------------------------------------------------------
 	assume	cs:PCCGA_TEXT
 
-screen_buffer	db	16000 dup (?)
+;screen_buffer	db	16000 dup (?)
 
 pc_put_block	proc	far
 	push	bp
@@ -232,7 +235,7 @@ pc_put_block	proc	far
 	sub	sp,16
 	push	si
 	push	di
-	mov	si,word ptr [bp+8]
+	mov	si,word ptr [bp+8]		; y1
 @6@86:
    ;	
    ;	{
@@ -269,7 +272,7 @@ pc_put_block	proc	far
 @6@310:
    ;	
    ;	
-   ;		y1 &= ~1;			/* Always start at an even line */
+   ;		y1 &= ~1;		/* Always start at an even line */
    ;	
 	and	si,65534
    ;	
@@ -283,24 +286,22 @@ pc_put_block	proc	far
    ;	
    ;		w = (x2 - x1 + 1) / 4 + 1;
    ;	
-	mov	ax,word ptr [bp+10]
-	sub	ax,word ptr [bp+6]
-	inc	ax
-	shr	ax, 1
-	shr	ax, 1
-	inc	ax
-	mov	word ptr [bp-4],ax
+	mov	cx,word ptr [bp+10]
+	sub	cx,word ptr [bp+6]
+	inc	cx
+	shr	cx, 1
+	shr	cx, 1
+	inc	cx
+	mov	word ptr [bp-4],cx
    ;	
    ;		p = 40 * y1 + x1 / 4;		/* Note: (GFX_WIDTH / 4) * (y1 / 2) */
    ;	
 	mov	ax,si
 	mov	dx,40
 	imul	dx
-	push	ax
-	mov	ax,word ptr [bp+6]
-	shr	ax, 1
-	shr	ax, 1
-	pop	dx
+	mov	dx,word ptr [bp+6]
+	shr	dx, 1
+	shr	dx, 1
 	add	dx,ax
 	mov	word ptr [bp-6],dx
    ;	
@@ -318,94 +319,84 @@ pc_put_block	proc	far
    ;	
    ;		fbuffer = (UINT8 far *)0xb8000000 + p;
    ;	
-	mov	ax,word ptr [bp-6]
-	mov	word ptr [bp-10],47104
-	mov	word ptr [bp-12],ax
+	mov	ax, 0b800h
+	push	ax
+	pop	es
+	mov	di,word ptr [bp-6]
    ;	
    ;		sbuffer = screen_buffer + p2;
    ;	
-	push	cs
-	pop	ax
-	mov	dx, offset screen_buffer
+	mov	si, offset screen_buffer
+	add	si, word ptr [bp-8]
 
-	add	dx,word ptr [bp-8]
-	mov	word ptr [bp-14],ax
-	mov	word ptr [bp-16],dx
    ;	
    ;		for (i = 0; i < h; i += 2) {
    ;	
-	xor	di,di
+	xor	dx,dx
 	jmp	short @6@394
 @6@338:
    ;	
    ;			_fmemcpy (fbuffer, sbuffer, w);
    ;	
-	push	word ptr [bp-4]
-	push	word ptr [bp-14]
-	push	word ptr [bp-16]
-	push	word ptr [bp-10]
-	push	word ptr [bp-12]
-	call	far ptr __fmemcpy
-	add	sp,10
+	push	di
+	push	si
+	mov	cx, word ptr [bp-4]
+	repz	movsb
+	pop	si
+	pop	di
    ;	
    ;			fbuffer += 80;
    ;	
-	add	word ptr [bp-12],80
+	add	di,80	;word ptr [bp-12],80
    ;	
    ;			sbuffer += 160;
    ;	
-	add	word ptr [bp-16],160
-	add	di,2
+	add	si, 160	;word ptr [bp-16],160
+	add	dx,2
 @6@394:
-	cmp	di,word ptr [bp-2]
+	cmp	dx,word ptr [bp-2]
 	jb	short @6@338
    ;	
    ;		}
    ;	
    ;		fbuffer = (UINT8 far *)0xb8002000 + p;
    ;	
-	mov	ax,word ptr [bp-6]
-	add	ax,8192
-	mov	word ptr [bp-10],47104
-	mov	word ptr [bp-12],ax
+	mov	di,word ptr [bp-6]
+	add	di,8192
    ;	
    ;		sbuffer = screen_buffer + p2 + 80;
    ;	
-	push	cs
-	pop	ax
-	mov	dx, offset screen_buffer
 
-	add	dx,word ptr [bp-8]
-	add	dx,80
-	mov	word ptr [bp-14],ax
-	mov	word ptr [bp-16],dx
+	mov	si, offset screen_buffer
+	add	si, word ptr [bp-8]
+	add	si, 80
    ;	
    ;		for (i = 1; i < h; i += 2) {
    ;	
-	mov	di,1
+	mov	dx,1
 	jmp	short @6@506
 @6@450:
    ;	
    ;			_fmemcpy (fbuffer, sbuffer, w);
    ;	
-	push	word ptr [bp-4]
-	push	word ptr [bp-14]
-	push	word ptr [bp-16]
-	push	word ptr [bp-10]
-	push	word ptr [bp-12]
-	call	far ptr __fmemcpy
-	add	sp,10
+	push	di
+	push	si
+	mov	cx, word ptr [bp-4]
+	repz	movsb
+	pop	si
+	pop	di
+
    ;	
    ;			fbuffer += 80;
    ;	
-	add	word ptr [bp-12],80
+	add	di, 80	;word ptr [bp-12],80
    ;	
    ;			sbuffer += 160;
    ;	
-	add	word ptr [bp-16],160
-	add	di,2
+	add	si, 160		;word ptr [bp-16],160
+	add	dx, 2
 @6@506:
-	cmp	di,word ptr [bp-2]
+	cmp	dx,word ptr [bp-2]
 	jb	short @6@450
    ;	
    ;		}
@@ -493,11 +484,11 @@ color_ok:
    ;	
    ;			*s = (*s & ~mask) | val;
    ;	
-	mov	ch, byte ptr cs:[di]
+	mov	ch, byte ptr [di]
 	not	dl
 	and	ch, dl				; dl = !mask
 	or	al, ch
-	mov	byte ptr cs:[di], al
+	mov	byte ptr [di], al
    ;	
    ;			
    ;			if ((x % 4) == 3)
@@ -555,18 +546,6 @@ pc_keypress	endp
 	assume	cs:PCCGA_TEXT
 
 pc_get_key	proc	far
-@9@86:
-   ;	{
-   ;		union REGS r;
-   ;		UINT16 key;
-   ;	
-   ;		memset (&r, 0, sizeof(union REGS));
-   ;		int86 (0x16, &r, &r);
-   ;		key = r.h.al ? r.h.al : r.h.ah << 8;
-   ;	
-   ;		return key;
-   ;	}
-
 	xor	ax, ax
 	int	16h
 	or	al, al
@@ -668,12 +647,6 @@ _pc_init_vidmode	equ	pc_init_vidmode
 	extrn	__dos_setvect:far
 	extrn	__dos_getvect:far
 	extrn	__chain_intr:far
-	extrn	_int86:far
-	extrn	__stklen:word
-	extrn	__fmemcpy:far
-	extrn	_memset:far
-	extrn	_free:far
-	extrn	_calloc:far
 
 	end
 
