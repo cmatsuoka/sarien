@@ -200,7 +200,7 @@ static struct agi_note play_sample[] = {
 
 static int note_to_period (int note)
 {
-	return period[note % 12] >> (note / 12 - 3);
+	return 10 * (period[note % 12] >> (note / 12 - 3));
 }
 
 #endif /* USE_IIGS_SOUND */
@@ -465,7 +465,7 @@ static void play_note (int i, int freq, int vol)
 #ifdef USE_CHORUS
 	/* Add chorus ;) */
 	if (opt.soundemu == SOUND_EMU_NONE && i < 3) {
-		int newfreq = 1.0 / ((1.0 / freq) * 1000 / 1001);
+		int newfreq = freq * 1007 / 1000;
 		if (freq == newfreq)
 			newfreq++;
 		play_note (i + 4, newfreq, vol * 2 / 3);
@@ -537,7 +537,7 @@ void play_midi_sound ()
 
 void play_sample_sound ()
 {
-	play_note (0, 11025, 200);
+	play_note (0, 11025 * 10, 200);
 	playing = 1;
 }
 
@@ -561,7 +561,7 @@ void play_agi_sound ()
 
 			if (freq) {
 				UINT8 v = chn[i].ptr->vol & 0x0f;
-				play_note (i, freq, v == 0xf ? 0 :
+				play_note (i, freq * 10, v == 0xf ? 0 :
 					0xff - (v << 1));
 			}
 
@@ -645,7 +645,7 @@ UINT32 mix_sound (void)
 #endif
 				snd_buffer[i] += (b * m) >> 4;
 	
-				p += (UINT32)11860 * 4 / chn[c].freq;
+				p += (UINT32)118600 * 4 / chn[c].freq;
 	
 				/* FIXME */
 				if (chn[c].flags & AGI_SOUND_LOOP) {
