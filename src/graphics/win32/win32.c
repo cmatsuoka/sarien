@@ -8,10 +8,10 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-/*
- * Win32 port by Felipe Rosinha <rosinha@helllabs.org>
+/* Win32 port by Felipe Rosinha <rosinha@helllabs.org>
  * Fixes and hacks by Igor Nesterov <nest@rtsnet.ru>
  * Mouse support by Ryan Gordon <icculus@clutteredmind.org>
+ * Extra fixes and hacks by Matt Hargett <matt@use.net>
  * Misc. mess by Claudio Matsuoka <claudio@helllabs.org>
  */
 #include <ctype.h>
@@ -106,9 +106,10 @@ extern struct gfx_driver *gfx;
 static char *apptext = TITLE " " VERSION;
 static HDC  hDC;
 static WNDCLASS wndclass;
+static int xsize, ysize;
 	
 
-#define ASPECT_RATIO(x) ((x) * 5 / 6)
+#define ASPECT_RATIO(x) ((x) * 6 / 5)
 
 /* ====================================================================*/
 
@@ -117,39 +118,32 @@ static WNDCLASS wndclass;
 static void _putpixels_scale1 (int x, int y, int w, BYTE *p)
 {
 	BYTE *p0 = g_screen.screen_pixels; /* Word aligned! */
-	EnterCriticalSection(&g_screen.cs);
 
 	y = GFX_HEIGHT - y - 1;
-
 	p0 += x + y * GFX_WIDTH;
-	while (w--) 
-	{ 
-		*p0++ = *p++; 
-	}
 
+	EnterCriticalSection(&g_screen.cs);
+	while (w--)
+		*p0++ = *p++;
 	LeaveCriticalSection(&g_screen.cs);
 }
 
 static void _putpixels_scale2 (int x, int y, int w, BYTE *p)
 {
 	BYTE *p0 = g_screen.screen_pixels, *p1; /* Word aligned! */
-	int extra = 0;
-
-	EnterCriticalSection(&g_screen.cs);
 
 	y = GFX_HEIGHT - y - 1;
-	x *= scale; y *= scale;
+	x <<= 1; y <<= 1; 
 	p0 += x + y * (GFX_WIDTH * scale);
 	p1 = p0 + (GFX_WIDTH * scale);
 
-	while (w--) 
-	{
+	EnterCriticalSection(&g_screen.cs);
+	while (w--) {
 		*p0++ = *p; *p0++ = *p;
 		*p1++ = *p; *p1++ = *p;
 		p++;
 	}
-
-	LeaveCriticalSection(&g_screen.cs);
+	LeaveCriticalSection (&g_screen.cs);
 }
 
 
@@ -172,10 +166,9 @@ static void _putpixels_fixratio_scale2 (int x, int y, int w, BYTE *p)
 	if (0 == w)
 		return;
 
-	EnterCriticalSection(&g_screen.cs);
 
 	y = GFX_HEIGHT - y - 1;
-	x *= scale; y *= scale;
+	x <<= 1; y <<= 1; 
 
 	if (y < ((GFX_WIDTH - 1) << 2) && ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2))
 	{
@@ -184,29 +177,27 @@ static void _putpixels_fixratio_scale2 (int x, int y, int w, BYTE *p)
 
 	y = ASPECT_RATIO(y);
 
-	p0 += x + y * GFX_WIDTH * scale;
-	p1 = p0 + GFX_WIDTH * scale;
-	p2 = p1 + GFX_WIDTH * scale;
+	p0 += x + y * GFX_WIDTH * 2;
+	p1 = p0 + GFX_WIDTH * 2;
+	p2 = p1 + GFX_WIDTH * 2;
 
 	_p = p;
 
-	while (w--) 
-	{
-		*p0++ = *p; 
+	EnterCriticalSection(&g_screen.cs);
+	while (w--) {
 		*p0++ = *p;
-		*p1++ = *p; 
+		*p0++ = *p;
+		*p1++ = *p;
 		*p1++ = *p;
 		p++;
 	}
 
 	p = _p;
-	while (extra--)
-	{
+	while (extra--) {
 		*p2++ = *p;
 		*p2++ = *p;
 		p++;
 	}
-
 	LeaveCriticalSection (&g_screen.cs);
 }
 
@@ -215,45 +206,18 @@ static void _putpixels_fixratio_scale2 (int x, int y, int w, BYTE *p)
 static void INLINE gui_put_block (int x1, int y1, int x2, int y2)
 {
 	HDC hDC;
-
-	if (x1 >= GFX_WIDTH)
-		x1 = GFX_WIDTH - 1;
-
-	if (y1 >= GFX_HEIGHT)
-		y1 = GFX_HEIGHT - 1;
-
-	if (x2 >= GFX_WIDTH)
-		x2 = GFX_WIDTH - 1;
-
-	if (y2 >= GFX_HEIGHT)
-		y2 = GFX_HEIGHT - 1;
-
-	if (scale > 1) {
-		 x1 *= scale;
-		 y1 *= scale;
-		 x2 = (x2 + 1) * scale - 1;
-		 y2 = (y2 + 1) * scale - 1;
-	}
-
-	if (opt.fixratio)
-	{
-		y1 = ASPECT_RATIO(y1);
-		y2 = ASPECT_RATIO(y2);
-	}
+	int h, w;
 
 	hDC = GetDC (hwndMain);
+
+	w = x2 - x1 + 1;
+	h = y2 - y1 + 1;
 
 	EnterCriticalSection (&g_screen.cs);
 	StretchDIBits (
 		hDC,
-		x1,
-		y1,
-		x2 - x1 + 1,
-		y2 - y1 + 1,
-		x1,
-		(GFX_HEIGHT * scale - 1) - y2,
-		x2 - x1 + 1,
-		(GFX_HEIGHT * scale - y1 - 1) - (GFX_HEIGHT * scale - y2 - 1) + 1,
+		x1, y1, w, h,
+		x1, ysize - y2 - 1, w, h,
 		g_screen.screen_pixels,
 		g_screen.binfo,
 		DIB_RGB_COLORS,
@@ -273,7 +237,7 @@ static void update_mouse_pos(int x, int y)
 		mouse.y /= opt.scale;
 	}
 	if (opt.fixratio)
-		mouse.y = ASPECT_RATIO(mouse.y);
+		mouse.y = mouse.y * 5 / 6;
 }
 
 
@@ -287,8 +251,11 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 	switch (nMsg) {
 	case WM_PUT_BLOCK: {
 		xyxy *p = (xyxy *)lParam;
-		gui_put_block (p->x1, p->y1, p->x2, p->y2);
-		free(p);
+		gui_put_block (
+			p->x1 * scale,
+			p->y1 * scale,
+			(p->x2 + 1) * scale - 1,
+			(p->y2 + 1) * scale - 1);
 		} break;
 	case WM_DESTROY:
 		deinit_vidmode ();
@@ -299,14 +266,8 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		EnterCriticalSection(&g_screen.cs);
 		StretchDIBits(
 			hDC,
-			0,
-			0,
-			GFX_WIDTH * scale,
-			(opt.fixratio ? ASPECT_RATIO(GFX_HEIGHT) : GFX_HEIGHT) * scale,
-			0,
-			0,
-			GFX_WIDTH,
-			(opt.fixratio ? ASPECT_RATIO(GFX_HEIGHT) : GFX_HEIGHT),
+			0, 0, xsize, ysize,
+			0, 0, xsize, ysize,
 			g_screen.screen_pixels,
 			g_screen.binfo,
 			DIB_RGB_COLORS,
@@ -511,6 +472,9 @@ static int init_vidmode ()
 	"win32: Win32 DIB support by rosinha@dexter.damec.cefetpr.br\n");
 #endif
 
+	xsize = GFX_WIDTH * scale;
+	ysize = (opt.fixratio ? ASPECT_RATIO(GFX_HEIGHT) : GFX_HEIGHT) * scale;
+
 	memset (&wndclass, 0, sizeof(WNDCLASS));
 	wndclass.lpszClassName = g_szMainWndClass;
 	wndclass.style         = CS_HREDRAW | CS_VREDRAW;
@@ -532,8 +496,8 @@ static int init_vidmode ()
 		WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		(GFX_WIDTH * scale) + GetSystemMetrics (SM_CXFRAME),
-		(opt.fixratio ? ASPECT_RATIO(GFX_HEIGHT) : GFX_HEIGHT) * scale + GetSystemMetrics (SM_CYCAPTION) +
+		xsize + GetSystemMetrics (SM_CXFRAME),
+		ysize + GetSystemMetrics (SM_CYCAPTION) +
 			GetSystemMetrics (SM_CYFRAME),
 		NULL,
 		NULL,
@@ -555,8 +519,8 @@ static int init_vidmode ()
 	}
 
 	g_screen.binfo->bmiHeader.biSize          = sizeof(BITMAPINFOHEADER);
-	g_screen.binfo->bmiHeader.biWidth         = GFX_WIDTH * scale;
-	g_screen.binfo->bmiHeader.biHeight        = (opt.fixratio ? ASPECT_RATIO(GFX_HEIGHT) : GFX_HEIGHT) * scale;
+	g_screen.binfo->bmiHeader.biWidth         = xsize;
+	g_screen.binfo->bmiHeader.biHeight        = ysize;
 	g_screen.binfo->bmiHeader.biPlanes        = 1;
 	g_screen.binfo->bmiHeader.biBitCount      = 8;   /* should be fine */
 	g_screen.binfo->bmiHeader.biCompression   = BI_RGB;
@@ -579,9 +543,9 @@ static int init_vidmode ()
 		DIB_RGB_COLORS, (void **)(&g_screen.screen_pixels), NULL, 0);
 	ReleaseDC (hwndMain, hDC);
 
-	if (g_screen.screen_bmp == NULL || g_screen.screen_pixels == NULL) 
-	{
-		OutputDebugString("win32.c: init_vidmode(): CreateDIBSection failed");
+	if (g_screen.screen_bmp == NULL || g_screen.screen_pixels == NULL) {
+		OutputDebugString ("win32.c: init_vidmode(): "
+			"CreateDIBSection failed");
 		g_err = err_Unk;
 	} else {
 		ShowWindow (hwndMain, TRUE);
@@ -640,24 +604,19 @@ static void win32_put_block (int x1, int y1, int x2, int y2)
 	if ((p = malloc (sizeof(xyxy))) == NULL)
 		return;
 
-	if (x1 >= GFX_WIDTH)
-		x1 = GFX_WIDTH - 1;
-	if (y1 >= GFX_HEIGHT)
-		y1 = GFX_HEIGHT - 1;
-	if (x2 >= GFX_WIDTH)
-		x2 = GFX_WIDTH - 1;
-	if (y2 >= GFX_HEIGHT)
-		y2 = GFX_HEIGHT - 1;
+	if (x1 >= GFX_WIDTH)  x1 = GFX_WIDTH - 1;
+	if (y1 >= GFX_HEIGHT) y1 = GFX_HEIGHT - 1;
+	if (x2 >= GFX_WIDTH)  x2 = GFX_WIDTH - 1;
+	if (y2 >= GFX_HEIGHT) y2 = GFX_HEIGHT - 1;
 
 	p->x1 = x1;
 	p->y1 = y1;
 	p->x2 = x2;
 	p->y2 = y2;
 
-	if (opt.fixratio)
-	{
-		p->y1 = ASPECT_RATIO(y1);
-		p->y2 = ASPECT_RATIO(y2);
+	if (opt.fixratio) {
+		p->y1 = ASPECT_RATIO(y1 + 1) - 1;
+		p->y2 = ASPECT_RATIO(y2 + 1) - 1;
 	}
 
 	PostMessage (hwndMain, WM_PUT_BLOCK, 0, (LPARAM)p);
@@ -749,5 +708,4 @@ static int set_palette (UINT8 *pal, int scol, int numcols)
 
 	return err_OK;
 }
-
 

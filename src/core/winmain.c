@@ -24,9 +24,11 @@ struct sarien_options opt;
 struct game_id_list game_info;
 struct agi_game game;
 
-void _D (char *x, ...) 
-{ 
-//	OutputDebugString(x); 
+void _D (char *x, ...)
+{
+#ifdef _TRACE
+	OutputDebugString(x);
+#endif
 }
 
 
@@ -66,8 +68,7 @@ BOOL CheckForGame(char *szDir)
 int CALLBACK BrowseCallbackProc(HWND hwnd,UINT uMsg,LPARAM lp, LPARAM pData)
 {
 	CHAR szDir[MAX_PATH + 1]= {0};
-	DWORD ret				= 0;
-	HKEY hKey				= NULL;
+	HKEY hKey			= NULL;
 	DWORD dwDisposition		= 0;
 	DWORD cbData			= MAX_PATH;
 
@@ -190,6 +191,7 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 	game.state = STATE_INIT;
 
 	/* Set defaults */
+	/* FIXME: make these selectable in the launcher window */
 	memset (&opt, 0, sizeof (struct sarien_options));
 	opt.gamerun = GAMERUN_RUNGAME;
 	opt.scale = 2;
