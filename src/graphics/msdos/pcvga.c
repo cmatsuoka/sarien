@@ -39,7 +39,7 @@ extern struct gfx_driver *gfx;
 extern struct sarien_options opt;
 
 UINT8	*exec_name;
-UINT8	*screen_buffer;
+static UINT8	*screen_buffer;
 
 void	(__interrupt __far *prev_08)	(void);
 void	__interrupt __far tick_increment	(void);
@@ -54,7 +54,7 @@ static int	pc_keypress		(void);
 
 #define TICK_SECONDS 18
 
-static struct gfx_driver GFX_pcvga = {
+static struct gfx_driver gfx_pcvga = {
 	pc_init_vidmode,
 	pc_deinit_vidmode,
 	pc_put_block,
@@ -75,12 +75,9 @@ static void pc_timer ()
 
 int init_machine (int argc, char **argv)
 {
-	gfx = &GFX_pcvga;
+	gfx = &gfx_pcvga;
 
-	screen_buffer = malloc (GFX_WIDTH * GFX_HEIGHT);
-
-	/* clear out the snow */
-	memset(screen_buffer, 0x0, GFX_WIDTH * GFX_HEIGHT);
+	screen_buffer = calloc (GFX_WIDTH, GFX_HEIGHT);
 
 	clock_count = 0;
 	clock_ticks = 0;
