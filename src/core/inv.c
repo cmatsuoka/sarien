@@ -42,16 +42,10 @@ extern struct gfx_driver *gfx;
 
 void inventory ()
 {
-	int x, y;
-	int cx, cy;
-	UINT8 *intObjects = NULL;
-	int intObjCount;
-	int flag = TRUE;
-	int fsel = 0;
-	int show = 0;
+	int x, y, cx, cy;
+	UINT8 *intobj = NULL;
+	int objcount;
 	int joffs = 0, jlen = 0;
-	int lcol, rcol = 0;
-	int lx1 = 0, ly1 = 0, lx2 = 0, ls = 0;
 
 	save_screen();
 
@@ -66,12 +60,12 @@ void inventory ()
 
 	/* FIXME: doesnt check if objects overflow off screen... */
 
-	intObjects = malloc (4 + game.num_objects);
+	intobj = malloc (4 + game.num_objects);
 
-	for (x = y = cx = 0, cy = 2, intObjCount = 0; x < game.num_objects; x++) {
+	for (x = y = cx = 0, cy = 2, objcount = 0; x < game.num_objects; x++) {
 		if ((objects + x)->location == EGO_OWNED) {
-			// add object to our list!
-			intObjects[intObjCount++]=x;
+			/* add object to our list! */
+			intobj[objcount++] = x;
 
 			print_text ((objects + x)->name, 0,
 				(cy % 2 ? 40 - strlen ((objects + x)->name) :
@@ -97,7 +91,6 @@ void inventory ()
  
 	/* dump to screen. */
 	put_screen ();
-	//gfx->put_block (0, 0, 320, 200);
 
 	/*
 	 * test flag(13)
@@ -107,18 +100,20 @@ void inventory ()
 	 */
  
 	if (getflag (F_status_selects_items)) {
-		cy=2;
-		fsel=0;
-		show=1;
+		int flag = TRUE;
+		int lcol, rcol;
+		int fsel = 0, show = 1;
+		int lx1 = 0, ly1 = 0, lx2 = 0, ls = 0;
 
-		rcol=intObjCount/2;
-		lcol=rcol + (intObjCount%2);
+		cy = 2;
+		rcol = objcount / 2;
+		lcol = rcol + (objcount % 2);
 
 		while (flag) {
 			cy = 2 + fsel;
 			if (show) {
 			/* nothing is a special case! */
-				if (!intObjCount) {
+				if (!objcount) {
 					print_text (NOTHING_MSG, 0, NOTHING_X,
 					NOTHING_Y, 40, STATUS_BG, STATUS_FG);
 					gfx->put_block (NOTHING_X, NOTHING_Y,
@@ -127,7 +122,7 @@ void inventory ()
 				} else {
 					if (ls) {
 						print_text ((objects +
-						intObjects[ls-1])->name,
+						intobj[ls-1])->name,
 						0, lx1, (((ly1/2)+1)<<3),
 						40, STATUS_FG, STATUS_BG);
 						gfx->put_block(lx1, ly1,
@@ -135,7 +130,7 @@ void inventory ()
 					}
 
 					jlen = strlen ((objects +
-						intObjects[fsel])->name);
+						intobj[fsel])->name);
 					joffs = (cy % 2 == 0 ? 0 : 40-jlen)<<3;
 
 					lx1 = joffs;
@@ -144,7 +139,7 @@ void inventory ()
 					ls = fsel+1;		// ls ALWAYS >0
 
 					print_text ((objects +
-						intObjects[fsel])->name,
+						intobj[fsel])->name,
 						0, lx1, (((cy/2)+1)<<3), 40,
 						STATUS_BG, STATUS_FG);
 					gfx->put_block (lx1, ly1, lx2, cy+8);
@@ -157,15 +152,15 @@ void inventory ()
 
 			switch(gfx->get_key()) {
 			case KEY_ENTER:
-				message_box ("Selected item %i", intObjects[fsel]);
-				//setvar(V_sel_item, intObjects[fsel]);
-				//report("show_obj() -> %i\n", intObjects[fsel]);
-				setvar(25, intObjects[fsel]);
+				message_box ("Selected item %i", intobj[fsel]);
+				//setvar(V_sel_item, intobj[fsel]);
+				//report("show_obj() -> %i\n", intobj[fsel]);
+				setvar(25, intobj[fsel]);
 				flag = FALSE;
 				break;
 			case KEY_ESCAPE:
 				//setvar(V_sel_item, 0xFF);
-				//report("show_obj() -> %i\n", intObjects[fsel]);
+				//report("show_obj() -> %i\n", intobj[fsel]);
 				setvar(25, 0xFF);
 				flag = FALSE;
 				break;
@@ -206,12 +201,12 @@ void inventory ()
 		}
 	}
 
-	free (intObjects);
+	free (intobj);
 
 	/* use wait_key instead of gfx->get_key() to be console aware */
 	if (!getflag (F_status_selects_items))
 		wait_key();
 
-	restore_screen();
+	restore_screen ();
 }
 

@@ -32,9 +32,9 @@ UINT8	show_screen_mode = 'x';
 volatile UINT32 clock_ticks;
 volatile UINT32 clock_count;
 
+extern int optind;
 
 extern struct sarien_console console;
-extern int optind;
 extern UINT8 *font, font_english[];
 
 extern struct agi_loader agi_v2;
@@ -56,11 +56,6 @@ static int detect_game (char *gn)
 	if (gn == NULL)		/* assume current directory */
 		gn = get_current_directory ();
 
-#if 0
-	if (gname == NULL)
-		gname = strdup ("");
-#endif
-
 	loader = &agi_v2;
 	ec = loader->detect_game (gn);
 
@@ -77,7 +72,7 @@ static int view_pictures ()
 {
 	int ec = err_OK;
 	UINT32 resnum = 0;
-	UINT8 x[64];
+	char x[64];
 	int i, pic, dir = 1;
 
 	console.active = 0;
@@ -94,7 +89,7 @@ static int view_pictures ()
 			if (pic < 0)
 				pic = MAX_DIRS - 1;
 
-			if(pic > MAX_DIRS - 1) {
+			if (pic > MAX_DIRS - 1) {
 				pic = 0;
 				if (i == 0) {		/* no pics? */
 					ec = 1;
@@ -117,38 +112,19 @@ static int view_pictures ()
 
 		show_buffer (show_screen_mode);
 
-#if 0
-		switch (show_screen_mode) {
-		case 'x':
-			put_block_buffer (xdata_data, 0, 0, _WIDTH, _HEIGHT);
-			break;
-		case 'c':
-			put_block_buffer (control_data, 0, 0, _WIDTH, _HEIGHT);
-			break;
-		case 'p':
-			put_block_buffer (priority_data, 0, 0, _WIDTH, _HEIGHT);
-			break;
-		case 'v':
-		default:
-			dump_screenX ();
-			break;
-		}
-#endif
-
 update_statusline:
-		sprintf ((char*)x, "V:Vis C:Con P:Pri X:P+C   +:Next -:Prev");
-		print_text (x, 0, 4, 170, strlen ((char*)x) + 1, 15, 0);
-		sprintf ((char*)x, "R:Redraw      D:Show toggle      Q:Quit");
-		print_text (x, 0, 4, 180, strlen ((char*)x) + 1, 15, 0);
-		sprintf ((char*)x, "Picture:%3li                   Show: %3s",
+		sprintf (x, "V:Vis C:Con P:Pri X:P+C   +:Next -:Prev");
+		print_text (x, 0, 4, 170, strlen (x) + 1, 15, 0);
+		sprintf (x, "R:Redraw      D:Show toggle      Q:Quit");
+		print_text (x, 0, 4, 180, strlen (x) + 1, 15, 0);
+		sprintf (x, "Picture:%3li                   Show: %3s",
 			resnum, opt.showscreendraw ? " on" : "off");
-		print_text (x, 0, 4, 190, strlen ((char*)x) + 1, 15, 0);
+		print_text (x, 0, 4, 190, strlen (x) + 1, 15, 0);
 
 		put_screen ();
 
 		while (42) {
-    			switch (tolower (get_key() & 0xFF))
-    			{
+    			switch (tolower (get_key() & 0xFF)) {
     			case 'q':
 				goto end_view;
     			case 'v':
@@ -196,6 +172,7 @@ next_pic:
     		loader->unload_resource (rPICTURE, resnum);
     		resnum = pic;
 	}
+
 end_view:
 	return ec;
 }
@@ -241,7 +218,7 @@ int main(int argc, char *argv[])
 TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 "Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka\n"
 "Portions Copyright (C) 1998 Lance Ewing, (C) 1999 Felipe Rosinha\n"
-#ifndef HAVE_GETOPT_LONG
+#if !defined(HAVE_GETOPT_LONG) || !defined(HAVE_GLOB_H)
 "Portions Copyright (C) 1989-1997 Free Software Foundation, Inc.\n"
 #endif
 "\n"
@@ -261,7 +238,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 	//clock_ticks = 0;
 
 	loader = NULL;
-	font = (UINT8*)font_english;
+	font = font_english;
 
 	if (opt.gamerun == gLIST_GAMES) {
 		list_games ();
@@ -323,9 +300,8 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
     			}
 
     			/* deinit our resources */
-    			agi_deinit();
+    			agi_deinit ();
     		} while (ec == err_RestartGame);
-
     	}
 
 	if (opt.gamerun == gRUN_GAME) {

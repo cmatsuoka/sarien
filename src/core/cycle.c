@@ -321,7 +321,7 @@ static void calc_obj_motion ()
 
 		switch(vt_obj->motion) {
 		case MOTION_NORMAL:		/* normal */
-			set_motion    ( em );
+			set_motion (em);
 			break;
 		case MOTION_WANDER:		/* wander */
 			ox = vt_obj->x_pos;
@@ -340,7 +340,8 @@ static void calc_obj_motion ()
 			adj_pos (em, vt_ego->x_pos, vt_ego->y_pos);
 
 			if (vt_obj->x_pos == vt_ego->x_pos &&
-				vt_obj->y_pos == vt_ego->y_pos) {
+				vt_obj->y_pos == vt_ego->y_pos)
+			{
 				vt_obj->motion = MOTION_NORMAL;
 				vt_obj->flags &= ~MOTION;
 				setflag (vt_obj->parm2, TRUE);
@@ -352,7 +353,8 @@ static void calc_obj_motion ()
 			adj_pos (em, vt_obj->parm1, vt_obj->parm2);
 
 			if (vt_obj->x_pos == vt_obj->parm1 &&
-				vt_obj->y_pos == vt_obj->parm2) {
+				vt_obj->y_pos == vt_obj->parm2)
+			{
 				if (em == EGO_VIEW_TABLE)
 					setvar (V_ego_dir, 0);
 
@@ -400,7 +402,7 @@ static void interpret_cycle ()
 		setflag (F_entered_cli, FALSE);
 		setflag (F_said_accepted_input, FALSE);
 		setflag (F_new_room_exec, FALSE);		/* 5 */
-		setflag (F_output_mode, FALSE); /*************************/
+		setflag (F_output_mode, FALSE);	/*************************/
 		setflag (F_restart_game, FALSE);		/* 6 */
 		setflag (F_status_selects_items, FALSE);	/* 12? */
 
@@ -482,7 +484,7 @@ void main_cycle (int accept_key)
 {
 	static UINT32 msg_box_ticks = 0;
 
-	gfx->poll_timer();	/* msdos driver -> does nothing */
+	gfx->poll_timer ();	/* msdos driver -> does nothing */
 	update_timer ();
 
 	poll_keyboard ();
@@ -510,7 +512,6 @@ int run_game2 ()
 	UINT32 x, y, z = 12345678;
 
 	_D ("()");
-	_D ("F5 = %d", getflag (5));
 
 	stop_sound ();
 	clear_buffer ();
@@ -544,7 +545,6 @@ int run_game2 ()
 
 		if (y == 0 || (x % y == 0 && z != x)) {
 			z = x;
-
 			interpret_cycle ();
 			clean_keyboard (); 
 		}

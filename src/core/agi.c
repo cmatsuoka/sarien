@@ -45,13 +45,6 @@ int agi_init ()
 {
 	int ec, i;
 
-	//gid = NULL;			/* clean out GAME ID */
-
-#if 0
-	/* clean out game info */
-	memset (&game_info, 0, sizeof(struct game_id_list));
-#endif
-
 	_D("()");
 
 	/* set the font */
@@ -111,11 +104,11 @@ int agi_init ()
 	ec = loader->init ();		/* load vol files, etc */
 
 	if (ec == err_OK)
-		ec = load_objects ((UINT8*)OBJECTS);
+		ec = load_objects (OBJECTS);
 
 	/* CM: ec= commented out, demogs has no words.tok */
 	if(ec == err_OK)
-		/*ec =*/ load_words((UINT8*)WORDS);
+		/*ec =*/ load_words(WORDS);
 
 	/* FIXME: load IIgs instruments and samples */
 	/* load_instruments("kq.sys16"); */
