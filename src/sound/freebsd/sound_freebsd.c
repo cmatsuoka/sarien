@@ -16,7 +16,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <machine/soundcard.h>
+#include <sys/soundcard.h>
 
 #include "sarien.h"
 #include "sound.h"
