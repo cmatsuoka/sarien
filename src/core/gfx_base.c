@@ -257,6 +257,10 @@ void put_text_character (int l, int x, int y, int c, int fg, int bg)
 	int x1, y1, xx, yy, cc;
 	UINT8 *p;
 
+#if defined PALMOS || defined FAKE_PALMOS
+	c = toupper (c);
+#endif
+
 	p = font + (c * CHAR_LINES);
 	for (y1 = 0; y1 < CHAR_LINES; y1++) {
 		for (x1 = 0; x1 < CHAR_COLS; x1 ++) {
@@ -307,9 +311,12 @@ void draw_box (int x1, int y1, int x2, int y2, int colour1, int colour2, int f, 
 
 		for (y = y1; y <= y2 - 5; y++) {
 			put_pixel (x1+2, y+2, colour2);
-			put_pixel (x1+3, y+2, colour2);
 			put_pixel (x2-3, y+2, colour2);
+#if !defined PALMOS && !defined FAKE_PALMOS
+			/* For PalmOS we'll want single-pixel lines */
+			put_pixel (x1+3, y+2, colour2);
 			put_pixel (x2-4, y+2, colour2);
+#endif
 		}
 	}
 
