@@ -49,12 +49,6 @@ static void put_virt_pixel (int x, int y)
 
 #define STACK_SEG_SIZE 0x1000
 
-#if 0
-struct point_xy {
-	UINT16 x, y;
-};
-#endif
-
 #define MAX_STACK_SEGS 16
 static unsigned int stack_num_segs;
 static unsigned int stack_seg;

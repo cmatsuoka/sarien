@@ -51,6 +51,7 @@ AC_ARG_WITH(script, [  --with-script           use the scriptable console driver
 AC_ARG_ENABLE(efence, [  --enable-efence         enable Electric Fence support])
 AC_ARG_ENABLE(dmalloc,[  --enable-dmalloc        enable dmalloc support])
 AC_ARG_ENABLE(trace,  [  --enable-trace          enable trace support])
+AC_ARG_ENABLE(trace,  [  --enable-profile        enable profile support])
 
 if test "${GCC-no}" = yes; then
 	CFLAGS="${CFLAGS} -Wall"
@@ -294,6 +295,9 @@ if test "${enable_efence}" = "yes"; then
 elif test "${enable_dmalloc}" = "yes"; then
 	CFLAGS="${CFLAGS} -DDMALLOC"
 	LIBS="${LIBS} -ldmalloc"
+elif test "${enable_profile}" = "yes"; then
+	CFLAGS="-pg ${CFLAGS}"
+	LDFLAGS="-pg ${LDFLAGS}"
 fi
 
 dnl ----------------------------------------------
