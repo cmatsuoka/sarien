@@ -25,7 +25,7 @@ static struct sound_driver sound_alleg = {
 	alleg_close_sound,
 };
 
-#define BUFFER_LEN 4096
+#define BUFFER_LEN 16384
 
 
 void fill_audio ()
@@ -66,7 +66,7 @@ static int alleg_init_sound (SINT16 *b)
 	audiobuffer = b;
 
 	install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, NULL);
-	stream = play_audio_stream(BUFFER_LEN, 16, 0, 22050, 255, 255);
+	stream = play_audio_stream(BUFFER_LEN, 16, 0, 22050, 200, 255);
 
 	report ("Allegro sound initialized.\n");
 
