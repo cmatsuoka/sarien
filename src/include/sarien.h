@@ -89,6 +89,9 @@ extern "C"{
 #  define free(x)	DisposePtr ((Ptr)(x))
 #  undef USE_HIRES
 #  undef USE_COMMAND_LINE
+#  undef OPT_LIST_OBJECTS
+#  undef OPT_PICTURE_VIEWER
+#  undef OPT_LIST_DICT
 #endif
 
 #ifdef __AMIGA__

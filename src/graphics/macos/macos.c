@@ -363,7 +363,8 @@ static int macos_init_vidmode ()
 		return -1;
 
 	SetGWorld (gworld, NULL);
-	//EraseRect (&gworld->portRect);
+	BackColor (blackColor);
+	EraseRect (&gworld->portRect);
 	SetGWorld (old_gw, old_gd);
 
 	/* Set optimized put_pixels handler */

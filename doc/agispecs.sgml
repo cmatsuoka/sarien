@@ -5482,7 +5482,8 @@ void drawline(word x1, word y1, word x2, word y2)
 </para>
 </sect1>
 
-<sect1><title>Sierra's picture editor</title>
+<sect1>
+<title>Sierra's picture editor</title>
 <para>
    The picture editor that Sierra used back in the vector picture days
    was much like a CAD program. I've seen a few photos of it in ``The
@@ -5528,9 +5529,11 @@ Tool:Line V:A P:o C:o X=199 Y=55 Pri:2
 </chapter>
 
 
-<chapter id="view"><title>View resources</title>
+<chapter id="view-resources">
+<title>View resources</title>
 
-<sect1><title>Introduction</title>
+<sect1>
+<title>Introduction</title>
 <para>
   View resources contain some of the graphics for the game. Unlike the
   picture resources which are full-screen background images, view
@@ -5556,71 +5559,69 @@ Tool:Line V:A P:o C:o X=199 Y=55 Pri:2
 <sect1>
 <title>View resource format</title>
 
-<sect2>
-<title>View header (7+ bytes)</title>
-
 <para>
-  <programlisting>
-Byte  Meaning
------ -----------------------------------------------------------
-  0   Unknown (always seems to be either 1 or 2)
-  1   Unknown (always seems to be 1)
-  2   Number of loops
- 3-4  Position of description (more on this later)
-      Both bytes are 0 if there is no description
- 5-6  Position of first loop
- 7-8  Position of second loop (if any)
- 9-10 Position of third loop (if any)
- ...  ...
------ -----------------------------------------------------------
-  </programlisting>
-</para>
-
-<warning><para>
-  Two of these loop references can point to the same place. This
-  is done when you want to use mirroring (more on this later).
-</para></warning>
-
-<sect2>
-<title>Loop header (3+ bytes)</title>
-
-<para>
-  <programlisting>
-Byte  Meaning
------ -----------------------------------------------------------
-  0   Number of cels in this loop
- 1-2  Position of first cel, relative to start of loop
- 3-4  Position of second cel (if any), relative to start of loop
- 5-6  Position of third cel (if any), relative to start of loop
------ -----------------------------------------------------------
-  </programlisting>
-</para>
-
-<sect2>
-<title>Cel header (3 bytes)</title>
-
-<para>
-  <programlisting>
-Byte  Meaning
------ -----------------------------------------------------------
-  0   Width of cel (remember that AGI pixels are 2 normal EGA
-      pixels wide so a cel of width 12 is actually 24 pixels
-      wide on screen)
-  1   Height of cel
-  2   Transparency and cel mirroring
------ -----------------------------------------------------------
-  </programlisting>
+  <xref linkend="tab-view-header">, <xref linkend="tab-loop-header"> and
+  <xref linkend="tab-cel-header"> show the format of the view, loop
+  and cel headers.
 </para><para>
-  The first four bits of this byte tell the interpreter how to handle
-  the mirroring of this cel (explained later).
-</para><para>
+  The first four bits of the last byte of the cel header tell the
+  interpreter how to handle the mirroring of this cel (explained later).
   The last four bits represent the transparent color. When the cel is
   drawn on the screen, any pixels of this color will show through to the
-  background.
-</para><para>
-  All cels have a transparent color, so if you want an opaque cel then
-  you must set the transparent color to one that is not used in the cel.
+  background. All cels have a transparent color, so if you want an
+  opaque cel then you must set the transparent color to one that is
+  not used in the cel.
 </para>
+
+<table id="tab-view-header">
+  <title>View header (7+ bytes)</title>
+  <tgroup cols="2">
+    <thead>
+      <row/ <entry/Offset/ <entry/Description/ /
+    </thead>
+    <tbody>
+      <row/ <entry/ 0 / <entry/Unknown (always seems to be either 1 or 2)//
+      <row/ <entry/ 1 / <entry/Unknown (always seems to be 1)//
+      <row/ <entry/ 2 / <entry/Number of loops//
+      <row/ <entry/3-4/ <entry/Position of description (more on this later)
+                         Both bytes are 0 if there is no description//
+      <row/ <entry/5-6/ <entry/Position of first loop//
+      <row/ <entry/7-8/ <entry/Position of second loop (if any)//
+      <row/ <entry/9-10/<entry/Position of third loop (if any)//
+      <row/ <entry/.../ <entry/...//
+    </tbody>
+  </tgroup>
+</table>
+
+<table id="tab-loop-header">
+  <title>Loop header (3+ bytes)</title>
+  <tgroup cols="2">
+    <thead>
+      <row/ <entry/Offset/ <entry/Description/ /
+    </thead>
+    <tbody>
+      <row/ <entry/ 0 / <entry/Number of cels in this loop//
+      <row/ <entry/1-2/ <entry/Position of first cel relative to start of loop//
+      <row/ <entry/3-4/ <entry/Position of second cel (if any)//
+      <row/ <entry/5-6/ <entry/Position of third cel (if any)//
+      <row/ <entry/.../ <entry/...//
+    </tbody>
+  </tgroup>
+</table>
+
+<table id="tab-cel-header">
+  <title>Cel header (3 bytes)</title>
+  <tgroup cols="2">
+    <thead>
+      <row/ <entry/Offset/ <entry/Description/ /
+    </thead>
+    <tbody>
+      <row/ <entry/ 0 / <entry/Width of cel in AGI pixels//
+      <row/ <entry/ 1 / <entry/Height of cel//
+      <row/ <entry/ 2 / <entry/Transparency and cel mirroring//
+    </tbody>
+  </tgroup>
+</table>
 
 <sect2>
 <title>Cel data</title>
@@ -5680,14 +5681,20 @@ Byte  Meaning
   place. The first four bits of the 3rd byte in the header of each cel
   tell the interpreter what is mirrored:
 </para><para>
-  <programlisting>
- Bit  Meaning
------ -----------------------------------------------------------
-  0   Specify whether or not this cel is mirrored.
- 1-3  Specify the number of the loop (from 0-7) which is NOT
-      mirrored
------ -----------------------------------------------------------
-  </programlisting>
+
+<table id="tab-cel-header">
+  <title>Cel header (3 bytes)</title>
+  <tgroup cols="2">
+    <thead>
+      <row/ <entry/Bit/ <entry/Description/ /
+    </thead>
+    <tbody>
+      <row/ <entry/ 0 / <entry/Specify whether or not this cel is mirrored//
+      <row/ <entry/1-3/ <entry/Specify the number of the loop (from 0-7)
+            which is NOT mirrored//
+    </tbody>
+  </tgroup>
+</table>
 
 </para><para>
   When the interpreter goes to display a loop, it looks at the bit 0 and
@@ -5731,7 +5738,8 @@ Byte  Meaning
   regardless.
 </para>
 
-<sect2><title>Description</title>
+<sect2>
+<title>Description</title>
 <para>
   All the views in the game that are used as close-ups of inventory
   members have a description. When a player ``examines'' these (in some
@@ -5840,10 +5848,10 @@ Byte  Meaning
 </table>
 
 <table id="tab-view-flags">
-  <title>Cycle table</title>
+  <title>Viewtable flags</title>
   <tgroup cols="3">
     <thead>
-      <row/ <entry/Bit/ <entry/Flag reset/ <entry/Flag set/ /
+      <row/ <entry/Bit/ <entry/Flag unset/ <entry/Flag set/ /
     </thead>
     <tbody>
       <row/ <entry/0/  <entry/Not drawn/         <entry/Drawn/ /

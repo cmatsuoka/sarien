@@ -58,7 +58,6 @@ int main (int argc, char *argv[])
 #ifndef __MPW__
 	if ((ec = parse_cli (argc, argv)) != err_OK)
 		goto bail_out;
-#endif
 
 	if (opt.gamerun == GAMERUN_CRC) {
 		agi_detect_game (argc > 1 ? argv[optind] :
@@ -70,6 +69,7 @@ int main (int argc, char *argv[])
 		list_games ();
 		exit (0);
 	}
+#endif
 
 	init_machine (argc, argv);
 
