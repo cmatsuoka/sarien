@@ -382,6 +382,7 @@ int run_game ()
 		setvar (V_monitor, 0x3);		/* EGA monitor */
 		setvar (V_max_input_chars, 38);
 		game.input_mode = INPUT_NONE;
+		game.has_prompt = 0;
 
 		game.state = STATE_RUNNING;
 		ec = play_game();

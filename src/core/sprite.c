@@ -879,4 +879,5 @@ void deinit_sprites ()
 {
 	free (sprite_pool);
 }
+
 /* end: sprite.c */
