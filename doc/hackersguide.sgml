@@ -867,6 +867,22 @@ struct agi_game {
 <chapter id="gfx">
 <title>Graphic subsystem</title>
 
+<sect1 id="gfx-overview">
+<title>Graphic subsystem overview</title>
+<para>
+  In most platforms, Sarien draws on an internal buffer of 320x200
+  pixels<footnote>On Palm devices, this buffer is 160x200.</footnote>. 
+  Image scaling and aspect ratio correction are handled by each of
+  the drivers in order to take advantage of hardware acceleration or
+  optimized routines provided by the underlying system.<footnote>This
+  buffer may be extended to 640x480 in Sarien 2.0 to use high
+  resolution pictures and 80-columns console.</footnote> The number
+  of colors is limited to 16 regular colors and 16 ``transparent''
+  colors for the interpreter console. Sarien 1.0 drivers don't support
+  pallete changes after the graphics subsystem has been initialized.
+</para>
+</sect1>
+
 <sect1 id="gfx-lowlevel">
 <title>Lowlevel graphic subsystem</title>
 <para>
