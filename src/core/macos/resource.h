@@ -1,1 +1,1 @@
-/* $Id */#define rMenuBar 128#define mApple 128#define		iAbout 1#define mFile  129#define		iQuit  1
+/* $Id */#define rMenuBar 128#define mApple 128#define		iAbout 1#define mFile  129#define		iQuit  1#define mView  130#define		iSize  1#define		iRatio 2

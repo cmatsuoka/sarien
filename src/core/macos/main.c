@@ -41,8 +41,6 @@ int main (int argc, char *argv[])
 	game.clock_enabled = FALSE;
 	game.state = STATE_INIT;
 
-	opt.scale = 1;
-
 	init_machine (argc, argv);
 
 	game.color_fg = 15;
@@ -72,8 +70,6 @@ int main (int argc, char *argv[])
 
 	console_init ();
 	report ("--- Starting console ---\n\n");
-	if (!opt.gfxhacks)
-		report ("Graphics driver hacks disabled (if any)\n");
 
 	_D ("Init sound");
 	init_sound ();

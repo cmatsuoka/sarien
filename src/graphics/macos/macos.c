@@ -57,9 +57,9 @@ static GWorldPtr gworld;
 static PixMapHandle pix, wpix;
 static UINT8 *screen_buffer;
 static int depth = 16;
-static int scale = 2;
+static int scale = 1;
+static int fixratio = 1;
 static int bpl;
-
 
 #define KEY_QUEUE_SIZE 16
 
@@ -73,6 +73,127 @@ static int key_queue_end = 0;
 	key_queue_start %= KEY_QUEUE_SIZE; } while (0)
 
 #define ASPECT_RATIO(x) ((x) * 6 / 5)
+#define MAX_SCALE 2
+
+/* ===================================================================== */
+/* Optimized wrappers to access the offscreen pixmap directly.
+ * From my raster star wars scroller screensaver.
+ */
+
+/* In the normal 8/15/16/24/32 bpp cases idx indexes the data item directly.
+ * x and y are available for the other depths.
+ */
+static INLINE void putpixel_32 (UINT8 *img, int idx, int p)
+{
+	*(int *)&img[idx] = p;
+}
+
+static INLINE void putpixel_16 (UINT8 *img, int idx, int p)
+{
+	*(short *)&img[idx] = p;
+}
+
+static INLINE void putpixel_8 (UINT8 *img, int idx, int p)
+{
+	*(char *)&img[idx] = p;
+}
+
+/* ===================================================================== */
+
+/* Standard put pixels handlers */
+
+#define _putpixels_scale1(d) static void \
+_putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
+	if (w == 0) return; \
+	x *= ((d) / 8); x += y * bpl; \
+	while (w--) { \
+		putpixel_##d (screen_buffer, x, rgb_palette[*p++]); \
+		x += ((d) / 8); \
+	} \
+}
+
+#define _putpixels_scale2(d) static void \
+_putpixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) { \
+	register int c; if (w == 0) return; \
+	x <<= 1; y <<= 1; x *= ((d) / 8); \
+	x += y * bpl; \
+	y = x + bpl; \
+	while (w--) { \
+		c = rgb_palette[*p++]; \
+		putpixel_##d (screen_buffer, x, c); x += ((d) / 8); \
+		putpixel_##d (screen_buffer, x, c); x += ((d) / 8); \
+		putpixel_##d (screen_buffer, y, c); y += ((d) / 8); \
+		putpixel_##d (screen_buffer, y, c); y += ((d) / 8); \
+	} \
+}
+
+_putpixels_scale1(8);
+_putpixels_scale1(16);
+_putpixels_scale1(32);
+
+_putpixels_scale2(8);
+_putpixels_scale2(16);
+_putpixels_scale2(32);
+
+/* ===================================================================== */
+
+/* Aspect ratio correcting put pixels handlers */
+
+#define _putpixels_fixratio_scale1(d) static void \
+_putpixels_fixratio_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
+	if (y > 0 && ASPECT_RATIO (y) - 1 != ASPECT_RATIO (y - 1)) \
+		_putpixels_##d##bits_scale1 (x, ASPECT_RATIO(y) - 1, w, p);\
+	_putpixels_##d##bits_scale1 (x, ASPECT_RATIO(y), w, p); \
+}
+
+#define _putpixels_fixratio_scale2(d) static void \
+_putpixels_fixratio_##d##bits_scale2 (int x, int y, int w, UINT8 *p0) { \
+	register int c; int extra = 0, z; UINT8 *p; \
+	if (w == 0) return; \
+	x <<= 1; y <<= 1; x *= ((d) / 8); \
+	if (y < ((GFX_WIDTH - 1) << 2) && ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2)) extra = w; \
+	y = ASPECT_RATIO(y); \
+	x += y * bpl; \
+	y = x + bpl; \
+	z = y + bpl; \
+	for (p = p0; w--; ) { \
+		c = rgb_palette[*p++]; \
+		putpixel_##d (screen_buffer, x, c); x += ((d) / 8); \
+		putpixel_##d (screen_buffer, x, c); x += ((d) / 8); \
+		putpixel_##d (screen_buffer, y, c); y += ((d) / 8); \
+		putpixel_##d (screen_buffer, y, c); y += ((d) / 8); \
+	} \
+	for (p = p0; extra--; ) { \
+		c = rgb_palette[*p++]; \
+		putpixel_##d (screen_buffer, z, c); z += ((d) / 8); \
+		putpixel_##d (screen_buffer, z, c); z += ((d) / 8); \
+	} \
+}
+
+_putpixels_fixratio_scale1 (8);
+_putpixels_fixratio_scale1 (16);
+_putpixels_fixratio_scale1 (32);
+
+_putpixels_fixratio_scale2 (8);
+_putpixels_fixratio_scale2 (16);
+_putpixels_fixratio_scale2 (32);
+
+/* ===================================================================== */
+
+
+void (*ppix[2][3][MAX_SCALE])() = {
+	{
+		{ _putpixels_8bits_scale1, _putpixels_8bits_scale2 },
+		{ _putpixels_16bits_scale1, _putpixels_16bits_scale2 },
+		{ _putpixels_32bits_scale1, _putpixels_32bits_scale2 }
+	},
+	{
+		{ _putpixels_fixratio_8bits_scale1, _putpixels_fixratio_8bits_scale2 },
+		{ _putpixels_fixratio_16bits_scale1, _putpixels_fixratio_16bits_scale2 },
+		{ _putpixels_fixratio_32bits_scale1, _putpixels_fixratio_32bits_scale2 }
+	}
+};
+
 
 
 /*
@@ -99,6 +220,33 @@ static void init_menu ()
 	DisposeHandle (menubar);
 	AppendResMenu (GetMenuHandle (mApple), 'DRVR');
 	DrawMenuBar();
+}
+
+static void resize_window ()
+{
+	SizeWindow (window, GFX_WIDTH * scale,
+		fixratio ? ASPECT_RATIO (GFX_HEIGHT * scale) : GFX_HEIGHT * scale,
+		true);
+	InvalRect (&gworld->portRect);
+	gfx->put_pixels = ppix[fixratio][depth / 8 - 1][scale - 1];
+	flush_screen ();
+}
+
+static void adjust_menu ()
+{
+	MenuHandle menu;
+	
+	menu = GetMenuHandle (mView);
+	
+	if (scale == 1)
+		SetMenuItemText (menu, iSize, "\pDouble size");
+	else
+		SetMenuItemText (menu, iSize, "\pSingle size");
+	
+	if (fixratio)
+		SetMenuItemText (menu, iRatio, "\p8:5 aspect ratio");
+	else
+		SetMenuItemText (menu, iRatio, "\p4:3 aspect ratio");
 }
 
 static void process_menu (int mc)
@@ -128,6 +276,23 @@ static void process_menu (int mc)
 		case iQuit:
 			gfx->deinit_video_mode ();
 			ExitToShell ();
+			break;
+		}
+		break;
+	case mView:
+		switch (item) {
+		case iSize:
+			if (scale == 1)
+				scale = 2;
+			else
+				scale = 1;
+			adjust_menu ();
+			resize_window ();
+			break;
+		case iRatio:
+			fixratio = !fixratio;
+			adjust_menu ();
+			resize_window ();
 			break;
 		}
 		break;
@@ -161,17 +326,14 @@ static void process_events ()
 				break;
 			case inDrag:
 				/* title bar: call Window Manager to drag */
-				DragWindow (win, event.where,
-					&qd.screenBits.bounds);
+				DragWindow (win, event.where, &qd.screenBits.bounds);
 				break;
 			case inContent:
 				/* body of application window:
 				 * make it active if not
 				 */
-				if (win != FrontWindow()) {
+				if (win != FrontWindow())
 					SelectWindow (win);
-					break;
-				}
 				break;
 			case inGoAway:
 				/* quit application */
@@ -253,111 +415,6 @@ int deinit_machine ()
 }
 
 
-/* ===================================================================== */
-/* Optimized wrappers to access the offscreen pixmap directly.
- * From my raster star wars scroller screensaver.
- */
-
-/* In the normal 8/15/16/24/32 bpp cases idx indexes the data item directly.
- * x and y are available for the other depths.
- */
-static INLINE void putpixel_32 (UINT8 *img, int idx, int p)
-{
-	*(int *)&img[idx] = p;
-}
-
-static INLINE void putpixel_16 (UINT8 *img, int idx, int p)
-{
-	*(short *)&img[idx] = p;
-}
-
-static INLINE void putpixel_8 (UINT8 *img, int idx, int p)
-{
-	*(char *)&img[idx] = p;
-}
-
-/* ===================================================================== */
-
-/* Standard put pixels handlers */
-
-#define _putpixels_scale1(d) static void \
-_putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
-	if (w == 0) return; \
-	x *= ((d) / 8); x += y * bpl; \
-	while (w--) { \
-		putpixel_##d (screen_buffer, x, rgb_palette[*p++]); \
-		x += ((d) / 8); \
-	} \
-}
-
-#define _putpixels_scale2(d) static void \
-_putpixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) { \
-	register int c; if (w == 0) return; \
-	x <<= 1; y <<= 1; x *= ((d) / 8); \
-	x += y * bpl; \
-	y = x + bpl; \
-	while (w--) { \
-		c = rgb_palette[*p++]; \
-		putpixel_##d (screen_buffer, x, c); x += ((d) / 8); \
-		putpixel_##d (screen_buffer, x, c); x += ((d) / 8); \
-		putpixel_##d (screen_buffer, y, c); y += ((d) / 8); \
-		putpixel_##d (screen_buffer, y, c); y += ((d) / 8); \
-	} \
-}
-
-_putpixels_scale1(8);
-_putpixels_scale1(16);
-_putpixels_scale1(32);
-
-_putpixels_scale2(8);
-_putpixels_scale2(16);
-_putpixels_scale2(32);
-
-/* ===================================================================== */
-
-/* Aspect ratio correcting put pixels handlers */
-
-#define _putpixels_fixratio_scale1(d) static void \
-_putpixels_fixratio_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
-	if (y > 0 && ASPECT_RATIO (y) - 1 != ASPECT_RATIO (y - 1)) \
-		_putpixels_##d##bits_scale1 (x, ASPECT_RATIO(y) - 1, w, p);\
-	_putpixels_##d##bits_scale1 (x, ASPECT_RATIO(y), w, p); \
-}
-
-#define _putpixels_fixratio_scale2(d) static void \
-_putpixels_fixratio_##d##bits_scale2 (int x, int y, int w, UINT8 *p0) { \
-	register int c; int extra = 0, z; UINT8 *p; \
-	if (w == 0) return; \
-	x <<= 1; y <<= 1; \
-	if (y < ((GFX_WIDTH - 1) << 2) && ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2)) extra = w; \
-	y = ASPECT_RATIO(y); \
-	x += y * bpl; \
-	y = x + bpl; \
-	z = y + bpl; \
-	for (p = p0; w--; ) { \
-		c = rgb_palette[*p++]; \
-		putpixel_##d (screen_buffer, x, c); x += ((d) / 8); \
-		putpixel_##d (screen_buffer, x, c); x += ((d) / 8); \
-		putpixel_##d (screen_buffer, y, c); y += ((d) / 8); \
-		putpixel_##d (screen_buffer, y, c); y += ((d) / 8); \
-	} \
-	for (p = p0; extra--; ) { \
-		c = rgb_palette[*p++]; \
-		putpixel_##d (screen_buffer, z, c); z += ((d) / 8); \
-		putpixel_##d (screen_buffer, z, c); z += ((d) / 8); \
-	} \
-}
-
-_putpixels_fixratio_scale1 (8);
-_putpixels_fixratio_scale1 (16);
-_putpixels_fixratio_scale1 (32);
-
-_putpixels_fixratio_scale2 (8);
-_putpixels_fixratio_scale2 (16);
-_putpixels_fixratio_scale2 (32);
-
-/* ===================================================================== */
-
 
 static int set_palette (UINT8 *pal, int scol, int numcols)
 {
@@ -436,6 +493,7 @@ static int macos_init_vidmode ()
 	
 	init_toolbox ();
 	init_menu ();
+	adjust_menu ();
 
 	/* Set palette */
 	set_palette (palette, 0, 32);
@@ -445,14 +503,16 @@ static int macos_init_vidmode ()
 	 * defined by dimensions while in the window creation call it
 	 * is defined by coordinates. --claudio
 	 */
-	SetRect (&gworld_rect, 0, 0, GFX_WIDTH * scale, GFX_HEIGHT * scale);
+	SetRect (&gworld_rect, 0, 0, GFX_WIDTH * MAX_SCALE,
+		ASPECT_RATIO (GFX_HEIGHT * MAX_SCALE));
 	if (NewGWorld (&gworld, depth, &gworld_rect, NULL, NULL, 0) != noErr)
 		return -1;
 
 	/* Create window */
 	SetRect (&window_rect, 50, 50, 50 + GFX_WIDTH * scale - 1,
-		50 + GFX_HEIGHT * scale - 1);
-	window = NewCWindow (NULL, &window_rect, "\pSarien", true,
+		50 + (fixratio ? ASPECT_RATIO (GFX_HEIGHT * scale) :
+		GFX_HEIGHT * scale) - 1);
+	window = NewCWindow (NULL, &window_rect, "\pSarien " VERSION, true,
 		noGrowDocProc, (WindowPtr) -1, true, NULL);
 		
 	/* Initialize pixmap pointers */
@@ -478,8 +538,8 @@ static int macos_init_vidmode ()
 	BackColor (whiteColor);
 
 	/* Set optimized put_pixels handler */
-	gfx_macos.put_pixels = _putpixels_16bits_scale2;
-	
+	gfx->put_pixels = ppix[fixratio][depth / 8 - 1][scale - 1];
+		
 	return err_OK;
 }
 
@@ -507,7 +567,7 @@ static void macos_put_block (int x1, int y1, int x2, int y2)
 	x1 *= scale;
 	y1 *= scale;
 	x2 = (x2 + 1) * scale;
-	y2 = (y2 + 1) * scale;
+	y2 = fixratio ? ASPECT_RATIO ((y2 + 1) * scale) : (y2 + 1) * scale;
 
 	SetRect (&r, x1, y1, x2, y2);
 	CopyBits ((BitMap *)*pix, (BitMap *)*wpix, &r, &r, srcCopy, 0L);
