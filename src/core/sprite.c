@@ -262,21 +262,27 @@ static void checkmove_sprites (struct list_head *head)
 
 	list_for_each (h, head, next) {
 		struct sprite *s = list_entry (h, struct sprite, list);
-		int x1, y1, x2, y2;
+		int x1, y1, x2, y2, w, h;
+
+		w = (s->v->cel_data->width > s->v->cel_data_2->width) ?
+			s->v->cel_data->width : s->v->cel_data_2->width;
+
+		h = (s->v->cel_data->height > s->v->cel_data_2->height) ?
+			s->v->cel_data->height : s->v->cel_data_2->height;
 
 		if (s->v->x_pos < s->v->x_pos2) {
 			x1 = s->v->x_pos;
-			x2 = s->v->x_pos2 + s->v->x_size - 1;
+			x2 = s->v->x_pos2 + w - 1;
 		} else {
 			x1 = s->v->x_pos2;
-			x2 = s->v->x_pos + s->v->x_size - 1;
+			x2 = s->v->x_pos + w - 1;
 		}
 
 		if (s->v->y_pos < s->v->y_pos2) {
-			y1 = s->v->y_pos - s->v->y_size + 1;
+			y1 = s->v->y_pos - h + 1;
 			y2 = s->v->y_pos2;
 		} else {
-			y1 = s->v->y_pos2 - s->v->y_size + 1;
+			y1 = s->v->y_pos2 - h + 1;
 			y2 = s->v->y_pos;
 		}
 
