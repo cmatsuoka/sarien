@@ -31,11 +31,12 @@
       $Id$
     </releaseinfo>
 
+    <copyright>
+      <year>2001</year>
+      <holder>The Sarien Development Team</holder>
+    </copyright>
+
     <legalnotice><para>
-      <copyright>
-        <year>2001</year>
-        <holder>The Sarien Development Team</holder>
-      </copyright>
     </para></legalnotice>
 
   </bookinfo>
@@ -97,7 +98,8 @@
   yet integrated to the main development tree.</para></footnote>:
 </para><para>
 
-  <informaltable>
+  <table id="table-ports">
+    <title>Available Sarien ports and the features they support
     <tgroup cols="8">
       <thead>
         <row>
@@ -244,7 +246,8 @@
         </row>
       </tbody>
     </tgroup>
-  </informaltable>
+  </table>
+
 </para><para>
   To achieve maximum portability, the following guidelies should be
   observed when writing code for Sarien:
@@ -437,6 +440,19 @@
 <sect1 id="intro-organization">
 <title>Organization</title>
 <para>
+  The SHG is a work in progress and is expected to evolve with Sarien
+  development. Many sections are still incomplete and others are to
+  be added. The basic outline of the document, however, is already
+  defined and is organized as follows: <xref linkend="intro"> introduces
+  the project to newcomer developers and gives general coding and
+  portability recommendations; <xref linkend="arch"> gives notions of
+  how the interpreter works and some of its design and implementation
+  decisions; <xref linkend="input"> shows how user input is collected
+  and processed using different input methods; <xref linkend="gfx">
+  discusses graphics and sprite management; <xref linkend="sound">
+  documents the sound subsystem; and <xref linkend="driver"> presents
+  the driver API and gives detaled information on how to port Sarien
+  to other platforms.
 </para>
 </sect1>
 
@@ -447,6 +463,75 @@
 <sect1 id="arch-system">
 <title>Interpreter subsystems</title>
 <para>
+  Sarien can be roughly divided in a number of subsystems, each one
+  dealing with a specific aspect of running a set of AGI scripts.
+
+  <itemizedlist>
+    <listitem><para>
+      The interpreter core is responsible for managing AGI resources
+      and execute the Logic scripts. It must interact with the other
+      subsystems to perform several actions such as sound playing,
+      graphic updates and read user input. The rest of this chapter
+      discusses the Sarien interpreter core, its internal organization
+      and the services it provides to the rest of the system.
+    </para></listitem>
+
+    <listitem><para>
+      The user input subsystem collects keyboard, mouse or other input
+      device events from a lowlevel driver and makes them available
+      to the interpreter core. Currently only keyboard input is supported;
+      details on the input subsystem are given in <xref linkend="input">.
+    </para></listitem>
+
+    <listitem><para>
+      The graphics subsystem work on an internal frame and ancillary
+      buffers to render the images requested by the interpreter core,
+      delivering them to the lowlevel driver for display exposure.
+      The ancillary buffers include a 4-bit Z-buffer (priority) and
+      the console layer, that should be made transparent to the
+      framebuffer-accessing functions. It is also responsible for
+      blitting sprites and rendering character fonts on the framebuffer.
+      <xref linkend="gfx"> gives more information on Sarien's graphics
+      subsystems.
+    </para></listitem>
+
+    <listitem><para>
+      The sound subsystem runs on its own thread and uses real-time
+      software synthesis to produce a PCM stream from AGI resources.
+      In single-threaded environments it can be called as an interrupt
+      handler (assigned and managed by the platform-specifc low-level
+      driver).
+    </para></listitem>
+
+    <listitem><para>
+      Low-level drivers provide the platform-specific code necessary in
+      the several Sarien ports. As shown in <xref linkend="table-ports">
+      there are low-level drivers for graphic (X11, Win32, SDL, etc.) and
+      sound (OSS, SDL, Solaris, etc.) access. Non-obvious drivers are
+      the input device drivers and the filesystem access drivers. Unlike
+      graphics and sound, which can be combined to match the host platform
+      (e.g. X11 graphics driver with OSS or Solaris sound driver), the
+      input driver is tied to the graphics driver. The "console driver"
+      term is more appropriate, but graphics driver will be used to avoid
+      confusion with the system console. The driver API and implementation
+      details are examined in <xref linkend="driver">.
+      
+    </para></listitem>
+  </itemizedlist>
+
+</para><para>
+  Among the aforementioned subsystems, only the interpreter core is
+  AGI-aware, and deals directly with AGI resources. Similary, only
+  the lowlevel drivers know details about the underlying hardware.
+  The other subsystems sit in the middle and work with
+  platform-independent raw (i.e. non-AGI) data. <footnote><para>That
+  doesn't necessarily mean that this middle layer will always use data
+  formats that are different or non-AGI in nature, but that the internal
+  organization adopted by AGI becomes meaningless to these subsystems.
+  The sound subsystem, for instance, reads sequencing information from
+  data in AGI format, and the graphics subsystem has its Z-buffer with
+  the same format as the AGI priority buffer, but the "cel", "loop" or
+  "view" table concepts are irrelevant.</para></footnote>.
 </para>
 </sect1>
 
