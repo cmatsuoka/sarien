@@ -104,7 +104,7 @@ void reset_view (int n)
 		view_table[n].bg_pri = NULL;
 	}
 
-	/*view_table[n].flags& =~ (UPDATE | ANIMATED);*/
+	/*view_table[n].flags &= ~(UPDATE | ANIMATED);*/
 	view_table[n].flags = 0;
 	view_table[n].step_time = 1;
 	view_table[n].step_time_count = 1;
@@ -429,8 +429,6 @@ void draw_obj (int vt)
 	 * Sierra logo didn't appear in demos because
 	 * (v->y_pos - cel_height) < 0 and agi_put_bimap receive
 	 * only unsigned values!
-	 *
-	 * This work-around only creates more bugs!
 	 */
 	agi_put_bitmap (VT_CEL(view_table[vt]).data,
 		v->x_pos,
@@ -527,7 +525,7 @@ int decode_view (int resnum)
 
 			_D ("mirror=%d, loop=%d", vc->mirror,vc->mirror_loop);
     			if (vc->mirror == 1 && vc->mirror_loop != loop) {
-				_D (_D_WARN "mirror_loop = %d", vc->mirror_loop);
+				_D(_D_WARN "mirror_loop = %d", vc->mirror_loop);
     				mirror_cel (vc);
 			}
     		} /* cel */

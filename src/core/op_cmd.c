@@ -273,14 +273,14 @@ void cmd_fix_loop (UINT8 entry)
 void cmd_object_on_any (UINT8 entry)
 {
 	_D (_D_WARN "(%d)", entry);
-	vt.flags &= ~ (ON_WATER | ON_LAND);
+	vt.flags &= ~(ON_WATER | ON_LAND);
 }
 
 
 void cmd_object_on_land (UINT8 entry)
 {
 	_D (_D_WARN "(%d)", entry);
-	vt.flags &= ~ON_WATER;
+	vt.flags &= ~ON_WATER;		/* Not in Sierra AGI */
 	vt.flags |= ON_LAND;
 }
 
@@ -288,8 +288,9 @@ void cmd_object_on_land (UINT8 entry)
 void cmd_object_on_water (UINT8 entry)
 {
 	_D (_D_WARN "(%d)", entry);
-	vt.flags &= ~ON_LAND;
+	vt.flags &= ~ON_LAND;		/* Not in Sierra AGI */
 	vt.flags |= ON_WATER;
+	
 }
 
 

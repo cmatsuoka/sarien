@@ -129,7 +129,7 @@ typedef signed long	SINT32;
 #undef OPT_PICTURE_VIEWER
 
 #define EGO_VIEW_TABLE	0
-#define	HORIZON		86
+#define	HORIZON		36
 #define _WIDTH		160
 #define _HEIGHT		168
 

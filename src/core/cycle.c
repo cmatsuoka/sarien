@@ -369,15 +369,20 @@ static void calc_obj_motion ()
 
 		original_direction = vt_obj->direction;
 
-		if (~vt_obj->flags & (UPDATE | MOTION))
+		if (~vt_obj->flags & UPDATE)
 			continue;
+
+		if (~vt_obj->flags & UPDATE) {
+			check_surface (em, vt_obj->x_pos, vt_obj->y_pos);
+			continue;
+		}
 
 		vt_obj->step_time_count += vt_obj->step_size;
 
 		if (vt_obj->step_time_count <= vt_obj->step_time)
 			continue;
 
-		vt_obj->step_time_count=1;
+		vt_obj->step_time_count = 1;
 
 		switch(vt_obj->motion) {
 		case MOTION_NORMAL:		/* normal */

@@ -75,7 +75,7 @@ void new_room (int r)
 		view_table[EGO_VIEW_TABLE].x_pos = 0;
 		break;
 	case 3:
-		view_table[EGO_VIEW_TABLE].y_pos = HORIZON + 1;
+		view_table[EGO_VIEW_TABLE].y_pos = game.horizon + 1;
 		break; /* horizon + 1*/
 	case 4:
 		view_table[EGO_VIEW_TABLE].x_pos = _WIDTH -
@@ -83,7 +83,7 @@ void new_room (int r)
 		break;
 	}
 
- 	cmd_set_horizon (HORIZON);
+ 	//cmd_set_horizon (HORIZON);
 
 	setvar (V_prev_room, getvar(V_cur_room));
 	setvar (V_cur_room, r);
