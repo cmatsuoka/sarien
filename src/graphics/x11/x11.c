@@ -71,8 +71,7 @@ static int key_queue_end = 0;
 static int	init_vidmode	(void);
 static int	deinit_vidmode	(void);
 static void	x11_put_block	(int, int, int, int);
-static void	_putpixels_anybits_scaleany
-				(int, int, int, UINT8 *);
+static void	_putpixels	(int, int, int, UINT8 *);
 static int	x11_keypress	(void);
 static int	x11_get_key	(void);
 static void	x11_timer	(void);
@@ -81,7 +80,7 @@ static struct gfx_driver gfx_x11 = {
 	init_vidmode,
 	deinit_vidmode,
 	x11_put_block,
-	_putpixels_anybits_scaleany,
+	_putpixels,
 	x11_timer,
 	x11_keypress,
 	x11_get_key
@@ -92,7 +91,7 @@ static struct gfx_driver gfx_x11 = {
 #endif
 
 
-#define ASPECT_RATIO(x) ((x + 1) * 6 / 5 - 1)
+#define ASPECT_RATIO(x) ((x) * 6 / 5)
 
 
 /* ===================================================================== */
@@ -119,105 +118,86 @@ static INLINE void putpixel_8 (XImage *img, int idx, int p)
 	((char *)img->data)[idx] = p;
 }
 
-static void _putpixels_8bits_scale1 (int x, int y, int w, UINT8 *p)
-{
-	if (w == 0) return;
-	x += y * GFX_WIDTH;
-	while (w--) { putpixel_8 (ximage, x++, rgb_palette[*p++]); }
+/* ===================================================================== */
+
+/* Standard put pixels handlers */
+
+#define _putpixels_scale1(d) static void \
+_putpixels_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
+	if (w == 0) return; \
+	x += y * GFX_WIDTH; \
+	while (w--) { putpixel_##d## (ximage, x++, rgb_palette[*p++]); } \
 }
 
-static void _putpixels_8bits_scale2 (int x, int y, int w, UINT8 *p)
-{
-	register int c;
-
-	if (w == 0) return;
-
-	x <<= 1; y <<= 1;
-	x += y * (GFX_WIDTH << 1);
-	y = x + (GFX_WIDTH << 1);
-
-	while (w--) {
-		c = rgb_palette[*p++];
-		putpixel_8 (ximage, x++, c);
-		putpixel_8 (ximage, x++, c);
-		putpixel_8 (ximage, y++, c);
-		putpixel_8 (ximage, y++, c);
-	}
+#define _putpixels_scale2(d) static void \
+_putpixels_##d##bits_scale2 (int x, int y, int w, UINT8 *p) { \
+	register int c; if (w == 0) return; \
+	x <<= 1; y <<= 1; \
+	x += y * (GFX_WIDTH << 1); \
+	y = x + (GFX_WIDTH << 1); \
+	while (w--) { \
+		c = rgb_palette[*p++]; \
+		putpixel_##d## (ximage, x++, c); \
+		putpixel_##d## (ximage, x++, c); \
+		putpixel_##d## (ximage, y++, c); \
+		putpixel_##d## (ximage, y++, c); \
+	} \
 }
 
-static void _putpixels_16bits_scale1 (int x, int y, int w, UINT8 *p)
-{
-	if (w == 0) return;
-	x += y * GFX_WIDTH;
-	while (w--) { putpixel_16 (ximage, x++, rgb_palette[*p++]); }
-}
-
-static void _putpixels_16bits_scale2 (int x, int y, int w, UINT8 *p)
-{
-	int c;
-
-	if (w == 0) return;
-
-	x <<= 1; y <<= 1;
-	x += y * (GFX_WIDTH << 1);
-	y = x + (GFX_WIDTH << 1);
-
-	while (w--) {
-		c = rgb_palette[*p++];
-		putpixel_16 (ximage, x++, c);
-		putpixel_16 (ximage, x++, c);
-		putpixel_16 (ximage, y++, c);
-		putpixel_16 (ximage, y++, c);
-	}
-}
-
-static void _putpixels_32bits_scale1 (int x, int y, int w, UINT8 *p)
-{
-	if (w == 0) return;
-	x += y * GFX_WIDTH;
-	while (w--) { putpixel_32 (ximage, x++, rgb_palette[*p++]); }
-}
-
-static void _putpixels_32bits_scale2 (int x, int y, int w, UINT8 *p)
-{
-	int c;
-
-	if (w == 0) return;
-
-	x <<= 1; y <<= 1;
-	x += y * (GFX_WIDTH << 1);
-	y = x + (GFX_WIDTH << 1);
-
-	while (w--) {
-		c = rgb_palette[*p++];
-		putpixel_32 (ximage, x++, c);
-		putpixel_32 (ximage, x++, c);
-		putpixel_32 (ximage, y++, c);
-		putpixel_32 (ximage, y++, c);
-	}
-}
+_putpixels_scale1(8);
+_putpixels_scale1(16);
+_putpixels_scale1(32);
+_putpixels_scale2(8);
+_putpixels_scale2(16);
+_putpixels_scale2(32);
 
 /* ===================================================================== */
 
-#define _putpixels_fixratio(b,s) static void \
-_putpixels_fixratio_##b##bits_scale##s## (int x, int y, int w, UINT8 *p) { \
+/* Aspect ratio correcting put pixels handlers */
+
+#define _putpixels_fixratio_scale1(d) static void \
+_putpixels_fixratio_##d##bits_scale1 (int x, int y, int w, UINT8 *p) { \
 	if (y > 0 && ASPECT_RATIO (y) - 1 != ASPECT_RATIO (y - 1)) \
-		_putpixels_##b##bits_scale##s## (x, ASPECT_RATIO(y) - 1, w, p);\
-	_putpixels_##b##bits_scale##s## (x, ASPECT_RATIO(y), w, p); \
+		_putpixels_##d##bits_scale1 (x, ASPECT_RATIO(y) - 1, w, p);\
+	_putpixels_##d##bits_scale1 (x, ASPECT_RATIO(y), w, p); \
 }
 
-_putpixels_fixratio (8,1);
-_putpixels_fixratio (16,1);
-_putpixels_fixratio (32,1);
-_putpixels_fixratio (8,2);
-_putpixels_fixratio (16,2);
-_putpixels_fixratio (32,2);
-_putpixels_fixratio (any,any);
+#define _putpixels_fixratio_scale2(d) static void \
+_putpixels_fixratio_##d##bits_scale2 (int x, int y, int w, UINT8 *p0) { \
+	register int c; int extra = 0, z; UINT8 *p; \
+	if (w == 0) return; \
+	x <<= 1; y <<= 1; \
+	if (y < ((GFX_WIDTH - 1) << 2) && ASPECT_RATIO (y) + 2 != ASPECT_RATIO (y + 2)) extra = w; \
+	y = ASPECT_RATIO(y); \
+	x += y * (GFX_WIDTH << 1); \
+	y = x + (GFX_WIDTH << 1); \
+	z = x + (GFX_WIDTH << 2); \
+	for (p = p0; w--; ) { \
+		c = rgb_palette[*p++]; \
+		putpixel_##d## (ximage, x++, c); \
+		putpixel_##d## (ximage, x++, c); \
+		putpixel_##d## (ximage, y++, c); \
+		putpixel_##d## (ximage, y++, c); \
+	} \
+	for (p = p0; extra--; ) { \
+		c = rgb_palette[*p++]; \
+		putpixel_##d## (ximage, z++, c); \
+		putpixel_##d## (ximage, z++, c); \
+	} \
+}
+
+_putpixels_fixratio_scale1 (8);
+_putpixels_fixratio_scale1 (16);
+_putpixels_fixratio_scale1 (32);
+_putpixels_fixratio_scale2 (8);
+_putpixels_fixratio_scale2 (16);
+_putpixels_fixratio_scale2 (32);
 
 /* ===================================================================== */
 
+/* Slow generic routine. */
 
-static void _putpixels_anybits_scaleany (int x, int y, int w, UINT8 *p)
+static void _putpixels (int x, int y, int w, UINT8 *p)
 {
 	register int cp;
 	register int i, j;
@@ -253,6 +233,14 @@ static void _putpixels_anybits_scaleany (int x, int y, int w, UINT8 *p)
 	}
 }
 
+static void _putpixels_fixratio (int x, int y, int w, UINT8 *p)
+{
+	if (y > 0 && ASPECT_RATIO (y) - 1 != ASPECT_RATIO (y - 1))
+		_putpixels (x, ASPECT_RATIO(y) - 1, w, p);
+	_putpixels (x, ASPECT_RATIO(y), w, p); 
+}
+
+/* ===================================================================== */
 
 static void process_events ()
 {
@@ -624,46 +612,53 @@ static int init_vidmode ()
 		return err_Unk;
 	}
 
-if (opt.fixratio) {
-	gfx_x11.put_pixels = _putpixels_fixratio_anybits_scaleany;
-	if (opt.gfxhacks) switch (scale) {
-	case 1:
-		switch (depth) {
-		case 8:  gfx_x11.put_pixels = _putpixels_fixratio_8bits_scale1; break;
-		case 16: gfx_x11.put_pixels = _putpixels_fixratio_16bits_scale1; break;
-		case 24: /* fall-through */
-		case 32: gfx_x11.put_pixels = _putpixels_fixratio_32bits_scale1; break;
+	/* Handle optimization and aspect ratio correction */
+
+#define handle_case(d,s) case d: \
+	gfx_x11.put_pixels = _putpixels_##d##bits_scale##s##; break;
+#define handle_fixratio_case(d,s) case d: \
+	gfx_x11.put_pixels = _putpixels_fixratio_##d##bits_scale##s##; break;
+
+	if (opt.fixratio) {
+		gfx_x11.put_pixels = _putpixels_fixratio;
+		if (opt.gfxhacks) switch (scale) {
+		case 1:
+			switch (depth) {
+			handle_fixratio_case (8, 1);
+			handle_fixratio_case (16, 1);
+			case 24: /* fall-through */
+			handle_fixratio_case (32, 1);
+			}
+			break;
+		case 2:
+			switch (depth) {
+			handle_fixratio_case (8, 2);
+			handle_fixratio_case (16, 2);
+			case 24: /* fall-through */
+			handle_fixratio_case (32, 2);
+			}
+			break;
 		}
-		break;
-	case 2:
-		switch (depth) {
-		case 8:  gfx_x11.put_pixels = _putpixels_fixratio_8bits_scale2; break;
-		case 16: gfx_x11.put_pixels = _putpixels_fixratio_16bits_scale2; break;
-		case 24: /* fall-through */
-		case 32: gfx_x11.put_pixels = _putpixels_fixratio_32bits_scale2; break;
+	} else {
+		if (opt.gfxhacks) switch (scale) {
+		case 1:
+			switch (depth) {
+			handle_case (8, 1);
+			handle_case (16, 1);
+			case 24: /* fall-through */
+			handle_case (32, 1);
+			}
+			break;
+		case 2:
+			switch (depth) {
+			handle_case (8, 2);
+			handle_case (16, 2);
+			case 24: /* fall-through */
+			handle_case (32, 2);
+			}
+			break;
 		}
-		break;
 	}
-} else {
-	if (opt.gfxhacks) switch (scale) {
-	case 1:
-		switch (depth) {
-		case 8:  gfx_x11.put_pixels = _putpixels_8bits_scale1; break;
-		case 16: gfx_x11.put_pixels = _putpixels_16bits_scale1; break;
-		case 24: /* fall-through */
-		case 32: gfx_x11.put_pixels = _putpixels_32bits_scale1; break;
-		}
-		break;
-	case 2:
-		switch (depth) {
-		case 8:  gfx_x11.put_pixels = _putpixels_8bits_scale2; break;
-		case 16: gfx_x11.put_pixels = _putpixels_16bits_scale2; break;
-		case 24: /* fall-through */
-		case 32: gfx_x11.put_pixels = _putpixels_32bits_scale2; break;
-		}
-		break;
-	}
-}
 
 	XMapWindow (display, window);
 	XSetWindowBackground (display, window, BlackPixel (display, screen));
@@ -811,3 +806,4 @@ int deinit_machine (void)
 	return err_OK;
 }
 
+/* end: x11.c */
