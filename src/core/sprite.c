@@ -72,15 +72,9 @@ static void blit_cel (int x, int y, int spr, struct view_cel *c)
 				*p = (pr < 0x30 ? pr : spr) | *q;
 			}
 		}
-	if (game.picture_shown)
-		put_pixels_a (x, y + i, c->width, p0);
 		p0 += _WIDTH;
 	}
-
-	if (game.picture_shown)
-		flush_block_a (x, y, x + c->width - 1, y + c->height - 1);
 }
-
 
 static void objs_savearea (struct sprite *s)
 {
@@ -114,11 +108,6 @@ static void objs_restorearea (struct sprite *s)
 		put_pixels_a (s->x_pos, s->y_pos + y, s->x_size, p0);
 		q += s->x_size;
 		p0 += _WIDTH;
-	}
-
-	if (game.picture_shown) {
-		flush_block_a (s->x_pos, s->y_pos, s->x_pos + s->x_size - 1,
-			s->y_pos + s->y_size - 1);
 	}
 }
 
@@ -273,6 +262,25 @@ static void checkmove_sprites (struct list_head *head)
 
 	list_for_each (h, head, next) {
 		struct sprite *s = list_entry (h, struct sprite, list);
+		int x1, y1, x2, y2;
+
+		if (s->v->x_pos < s->v->x_pos2) {
+			x1 = s->v->x_pos;
+			x2 = s->v->x_pos2 + s->v->x_size - 1;
+		} else {
+			x1 = s->v->x_pos2;
+			x2 = s->v->x_pos + s->v->x_size - 1;
+		}
+
+		if (s->v->y_pos < s->v->y_pos2) {
+			y1 = s->v->y_pos - s->v->y_size + 1;
+			y2 = s->v->y_pos2;
+		} else {
+			y1 = s->v->y_pos2 - s->v->y_size + 1;
+			y2 = s->v->y_pos;
+		}
+
+		commit_block (x1, y1, x2, y2);
 
 		if (s->v->step_time_count != s->v->step_time)
 			continue;
@@ -427,7 +435,7 @@ void blit_both ()
  * Add view to picture.
  * This function is used to implement the add.to.pic AGI command. It
  * copies the specified cel from a view resource on the current picture.
- * This cel is not a sprite, it's can't be moved or removed.
+ * This cel is not a sprite, it can't be moved or removed.
  * @param view  number of view resource
  * @param loop  number of loop in the specified view resource
  * @param cel   number of cel in the specified loop
@@ -475,6 +483,8 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 			}
 		}
 	}
+
+	commit_block (x, y, x + c->width - 1, y + c->height - 1);
 }
 
 /**
@@ -504,6 +514,34 @@ void show_obj (n)
 	objs_restorearea (&s);
 
 	free (s.buffer);
+}
+
+void commit_block (int x1, int y1, int x2, int y2)
+{
+	int i, w;
+	UINT8 *q;
+
+	if (!game.picture_shown)
+		return;
+
+	/* Clipping */
+	if (x1 < 0) x1 = 0;
+	if (x2 < 0) x2 = 0;
+	if (y1 < 0) y1 = 0;
+	if (y2 < 0) y2 = 0;
+	if (x1 >= _WIDTH) x1 = _WIDTH - 1;
+	if (x2 >= _WIDTH) x2 = _WIDTH - 1;
+	if (y1 >= _HEIGHT) y1 = _HEIGHT - 1;
+	if (y2 >= _HEIGHT) y2 = _HEIGHT - 1;
+
+	w = x2 - x1 + 1;
+	q = &game.sbuf[x1 + _WIDTH * y1];
+	for (i = y1; i <= y2; i++) {
+		put_pixels_a (x1, i, w, q);
+		q += _WIDTH;
+	}
+
+	flush_block_a (x1, y1, x2, y2);
 }
 
 /* end: sprite.c */

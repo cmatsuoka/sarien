@@ -22,5 +22,6 @@ void	checkmove_nonupd_sprites(void);
 void	checkmove_both		(void);
 void	add_to_pic		(int, int, int, int, int, int, int);
 void	show_obj		(int);
+void	commit_block		(int, int, int, int);
 
 #endif /* __AGI_SPRITE_H */

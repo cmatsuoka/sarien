@@ -279,6 +279,10 @@ cmd(draw) {
 		vt.flags |= DRAWN;
 		blit_upd_sprites ();
 		vt.flags &= ~DONTUPDATE;
+
+		commit_block (vt.x_pos, vt.y_pos - vt.y_size + 1,
+			vt.x_pos + vt.x_size - 1, vt.y_pos);
+
 		_D ("vt entry #%d flags = %02x", p0, vt.flags);
 	}
 }
@@ -294,6 +298,9 @@ cmd(erase) {
 			blit_nonupd_sprites ();
 		}
 		blit_upd_sprites ();
+
+		commit_block (vt.x_pos, vt.y_pos - vt.y_size + 1,
+			vt.x_pos + vt.x_size - 1, vt.y_pos);
 	}
 }
 
