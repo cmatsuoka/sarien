@@ -270,19 +270,21 @@ static void checkmove_sprites (struct list_head *head)
 		h = (s->v->cel_data->height > s->v->cel_data_2->height) ?
 			s->v->cel_data->height : s->v->cel_data_2->height;
 
+		s->v->cel_data_2 = s->v->cel_data;
+
 		if (s->v->x_pos < s->v->x_pos2) {
 			x1 = s->v->x_pos;
-			x2 = s->v->x_pos2 + w;
+			x2 = s->v->x_pos2 + w - 1;
 		} else {
 			x1 = s->v->x_pos2;
-			x2 = s->v->x_pos + w;
+			x2 = s->v->x_pos + w - 1;
 		}
 
 		if (s->v->y_pos < s->v->y_pos2) {
-			y1 = s->v->y_pos - h;
+			y1 = s->v->y_pos - h + 1;
 			y2 = s->v->y_pos2;
 		} else {
-			y1 = s->v->y_pos2 - h;
+			y1 = s->v->y_pos2 - h + 1;
 			y2 = s->v->y_pos;
 		}
 

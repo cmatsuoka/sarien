@@ -8,6 +8,7 @@ Revision History
 	- partial port to MacOS using MPW
 	- changed palette to use Amiga-ish colors instead of PC EGA
 	- added "crc" command to the interpreter console
+	- sprite blitting algorithm changed to work with hidden screens
 
 0.6.1 (20010722)
 	- fixed QNX build and Photon driver
