@@ -57,6 +57,7 @@ UINT8	pic_clear_flag = TRUE;
 extern UINT8 old_prio;		/* Used in add_to_pic() */
 
 
+#ifdef OPT_PICTURE_VIEWER
 
 void dump_screen (int resnum)
 {
@@ -69,14 +70,6 @@ void dump_screen2 ()
 {
 	put_block_buffer (screen_data);
 	put_screen();
-}
-
-
-void dump_screenX ()
-{
-	memmove (screen_data, screen2, _WIDTH*_HEIGHT);
-	put_block_buffer (screen_data);
-	put_screen ();
 }
 
 
@@ -120,10 +113,19 @@ void dump_con_screen ()
 	put_screen ();
 }
 
+#endif
 
 void dump_x_screen ()
 {
 	put_block_buffer (xdata_data);
+	put_screen ();
+}
+
+
+void dump_screenX ()
+{
+	memmove (screen_data, screen2, _WIDTH*_HEIGHT);
+	put_block_buffer (screen_data);
 	put_screen ();
 }
 
@@ -818,6 +820,7 @@ static void draw_picture ()
 			break;
 		}
 
+#ifdef OPT_PICTURE_VIEWER
 		if (opt.showscreendraw) {
 			show_buffer (show_screen_mode);
 			put_screen ();
@@ -833,6 +836,8 @@ static void draw_picture ()
 				opt.showscreendraw = 3;
 		}
 #endif
+
+#endif /* OPT_PICTURE_VIEWER */
 	}
 
 	for (i = 0; i < stack_num_segs; i++)
@@ -899,6 +904,8 @@ int unload_picture (int resnum)
 }
 
 
+#ifdef OPT_PICTURE_VIEWER
+
 void show_buffer (int mode)
 {
 	switch (mode) {
@@ -918,3 +925,4 @@ void show_buffer (int mode)
 	}
 }
 
+#endif
