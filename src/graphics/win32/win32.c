@@ -74,9 +74,6 @@ static struct{
 } g_key_queue = { 0, 0 };
 
 
-volatile UINT32 c_ticks;
-volatile UINT32 c_count;
-
 static int	init_vidmode		(void);
 static int	deinit_vidmode		(void);
 static void	win32_put_block		(int, int, int, int);
@@ -89,7 +86,7 @@ static void	gui_put_block		(int, int, int, int);
 static int	set_palette		(UINT8 *, int, int);
 
 
-static struct gfx_driver GFX_WIN32 = {
+static struct gfx_driver gfx_win32 = {
 	init_vidmode,
 	deinit_vidmode,
 	win32_put_block,
@@ -277,15 +274,12 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 
 int init_machine (int argc, char **argv)
 {
-	InitializeCriticalSection(&g_screen.cs);
-	InitializeCriticalSection(&g_key_queue.cs);
+	InitializeCriticalSection (&g_screen.cs);
+	InitializeCriticalSection (&g_key_queue.cs);
 
-	gfx = &GFX_WIN32;
+	gfx = &gfx_win32;
 
 	//scale = opt.scale;
-
-	c_ticks = 0;
-	c_count = 0;
 
 	return err_OK;
 }
@@ -330,9 +324,9 @@ static int init_vidmode ()
 		WS_OVERLAPPED | WS_SYSMENU | WS_MINIMIZEBOX,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		(GFX_WIDTH*scale) + 2*GetSystemMetrics (SM_CXFRAME),
+		(GFX_WIDTH*scale) + GetSystemMetrics (SM_CXFRAME),
 		(GFX_HEIGHT*scale) + GetSystemMetrics (SM_CYCAPTION) +
-			2 * GetSystemMetrics (SM_CYFRAME),
+			GetSystemMetrics (SM_CYFRAME),
 		NULL,
 		NULL,
 		NULL,
@@ -391,7 +385,7 @@ exx:
 	return g_err;	
 }
 
-static void process_events ()
+static void INLINE process_events ()
 {
 	MSG msg;
 
@@ -413,19 +407,20 @@ static int deinit_vidmode (void)
 /* put a block onto the screen */
 static void win32_put_block (int x1, int y1, int x2, int y2) //th0
 {
-	xyxy *p = (xyxy*)malloc(sizeof(xyxy));
-	if (p == NULL) // no way
+	xyxy *p;
+
+	if ((p = malloc (sizeof(xyxy))) == NULL)
 		return;
 
 	p->x1 = x1;
-	p->x2 = x2;
 	p->y1 = y1;
+	p->x2 = x2;
 	p->y2 = y2;
 
 	PostMessage (hwndMain, WM_PUT_BLOCK, 0, (LPARAM)p);
 }
 
-static void gui_put_block (int x1, int y1, int x2, int y2)
+static void INLINE gui_put_block (int x1, int y1, int x2, int y2)
 {
 	HDC hDC;
 
@@ -544,39 +539,17 @@ static int win32_get_key (void)
 static void win32_new_timer ()
 {
 	DWORD	now;
-	static DWORD end_of_last_tick = 0;
-#ifdef QUERYPERFORMANCE
-	LONGLONG        end;
-	static LONGLONG start = 0;
-	static int      msg_box_ticks = 0;
-#endif
+	static DWORD last = 0;
 
-	/* This is the original code written by Felipe. It works but boosts
-	 * the system load to 100% when running
-	 */
-	/* 20 fps */
 	now = GetTickCount();
-	if ((end_of_last_tick != 0) && ((now - end_of_last_tick) < TICK_IN_MSEC)){
-		Sleep(TICK_IN_MSEC - (now - end_of_last_tick));
-	}
 
-#ifdef QUERYPERFORMANCE
-	QueryPerformanceCounter( (LARGE_INTEGER*) &end );
-	if (( g_update_freq > (end - start) )){
-		Sleep((g_update_freq - (end - start))/ g_counts_per_msec);
+	while (now - last < TICK_IN_MSEC) {
+		Sleep (TICK_IN_MSEC - (now - last));
+		now = GetTickCount ();
 	}
-#endif
-
-	end_of_last_tick = GetTickCount();
+	last = now;
 
 	process_events ();
-	
-	/* This is a highly indecent method to make it work, but it seems
-	 * to work better than the two previous versions. Urght. I hate
-	 * win32.
-	 */
-	/* Sleep (5); */
-
 }
 
 /* Primitive palette functions */

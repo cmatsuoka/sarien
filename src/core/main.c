@@ -65,7 +65,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 		goto bail_out;
 
 	init_machine (argc, argv);
-	game.gfx_mode = TRUE;
+
 	game.color_fg = 15;
 	game.color_bg = 0;
 

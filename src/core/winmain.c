@@ -63,7 +63,7 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int
 		open_file (hThisInst, filename);
 
 	init_machine (1, 0);
-	game.gfx_mode = TRUE;
+
 	game.color_fg = 15;
 	game.color_bg = 0;
 

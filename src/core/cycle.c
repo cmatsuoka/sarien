@@ -236,6 +236,7 @@ int run_game ()
 	setflag (F_sound_on, TRUE);		/* enable sound */
 	setvar (V_time_delay, 2);		/* "normal" speed */
 
+	game.gfx_mode = TRUE;
 	game.quit_prog_now = FALSE;
 	game.clock_enabled = TRUE;
 	game.input_mode = INPUT_NONE;
