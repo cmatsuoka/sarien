@@ -627,7 +627,7 @@ int run_game2 ()
 	console_prompt ();
 #endif
 
-	clean_keyboard ();
+	/* clean_keyboard (); */
 
 	do {
 		if (!main_cycle ())
@@ -639,7 +639,7 @@ int run_game2 ()
 		if (y == 0 || (x % y == 0 && z != x)) {
 			z = x;
 			interpret_cycle ();
-			clean_keyboard (); 
+			/* clean_keyboard (); */
 		}
 
 		do_blit ();

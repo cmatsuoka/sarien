@@ -54,12 +54,14 @@ static UINT8 test_keypressed ()
 
 static UINT8 test_controller (UINT8 cont)
 {
+#if 0
 	int r;
 
 	if ((r = game.events[cont].occured))
 		setvar (V_key, 0);
-
 	return r;
+#endif
+	return game.events[cont].occured;
 }
 
 

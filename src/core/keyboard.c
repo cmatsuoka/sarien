@@ -170,6 +170,10 @@ static void move_ego (UINT8 direction)
 }
 
 
+#if 0
+
+not used?
+
 void clean_keyboard ()
 {
 	clean_input ();
@@ -177,6 +181,7 @@ void clean_keyboard ()
 	setflag (F_entered_cli, FALSE);
 	setflag (F_said_accepted_input, FALSE);
 }
+#endif
 
 
 /*

@@ -371,6 +371,7 @@
   supported platform. These files go under their own directories in
   <filename>src/graphics/</filename>, <filename>src/sound</filename> and
   <filename>src/fileglob/</filename>.
+
 </para><para>
   After building, executable binaries can be found in <filename>bin/</filename>.
   In each subdirectory, object files produced by the compiler are archived
@@ -381,6 +382,65 @@
   is the main file for <filename>bin/sarien</filename> and 
   <filename>src/core/picview.c</filename> is the main file for
   <filename>bin/picview</filename>.
+
+</para><para>
+  Depending on enviromental needs or constraints, different binaries
+  can be built via conditional compiling. The following macros are
+  used to enable or disable features at build time:
+  
+  <variablelist>
+    <varlistentry>
+      <term><parameter/_TRACE/</term>
+      <listitem><para>
+        Enable debug messages to be written to the standard output.
+        The trace messages are ANSI-colored accoding to message priority
+        and show the file name<footnote><para>Tracking specific messages
+        is easier with the colored output. If your terminal does not support
+        ANSI colors, change the <parameter/_D_INFO/, <parameter/_D_WARN/
+        and <parameter/_D_CRIT/ in <filename>include/sarien.h</filename>
+        to appropriate values.</para></footnote>, line number and name of
+        the function where the macro <function/_D()/ is inserted. 
+      </para></listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><parameter/USE_CONSOLE/</term>
+      <listitem><para>
+        Enable the system console. If not defined, it will reduce memory
+        footprint and some code complexity. Recommended for systems with
+        severe memory restrictions such as PalmOS.
+      </para></listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><parameter/FAKE_PALMOS/</term>
+      <listitem><para>
+        Set the output window geometry to 160x160 pixels and select the
+        4x6 font for system messages, to simulate the graphic output of a
+        PalmOS device. The console and AGDS support are automatically
+        disabled when this macro is set. 160x160 output works only with
+        windowed graphics output.
+      </para></listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><parameter/DISABLE_COPYPROTECTION/</term>
+      <listitem><para>
+        Patch some known AGI scripts to bypass annoying or time-consuming
+        sequences during the development of the interpreter.
+      </para></listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><parameter/AGDS_SUPPORT/</term>
+      <listitem><para>
+        Add a Cyrillic font and minor changes in the interpreter to
+        support Russian AGDS games such as Groza.
+      </para></listitem>
+    </varlistentry>
+
+  </variablelist>
+
 </para>
 </sect1>
 
@@ -393,6 +453,7 @@
   style. Don't use the GNU coding style: it's ugly, hard to read and wastes
   too much vertical space.
 </para><para>
+
   So here are the conventions to follow. (They summarize a number of
   style elements already in use in the source code, so just reading
   the existing codebase and using a similar style should give the same
