@@ -98,16 +98,15 @@ static int check_priority (struct vt_entry *v)
 	water = 1;
 	pass = 1;
 
+	if (v->priority == 0x0f)
+		goto _check_ego;
+
 	p0 = &game.sbuf[v->x_pos + v->y_pos * _WIDTH];
 
 	for (i = 0; i < v->x_size; i++, p0++) {
 		pri = *p0 >> 4;
 
 		if (pri == 0) {		/* unconditional black. no go at all! */
-
-			if (v->entry != 0)
-				return 0;
-
 			pass = 0;
 			break;
 		}
@@ -120,9 +119,6 @@ static int check_priority (struct vt_entry *v)
 		if (pri == 1) {		/* conditional blue */
 			if (v->flags & IGNORE_BLOCKS)
 				continue;
-
-			if (v->entry != 0)
-				return 0;
 
 			_D (_D_WARN "Blocks observed!");
 			pass = 0;
@@ -143,6 +139,7 @@ static int check_priority (struct vt_entry *v)
 			pass = 0;
 	}
 
+_check_ego:
 	if (v->entry == 0) {
 		setflag (F_ego_touched_p2, trigger ? TRUE : FALSE);
 		setflag (F_ego_water, water ? TRUE : FALSE);
