@@ -68,12 +68,14 @@
 #define code	logics[lognum].data
 #define vt	view_table[entry]
 
-int open_dialogue = 0;		/* fix this properly too */
+//int open_dialogue = 0;		/* fix this properly too */
 static int window_nonblocking = 0;	/* Yuck! Remove it later! */
 
 extern struct agi_logic logics[];
 extern struct agi_view views[];
 extern struct agi_view_table view_table[];
+
+
 
 
 void cmd_position (UINT8 entry, UINT8 x, UINT8 y)
@@ -482,7 +484,7 @@ void cmd_get_num (UINT8 logic, UINT8 msg, UINT8 num)
 		print_text (p, 0, 0, 23 * CHAR_LINES, strlen (p) + 1,
 			txt_fg, txt_bg);
 		p = get_string ((strlen (p) - 1) * CHAR_COLS, 23 * CHAR_LINES, 4);
-		while (*p && isspace (*p))
+		while (*p == ' ')
 			p++;
 		setvar (num, (UINT8)atoi (p));
 	}
@@ -669,20 +671,13 @@ void cmd_shake_screen (UINT8 n)
 
 void cmd_accept_input ()
 {
-	game.allow_kyb_input = TRUE;
+	game.input_mode = INPUT_NORMAL;
 }
 
 
 void cmd_stop_input ()
 {
-	game.allow_kyb_input = FALSE;
-
-	/* Clear the area of the user input (the +1 is for the last line)*/
-	/* CM: produces white strip at bottom of larry demo! */
-#if 0
-	cmd_clear_lines ( line_user_input, line_user_input + 1, txt_bg );
-#endif
-	/* CM: Maybe this workaround could work... */
+	game.input_mode = INPUT_NONE;
 	cmd_clear_lines (game.line_user_input, game.line_user_input + 1, 0 );
 }
 
@@ -711,22 +706,26 @@ void cmd_get_posn (UINT8 entry, UINT8 x1, UINT8 y1)
 void cmd_get_string (UINT8 logic, UINT8 str, UINT8 msg, UINT8 y, UINT8 x, UINT8 len)
 {
 	char *p;
+	int tmp;
 
-	/* FR:
-	 * Changed here
-	 */
+	tmp = game.input_mode;
+	game.input_mode = INPUT_GETSTRING;
+
 	if (logics[logic].texts!=NULL && (msg-1)<=logics[logic].num_texts) {
 
-		/* FIXME : hack to stop input line on a getstring command */
-    	open_dialogue=1;
+		//open_dialogue=1;
 
-		p=agi_printf (logics[logic].texts[msg-1], logic);
-		print_text (p, 0, x * CHAR_COLS, y * CHAR_LINES, strlen (p), txt_fg, txt_bg);
-		p = get_string (x * CHAR_COLS + CHAR_COLS * (strlen (p) - 1), y*CHAR_LINES, len);
+		p = agi_printf (logics[logic].texts[msg-1], logic);
+		print_text (p, 0, x * CHAR_COLS, y * CHAR_LINES,
+			strlen (p), txt_fg, txt_bg);
+		p = get_string (x * CHAR_COLS + CHAR_COLS * (strlen (p) - 1),
+			y * CHAR_LINES, len);
 		strcpy (game.strings[str], p );
 
-		open_dialogue=0;
+		//open_dialogue = 0;
 	}
+
+	game.input_mode = tmp;
 }
 
 
@@ -891,22 +890,18 @@ void cmd_print_at (UINT8 logic, UINT8 msg, SINT8 y, SINT8 x, SINT8 len)
 			_D (_D_WARN "msg_box_secs2 = %ld", msg_box_secs2);
 
 			do {
-				/* FR: The call to main cycle fills the
-				 * keyboard internal buffer!
-				 */
-				/* CM: not anymore */
 				main_cycle (FALSE);
 
-				if (key) {
-					_D (_D_WARN "key");
-					setvar (V_key, key = 0);
+				if (getvar (V_key) == KEY_ENTER) {
+					_D (_D_WARN "KEY_ENTER");
 					setvar (V_window_reset, 0);
 					break;
 				}
+				setvar (V_key, 0);
 			} while (game.msg_box_ticks > 0);
 		} else {
 			_D (_D_WARN "f15==0, v21==0 ==> waitkey");
-			setvar (V_key, key = 0);
+			setvar (V_key, 0);
 			wait_key ();
 		}
 		release_sprites ();
@@ -917,27 +912,30 @@ void cmd_print_at (UINT8 logic, UINT8 msg, SINT8 y, SINT8 x, SINT8 len)
 
 void cmd_stop_motion (UINT8 entry)
 {
-	vt.flags&=~MOTION;
-	vt.direction=0;
-	vt.motion=MOTION_NORMAL;
+	vt.flags &= ~MOTION;
+	vt.direction = 0;
+	vt.motion = MOTION_NORMAL;
 
 	/* CM: added to fix LSL1 from room11 <-> room12
 	 */
-	if (!entry)
+	if (!entry) {
+		setvar (V_ego_dir, 0);
 		cmd_prog_control ();
+	}
 }
 
 
 void cmd_start_motion (UINT8 entry)
 {
-	vt.flags|=MOTION;
-	vt.motion=MOTION_NORMAL;
+	vt.flags |= MOTION;
+	vt.direction = 0;
+	vt.motion = MOTION_NORMAL;
 
 	/* CM: added these to fix LSL1 from room11 <-> room12
 	 */
-	if (!entry)
-	{
-		move_ego (0);
+	if (!entry) {
+		setvar (V_ego_dir, 0);
+		//view_table[EGO_VIEW_TABLE].direction = 0;
 		cmd_ego_control ();
 	}
 }
@@ -1102,7 +1100,7 @@ void cmd_quit (UINT8 f)
 		message_box ((UINT8*)"   Press ENTER to quit.\n"
 			"Press ESC to keep playing.");
 
-		switch (game.message_box_key & 0xFF) {
+		switch (KEY_ASCII (game.keypress)) {
 		case 'Y':
 		case 'y':
 		case 0x0d:

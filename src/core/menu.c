@@ -205,10 +205,12 @@ void do_menus ()
 	int v_cur_menu = 0, v_max_menu = 0;
 	int x;
 	struct agi_menu *men;
-	int clock_val;
+	int clock_val, input_val;
 
 	clock_val = game.clock_enabled;
+	input_val = game.input_mode;
 	game.clock_enabled = FALSE;
+	game.input_mode = INPUT_MENU;
 
 	release_sprites ();
 	save_screen ();
@@ -227,10 +229,15 @@ void do_menus ()
    	draw_horizontal_menu_bar (h_cur_menu, h_max_menu);
    	draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
 
+	game.keypress = 0;
 	while (42) {
-		main_cycle (FALSE);
+		int x;
 
-    		switch (key) {
+		main_cycle (FALSE);
+		x = game.keypress;
+		game.keypress = 0;
+
+    		switch (x) {
     		case KEY_ESCAPE:
 			goto exit_menu;
     		case KEY_ENTER:
@@ -301,6 +308,7 @@ exit_menu:
 
 	setvar (V_key, 0);
 	game.clock_enabled = clock_val;
+	game.input_mode = input_val;
 }
 
 

@@ -23,10 +23,6 @@
 
 #define TICK_SECONDS 20
  
-#ifdef USE_CONSOLE
-extern struct sarien_console console;
-#endif
-
 extern struct agi_logic logics[];
 extern struct agi_view views[];
 extern struct agi_view_table view_table[];
@@ -127,13 +123,6 @@ static int check_borders (int em, int x, int y)
 	vt_obj = &view_table[em];
 	dir = vt_obj->direction;
 
-#if 0
-/* FIXME: this test shouldn't be here, but DDP demo intro in
- *        demopack 6 fails if non-ego objects hit the border
- */
-if (em == EGO_VIEW_TABLE) {
-#endif
-
 	v = em == EGO_VIEW_TABLE ? V_border_touch_ego : V_border_touch_obj;
 
 	if (x < 0 && (dir == 8 || dir == 7 || dir == 6)) {
@@ -168,10 +157,6 @@ if (em == EGO_VIEW_TABLE) {
 		return -1;
 	}
 
-#if 0
-}
-#endif
-
 	return 0;
 }
 
@@ -201,7 +186,7 @@ static int check_control_lines (int em, int x, int y)
 				vt_obj->x_pos = x;
 				vt_obj->y_pos = y;
 				_D (_D_CRIT "Trigger pressed!");
-				return -1;
+				return -2;
 			}
 		}
 	}
@@ -279,7 +264,7 @@ static void normal_motion (int em, int x, int y)
 	/* Positions should be adjusted if the object is stepping
 	 * on a control line, as reported by Nat Budin
 	 */
-	while (check_control_lines (em, vt_obj->x_pos, vt_obj->y_pos)) {
+	while (check_control_lines (em, vt_obj->x_pos, vt_obj->y_pos) == -1) {
 		if (vt_obj->x_pos > 0)
 			vt_obj->x_pos--;
 		if (vt_obj->y_pos < _HEIGHT)
@@ -460,7 +445,7 @@ static void interpret_cycle ()
 		/* make sure logic 0 is not set to 'firsttime' */
 		setflag (F_logic_zeron_firsttime, FALSE);
 
-		setvar (V_key, 0x0);
+		/* CM: commented out -- setvar (V_key, 0x0); */
 		setvar (V_word_not_found, 0);
 		setvar (V_border_code, 0);			/* 5 */
 		setvar (V_border_touch_obj, 0);			/* 4 */
@@ -515,7 +500,7 @@ static void interpret_cycle ()
 }
 
 
-static void update_timer ()
+void update_timer ()
 {
 	if (!game.clock_enabled)
 		return;
@@ -589,12 +574,13 @@ int run_game2 ()
 	setflag (F_sound_on, TRUE);		/* enable sound */
 	setvar (V_time_delay, 2);		/* "normal" speed */
 
-	game.allow_kyb_input = FALSE;
+	//game.allow_kyb_input = FALSE;
 	game.new_room_num = 0;
 	game.quit_prog_now = FALSE;
 	game.clock_enabled = TRUE;
 	game.ego_in_new_room = FALSE;
 	game.exit_all_logics = FALSE;
+	game.input_mode = INPUT_NONE;
 
 	report (" \nSarien " VERSION " is ready.\n");
 	report ("Running AGI script.\n");

@@ -58,15 +58,19 @@ struct agi_game {
 	int line_status;	/* line num to put status on */
 	int line_user_input;	/* line to put user input on */
 	int line_min_print;	/* num lines to print on */
-	int message_box_key;	/* message box keypress */
 	int new_room_num;
+	int keypress;
+#define INPUT_NORMAL	0x01
+#define INPUT_GETSTRING	0x02
+#define INPUT_MENU	0x03
+#define INPUT_NONE	0x04
+	int input_mode;
 
 	/* internal flags */
 	int ego_in_new_room;	/* new room flag */
 	int control_mode;	/* who's in control */
 	int quit_prog_now;	/* quit now */
 	int status_line;	/* status line on/off */
-	int allow_kyb_input;	/* allow keyboard input */
 	int clock_enabled;	/* clock is on/off */
 	int exit_all_logics;
 #define ID_AGDS		0x00000001

@@ -21,7 +21,9 @@
     <abstract><para>
     </para></abstract>
 
-    <releaseinfo>$Id$</releaseinfo>
+    <releaseinfo>
+      $Id$
+    </releaseinfo>
   </bookinfo>
 
 <chapter id="intro">
@@ -34,8 +36,216 @@
 </sect1>
 
 <sect1 id="intro-portability">
-<title>Portability issues</title>
+<title>Portability</title>
 <para>
+  Sarien is currently very portable. It is currently known to run in
+  many platforms, summarized in the following table:
+
+  <informaltable>
+    <tgroup cols="8">
+      <thead>
+        <row>
+          <entry>Platform</entry>
+          <entry>Author/Maintainer</entry>
+          <entry>Compiler</entry>
+          <entry>Graphic driver</entry>
+          <entry>Sound driver</entry>
+          <entry>Windowed</entry>
+          <entry>Fullscreen</entry>
+          <entry>Sound</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry>MS-DOS</entry>
+          <entry>Stuart</entry>
+          <entry>Watcom</entry>
+          <entry>Raw</entry>
+          <entry>Dummy</entry>
+          <entry>No</entry>
+          <entry>Yes</entry>
+          <entry>No</entry>
+        </row>
+        <row>
+          <entry>MS-DOS</entry>
+          <entry>Stuart</entry>
+          <entry>DJGPP</entry>
+          <entry>Allegro</entry>
+          <entry>Allegro</entry>
+          <entry>No</entry>
+          <entry>Yes</entry>
+          <entry>Yes</entry>
+        </row>
+        <row>
+          <entry>Linux/IA32</entry>
+          <entry>Claudio</entry>
+          <entry>gcc</entry>
+          <entry>X11</entry>
+          <entry>OSS</entry>
+          <entry>Yes</entry>
+          <entry>No</entry>
+          <entry>Yes</entry>
+        </row>
+        <row>
+          <entry>Linux</entry>
+          <entry>Claudio</entry>
+          <entry>gcc</entry>
+          <entry>SDL</entry>
+          <entry>SDL</entry>
+          <entry>Yes</entry>
+          <entry>Yes</entry>
+          <entry>Yes</entry>
+        </row>
+        <row>
+          <entry>Linux</entry>
+          <entry>XoXus/Claudio</entry>
+          <entry>gcc</entry>
+          <entry>SVGAlib</entry>
+          <entry>Dummy</entry>
+          <entry>No</entry>
+          <entry>Yes</entry>
+          <entry>No</entry>
+        </row>
+        <row>
+          <entry>FreeBSD</entry>
+          <entry>Joep</entry>
+          <entry>gcc</entry>
+          <entry>X11</entry>
+          <entry>FreeBSD</entry>
+          <entry>Yes</entry>
+          <entry>No</entry>
+          <entry>Yes</entry>
+        </row>
+        <row>
+          <entry>Open/NetBSD</entry>
+          <entry>Claudio</entry>
+          <entry>gcc</entry>
+          <entry>X11</entry>
+          <entry>BSD</entry>
+          <entry>Yes</entry>
+          <entry>No</entry>
+          <entry>Yes</entry>
+        </row>
+        <row>
+          <entry>Solaris/SPARC</entry>
+          <entry>Claudio</entry>
+          <entry>gcc</entry>
+          <entry>X11</entry>
+          <entry>Solaris</entry>
+          <entry>Yes</entry>
+          <entry>No</entry>
+          <entry>Yes</entry>
+        </row>
+        <row>
+          <entry>IRIX</entry>
+          <entry>Ari Heikkinen</entry>
+          <entry>MIPSpro</entry>
+          <entry>X11</entry>
+          <entry>sgi</entry>
+          <entry>Yes</entry>
+          <entry>No</entry>
+          <entry>Yes</entry>
+        </row>
+        <row>
+          <entry>BeOS</entry>
+          <entry>Claudio</entry>
+          <entry>gcc</entry>
+          <entry>SDL</entry>
+          <entry>SDL</entry>
+          <entry>Yes</entry>
+          <entry>Yes</entry>
+          <entry>Yes</entry>
+        </row>
+        <row>
+          <entry>OS/2 + XFree86</entry>
+          <entry>?</entry>
+          <entry>gcc</entry>
+          <entry>X11</entry>
+          <entry>Dummy</entry>
+          <entry>Yes</entry>
+          <entry>No</entry>
+          <entry>No</entry>
+        </row>
+        <row>
+          <entry>QNX</entry>
+          <entry>Jeremy Penner</entry>
+          <entry>?</entry>
+          <entry>Photon</entry>
+          <entry>Dummy</entry>
+          <entry>Yes</entry>
+          <entry>No</entry>
+          <entry>No</entry>
+        </row>
+        <row>
+          <entry>Win32</entry>
+          <entry>Felipe/Igor</entry>
+          <entry>Visual C++</entry>
+          <entry>DIB</entry>
+          <entry>Win32</entry>
+          <entry>Yes</entry>
+          <entry>No</entry>
+          <entry>Yes</entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </informaltable>
+</para><para>
+  Other ports such as Amiga, Atari and Acorn are not yet integrated to
+  the main development tree.
+</para><para>
+  To achieve maximum portability, the following guidelies should be
+  observed when writing code for Sarien:
+</para>
+</sect1>
+
+<sect1 id="intro-build">
+<title>Build system</title>
+<para>
+  The build system used in Sarien tries to be flexible and allow
+  out-of-the-box building in all supported system architectures.
+  Different compilers and cross-compilers are supported:
+
+  <itemizedlist>
+    <listitem><para>
+      Sarien can be built using the standard <application/GNU Autoconf/
+      <filename/configure/ script in systems running a POSIX shell and
+      <application/GNU Make/. The configuration script produces a suitable
+      <filename/Rules/ file which is included by all Makefiles in the
+      system.
+    </para></listitem>
+    <listitem><para>
+      Systems with <application/GNU Make/ but not supported by
+      the configuration script or can use one of the pre-configured
+      <filename/Rules/ file available in the <filename>rulesets/</filename>
+      directory.
+    </para></listitem>
+    <listitem><para>
+      Cross-compiling to platforms such as Win32 or BeOS using
+      <application/gcc/ is supported using the supplied configuration
+      script with appropriate values in the <parameter/CC/ and
+      <parameter/RANLIB/ enviroment variables and setting the
+      <parameter/--host/ command-line parameter.
+    </para></listitem>
+    <listitem><para>
+      Pre-configured rulesets are available to cross-compile to other
+      platforms such as PalmOS using the GNU tools and cross-compiler.
+    </para></listitem>
+    <listitem><para>
+      Compiler-specific Makefiles are available for use with
+      <application/Watcom C/ and <application/DJGPP/. These are named
+      <filename/Makefile.wat/ and <filename/Makefile.dj/.
+    </para></listitem>
+    <listitem><para>
+      Project and other support files are available for use with
+      <application/Microsoft Visual C++ 6.0/ in the
+      <filename>VC++6.0/</filename> directory.
+    </para></listitem>
+  </itemizedlist>
+</para><para>
+  Extra functionality provided by the standard Makefiles for
+  <application/GNU make/ include the <parameter/dist/ target to produce
+  a distribution package.
+
 </para>
 </sect1>
 
@@ -90,7 +300,7 @@
   The keystroke is routed to different subsystems according to the value
   of <parameter/game.input-mode/. This variable can assume one of the
   following values:
-</para><para>
+
   <variablelist>
     <varlistentry>
       <term><parameter/INPUT_NORMAL/</term>

@@ -103,7 +103,6 @@ int agi_init ()
 
 #if 0
 	screen_mode=GFX_MODE;
-	/*allow_kyb_input=__FALSE;*/
 	txt_fg=0xF;
 	txt_bg=0x0;
 #endif
@@ -197,17 +196,6 @@ int agi_deinit ()
 	ec = loader->deinit ();
 	unload_objects();
 	unload_words();
-
-	game.ego_in_new_room = 0;
-	game.control_mode = 0;
-	game.quit_prog_now = 0;
-	game.status_line = FALSE;
-	game.line_status = 0;
-	game.line_user_input = 0;
-	game.line_min_print = 0;
-	game.allow_kyb_input = 0;
-	game.clock_enabled = 0;
-	game.message_box_key = 0;
 
 	return ec;
 }

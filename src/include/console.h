@@ -50,6 +50,9 @@ extern "C" {
 }
 #endif
 
+
+extern struct sarien_console console;
+
 #endif /* USE_CONSOLE */
 
 int	console_init	(void);

@@ -206,13 +206,13 @@ void message_box (char *message, ...)
 	 * CM: Blarghts
 	 */
 
-	tmp = game.allow_kyb_input;
+	//tmp = game.input_mode;
 
-	game.allow_kyb_input = TRUE;
+	//game.input_mode = INPUT_NONE;
 	textbox (x, -1, -1, -1);
-	game.message_box_key = wait_key();
+	wait_key();
 
-	game.allow_kyb_input = tmp;
+	//game.input_mode = tmp;
 
 	release_sprites ();
 	restore_screen ();

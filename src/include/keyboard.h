@@ -47,7 +47,7 @@ extern "C"{
 
 
 extern	UINT8		scancode_table[];
-extern	UINT16		key;
+//extern	UINT16		key;
 
 
 void	init_words	(void);
@@ -56,9 +56,8 @@ void	poll_keyboard	(void);
 void	clean_keyboard	(void);
 void	handle_keys	(void);
 void	handle_console_keys	(void);
-UINT8	*get_string	(int, int, int);
+char	*get_string	(int, int, int);
 UINT16	agi_get_keypress(void);
-void	move_ego	(UINT8);
 int	wait_key	(void);
 
 void print_line_prompt(void);

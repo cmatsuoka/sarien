@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "sarien.h"
 #include "agi.h"
@@ -21,11 +22,11 @@
 #include "console.h"
 #include "text.h"	/* remove later */
 
-UINT16 key; 
 UINT8  buffer[40];
 UINT8  last_sentence[40];
-UINT8  IsGetString=FALSE;
-UINT16  xInput, yInput;
+
+static int xInput, yInput;
+static int IsGetString=FALSE;
 
 #ifdef USE_CONSOLE
 extern struct sarien_console console;
@@ -89,6 +90,48 @@ void clean_input ()
 }
 
 
+/* FR:
+ * The capture of the keys is done inside main_cycle()
+ * It's safe to return last_sentence because all the functions who call
+ * get_string copy the result into another buffer
+ */
+char *get_string (int x, int y, int len)
+{
+	UINT8 old_max_chars = getvar (V_max_input_chars);
+	int tmp;
+
+	tmp = game.input_mode;
+	game.input_mode = INPUT_GETSTRING;
+
+	setvar (V_max_input_chars, len);
+
+	xInput = x;
+	yInput = y;
+
+	while (IsGetString) {
+		poll_timer ();		/* msdos driver -> does nothing */
+		update_timer ();
+
+		poll_keyboard ();
+
+#ifdef USE_CONSOLE
+		if (console.active && console.input_active)
+			handle_console_keys ();
+		else
+			handle_keys ();
+		console_cycle ();
+#else
+		handle_keys ();
+#endif
+	}
+
+	game.input_mode = tmp;
+	setvar (V_max_input_chars, old_max_chars);
+
+	return last_sentence;
+}
+
+
 /* Called if ego enters a new room */
 /* FIXME: remove lowlevel print_text call! */
 
@@ -96,11 +139,8 @@ void print_line_prompt ()
 {
 	int k;
 
-	if (game.allow_kyb_input) {
+	if (game.input_mode == INPUT_NORMAL) {
 		/* Command prompt */
-
-		/* FIXME : dont show line input if its a dialogue box */
-		if (open_dialogue==0){
 
       		print_text (agi_printf (game.strings[0], 0), 0, 0,
     			game.line_user_input * CHAR_LINES, 40, txt_fg, txt_bg );
@@ -108,7 +148,8 @@ void print_line_prompt ()
 
     		/* internal keyboard buffer */
     		for (k = 0; buffer[k]; k++) {
-    			print_character ((k + 1) * CHAR_COLS, game.line_user_input * CHAR_LINES,
+    			print_character ((k + 1) * CHAR_COLS,
+				game.line_user_input * CHAR_LINES,
     				buffer[k], txt_fg, txt_bg );
     		}
 
@@ -117,45 +158,15 @@ void print_line_prompt ()
     			print_character (xInput + (k + 1) * CHAR_COLS, yInput,
     				txt_char, txt_fg, txt_bg );
     		} else {
-    			print_character ((k + 1) * CHAR_COLS, game.line_user_input * CHAR_LINES,
+    			print_character ((k + 1) * CHAR_COLS,
+				game.line_user_input * CHAR_LINES,
     				txt_char, txt_fg, txt_bg );
     		}
-
-		}
-
 	}
 }
 
-/* FR:
- * The capture of the keys is done inside of main_cycle()
- * It's safe to return last_sentence because all the functions who call
- * get_string copy the result into another buffer
- */
-UINT8 *get_string (int x, int y, int len)
-{
-	UINT8 old_kyb_input = game.allow_kyb_input;
-	UINT8 old_max_chars = getvar (V_max_input_chars);
 
-	game.allow_kyb_input = TRUE;
-	setvar( V_max_input_chars, len );
-
-	xInput = x;
-	yInput = y;
-
-	IsGetString = TRUE;
-
-	while (IsGetString)
-		main_cycle(TRUE);
-
-	game.allow_kyb_input = old_kyb_input;
-	setvar (V_max_input_chars, old_max_chars);
-
-	return (UINT8 *) last_sentence;
-}
-
-
-/* move_ego() shouldn't be in keyboard.c */
-void move_ego (UINT8 direction)
+static void move_ego (UINT8 direction)
 {
 	static UINT8 last_ego_dir = 0xFF;
 
@@ -184,10 +195,9 @@ void move_ego (UINT8 direction)
 void clean_keyboard ()
 {
 	clean_input ();
-	setvar (V_key, key = 0);
+	setvar (V_key, 0);
 	setflag (F_entered_cli, FALSE);
 	setflag (F_said_accepted_input, FALSE);
-	key = 0;
 }
 
 
@@ -198,10 +208,7 @@ void clean_keyboard ()
  */
 void poll_keyboard ()
 {
-	UINT16 xkey, c1;
-
-	if (getvar (V_key) != KEY_ENTER)
-		setvar (V_key, key = 0);
+	int i, key = 0;
 
 	setvar (V_word_not_found, 0);
 
@@ -209,123 +216,121 @@ void poll_keyboard ()
 	if (!console.active || !console.input_active)
 #endif
 	{
-		for (c1 = 0; c1 < MAX_DIRS; c1++)
-			game.events[c1].occured = FALSE;
+		for (i = 0; i < MAX_DIRS; i++)
+			game.events[i].occured = FALSE;
 	}
 
 	/* If a key is ready, rip it */
 	while (keypress ()) {
-		xkey = get_key ();
+		key = get_key ();
+		_D ("key %02x pressed", key);
 
 #ifdef USE_CONSOLE
-		if (console_keyhandler (xkey))
+		if (console_keyhandler (key))
 			continue;
-#endif
 
-		key = xkey;
-		_D ("key = %d", key);
-
-#ifdef USE_CONSOLE
 		if (console.active && console.input_active)
 			continue;
 #endif
+		_D ("key = %d", key);
 
 		/* For controller() */
-		for (c1 = 0; c1 < MAX_DIRS; c1++) {
-
-#if 0
-			if (game.events[c1].data &&
-				game.events[c1].data == KEY_SCAN (xkey))
-			{
-				report ("xevent SC:%i=%04X %i:%i\n", c1,
-					KEY_SCAN(xkey), eSCAN_CODE,
-					game.events[c1].event);
-			}
-			if(game.events[c1].data &&
-				game.events[c1].data == KEY_ASCII (xkey))
-			{
-	                       	report ("xevent AC:%i=%04X %i:%i\n", c1,
-					KEY_ASCII(xkey), eKEY_PRESS,
-					game.events[c1].event);
-			}
-#endif
-
-			switch (game.events[c1].event) {
+		for (i = 0; game.input_mode != INPUT_MENU && i < MAX_DIRS; i++){
+			switch (game.events[i].event) {
 			case eSCAN_CODE:
-				if (game.events[c1].data == KEY_SCAN(key) &&
+				if (game.events[i].data == KEY_SCAN(key) &&
 					KEY_ASCII(key) == 0)
 				{
 					_D ("event: scan code");
-					game.events[c1].occured = TRUE;
-					report("event SC:%i occured\n", c1);
+					game.events[i].occured = TRUE;
+					report("event SC:%i occured\n", i);
 				}
 				break;
 			case eKEY_PRESS:
-				if (game.events[c1].data == KEY_ASCII(key) &&
+				if (game.events[i].data == KEY_ASCII(key) &&
 					KEY_SCAN(key) == 0)
 				{
 					_D ("event: key press");
-					game.events[c1].occured = TRUE;
-					report ("event AC:%i occured\n", c1);
+					game.events[i].occured = TRUE;
+					report ("event AC:%i occured\n", i);
 				}
 				break;
 			}
 		}
 	}
 
-	if (!KEY_ASCII (key))
+#ifdef USE_CONSOLE
+	if (key == CONSOLE_ACTIVATE_KEY key == CONSOLE_SWITCH_KEY)
 		return;
 
-#ifdef USE_CONSOLE
 	if (console.active && console.input_active) {
-		console.input_key = KEY_ASCII (key);
-		key = 0;
-	} else
-#endif
-	{
-		/* If you comment this out all keystrokes will be echoed */
-		if (!game.allow_kyb_input && KEY_ASCII (key) != 0x0d) {
+		if (key == CONSOLE_SCROLLUP_KEY || key == CONSOLE_SCROLLDN_KEY)
 			return;
-		}
-
-		setvar (V_key, KEY_ASCII (key));
+		console.input_key = KEY_ASCII (key);
+		return;	
 	}
+#endif
+
+	if (game.input_mode == INPUT_NORMAL && !KEY_ASCII (key)) {
+		switch (key) {
+		case KEY_UP:         move_ego (1); break;
+		case KEY_DOWN:       move_ego (5); break;
+		case KEY_LEFT:       move_ego (7); break;
+		case KEY_RIGHT:      move_ego (3); break;
+		case KEY_UP_RIGHT:   move_ego (2); break;
+		case KEY_DOWN_RIGHT: move_ego (4); break;
+		case KEY_UP_LEFT:    move_ego (8); break;
+		case KEY_DOWN_LEFT:  move_ego (6); break;
+		}
+		return;
+	}
+
+	if (key)
+		game.keypress = key;
+
+	/* If you comment this out all keystrokes will be echoed */
+	if (game.input_mode != INPUT_NONE || KEY_ASCII (key) == KEY_ENTER)
+		setvar (V_key, KEY_ASCII (key));
+
 }
 
 
 void handle_keys ()
 {
 	UINT8 *p=NULL;
-	UINT16 k, c = 0;
-	static UINT8  old_keyboard_status = FALSE;
+	int key, c = 0;
+	static UINT8  old_input_mode = INPUT_NONE;
 	static UINT8  new_line = 1;
 	static UINT8  formated_entry[256];
 	static UINT16 bufindex = 0;
 
-	/*
-	 */
-	switch (k = getvar (V_key)) {
+	key = getvar (V_key);
+	if (!key)
+		return;
+
+	_D ("handling key: %02x", key);
+	setvar (V_key, 0);
+ 	
+	switch (key) {
 	case KEY_ENTER:
 		_D (("KEY_ENTER"));
 
-		/* remove all the crap from their strings */
-		p = (UINT8*) buffer;
-		while ((*p == 0x20) && (*p))	/* Remove all leading spaces */
+		/* remove all the crap from string */
+		p = buffer;
+		while (*p && *p == 0x20)	/* Remove all leading spaces */
 			p++;
 
-		if ( IsGetString ) {
-			setvar (V_key, 0);
-			strcpy((char *) last_sentence, (char *) p);
-
+		if (IsGetString) {
+			strcpy (last_sentence, p);
 			IsGetString = FALSE;
 		} else {
 			while (*p) {	
- 				/* Remove a sequence of spaces */
-				if ((*p == 0x20) && (*(p + 1) == 0x20)) {	
+ 				/* Squash spaces */
+				if (*p == 0x20 && *(p + 1) == 0x20) {	
 					p++;
 					continue;
 				}
-				formated_entry[c++] = tolower( *p );
+				formated_entry[c++] = tolower (*p);
 				p++;
 			}
 			formated_entry[c++] = 0;
@@ -353,8 +358,8 @@ void handle_keys ()
 			break;
 
 		if (IsGetString) { 
-			print_character (xInput + (bufindex + 1) * CHAR_COLS, yInput,
-				txt_char, txt_bg, txt_bg );
+			print_character (xInput + (bufindex + 1) * CHAR_COLS,
+				yInput, txt_char, txt_bg, txt_bg );
 		} else {
 			print_character ((bufindex + 1) * CHAR_COLS,
 				game.line_user_input * CHAR_LINES,
@@ -365,36 +370,36 @@ void handle_keys ()
 		buffer[bufindex]=0;
 		break;
 	default:
-		if (k >= 0x20 && k <= 0x7f && (bufindex < getvar (V_max_input_chars) - 1))
-		{
-			buffer[bufindex] = k;
+		if (key < 0x20 || key > 0x7f)
+			break;
 
-			bufindex++;
-			buffer[bufindex]=0;
+		if (bufindex >= getvar (V_max_input_chars))
+			return;
 
-			if (IsGetString) {
-				print_character (xInput + (bufindex * CHAR_COLS),
-					yInput, buffer[bufindex - 1],
-					txt_fg, txt_bg );
-			} else {
-				print_character (bufindex * CHAR_COLS,
-					game.line_user_input * CHAR_LINES,
-					buffer[bufindex - 1], txt_fg, txt_bg);
-			}
+		buffer[bufindex++] = key;
+		buffer[bufindex] = 0;
+
+		if (IsGetString) {
+			print_character (xInput + (bufindex * CHAR_COLS),
+				yInput, buffer[bufindex - 1], txt_fg, txt_bg );
+		} else {
+			print_character (bufindex * CHAR_COLS,
+				game.line_user_input * CHAR_LINES,
+				buffer[bufindex - 1], txt_fg, txt_bg);
 		}
 		break;
 	}
 
-	if (old_keyboard_status != game.allow_kyb_input) {
-		old_keyboard_status = game.allow_kyb_input;
+	if (old_input_mode != game.input_mode) {
+		old_input_mode = game.input_mode;
 
-		if (game.allow_kyb_input) {
+		if (game.input_mode == INPUT_NORMAL) {
 			print_line_prompt();
 		} else {
 			cmd_clear_lines (game.line_user_input,
 				game.line_user_input, txt_bg);
 		}
-	} else if (game.allow_kyb_input) {
+	} else if (game.input_mode == INPUT_NORMAL) {
 		if (new_line) {
 			new_line = 0;
 
@@ -419,50 +424,18 @@ void handle_keys ()
 				txt_fg, txt_bg );
 		}
 	}
-
-
-	if (key < 0x100)
-		return;
-
-	switch (key) {
-	case KEY_UP:
-		move_ego (1);
-		return;
-	case KEY_DOWN:
-		move_ego (5);
-		return;
-	case KEY_LEFT:
-		move_ego (7);
-		return;
-	case KEY_RIGHT:
-		move_ego (3);
-		return;
-	case KEY_UP_RIGHT:
-		move_ego (2);
-		return;
-	case KEY_DOWN_RIGHT:
-		move_ego (4);
-		return;
-	case KEY_UP_LEFT:
-		move_ego (8);
-		return;
-	case KEY_DOWN_LEFT:
-		move_ego (6);
-		return;
-	}
 }
 
 
 int wait_key ()
 {
-	int x;
-
 	_D (_D_WARN "waiting...");
 	while(42) {
-		main_cycle (FALSE);
+		int x;
 
+		main_cycle (FALSE);
 		if ((x = getvar (V_key))) {
-			setvar (V_key, key = 0);
+			setvar (V_key, 0);
 			return x;
 		}
 	}

@@ -45,13 +45,8 @@ static UINT8	test_keypressed	(void);
 
 static UINT8 test_keypressed ()
 {
-	int x;
-
-	main_cycle (FALSE);
-	x = key;
-	setvar (V_key, key = 0);
-	
-	return !!x;
+	_D ("keypress = %02x", game.keypress);
+	return game.keypress;
 }
 
 
@@ -60,7 +55,7 @@ static UINT8 test_controller (UINT8 cont)
 	int r;
 
 	if ((r = game.events[cont].occured))
-		setvar (V_key, key = 0);
+		setvar (V_key, 0);
 
 	return r;
 }
