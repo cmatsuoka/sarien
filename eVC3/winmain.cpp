@@ -195,9 +195,6 @@ bail_out2:
 bail_out:
 	deinit_machine ();
 
-	exit(0); /* Workaround for bad bug in WinCE. The app will leak
-			    all static memory and won't unload DLLs properly.
-				In most cases that means reboot. */
 	return ec;
 }
 
