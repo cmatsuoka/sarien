@@ -39,9 +39,16 @@ struct agi_game game;
 static bool open_file (HINSTANCE hThisInst, char *s)
 {
 	TCHAR buffer[MAX_PATH];
-	EXTIMAGE ei[3] =
+	EXTIMAGE ei[] =
 	{
-		{ TEXT("ovl"), 1 },
+		{ TEXT(""), 1 },
+		{ TEXT("0"), 1 },
+		{ TEXT("1"), 1 },
+		{ TEXT("2"), 1 },
+		{ TEXT("3"), 1 },
+		{ TEXT("4"), 1 },
+		{ TEXT("5"), 1 },
+		{ TEXT("TOK"), 1 },
 		{ NULL, 0 }
 	};
 	BROWSEFILES bf;

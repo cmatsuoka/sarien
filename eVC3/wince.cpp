@@ -13,7 +13,8 @@
  */
 
 /*
- * Massively modified by Vasyl Tsvirkunov <vasyl@pacbell.net> for Pocket PC/WinCE port
+ * Massively modified by Vasyl Tsvirkunov <vasyl@pacbell.net> for
+ * Pocket PC/WinCE port
  */
 
 #include <ctype.h>
@@ -57,6 +58,16 @@ static UBYTE* palBlue;
 static unsigned short* pal;
 #endif
 
+static bool bmono;
+static bool b565;
+static bool b555;
+
+static UBYTE invert = 0;
+static int colorscale = 0;
+
+#define COLORCONV565(r,g,b) (((r&0xf8)<<(11-3))|((g&0xfc)<<(5-2))|((b&0xf8)>>3))
+#define COLORCONV555(r,g,b) (((r&0xf8)<<(10-3))|((g&0xf8)<<(5-2))|((b&0xf8)>>3))
+#define COLORCONVMONO(r,g,b) ((((3*r>>3)+(g>>1)+(b>>3))>>colorscale)^invert)
 
 static int	wince_init_vidmode	(void);
 static int	wince_deinit_vidmode(void);
@@ -108,10 +119,12 @@ void set_palette(int ent, UBYTE r, UBYTE g, UBYTE b)
 	palGreen[ent] = g;
 	palBlue[ent] = b;
 #else
-	if(gxdp.ffFormat & kfDirect565)
-		pal[ent] = ((r&0xf8)<<(11-3))|((g&0xfc)<<(5-2))|((b&0xf8)>>3);
-	else if(gxdp.ffFormat & kfDirect555)
-		pal[ent] = ((r&0xf8)<<(10-3))|((g&0xf8)<<(5-2))|((b&0xf8)>>3);
+	if(b565)
+		pal[ent] = COLORCONV565(r,g,b);
+	else if(b555)
+		pal[ent] = COLORCONV555(r,g,b);
+	else if(bmono)
+		pal[ent] = COLORCONVMONO(r,g,b);
 #endif
 }
 
@@ -187,6 +200,17 @@ static int wince_init_vidmode()
 
 	gxdp = GXGetDisplayProperties();
 	gxkl = GXGetDefaultKeys(GX_NORMALKEYS);
+
+
+	bmono = (gxdp.ffFormat & kfDirect) && (gxdp.cBPP <= 8);
+	b565 = (gxdp.ffFormat & kfDirect565) != 0;
+	b555 = (gxdp.ffFormat & kfDirect555) != 0;
+	if(bmono)
+	{
+		if(gxdp.ffFormat & kfDirectInverted)
+			invert = (1<<gxdp.cBPP)-1;
+		colorscale = gxdp.cBPP < 8 ? 8-gxdp.cBPP : 0;
+	}
 
 	int i;
 	for(i=0; i<16; i++)
@@ -317,8 +341,11 @@ static void wince_put_block(int x1, int y1, int x2, int y2)
 	static long pixelstep;
 	static long linestep;
 
+// Special code is used to deal with packed pixels in monochrome mode
+	static UBYTE bitmask;
+	static int   bitshift;
+
 #ifdef SMOOTH
-	static bool b565 = (gxdp.ffFormat & kfDirect565);
 	x1 &= ~3;
 #endif
 
@@ -328,10 +355,34 @@ static void wince_put_block(int x1, int y1, int x2, int y2)
 	linestep = gxdp.cbyPitch;
 	pixelstep = gxdp.cbxPitch;
 
+	if(bmono)
+	{
+		if(pixelstep == 0)
+			return; // unsupported screen geometry
+	// this will work on mono iPAQ and @migo, don't know about any others
+		bitshift = 0;
+		bitmask = (1<<gxdp.cBPP)-1;
+		linestep = (pixelstep > 0) ? -1 : 1;
+	}
+
+
 	scraddr = (UBYTE*)GXBeginDraw();
 	if(scraddr)
 	{
-		scraddr += (x1*3/4)*pixelstep + y1*linestep;
+		if(bmono)
+		{
+		// Some partial pixel voodoo. I don't know if this works in all cases.
+			scraddr += (x1*3/4)*pixelstep;
+			int full = (y1*gxdp.cBPP)>>3;
+			int partial = (y1*gxdp.cBPP)&7;
+			scraddr += full*linestep;
+			bitshift += gxdp.cBPP*partial;
+			bitmask <<= gxdp.cBPP*partial;
+			if(linestep < 0)
+				scraddr += (pixelstep-1);
+		}
+		else
+			scraddr += (x1*3/4)*pixelstep + y1*linestep;
 		src_limit = scr_ptr + x2-x1+1;
 
 		while(scr_ptr < scr_ptr_limit)
@@ -348,9 +399,12 @@ static void wince_put_block(int x1, int y1, int x2, int y2)
 				b = (3*palBlue[*(src+0)] + palBlue[*(src+1)])>>2;
 
 				if(b565)
-					*(unsigned short*)dst = ((r&0xf8)<<(11-3))|((g&0xfc)<<(5-2))|((b&0xf8)>>3);
-				else
-					*(unsigned short*)dst = ((r&0xf8)<<(10-3))|((g&0xf8)<<(5-2))|((b&0xf8)>>3);
+					*(unsigned short*)dst = COLORCONV565(r,g,b);
+				else if(b555)
+					*(unsigned short*)dst = COLORCONV555(r,g,b);
+				else if(bmono)
+					*dst = (*dst & ~bitmask) | (COLORCONVMONO(r,g,b)<<bitshift);
+
 				dst += pixelstep;
 
 				r = (palRed[*(src+1)] + palRed[*(src+2)])>>1;
@@ -358,9 +412,12 @@ static void wince_put_block(int x1, int y1, int x2, int y2)
 				b = (palBlue[*(src+1)] + palBlue[*(src+2)])>>1;
 
 				if(b565)
-					*(unsigned short*)dst = ((r&0xf8)<<(11-3))|((g&0xfc)<<(5-2))|((b&0xf8)>>3);
-				else
-					*(unsigned short*)dst = ((r&0xf8)<<(10-3))|((g&0xf8)<<(5-2))|((b&0xf8)>>3);
+					*(unsigned short*)dst = COLORCONV565(r,g,b);
+				else if(b555)
+					*(unsigned short*)dst = COLORCONV555(r,g,b);
+				else if(bmono)
+					*dst = (*dst & ~bitmask) | (COLORCONVMONO(r,g,b)<<bitshift);
+
 				dst += pixelstep;
 
 				r = (palRed[*(src+2)] + 3*palRed[*(src+3)])>>2;
@@ -368,22 +425,41 @@ static void wince_put_block(int x1, int y1, int x2, int y2)
 				b = (palBlue[*(src+2)] + 3*palBlue[*(src+3)])>>2;
 
 				if(b565)
-					*(unsigned short*)dst = ((r&0xf8)<<(11-3))|((g&0xfc)<<(5-2))|((b&0xf8)>>3);
-				else
-					*(unsigned short*)dst = ((r&0xf8)<<(10-3))|((g&0xf8)<<(5-2))|((b&0xf8)>>3);
+					*(unsigned short*)dst = COLORCONV565(r,g,b);
+				else if(b555)
+					*(unsigned short*)dst = COLORCONV555(r,g,b);
+				else if(bmono)
+					*dst = (*dst & ~bitmask) | (COLORCONVMONO(r,g,b)<<bitshift);
+
 				dst += pixelstep;
 
 				src += 4;
 #else
 				if((unsigned long)src & 3)
 				{
-					*(unsigned short*)dst = pal[*src];
+					if(bmono)
+						*dst = ((*dst)&~bitmask)|(pal[*src]<<bitshift);
+					else
+						*(unsigned short*)dst = pal[*src];
 					dst += pixelstep;
 				}
 				src ++;
 #endif
 			}
-			scraddr += linestep;
+			if(bmono)
+			{
+				bitshift += gxdp.cBPP;
+				if(bitshift >= 8)
+				{
+					bitshift = 0;
+					bitmask = (1<<gxdp.cBPP)-1;
+					scraddr += linestep;
+				}
+				else
+					bitmask <<= gxdp.cBPP;
+			}
+			else
+				scraddr += linestep;
 			scr_ptr += GFX_WIDTH;
 			src_limit += GFX_WIDTH;
 		}
@@ -460,8 +536,8 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		switch(wParam)
 		{
 		case IDC_ABOUT:
-			message_box("Pocket Sarien rev.3\n"
-				        "Ported by Vasyl Tsvirkunov\n"
+			message_box("Pocket Sarien R4 (" __DATE__ ")\n\n"
+						"Ported by Vasyl Tsvirkunov\n"
 						"http://pocketatari.\n"
 						"               retrogames.com\n\n"
 						"Visit Sarien homepage at\n"
