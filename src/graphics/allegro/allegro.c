@@ -77,6 +77,7 @@ static int init_vidmode ()
 
 	install_keyboard();
 	install_timer();
+	/*install_mouse();*/
 
 	LOCK_VARIABLE (clock_ticks);
 	LOCK_FUNCTION (tick_increment);

@@ -53,6 +53,7 @@ Revision History
 	- added runtime screen size, palette and aspect ratio settings
 	  to the win32 port
 	- added Scale2x (http://scale2x.sf.net) support
+	- fixed/improved Allegro driver
 	- implemented set.simple AGI command
 	- added regression tests
 

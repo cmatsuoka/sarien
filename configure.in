@@ -226,7 +226,7 @@ if test "${with_script}" = "yes"; then
 elif test "${with_sdl}" = "yes"; then
 	SOUND_DRIVER="sdl"
 elif test "${with_allegro}" = "yes"; then
-	SOUND_DRIVER="dummy"
+	SOUND_DRIVER="allegro"
 else case ${host_os} in
 linux*)
 	case ${host_cpu} in

@@ -5,7 +5,7 @@ OBJS	=
 DFILES	= Makefile
 CFILES	=
 DDIRS	= oss sdl dummy alsa bsd solaris sgi win32 freebsd qnx dart \
-	  amiga macos macosx dc
+	  amiga macos macosx dc allegro
 XDFILES =
 LIB	=
 
