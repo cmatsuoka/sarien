@@ -393,9 +393,8 @@ pc_put_block	proc	far
 	mov	ax,word ptr [bp+10]
 	sub	ax,word ptr [bp+6]
 	inc	ax
-	mov	bx,4
-	cwd	
-	idiv	bx
+	shr	ax, 1
+	shr	ax, 1
 	inc	ax
 	mov	word ptr [bp-4],ax
    ;	
@@ -406,9 +405,8 @@ pc_put_block	proc	far
 	imul	dx
 	push	ax
 	mov	ax,word ptr [bp+6]
-	mov	bx,4
-	cwd	
-	idiv	bx
+	shr	ax, 1
+	shr	ax, 1
 	pop	dx
 	add	dx,ax
 	mov	word ptr [bp-6],dx
@@ -423,7 +421,7 @@ pc_put_block	proc	far
 	mov	word ptr [bp-8],dx
    ;	
    ;	
-   ;		/* Writed to the interlaced CGA framebuffer */
+   ;		/* Write to the interlaced CGA framebuffer */
    ;	
    ;		fbuffer = (UINT8 far *)0xb8000000 + p;
    ;	

@@ -147,7 +147,7 @@ static void pc_put_block (int x1, int y1, int x2, int y2)
 	p = 40 * y1 + x1 / 4;		/* Note: (GFX_WIDTH / 4) * (y1 / 2) */
 	p2 = p + 40 * y1;
 
-	/* Writed to the interlaced CGA framebuffer */
+	/* Write to the interlaced CGA framebuffer */
 
 	fbuffer = (UINT8 far *)0xb8000000 + p;
 	sbuffer = screen_buffer + p2;
