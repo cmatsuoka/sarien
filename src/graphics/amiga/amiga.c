@@ -13,6 +13,7 @@
  * version 2.2 (September 4, 1997) written by Matthew Stroup
  */
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <clib/exec_protos.h>
@@ -62,8 +63,28 @@ static UBYTE colors[NUMCOLS];
 static struct CIA *ciamou = (struct CIA *)CIAAPRA;
 static struct CIA *cia = (struct CIA *)CIAA;
 
+static struct Screen *scr;
+static struct BitMap bitmap_bm;
+static PLANEPTR raster;
+static char perm[8] = { 0, 1, 2, 3, 4, 5, 6, 7 };	/**< bitplane order */
+
 extern struct GfxBase *GfxBase;
 extern struct IntuitionBase *IntuitionBase;
+
+
+#if 0
+void __asm c2p8_init (
+	register __a0 UBYTE *chunky,	// pointer to chunky data
+	register __a1 UBYTE *chunky_cmp,// pointer to chunky comparison buffer
+	register __a2 PLANEPTR *planes,	// pointer to planes
+	register __d0 ULONG signals1,	// 1 << sigbit1
+	register __d1 ULONG signals2,	// 1 << sigbit2
+	register __d2 ULONG pixels,	// WIDTH * HEIGHT
+	register __d3 ULONG offset,	// byte offset into plane
+	register __d4 UBYTE *buff2,	// Chip buffer (size = width*height)
+	register __d5 UBYTE *buff3,	// Chip buffer (size = width*height)
+	register __a3 struct GfxBase *GfxBase);
+#endif
 
 
 
@@ -111,18 +132,20 @@ static void process_events ()
 	struct IntuiMessage *message;
 	UINT8 key;
 
-	message = (struct IntuiMessage *)GetMsg (win->UserPort);
-	if (message) {
-		switch (message->Class) {
-		case IDCMP_CLOSEWINDOW:
-			amiga_deinit_vidmode ();
-			exit (0);
+	if (!opt.fullscreen) {
+		message = (struct IntuiMessage *)GetMsg (win->UserPort);
+		if (message) {
+			switch (message->Class) {
+			case IDCMP_CLOSEWINDOW:
+				amiga_deinit_vidmode ();
+				exit (0);
+			}
 		}
+	
+		mouse.x = win->MouseX;
+		mouse.y = win->MouseY;
+		mouse.button = !(ciamou->ciapra & 0x0040);
 	}
-
-	mouse.x = win->MouseX;
-	mouse.y = win->MouseY;
-	mouse.button = !(ciamou->ciapra & 0x0040);
 
         key = cia->ciasdr ^ 0xFF;
         key = key & 0x01 ? (key >> 1) + 0x80 : key >> 1;
@@ -167,6 +190,7 @@ static void amiga_timer ()
 	process_events ();
 }
 
+
 static int amiga_init_vidmode ()
 {
 	int i;
@@ -185,29 +209,73 @@ static int amiga_init_vidmode ()
 	vscreen = (UBYTE *)AllocMem (GFX_WIDTH * GFX_HEIGHT,
 		MEMF_PUBLIC | MEMF_CLEAR);
 
-	win = OpenWindowTags (NULL,
-		WA_Title, "Sarien " ##VERSION,
-		WA_AutoAdjust, TRUE,
-		WA_InnerWidth, GFX_WIDTH, 
-		WA_InnerHeight, GFX_HEIGHT,
-		WA_DragBar, TRUE,
-		WA_CloseGadget, TRUE,
-		WA_DepthGadget,TRUE,
-		WA_SimpleRefresh, TRUE,
-		WA_IDCMP, IDCMP_CLOSEWINDOW,
-		TAG_DONE);
-	if (win == NULL)
-		return -1;
+	if (opt.fullscreen) {
+		_D ("Fullscreen");
+		InitBitMap (&bitmap_bm, 8, GFX_WIDTH, GFX_HEIGHT);
+		raster = (PLANEPTR)AllocRaster (GFX_WIDTH, 8 * GFX_HEIGHT);
+		if (raster == NULL) {
+			fprintf (stderr, "can't alloc raster\n");
+			return -1;
+		}
+		for (i = 0; i < 8; i++) {
+			bitmap_bm.Planes[i] = raster +
+				perm[i] * RASSIZE (GFX_WIDTH, GFX_HEIGHT);
+		}
 
-	rp = win->RPort;
-
-	for (i = 0; i < NUMCOLS; i++) {
-		colors[i] = ObtainBestPen (win->WScreen->ViewPort.ColorMap,
-			(UINT32)palette[i * 3 + 0] << 26,
-			(UINT32)palette[i * 3 + 1] << 26,
-			(UINT32)palette[i * 3 + 2] << 26,
-			OBP_Precision,PRECISION_EXACT,
+		scr = OpenScreenTags (NULL,
+			SA_Title, "Sarien " ##VERSION,
+			SA_ShowTitle, FALSE,
+			SA_Depth, 7,
+			SA_Width, GFX_WIDTH,
+			SA_Height, GFX_HEIGHT,
+			SA_Quiet, TRUE,
+			SA_Type, PUBLICSCREEN,
+			SA_BitMap, &bitmap_bm,
 			TAG_DONE);
+		if (scr == NULL) {
+			fprintf (stderr, "can't open screen\n");
+			return -1;
+		}
+
+		rp = &(scr->RastPort);
+		SetRast (rp, 0);	/* clear screen memory */
+		WaitBlit();		/* wait until it's finished */
+
+		for (i = 0; i < NUMCOLS; i++) {
+			SetRGB32 (&(scr->ViewPort), i,
+				(UINT32)palette[i * 3 + 0] << 26,
+				(UINT32)palette[i * 3 + 1] << 26,
+				(UINT32)palette[i * 3 + 2] << 26);
+			colors[i] = i;
+		}
+	} else {
+		win = OpenWindowTags (NULL,
+			WA_Title, "Sarien " ##VERSION,
+			WA_AutoAdjust, TRUE,
+			WA_InnerWidth, GFX_WIDTH, 
+			WA_InnerHeight, GFX_HEIGHT,
+			WA_DragBar, TRUE,
+			WA_CloseGadget, TRUE,
+			WA_DepthGadget,TRUE,
+			WA_SimpleRefresh, TRUE,
+			WA_IDCMP, IDCMP_CLOSEWINDOW,
+			TAG_DONE);
+		if (win == NULL) {
+			fprintf (stderr, "can't open window\n");
+			return -1;
+		}
+	
+		rp = win->RPort;
+
+		for (i = 0; i < NUMCOLS; i++) {
+			colors[i] = ObtainBestPen (
+				win->WScreen->ViewPort.ColorMap,
+				(UINT32)palette[i * 3 + 0] << 26,
+				(UINT32)palette[i * 3 + 1] << 26,
+				(UINT32)palette[i * 3 + 2] << 26,
+				OBP_Precision,PRECISION_EXACT,
+				TAG_DONE);
+		}
 	}
 
 	/* clear screen */
@@ -218,7 +286,11 @@ static int amiga_init_vidmode ()
 
 static int amiga_deinit_vidmode ()
 {
-	CloseWindow (win);
+	if (opt.fullscreen) {
+		CloseScreen (scr);
+	} else {
+		CloseWindow (win);
+	}
 	FreeMem (vscreen, GFX_WIDTH * GFX_HEIGHT);
 	CloseLibrary ((struct Library *)GfxBase);
 	CloseLibrary ((struct Library *)IntuitionBase);
@@ -235,10 +307,13 @@ static void amiga_put_block (int x1, int y1, int x2, int y2)
 	if (x2 >= GFX_WIDTH)  x2 = GFX_WIDTH  - 1;
 	if (y2 >= GFX_HEIGHT) y2 = GFX_HEIGHT - 1;
 
-	WriteChunkyPixels (rp,
-		win->BorderLeft + x1, win->BorderTop + y1,
-		win->BorderLeft + x2, win->BorderTop + y2,
-		vscreen + y1 * GFX_WIDTH + x1, GFX_WIDTH);
+	if (opt.fullscreen) {
+	} else {
+		WriteChunkyPixels (rp,
+			win->BorderLeft + x1, win->BorderTop + y1,
+			win->BorderLeft + x2, win->BorderTop + y2,
+			vscreen + y1 * GFX_WIDTH + x1, GFX_WIDTH);
+	}
 }
 
 
