@@ -94,6 +94,7 @@ palmos*)
 	;;
 darwin*)
 	CFLAGS="${CFLAGS} -DMACOSX -no-cpp-precomp"
+	LDFLAGS="${LDFLAGS} -flat_namespace"
 	LIBS="${LIBS} -lobjc"
 	with_cocoa="yes"
 	;;
