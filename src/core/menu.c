@@ -136,11 +136,24 @@ static void draw_menu_option_hilite (int h_menu, int v_menu)
 }
 
 
+static void new_menu_selected (i)
+{
+	show_pic ();
+	draw_menu_bar ();
+   	draw_menu_hilite (i);
+    	draw_menu_option (i);
+}
+
 static int h_index;
 static int v_index;
 static int h_col;
 static int h_max_menu;
 static int v_max_menu[10];
+
+
+/*
+ * Public functions
+ */
 
 void init_menus ()
 {
@@ -210,19 +223,9 @@ void add_menu_item (char *s, int code)
 	list_add_tail (&d->list, &m->down);
 }
 
-
 void submit_menu ()
 {
 	_D (_D_WARN "Submitting menu");
-}
-
-
-static void new_menu_selected (i)
-{
-	show_pic ();
-	draw_menu_bar ();
-   	draw_menu_hilite (i);
-    	draw_menu_option (i);
 }
 
 int menu_keyhandler (int key)
@@ -242,29 +245,64 @@ int menu_keyhandler (int key)
    		draw_menu_bar ();
 	}
 
+	/*
+	 * Mouse handling
+	 */
 	if (mouse.button) {
 		struct list_head *h;
 		struct menu *m;
-		int hmenu;
+		int hmenu, vmenu;
 
-		hmenu = 0;
-		list_for_each (h, &menubar, next) {
-			m = list_entry (h, struct menu, list);
-			if (mouse.y <= CHAR_LINES &&
-				mouse.x > m->col * CHAR_COLS &&
-				mouse.x < (m->col + strlen(m->text)) * CHAR_COLS) {
-				break;
-			} else {
-				hmenu++;
-			}
-		}
+		if (mouse.y <= CHAR_LINES) {
+			hmenu = 0;
 
-		if (hmenu <= h_max_menu) {
-			if (h_cur_menu != hmenu) {
-				v_cur_menu = 0;
-				new_menu_selected (hmenu);
+			list_for_each (h, &menubar, next) {
+				m = list_entry (h, struct menu, list);
+				if (mouse.x > m->col * CHAR_COLS &&
+					mouse.x < (m->col + strlen(m->text)) *
+					CHAR_COLS)
+				{
+					break;
+				} else {
+					hmenu++;
+				}
 			}
-			h_cur_menu = hmenu;
+	
+			if (hmenu <= h_max_menu) {
+				if (h_cur_menu != hmenu) {
+					v_cur_menu = 0;
+					new_menu_selected (hmenu);
+				}
+				h_cur_menu = hmenu;
+			}
+		} else {
+			struct menu_option *d;
+
+			vmenu = 0;
+
+			m = get_menu (h_cur_menu);
+			list_for_each (h, &m->down, next) {	
+				d = list_entry (h, struct menu_option, list);
+				if (mouse.x > (m->wincol + 1) * CHAR_COLS &&
+					mouse.x < (m->wincol + strlen (m->text))
+						* CHAR_COLS &&
+					mouse.y >=(2 + d->index) * CHAR_LINES &&
+					mouse.y < (3 + d->index) * CHAR_LINES)
+				{
+					break;
+				} else {
+					vmenu++;
+				}
+			}
+
+			if (vmenu <= v_max_menu[h_cur_menu]) {
+				if (v_cur_menu != vmenu) {
+					draw_menu_option (h_cur_menu);
+					draw_menu_option_hilite (h_cur_menu,
+						vmenu);
+				}
+				v_cur_menu = vmenu;
+			}
 		}
 	}
 #if 0
@@ -275,9 +313,12 @@ int menu_keyhandler (int key)
 
 	if (!menu_active) {
  		/* calc size of vertical menus */
-   		draw_menu_hilite (h_cur_menu);
-   		draw_menu_option (h_cur_menu);
-   		draw_menu_option_hilite (h_cur_menu, v_cur_menu);
+   		if (h_cur_menu >= 0) {
+			draw_menu_hilite (h_cur_menu);
+   			draw_menu_option (h_cur_menu);
+			if (v_cur_menu >= 0)
+   				draw_menu_option_hilite(h_cur_menu, v_cur_menu);
+		}
 		menu_active = TRUE;
 	}
 
@@ -359,4 +400,5 @@ void menu_set_item (int event, int state)
 	}
 }
 
+/* end of file: menu.c */
 
