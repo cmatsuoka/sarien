@@ -42,7 +42,7 @@ static void help (int argc, char **argv)
 #endif
 "  -E --emulate-sound {type}\n"
 "                     Emulate the sound of Sierra AGI running in different\n"
-"                     computers. Valid emulations are: pc, tandy and mac\n"
+"                     computers. Valid emulations are pc and mac\n"
 #if 0
 "  -l -force-loading  Force loading of all volume information at start of\n"
 "                     game which will give you faster play, this also implies\n"
