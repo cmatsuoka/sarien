@@ -1,4 +1,7 @@
 
+#import <Cocoa/Cocoa.h>
+#include <stdlib.h>
+
 int	__argc;
 char** __argv;
 

@@ -100,6 +100,7 @@ darwin*)
 		CORE_ARCH="macosx/sdl"
 	else
 		with_cocoa="yes"
+		CORE_ARCH="macosx"
 	fi
 	;;
 amiga*)

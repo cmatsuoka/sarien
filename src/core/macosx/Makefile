@@ -1,10 +1,10 @@
 # $Id$
 
 XCFLAGS	= -I ../../include
-OBJS	=
-DFILES	= Makefile main.c
+OBJS	= main.o
+DFILES	= Makefile $(OBJS:.o=.m) SarienIcon.icns
 CFILES	=
-DDIRS	= sdl
+DDIRS	= sdl English.lproj French.lproj
 LIB	= ../../../lib/libsarien.a
 
 all: $(LIB)
