@@ -18,7 +18,6 @@
 #include "gfx_base.h"
 #include "console.h"
 
-extern struct sarien_options opt;
 extern struct sarien_console console;
 extern UINT8 *font;
 

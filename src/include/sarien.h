@@ -351,4 +351,7 @@ struct sarien_options {
 	int soundemu;		/* sound emulation mode */
 };
 
+extern struct sarien_options opt;
+extern struct sarien_debug debug;
+
 #endif

@@ -25,7 +25,6 @@
 
 #define TICK_SECONDS 20
  
-extern struct sarien_options opt;
 extern struct sarien_console console;
 extern struct agi_logic logics[];
 extern struct agi_view views[];
@@ -216,7 +215,8 @@ static void normal_motion (int em, int x, int y)
 
 	if (e) {
 		/* Check if ego is completely on water */
-		if (w == cel_width) {
+		if (w >= cel_width) {
+			_D (_D_WARN "Ego is completely on water");
 			vt_obj->x_pos = x;
 			vt_obj->y_pos = y;
 			setflag (F_ego_water, TRUE);

@@ -31,7 +31,6 @@
 #define _L(a,b,c) { b, c }
 #endif
 
-extern struct sarien_debug debug;
 extern struct agi_logic logics[];
 
 struct agi_logicnames logic_names_test[] = {

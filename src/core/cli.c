@@ -16,7 +16,6 @@
 #include "sarien.h"
 #include "sound.h"
 
-extern struct sarien_options opt;
 extern char *optarg;
 
 

@@ -21,7 +21,6 @@
 #include "view.h"
 #include "logic.h"
 
-extern struct sarien_debug debug;
 extern struct agi_game game;
 extern struct agi_logic logics[];
 extern struct agi_view views[];

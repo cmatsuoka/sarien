@@ -183,7 +183,6 @@ int agi_v3_deinit ()
 }
 
 
-/* FIXME: replace free(pictures[bla]) by picture_free (bla) */
 int agi_v3_unload_resource (int restype, int resnum)
 {
 	switch (restype) {

@@ -77,8 +77,6 @@ static int window_nonblocking = 0;	/* Yuck! Remove it later! */
 extern struct agi_logic logics[];
 extern struct agi_view views[];
 extern struct agi_view_table view_table[];
-extern struct sarien_options opt;
-extern struct sarien_debug debug;
 
 extern UINT32 msg_box_ticks;
 

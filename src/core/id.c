@@ -15,8 +15,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern struct sarien_options opt;
-
 /*
  * Determine what AGI v2 system to emulate, these are the "majour" version
  * to emulate, thus 2.915 comes under 2.917, 2.4xxx is 2.440, etc.

@@ -16,8 +16,6 @@
 #include "sarien.h"
 #include "agi.h"
 
-extern struct sarien_options opt;
-
 
 UINT8 hilo_getbyte (UINT8 *mem)
 {

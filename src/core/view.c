@@ -270,7 +270,7 @@ void add_view_table (int entry, int vw)
 
 void set_cel (int entry, int cel)
 {
-	_D ("(entry = %d, cel = %d)", entry, cel);
+	//_D ("(entry = %d, cel = %d)", entry, cel);
 	if (cel >= VT_LOOP(view_table[entry]).num_cels) {
 		report ("Oops! attempt to set cel(=%d) > num_cels(=%d)\n",
 			cel, VT_LOOP(view_table[entry]).num_cels);
@@ -568,5 +568,4 @@ int decode_view (int resnum)
 
 	return err_OK;
 }
-
 

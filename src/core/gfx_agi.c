@@ -23,7 +23,6 @@
 #include "picture.h"
 #include "console.h"
 
-extern struct sarien_options opt;
 extern struct sarien_console console;
 extern struct agi_view_table view_table[];
 
@@ -44,7 +43,9 @@ void get_bitmap (UINT8 *dst, UINT8 *src, int x1, int y1, int w, int h)
 }
 
 
-/* Works in the 160x168 AGI buffer, priority only */
+/* Works in the 160x168 AGI buffer, priority only
+ * Used to restore priority data when sprite is removed
+ */
 static void put_bitmap (UINT8 *dst, UINT8 *src, int x1, int y1,
 	int w, int h, int trans, int prio)
 {
@@ -55,18 +56,16 @@ static void put_bitmap (UINT8 *dst, UINT8 *src, int x1, int y1,
 		prio = 4;
 
 	for (y1++, y = 0; y < h; y++) {
-		for (yy = (y1 + y) * _WIDTH, x=0; x<w; x++) {
-			if ((c=src[x + y * w]) == trans)
+		for (yy = (y1 + y) * _WIDTH, x = 0; x < w; x++) {
+			if ((c = src[x + y * w]) == trans)
 				continue;
 
 			xx = x1 + x;
 			if (y + y1 >= _HEIGHT || xx >= _WIDTH)
 				continue;
 
-			if (prio < dst[yy + xx])
-				continue;
-
-			dst[yy + xx] = c;
+			if (prio >= dst[yy + xx])
+				dst[yy + xx] = c;
 		}
 	}
 
@@ -86,7 +85,7 @@ void agi_put_bitmap (UINT8 *src, int x1, int y1, int w, int h, int trans, int pr
 
 	/* FIXME: claudio's anti-crash test */
 	if (!src) {
-		_D ((": ERROR! src=0x00"));
+		_D (_D_CRIT "ERROR! src is NULL");
 		return;
 	}
 
@@ -102,16 +101,19 @@ void agi_put_bitmap (UINT8 *src, int x1, int y1, int w, int h, int trans, int pr
 			if (prio < priority_data[yy + xx])
 				continue;
 
-			priority_data[yy+xx] = prio;
+			priority_data[yy + xx] = prio;
+
 			if (!greatest_kludge_of_all_time) {
 				screen_data[yy+xx] = c;
 			}
-				/* Should be in the if, but it breaks SQ2 */
-			        if (game.line_min_print > 0)
-					put_pixel_buffer (xx, y + y1 + 8, c);
-				else
-					put_pixel_buffer (xx, y + y1, c);
-			screen2[yy+xx] = c;
+
+			/* Should be in the if, but it breaks SQ2 */
+		        if (game.line_min_print > 0)
+				put_pixel_buffer (xx, y + y1 + 8, c);
+			else
+				put_pixel_buffer (xx, y + y1, c);
+
+			screen2[yy + xx] = c;
 		}
 	}
 	y = game.line_min_print ? 8 : 0;

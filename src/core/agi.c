@@ -35,7 +35,6 @@ volatile UINT32	msg_box_secs2;		/* message box timeout in sec/2 */
 extern struct agi_loader agi_v2;
 extern struct agi_loader agi_v3;
 
-extern struct sarien_options opt;
 extern struct agi_picture pictures[];
 extern struct agi_logic logics[];
 extern struct agi_view views[];

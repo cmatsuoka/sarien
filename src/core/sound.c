@@ -83,7 +83,6 @@ SINT16 *snd_buffer;
 struct agi_sound sounds[MAX_DIRS];
 struct sound_driver *snd;
 
-extern struct sarien_options opt;
 extern struct sound_driver sound_dummy;
 
 
