@@ -12,6 +12,7 @@
  * Win32 port by Felipe Rosinha <rosinha@helllabs.org>
  * Fixes and hacks by Igor Nesterov <nest@rtsnet.ru>
  * Mouse support by Ryan Gordon <icculus@clutteredmind.org>
+ * Misc. mess by Claudio Matsuoka <claudio@helllabs.org>
  */
 #include <ctype.h>
 #include <string.h>
@@ -129,6 +130,7 @@ static void _putpixels_scale1 (int x, int y, int w, BYTE *p)
 static void _putpixels_scale2 (int x, int y, int w, BYTE *p)
 {
         BYTE *p0 = g_screen.screen_pixels, *p1; /* Word aligned! */
+	int extra = 0;
 
 	EnterCriticalSection(&g_screen.cs);
 
@@ -200,7 +202,6 @@ static void _putpixels_fixratio_scale2 (int x, int y, int w, BYTE *p)
 static void INLINE gui_put_block (int x1, int y1, int x2, int y2)
 {
 	HDC hDC;
-	int h, w;
 
 	if (x1 >= GFX_WIDTH)
 		x1 = GFX_WIDTH - 1;
