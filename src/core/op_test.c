@@ -47,7 +47,9 @@ static UINT8 test_keypressed ()
 {
 	int x = game.keypress;
 
-	/* _D ("keypress = %02x", game.keypress); */
+	game.keypress = 0;
+	if (!x) main_cycle ();
+
 	return x;
 }
 
@@ -55,17 +57,11 @@ static UINT8 test_keypressed ()
 static UINT8 test_controller (UINT8 cont)
 {
 	int r;
-#if 0
 
-	if ((r = game.events[cont].occured))
-		setvar (V_key, 0);
-	return r;
-#else
 	r = game.events[cont].occured;
 	game.events[cont].occured = FALSE;
 
 	return r;
-#endif
 }
 
 
@@ -252,7 +248,6 @@ int test_if_code (int lognum)
 			break;
 		case 0x0D:
 			ec = test_keypressed ();
-			game.keypress = 0;
 			break;
 		case 0x0E:
 			ec = test_said (p[0], (UINT8*)code + (ip + 1));

@@ -295,8 +295,6 @@ void reset_graphics(void)
 
 	memset (screen2, 0, _WIDTH * _HEIGHT);
 	memset (screen_data, 0, _WIDTH * _HEIGHT);
-	//memset (priority_data, 0, _WIDTH * _HEIGHT);
-	//memset (control_data, 0, _WIDTH * _HEIGHT);
 	memset (xdata_data, 0, _WIDTH * _HEIGHT);
 
 	memset (layer1_data, 0, 320 * 200);
