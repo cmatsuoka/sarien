@@ -1,3 +1,4 @@
+$Id$
 
 System requirements
 ===================
@@ -10,7 +11,7 @@ A Linux SVGAlib driver written by XoXus is now available, see README.svgalib
 for more information.
 
 This initial port is being tested on an i386 Debian GNU/Linux box with
-glibc running kernel 2.2.9 on a 333 MHz K6 machine. It should work with
+glibc running kernel 2.4.5 on a 333 MHz K6 machine. It should work with
 24/16/15 bpp true color and 8 bpp pseudo color servers.
 
 
@@ -20,10 +21,6 @@ Building
 Run "./configure", then "make". Should any problems happen, have a look
 at the generated Makefile, config.h and machine.h. And drop me a note
 so I could fix it in future versions.
-
-Most files contain carriage returns (^M) because the main development is
-being done in DOS by Dark Fiber, and keeping them there makes patching
-easier. You may need to remove them for proper building.
 
 
 Problems

@@ -1,3 +1,4 @@
+# $Id$
 
 XCFLAGS =
 OBJS	=

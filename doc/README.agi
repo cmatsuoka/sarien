@@ -1,11 +1,10 @@
-
-
+$Id$
 
 
 
 
                    Sarien Sierra Adventure Game Interpreter
-                            Version 0.5.x (unstable)
+                                 Version 0.6
 
 
 
@@ -23,23 +22,17 @@ Solaris and AIX), Win32 with native and SDL support and OS/2 XFree86.
 Please contact the authors if you want to port it to a new platform.
 
 Sarien is covered by the Free Software Foundation's GNU Public License
-and is an open source development.
-
-
-
-Please note, this is far from a fully working engine. Ther are bugs.
-wai... A great many of them.
-
-btw.. If Bug-san pops up, email me and I'll add it to my list ^_^
+and is an open source development. Up to date information and anonymous
+CVS is available at http://sarien.sourceforge.net/.
 
 
 Command Line Switches
 =====================
   -a --agds          Enables sarien to play AGDS created games.
   -A --amiga         Forces the game to be seen as an Amiga word padded game.
-  -d --list-dictionary
+* -d --list-dictionary
                      List dictionary words.
-  -D --debug         Turn on debugging.
+* -D --debug         Turn on debugging.
   -E --emulate-sound {type}
                      Emulate the sound of Sierra AGI running in different
                      computers. Valid emulations are: pc, tandy and mac
@@ -47,11 +40,14 @@ Command Line Switches
   -g --dga           Use XFree86 DGA extension (if available).
   -h --help          Display this help screen.
   -n --no-sound      Disable sound output.
-  -o --list-objects  List objects.
-  -p --picture-viewer
+* -o --list-objects  List objects.
+* -p --picture-viewer
                      Interactive picture viewer.
-  -ps --show-drawing Show screen as its drawn.
-  -pk --wait-key     Wait for keypress on each action. (forces -ps)
+* -ps --show-drawing Show screen as its drawn.
+* -pk --wait-key     Wait for keypress on each action. (forces -ps)
+  -r --fix-aspect-ratio
+                     Emulate IBM PC EGA 320x200 4:3 aspect ratio. Not
+                     supported in all drivers.
   -S --scale {num}   Window size scale (only for windowed graphics).
   -v --emulate-version {version}
                      Force version to emulate. Valid v2 game versions are:
@@ -61,18 +57,16 @@ Command Line Switches
   -x --no-x-shm      Disable X shared memory extension (if available).
 
 
+* These options are disabled in release 0.6.0 and will be back
+  in future versions of sarien
+
+
 Playing Games
 =============
 In order to play games, you will need,
 
 	1) A Game or Demo
 	2) A binary of Sarien.
-
-
-First, if your filesystem/OS is case sensitive (Unix, BeOS) make sure
-all the filenames are in lowercase.
-
-Second, weed out what files you DONT need.
 
 For a AGI V2 games you only need the following files
 
@@ -83,7 +77,6 @@ For a AGI V2 games you only need the following files
 	viewdir
 	vol.*
 	words.tok
-
 
 For an AGI V3 game you need;
 
@@ -165,7 +158,7 @@ Sierra Games currently ID'd:
 
 
     Notes
-    	Space Quest 1 v2.426 and v2.917 are 100% identicle with the
+    	Space Quest 1 v2.426 and v2.917 are 100% identical with the
         exception of the version of the interpreter used to play them.
         Since 2.917 is the same as 2.426, I use 2.426 as the
         emulation.
@@ -177,9 +170,9 @@ Sierra Games currently ID'd:
 
 
 
-Copyprotection
-==============
-Original Sierra adventure games employed copyprotection in various
+Copy protection
+===============
+Original Sierra adventure games employed copy protection in various
 different schemes on several architectures.
 
 * Key Disk

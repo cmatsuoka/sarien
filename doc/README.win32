@@ -1,3 +1,4 @@
+$Id$
 
 A win32 version of Sarien can be built using SDL or the native win32
 port written by Felipe Rosinha <rosinha@dexter.damec.cefetpr.br>.
@@ -7,31 +8,10 @@ game folder into the Sarien executable.
 To compile the SDL version, check README.sdl for more information.
 
 To build the native win32 version using the Mingw32 compiler, copy
-GNUrules.mingw32 to GNUrules and run "make". To build sarien using
+Rules.mingw32 to Rules and run "make". To build sarien using
 Visual C++ 6.0, use the project files in the VC++6.0 directory.
 
 Mingw32 and related GNU utilities are available at
 http://agnes.dida.physik.uni-essen.de/~janjaap/mingw32/download.html
 
-
-Using Xmingw32
-==============
-
-To cross-compile Sarien using Xmingw32, have i586-mingw32-gcc and
-i586-mingw32-ranlib in your $PATH and copy GNUrules.xmingw32 to
-GNUrules.
-
-
-Using Cygwin32
-==============
-
-Compiling Sarien with Cygwin32 should be possible, and requires some
-tweaking in the source code (the configuration script currently does
-not recognize i386-pc-cygwin32).
-
-
-Using other compilers
-=====================
-
-No idea if it is possible. Reports welcome.
 

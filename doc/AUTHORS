@@ -8,8 +8,8 @@
 
 - Claudio Matsuoka <claudio@helllabs.org>
   * Main code hacking
-  * X11 port
-  * SDL port
+  * X11, SDL, BeOS port
+  * Win32 port hacking
 
 - Felipe Rosinha <rosinha@dexter.damec.cefetpr.br>
   * Main code hacking
@@ -34,20 +34,13 @@
 - Robert Bihlmeyer <robbe@orcus.priv.at>
   * Fullscreen SDL patch 
 
-- Ryan "Squeaker" Gordon <ryan_gordon@hotmail.com>
+- Ryan Gordon <ryan_gordon@hotmail.com>
   * SDL fixes
   * Command line parsing fixes
   * Portability hacks
 
 - Magnus Kristiansen <makris@online.no>
   * Control line fixes
-
-- Paul Lunga <paul123@freenet.tlh.fl.us>
-  * IIgs/Mac/Tandy sound samples
-  * IIgs/Mac/Tandy AGI resources
-
-- Ian Schmidt <irsman@iag.net>
-  * IIgs sound documentation
 
 - Jeremy Penner <jeremy@astra.mb.ca>
   * Photon graphics module
@@ -57,4 +50,24 @@
 
 - Magnus Kristiansen <>
   * Status line display fixes
+
+
+Special thanks to:
+
+- Paul Lunga <paul123@freenet.tlh.fl.us>
+  * IIgs/Mac/Tandy sound samples
+  * IIgs/Mac/Tandy AGI resources
+
+- Ian Schmidt <irsman@iag.net>
+  * IIgs sound documentation
+
+- Nat Budin <nat@budin.net>
+  * Object repositioning information
+
+- Nick Sonneveld <sonneveld@dingoblue.net.au>
+  * AGI internals consultant
+
+- Matt Hargett <matt@use.net>
+  * VC++ build fixes
+  * Memory usage profiling
 

@@ -1,47 +1,28 @@
 
-Lots of things. Let's see...
-
-0.4 sees a feature freeze until the next stable release, 0.6.0. All 0.4
-releases until 0.6.0 will only be bugfixes of existing code, and new
-features will be added to the unstable branch 0.5. That means you wont
-see your inventory implemented until later on.
-
 Things noted to be fixed
+
  - Much nicer menu code
  - Finish the DJGPP/Allegro port (partially done)
- - Finish the BeOS/SDL port
  - Get KQ4 working
- - Fix the......
  - Nicer save/load functions
 
 SGEO:
- - PalmDB v4 driver needs to be cleaned up. Right now its an amalgen of agi_v2 + agi_v3.c
-   source code. Its quite ugly. agi2pdb should do this kind of conversion for us.
+ - PalmDB v4 driver needs to be cleaned up. Right now its an amalgen of
+   agi_v2 + agi_v3.c source code. Its quite ugly. agi2pdb should do this
+   kind of conversion for us.
  - AGI2PDB needs to convert a v3 game 'down' to v2 (ie: decompress it all)
 
 Sound:
-	- add the noise channel
-	- add Solaris, *BSD, SGI, HP-UX drivers
-	- add 8 bit sound driver
-	- add DOS drivers (SB, GUS)
-
-View:
-	- Fix sprite management
+ - add the noise channel
+ - add 8 bit sound driver
+ - add DOS drivers
 
 General:
-	- Implement restore
-	- Implement inventory (partially done in 0.5.0)
-	- Add error messages for unknown display and sound drivers, etc
-	- Fix keyboard input (controller() opcode test)
-	- Make cygwin cross-compiler work out of the box
+ - Add error messages for unknown display and sound drivers, etc
 
 Graphics:
-	- Drop root privileges when running svgalib binary and not
-	  initializing graphics
-	- Add DGA support
+ - Drop root privileges when running svgalib binary and not
+   initializing graphics
+ - XFree86 DGA support
 
-
-----
-
-CM:	Do Amiga/Atari/Mac AGI games emulate PC keyboard scancodes?
 

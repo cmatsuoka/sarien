@@ -1,3 +1,4 @@
+$Id$
 
 Tested ports:
 
@@ -15,19 +16,29 @@ Tested ports:
  AIX 4   |  gcc  |   X11   |  dummy  |   yes   |    no   |    no   |
  IRIX    |MIPSpro|   X11   |   sgi   |   yes   |    no   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
- BeOS 5  |  gcc  |   SDL   |   SDL   |   yes   |    ?    |   yes   |
+ BeOS 5  |  gcc  |   SDL   |   SDL   |   yes   |   yes   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
  QNX	 |   ?   |  Photon |    ?    |    ?    |    ?    |    ?    |
 ---------+-------+---------+---------+---------+---------+---------+
  Windows |Mingw32|   DIB   |  dummy  |   yes   |    no   |    no   |
  Windows*|Mingw32|   SDL   |   SDL   |   yes   |   yes   |   yes   |
  Windows |  VC++ |   DIB   |  WinMM  |   yes   |    no   |   yes   |
+ Windows |Cygwin |   DIB   |  WinMM  |   yes   |    no   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
  OS/2    |  gcc  |   X11   |  dummy  |   yes   |    no   |    no   |
+---------+-------+---------+---------+---------+---------+---------+
+
+
+Not integrated to the main tree:
+
+                  Graphics   Sound    Windowed  Fullscreen
+         Compiler  Driver    Driver   Graphics  Graphics    Sound
 ---------+-------+---------+---------+---------+---------+---------+
  Acorn   |   ?   |    ?    |    ?    |    ?    |    ?    |    ?    |
 ---------+-------+---------+---------+---------+---------+---------+
  Amiga   |   ?   |    ?    |    ?    |    ?    |    ?    |    ?    |
+---------+-------+---------+---------+---------+---------+---------+
+ Atari   |   ?   |    ?    |    ?    |    ?    |    ?    |    ?    |
 ---------+-------+---------+---------+---------+---------+---------+
 
 
@@ -40,8 +51,6 @@ Untested, expected to work:
  S/Linux |  gcc  |   X11   |   BSD   |   yes   |    no   |   yes   |
  HP-UX   |  gcc  |   X11   |  dummy  |   yes   |    no   |    no   |
  IRIX    |  gcc  |   X11   |   sgi   |   yes   |    no   |   yes   |
----------+-------+---------+---------+---------+---------+---------+
- Windows |Cygwin |   DIB   |  WinMM  |   yes   |    no   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
 
 
