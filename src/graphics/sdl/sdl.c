@@ -364,11 +364,11 @@ static void process_events ()
 			case SDLK_F10:
 				key = 0x4400;
 				break;
+			case SDLK_F12:
+				key = KEY_PRIORITY;
+				break;
 			case SDLK_ESCAPE:
 				key = 0x1b;
-				break;
-			case SDLK_PRINT:
-				key = KEY_PRIORITY;
 				break;
 			default:
 				if (!isalpha (key))

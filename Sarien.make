@@ -35,6 +35,7 @@ SrcFiles        =  ¶
 				  :src:core:keyboard.c ¶
 				  :src:core:logic.c ¶
 				  :src:core:lzw.c ¶
+				  :src:core:main.c ¶
 				  :src:core:menu.c ¶
 				  :src:core:motion.c ¶
 				  :src:core:objects.c ¶
@@ -45,8 +46,10 @@ SrcFiles        =  ¶
 				  :src:core:picture.c ¶
 				  :src:core:rand.c ¶
 				  :src:core:savegame.c ¶
+				  :src:graphics:sdl:sdl.c ¶
 				  :src:core:silent.c ¶
 				  :src:core:sound.c ¶
+				  :src:sound:sdl:sound_sdl.c ¶
 				  :src:core:sprite.c ¶
 				  :src:core:text.c ¶
 				  :src:core:view.c
@@ -70,6 +73,7 @@ ObjFiles-68K    =  ¶
 				  "{ObjDir}keyboard.c.o" ¶
 				  "{ObjDir}logic.c.o" ¶
 				  "{ObjDir}lzw.c.o" ¶
+				  "{ObjDir}main.c.o" ¶
 				  "{ObjDir}menu.c.o" ¶
 				  "{ObjDir}motion.c.o" ¶
 				  "{ObjDir}objects.c.o" ¶
@@ -80,6 +84,8 @@ ObjFiles-68K    =  ¶
 				  "{ObjDir}picture.c.o" ¶
 				  "{ObjDir}rand.c.o" ¶
 				  "{ObjDir}savegame.c.o" ¶
+				  "{ObjDir}sdl.c.o" ¶
+				  "{ObjDir}sound_sdl.c.o" ¶
 				  "{ObjDir}silent.c.o" ¶
 				  "{ObjDir}sound.c.o" ¶
 				  "{ObjDir}sprite.c.o" ¶
@@ -153,8 +159,10 @@ Sarien  ÄÄ  {ObjFiles-68K} {LibFiles-68K} {¥MondoBuild¥}
 "{ObjDir}picture.c.o"  Ä  :src:core:picture.c
 "{ObjDir}rand.c.o"  Ä  :src:core:rand.c
 "{ObjDir}savegame.c.o"  Ä  :src:core:savegame.c
+"{ObjDir}sdl.c.o"  Ä  :src:graphics:sdl:sdl.c
 "{ObjDir}silent.c.o"  Ä  :src:core:silent.c
 "{ObjDir}sound.c.o"  Ä  :src:core:sound.c
+"{ObjDir}sound_sdl.c.o"  Ä  :src:sound:sdl:sound_sdl.c
 "{ObjDir}sprite.c.o"  Ä  :src:core:sprite.c
 "{ObjDir}text.c.o"  Ä  :src:core:text.c
 "{ObjDir}view.c.o"  Ä  :src:core:view.c
