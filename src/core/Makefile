@@ -4,7 +4,7 @@ XCFLAGS	= -I../include
 OBJS	= global.o agi_v2.o agi_v3.o agi_v4.o agi.o cli.o words.o objects.o \
 	  picture.o view.o id.o logic.o op_test.o op_cmd.o op_dbg.o patches.o \
 	  keyboard.o menu.o font.o lzw.o getopt.o getopt1.o savegame.o \
-	  sound.o silent.o iff.o console.o cycle.o inv.o text.o graphics.o \
+	  sound.o silent.o console.o cycle.o inv.o text.o graphics.o \
 	  sprite.o checks.o motion.o picview.o
 GFILES	= agi_v2.c agi_v3.c agi_v4.c agi.c cli.c words.c view.c id.c \
 	  logic.c keyboard.c savegame.c sound.c silent.c console.c \

@@ -30,7 +30,6 @@ SrcFiles        =  ¶
 				  :src:core:global.c ¶
 				  :src:core:graphics.c ¶
 				  :src:core:id.c ¶
-				  :src:core:iff.c ¶
 				  :src:core:inv.c ¶
 				  :src:core:keyboard.c ¶
 				  :src:core:logic.c ¶
@@ -71,7 +70,6 @@ ObjFiles-68K    =  ¶
 				  "{ObjDir}global.c.o" ¶
 				  "{ObjDir}graphics.c.o" ¶
 				  "{ObjDir}id.c.o" ¶
-				  "{ObjDir}iff.c.o" ¶
 				  "{ObjDir}inv.c.o" ¶
 				  "{ObjDir}keyboard.c.o" ¶
 				  "{ObjDir}logic.c.o" ¶
@@ -149,7 +147,6 @@ Sarien  ÄÄ  {ObjFiles-68K} {LibFiles-68K} {¥MondoBuild¥}
 "{ObjDir}global.c.o"  Ä  :src:core:global.c
 "{ObjDir}graphics.c.o"  Ä  :src:core:graphics.c
 "{ObjDir}id.c.o"  Ä  :src:core:id.c
-"{ObjDir}iff.c.o"  Ä  :src:core:iff.c
 "{ObjDir}inv.c.o"  Ä  :src:core:inv.c
 "{ObjDir}keyboard.c.o"  Ä  :src:core:keyboard.c
 "{ObjDir}logic.c.o"  Ä  :src:core:logic.c

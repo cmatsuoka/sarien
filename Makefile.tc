@@ -25,7 +25,7 @@ INCLUDEPATH = SRC\INCLUDE;\TC\INCLUDE
 
 OBJS	= agi.obj agi_v2.obj agi_v3.obj checks.obj cli.obj console.obj \
 	  cycle.obj font.obj getopt.obj getopt1.obj global.obj graphics.obj \
-	  id.obj iff.obj inv.obj keyboard.obj logic.obj lzw.obj main.obj \
+	  id.obj inv.obj keyboard.obj logic.obj lzw.obj main.obj \
 	  menu.obj motion.obj objects.obj op_cmd.obj op_dbg.obj op_test.obj \
 	  patches.obj picture.obj rand.obj savegame.obj silent.obj sound.obj \
 	  sprite.obj text.obj view.obj words.obj tcglob.obj dummy.obj \
@@ -47,7 +47,6 @@ lib\getopt1.obj
 lib\global.obj
 lib\graphics.obj
 lib\id.obj
-lib\iff.obj
 lib\inv.obj
 lib\keyboard.obj
 lib\logic.obj
@@ -117,9 +116,6 @@ graphics.obj: sarien.cfg src\core\graphics.c
 
 id.obj: sarien.cfg src\core\id.c 
 	$(CC) -c src\core\id.c
-
-iff.obj: sarien.cfg src\core\iff.c 
-	$(CC) -c src\core\iff.c
 
 inv.obj: sarien.cfg src\core\inv.c 
 	$(CC) -c src\core\inv.c
