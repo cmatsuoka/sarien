@@ -498,7 +498,7 @@ static int init_vidmode ()
 	SDL_SetColors (screen, color, 0, 32);
 
 	/* Use an optimized put_pixels if available */
-	switch (scale) {
+	if (opt.gfxhacks) switch (scale) {
 	case 1:
 		switch (screen->format->BytesPerPixel) {
 		case 1: gfx_sdl.put_pixels = _put_pixels_8bits_scale1; break;

@@ -297,28 +297,29 @@ struct game_id_list {
  * Command-line options.
  */
 struct sarien_options {
-	int forceload;		/* force loading of all resources */
-	int cache;		/* cache loaded resources */
-	int gamerun;		/* status for game */
-	int pcjrgfx;		/* PCJr graphics */
-	int showscreendraw;	/* show screen drawing */
+	int forceload;		/**< force loading of all resources */
+	int cache;		/**< cache loaded resources */
+	int gamerun;		/**< status for game */
+	int pcjrgfx;		/**< PCJr graphics */
+	int showscreendraw;	/**< show screen drawing */
 	int showkeypress;
 	int emuversion;
 #ifndef NO_DEBUG
 	int debug;
 #endif
-	int scale;		/* window scale factor */
-	int agds;		/* enable AGDS mode */
-	int amiga;		/* enable Amiga mode */
-	int fullscreen;		/* use full screen mode if available */
-	int nosound;		/* disable sound */
+	int scale;		/**< window scale factor */
+	int agds;		/**< enable AGDS mode */
+	int amiga;		/**< enable Amiga mode */
+	int fullscreen;		/**< use full screen mode if available */
+	int nosound;		/**< disable sound */
 #ifdef MITSHM
-	int mitshm;		/* use shared memory extension */
+	int mitshm;		/**< use shared memory extension */
 #endif
 #ifdef XF86DGA
-	int dga;		/* use XFree86 DGA extension */
+	int dga;		/**< use XFree86 DGA extension */
 #endif
-	int soundemu;		/* sound emulation mode */
+	int soundemu;		/**< sound emulation mode */
+	int gfxhacks;		/**< enable graphics driver optimizations */
 };
 
 extern struct sarien_options opt;

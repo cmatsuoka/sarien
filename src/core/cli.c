@@ -52,9 +52,8 @@ static void help (int argc, char **argv)
 "  -L --list-games    List all the games in the ID file\n"
 #endif
 "  -F --full-screen   Run in full-screen mode if allowed by the graphics device\n"
-#if 0
-"  -g --dga           Use XFree86 DGA extension (if available).\n"
-#endif
+"  -g --no-gfx-optimizations\n"
+"                     Disable optimized graphic driver hacks (if available).\n"
 "  -h --help          Display this help screen.\n"
 "  -n --no-sound      Disable sound output.\n"
 #ifdef OPT_LIST_OBJECTS
@@ -69,6 +68,9 @@ static void help (int argc, char **argv)
 "                     3.002.086, 3.002.149.\n"
 "  -V --version       Display version information.\n"
 "  -x --no-x-shm      Disable X shared memory extension (if available).\n"
+#if 0
+"  -xd --dga          Use XFree86 DGA extension (if available).\n"
+#endif
 "\n"
 "[gamedir] is optionally the directory the game is in, if no directory is\n"
 "specified, the current directory is assumed.\n"
@@ -94,7 +96,7 @@ int parse_cli (int argc, char **argv)
 		{0x0, (UINT8*)""}
 	};
 	int o, optidx = 0;
-#define OPTIONS "VhaAv:DdE:FlnopskS:xCL"
+#define OPTIONS "AaCDdE:FghLlnopskS:Vv:x"
 	static struct option lopt[] = {
 		{ "version",		0, 0, 'V' },
 		{ "help",		0, 0, 'h' },
@@ -121,7 +123,8 @@ int parse_cli (int argc, char **argv)
 		{ "emulate-sound",	1, 0, 'E' },
 		{ "wait-key",		0, 0, 'k' },
 		{ "no-x-shm",		0, 0, 'x' },
-		{ "scale",		1, 0, 'S' }
+		{ "scale",		1, 0, 'S' },
+		{ "no-gfx-optimizations",0,0, 'g' }
 	};
 
 	UINT16 xc;
@@ -133,6 +136,7 @@ int parse_cli (int argc, char **argv)
 	memset (&opt, 0, sizeof (struct sarien_options));
 	opt.gamerun = gRUN_GAME;
 	opt.scale = 2;
+	opt.gfxhacks = TRUE;
 #ifdef MITSHM
 	opt.mitshm = TRUE;
 #endif
@@ -194,6 +198,9 @@ int parse_cli (int argc, char **argv)
 			break;
 		case 'L':
 			opt.gamerun = gLIST_GAMES;
+			break;
+		case 'g':
+			opt.gfxhacks = FALSE;
 			break;
 #ifdef OPT_LIST_DICT
 		case 'd':

@@ -139,6 +139,8 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 		report ("Enabling interpreter console\n");
 		console_init ();
 		report ("--- Starting console ---\n\n");
+		if (!opt.gfxhacks)
+			report ("Graphics driver hacks disabled (if any)\n");
 		init_sound ();
 	}
 

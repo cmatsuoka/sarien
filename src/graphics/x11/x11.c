@@ -116,14 +116,14 @@ static INLINE void putpixel_8 (XImage *img, int idx, int p)
 	((char *)img->data)[idx] = p;
 }
 
-static void x11_putpixels_8bits_scale1 (int x, int y, int w, UINT8 *p)
+static void _putpixels_8bits_scale1 (int x, int y, int w, UINT8 *p)
 {
 	if (w == 0) return;
 	x += y * GFX_WIDTH;
 	while (w--) { putpixel_8 (ximage, x++, rgb_palette[*p++]); }
 }
 
-static void x11_putpixels_8bits_scale2 (int x, int y, int w, UINT8 *p)
+static void _putpixels_8bits_scale2 (int x, int y, int w, UINT8 *p)
 {
 	register int c;
 
@@ -142,14 +142,14 @@ static void x11_putpixels_8bits_scale2 (int x, int y, int w, UINT8 *p)
 	}
 }
 
-static void x11_putpixels_16bits_scale1 (int x, int y, int w, UINT8 *p)
+static void _putpixels_16bits_scale1 (int x, int y, int w, UINT8 *p)
 {
 	if (w == 0) return;
 	x += y * GFX_WIDTH;
 	while (w--) { putpixel_16 (ximage, x++, rgb_palette[*p++]); }
 }
 
-static void x11_putpixels_16bits_scale2 (int x, int y, int w, UINT8 *p)
+static void _putpixels_16bits_scale2 (int x, int y, int w, UINT8 *p)
 {
 	int c;
 
@@ -168,14 +168,14 @@ static void x11_putpixels_16bits_scale2 (int x, int y, int w, UINT8 *p)
 	}
 }
 
-static void x11_putpixels_32bits_scale1 (int x, int y, int w, UINT8 *p)
+static void _putpixels_32bits_scale1 (int x, int y, int w, UINT8 *p)
 {
 	if (w == 0) return;
 	x += y * GFX_WIDTH;
 	while (w--) { putpixel_32 (ximage, x++, rgb_palette[*p++]); }
 }
 
-static void x11_putpixels_32bits_scale2 (int x, int y, int w, UINT8 *p)
+static void _putpixels_32bits_scale2 (int x, int y, int w, UINT8 *p)
 {
 	int c;
 
@@ -598,45 +598,22 @@ static int init_vidmode ()
 		return err_Unk;
 	}
 
-	switch (scale) {
+	if (opt.gfxhacks) switch (scale) {
 	case 1:
 		switch (depth) {
-		case 8:
-			gfx_x11.put_pixels = x11_putpixels_8bits_scale1;
-			break;
-		case 16:
-			gfx_x11.put_pixels = x11_putpixels_16bits_scale1;
-			break;
-		case 24:
-			/* fall-through */
-		case 32:
-			gfx_x11.put_pixels = x11_putpixels_32bits_scale1;
-			break;
-		default:
-			gfx_x11.put_pixels = x11_put_pixels;
-			break;
+		case 8:  gfx_x11.put_pixels = _putpixels_8bits_scale1; break;
+		case 16: gfx_x11.put_pixels = _putpixels_16bits_scale1; break;
+		case 24: /* fall-through */
+		case 32: gfx_x11.put_pixels = _putpixels_32bits_scale1; break;
 		}
 		break;
 	case 2:
 		switch (depth) {
-		case 8:
-			gfx_x11.put_pixels = x11_putpixels_8bits_scale2;
-			break;
-		case 16:
-			gfx_x11.put_pixels = x11_putpixels_16bits_scale2;
-			break;
-		case 24:
-			/* fall-through */
-		case 32:
-			gfx_x11.put_pixels = x11_putpixels_32bits_scale2;
-			break;
-		default:	
-			gfx_x11.put_pixels = x11_put_pixels;
-			break;
+		case 8:  gfx_x11.put_pixels = _putpixels_8bits_scale2; break;
+		case 16: gfx_x11.put_pixels = _putpixels_16bits_scale2; break;
+		case 24: /* fall-through */
+		case 32: gfx_x11.put_pixels = _putpixels_32bits_scale2; break;
 		}
-		break;
-	default:
-		gfx_x11.put_pixels = x11_put_pixels;
 		break;
 	}
 
