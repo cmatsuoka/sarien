@@ -56,6 +56,7 @@ static PixMapHandle pix, wpix;
 static UINT8 *screen_buffer;
 static int depth = 16;
 static int scale = 2;
+static int bpl;
 
 
 #define KEY_QUEUE_SIZE 16
@@ -371,7 +372,7 @@ static int macos_init_vidmode ()
 	pix = GetGWorldPixMap (gworld);
 	LockPixels (pix);
 	wpix = ((CGrafPort *)window)->portPixMap;
-	//bpl = (*wpix)->rowBytes & 0x3fff;
+	bpl = (*pix)->rowBytes & 0x3fff;
 	screen_buffer = (UINT8 *)GetPixBaseAddr(pix);
 
 	/* set window to current graf port */
