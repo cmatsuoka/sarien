@@ -1,7 +1,7 @@
 # $Id$
 
 XCFLAGS	= -I ../../include
-OBJS	= SDLmain.o MyWindowController.o
+OBJS	= SDLMain.o MyWindowController.o
 DFILES	= Makefile $(OBJS:.o=.m) $(OBJS:.o=.h)
 CFILES	=
 DDIRS	=

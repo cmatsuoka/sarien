@@ -36,21 +36,21 @@ Extra features:
 * Sierra v2 games accurate					90%
 * Multi-slot savegames						OK
 * Fix quit/restart problems					OK
-* Macintosh port						95%
 * Major homemade games playable					OK
 
 0.9.0:
 
+* Macintosh port						90%
 * IIgs sound emulation						20%
 * Sierra v3 games accurate					50%
 * Mouse support							90%
-* Fix input prompt problems					50%
-* Major homemade games finishable				30%
+* Fix input prompt problems					90%
+* Major homemade games finishable				50%
 * unk commands implemented					90%
 
 1.0:
 
-* All games 100% accurate					30%
+* All games 100% accurate					50%
 * Complete documentation					30%
 
 1.1+:

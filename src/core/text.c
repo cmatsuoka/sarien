@@ -398,7 +398,7 @@ int print (char *p, int lin, int col, int len)
 
 	_D (_D_WARN "lin = %d, col = %d, len = %d", lin, col, len);
 	if (len == 0 && col > 0 && col < 20)
-		len = (39 /*40*/ - 2 * (col - 1));
+		len = (40 - 2 * (col - 1));
 
 	blit_textbox (p, lin, col, len);
 
@@ -516,7 +516,7 @@ char *agi_sprintf (char *s)
 				if (i == 99) {
 					/* remove all leading 0 */
 					/* don't remove the 3rd zero if 000 */
-					for (i = 0; z[i] == '0' && i <= 15; i++);
+					for (i = 0; z[i] == '0' && i < 14; i++);
 				} else {
 					i = 15 - i;
 				}

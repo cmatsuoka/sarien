@@ -51,11 +51,13 @@ TEST_MODULE(test_format)
 	setvar (2,2);
 	setvar (42,42);
 	setvar (142,142);
+	setvar (242,0);
 
 	TEST("literal", c("Sanity check.", "Sanity check."));
 	TEST("escapes", c("\\a\\b\\c 100\\% \\\\ \\%v0", "abc 100% \\ %v0"));
 	TEST("variable", c("%v2 %v42 %v142", "2 42 142"));
 	TEST("fields", c("%v2|1 %v2|0 %v2|3 %v42|4 %v142|2", "2  002 0042 42"));
+	TEST("field pad", c("%v242 %v242|1 %v242|2 %v242|3", "0 0 00 000"));
 
 	/*
 	 * load template game resources

@@ -193,6 +193,10 @@ static void read_bytes (FILE* f, char* s, SINT16 size)
 }
 
 
+/*
+ * Version 0: view table has 64 entries
+ * Version 1: view table has 256 entries (needed in KQ3)
+ */
 #define SAVEGAME_VERSION 1
 
 int save_game (char* s, char* d)
@@ -211,8 +215,8 @@ int save_game (char* s, char* d)
 	write_bytes (f, strSig, 8);
 	write_string (f, d);
 
-	write_uint8 (f, (SINT8)SAVEGAME_VERSION);
-	write_uint8 (f, (SINT8)game.state);
+	write_uint8 (f, (UINT8)SAVEGAME_VERSION);
+	write_uint8 (f, (UINT8)game.state);
 	/* game.name */
 	write_string (f, game.id);
 	/* game.crc */
