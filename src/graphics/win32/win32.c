@@ -12,7 +12,7 @@
  * Fixes and hacks by Igor Nesterov <nest@rtsnet.ru>
  * Mouse support by Ryan Gordon <icculus@clutteredmind.org>
  * Extra fixes and hacks by Matt Hargett <matt@use.net>
- * Misc. mess by Claudio Matsuoka <claudio@helllabs.org>
+ * More fixes and hacks by Claudio Matsuoka <claudio@helllabs.org>
  */
 #include <ctype.h>
 #include <string.h>
@@ -121,7 +121,8 @@ static void _putpixels_scale1 (int x, int y, int w, BYTE *p)
 {
 	BYTE *p0 = g_screen.screen_pixels; /* Word aligned! */
 
-	y = GFX_HEIGHT - y - 1;
+	/* Always consider large, ratio-corrected screen for runtime resize */
+	y = ASPECT_RATIO(GFX_HEIGHT) * 2 - y - 1;
 	p0 += x + y * xsize;
 
 	EnterCriticalSection(&g_screen.cs);
@@ -133,7 +134,8 @@ static void _putpixels_scale2 (int x, int y, int w, BYTE *p)
 {
 	BYTE *p0 = g_screen.screen_pixels, *p1; /* Word aligned! */
 
-	y = GFX_HEIGHT - y - 1;
+	/* Using ASPECT_RATIO to allow runtime window resize */
+	y = ASPECT_RATIO(GFX_HEIGHT) - y - 1;
 	x <<= 1; y <<= 1; 
 	p0 += x + y * xsize;
 	p1 = p0 + xsize;
@@ -195,6 +197,29 @@ static void _putpixels_fixratio_scale2 (int x, int y, int w, BYTE *p)
 	LeaveCriticalSection (&g_screen.cs);
 }
 
+static void set_putpixels_method ()
+{
+	if (!opt.fixratio) {
+		switch (scale) {
+		case 1:
+			gfx_win32.put_pixels = _putpixels_scale1;
+			break;
+		case 2:
+			gfx_win32.put_pixels = _putpixels_scale2;
+			break;
+		}
+	} else {
+		switch (scale) {
+		case 1:
+			gfx_win32.put_pixels = _putpixels_fixratio_scale1;
+			break;
+		case 2:
+			gfx_win32.put_pixels = _putpixels_fixratio_scale2;
+			break;
+		}
+	}
+}
+
 /* ====================================================================*/
 
 static void update_mouse_pos(int x, int y)
@@ -212,8 +237,34 @@ static void update_mouse_pos(int x, int y)
 }
 
 
+static void resize_window(HWND hwnd)
+{
+	int xsize, ysize;
+
+	xsize = GFX_WIDTH * scale;
+	ysize = (opt.fixratio ? ASPECT_RATIO(GFX_HEIGHT) : GFX_HEIGHT) * scale;
+
+	SetWindowPos(
+		hwnd, HWND_TOP,
+		0, 0,
+		xsize + GetSystemMetrics (SM_CXFRAME),
+		ysize + GetSystemMetrics (SM_CYCAPTION) +
+			GetSystemMetrics (SM_CYFRAME) +
+			GetSystemMetrics (SM_CYMENU),
+		SWP_NOMOVE | SWP_NOZORDER
+	);
+}
+
+static void refresh_screen()
+{
+	erase_both ();
+	show_pic ();
+	blit_both ();
+	commit_both ();
+}
+
 LRESULT CALLBACK
-MainWndProc (HWND hwndMain, UINT nMsg, WPARAM wParam, LPARAM lParam)
+MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
 	HDC hdc;
 	PAINTSTRUCT ps;
@@ -226,21 +277,39 @@ MainWndProc (HWND hwndMain, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		switch (LOWORD(wParam)) {
 		case ITEM_OPTIONS_RES_LOW:
 			opt.hires = FALSE;
-			erase_both ();
-			show_pic ();
-			blit_both ();
-			commit_both ();
+			refresh_screen();
 			break;
 		case ITEM_OPTIONS_RES_HIGH:
 			opt.hires = TRUE;
-			erase_both ();
-			show_pic ();
-			blit_both ();
-			commit_both ();
+			refresh_screen();
+			break;
+		case ITEM_OPTIONS_SIZE_SMALL:
+			scale = 1;
+			resize_window(hwnd);
+			set_putpixels_method();
+			refresh_screen();
+			break;
+		case ITEM_OPTIONS_SIZE_LARGE:
+			scale = 2;
+			resize_window (hwnd);
+			set_putpixels_method();
+			refresh_screen();
+			break;
+		case ITEM_OPTIONS_RATIO_43:
+			opt.fixratio = 1;
+			resize_window(hwnd);
+			set_putpixels_method();
+			refresh_screen();
+			break;
+		case ITEM_OPTIONS_RATIO_85:
+			opt.fixratio = 0;
+			resize_window(hwnd);
+			set_putpixels_method();
+			refresh_screen();
 			break;
 		case ITEM_HELP_ABOUT:
 			DialogBox (GetModuleHandle(NULL),
-				MAKEINTRESOURCE(DIALOG_ABOUT), hwndMain,
+				MAKEINTRESOURCE(DIALOG_ABOUT), hwnd,
 				AboutDlgProc);
 			break;
 		case ITEM_FILE_EXIT:
@@ -250,7 +319,7 @@ MainWndProc (HWND hwndMain, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		break;
 
 	case WM_PUT_BLOCK:
-		hdc = GetDC (hwndMain);
+		hdc = GetDC (hwnd);
 		w = p->x2 - p->x1 + 1;
 		h = p->y2 - p->y1 + 1;
 		EnterCriticalSection (&g_screen.cs);
@@ -263,7 +332,7 @@ MainWndProc (HWND hwndMain, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			DIB_RGB_COLORS,
 			SRCCOPY);
 		LeaveCriticalSection (&g_screen.cs);
-		ReleaseDC (hwndMain, hdc);
+		ReleaseDC (hwnd, hdc);
 		break;
 
 	case WM_DESTROY:
@@ -271,7 +340,7 @@ MainWndProc (HWND hwndMain, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		exit (-1);
 
 	case WM_PAINT:
-		hdc = BeginPaint (hwndMain, &ps);
+		hdc = BeginPaint (hwnd, &ps);
 		EnterCriticalSection(&g_screen.cs);
 		StretchDIBits(
 			hdc,
@@ -281,7 +350,7 @@ MainWndProc (HWND hwndMain, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			g_screen.binfo,
 			DIB_RGB_COLORS,
 			SRCCOPY);
-		EndPaint (hwndMain, &ps);
+		EndPaint (hwnd, &ps);
 		LeaveCriticalSection(&g_screen.cs);
 		return 0;
 
@@ -496,7 +565,7 @@ MainWndProc (HWND hwndMain, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		return 0;
 	}
 
-	return DefWindowProc (hwndMain, nMsg, wParam, lParam);
+	return DefWindowProc (hwnd, nMsg, wParam, lParam);
 }
 
 static int init_vidmode ()
@@ -506,7 +575,10 @@ static int init_vidmode ()
 	InitializeCriticalSection (&g_screen.cs);
 	InitializeCriticalSection (&g_key_queue.cs);
 
-	scale = opt.scale;
+	/* Don't change! The off-screen bitmap must contain the largest
+	 * allowable scale for runtime window resizing!
+	 */
+	scale = 2;
 
 	xsize = GFX_WIDTH * scale;
 	ysize = (opt.fixratio ? ASPECT_RATIO(GFX_HEIGHT) : GFX_HEIGHT) * scale;
@@ -602,28 +674,9 @@ static int init_vidmode ()
 		g_err = err_OK;
 	}
 
-	if (!opt.fixratio) {
-		switch (scale) {
-		case 1:
-			gfx_win32.put_pixels = _putpixels_scale1;
-			break;
-		case 2:
-			gfx_win32.put_pixels = _putpixels_scale2;
-			break;
-		}
-	} else {
-		switch (scale) {
-		case 1:
-			gfx_win32.put_pixels = _putpixels_fixratio_scale1;
-			break;
-		case 2:
-			gfx_win32.put_pixels = _putpixels_fixratio_scale2;
-			break;
-		}
-	}
+	set_putpixels_method ();
 
 exx:
-
 	return g_err;	
 }
 
@@ -732,8 +785,8 @@ static int set_palette (UINT8 *pal, int scol, int numcols)
 			return err_Unk;
 		}
 
-		palette->palVersion    = 0x300;
-		palette->palNumEntries = 32;   /* Yikes! */
+		palette->palVersion = 0x300;
+		palette->palNumEntries = 32;
 
 		GetSystemPaletteEntries(hdc, 0, 16, palette->palPalEntry);
 		g_hPalette = CreatePalette(palette);
