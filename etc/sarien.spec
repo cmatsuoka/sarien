@@ -15,7 +15,7 @@ version 3 games such as Space Quest 1 and 2, King's Quest 1 to 4, Gold
 Rush! and Leisure Suit Larry in the Land of the Lounge Lizards).
 
 %prep
-%setup -q -n %{name}
+%setup -q
 
 %build
 %configure

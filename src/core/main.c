@@ -98,6 +98,7 @@ int main (int argc, char *argv[])
 	}
 #endif
 
+#ifndef __MSDOS__
 	/* printf() breaks GCC 3.0 build */
 	fprintf (stdout,
 TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
@@ -113,6 +114,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 "under the terms of the GNU General Public License, version 2 or later,\n"
 "as published by the the Free Software Foundation.\n"
 "\n");
+#endif
 
 	report ("Enabling interpreter console\n");
 	console_init ();
