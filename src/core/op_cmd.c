@@ -760,7 +760,7 @@ cmd(push_script) {
 #ifdef USE_MOUSE
 	if (opt.agimouse) {
 		game.vars[27] = mouse.button ? 1 : 0;
-		game.vars[28] = mouse.x;
+		game.vars[28] = mouse.x / 2;
 		game.vars[29] = mouse.y;
 	} else
 #endif
