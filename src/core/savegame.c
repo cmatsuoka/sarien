@@ -67,9 +67,9 @@ void record_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3, SINT16
 {
 	struct image_stack_element* pnew;
 
-	image_stack_pointer++;
 	assert (image_stack_pointer < IMAGE_STACK_SIZE);
 	pnew = &image_stack[image_stack_pointer];
+	image_stack_pointer++;
 
 	pnew->type = type;
 	pnew->parm1 = p1;
