@@ -397,8 +397,9 @@ int print (char *p, int lin, int col, int len)
 		return 0;
 
 	_D (_D_WARN "lin = %d, col = %d, len = %d", lin, col, len);
-	if (len == 0 && col > 0 && col < 20)
-		len = (40 - 2 * (col - 1));
+
+	if (len == 0)
+		len = 30;
 
 	blit_textbox (p, lin, col, len);
 
