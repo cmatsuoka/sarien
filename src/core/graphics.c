@@ -358,8 +358,13 @@ int keypress ()
  */
 int init_video ()
 {
+#ifndef _WIN32
+	/* XXX: this causes the win32 debug build to crash for some reason */
+	
 	fprintf (stderr, "Initializing graphics: %dx%d (scale = %d)\n",
 		GFX_WIDTH, GFX_HEIGHT, opt.scale);
+#endif
+
 	init_console ();
 	return gfx->init_video_mode ();
 }

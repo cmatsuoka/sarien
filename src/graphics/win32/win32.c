@@ -484,7 +484,8 @@ static int init_vidmode ()
 	wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW);
 	wndclass.hbrBackground = GetStockObject (BLACK_BRUSH);
 
-	if (!RegisterClass(&wndclass)) {
+	if (!RegisterClass(&wndclass)) 
+	{
 		OutputDebugString("win32.c: init_vidmode(): can't register class");
 		g_err = err_Unk;
 		goto exx;
@@ -504,6 +505,13 @@ static int init_vidmode ()
 		NULL,
 		NULL 
 	);
+
+	if (NULL == hwndMain)
+	{
+		OutputDebugString("win32.c: init_vidmode(): can't register class");
+		g_err = err_Unk;
+		goto exx;
+	}
 
 	/* First create the palete */
 	set_palette (palette, 0, 16); 
