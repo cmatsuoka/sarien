@@ -45,8 +45,10 @@ static UINT8	test_keypressed	(void);
 
 static UINT8 test_keypressed ()
 {
-	_D ("keypress = %02x", game.keypress);
-	return game.keypress;
+	int x = game.keypress;
+
+	/* _D ("keypress = %02x", game.keypress); */
+	return x;
 }
 
 
@@ -244,6 +246,7 @@ int test_if_code (int lognum)
 			break;
 		case 0x0D:
 			ec = test_keypressed ();
+			game.keypress = 0;
 			break;
 		case 0x0E:
 			ec = test_said (p[0], (UINT8*)code + (ip + 1));
@@ -279,8 +282,7 @@ int test_if_code (int lognum)
 		/* not is only enabled for 1 test command */
 		not_test = FALSE;
 
-		if (or_test && ec)
-		{
+		if (or_test && ec) {
 			/* a TRUE inside an OR statement passes
 			 * ENTIRE statement scan for end of OR
 			 */

@@ -145,6 +145,9 @@ void	object_set_location (int, int);
 
 void	adj_direction	(int, int, int);
 
+void	new_input_mode (int);
+void	old_input_mode (void);
+
 #ifdef __cplusplus
 };
 #endif

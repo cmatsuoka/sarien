@@ -31,8 +31,8 @@ struct agi_menu {
 static struct agi_menu *master_menu;
 static struct agi_menu *menu;
 
-extern struct sarien_console console;
-extern struct agi_game game;
+//extern struct sarien_console console;
+//extern struct agi_game game;
 
 
 static void draw_horizontal_menu_bar (int cur_menu, int max_menu)
@@ -199,116 +199,114 @@ void submit_menu ()
 }
 
 
-void do_menus ()
+int menu_keyhandler (int key)
 {
-	int h_cur_menu = 0, h_max_menu = 0;
-	int v_cur_menu = 0, v_max_menu = 0;
-	int x;
-	struct agi_menu *men;
-	int clock_val, input_val;
+	static int clock_val;
+	static int h_cur_menu = 0, h_max_menu = 0;
+	static int v_cur_menu = 0, v_max_menu = 0;
+	static struct agi_menu *men;
+	static int menu_active = FALSE;
+	int i;
 
-	clock_val = game.clock_enabled;
-	input_val = game.input_mode;
-	game.clock_enabled = FALSE;
-	game.input_mode = INPUT_MENU;
+	if (!getflag (F_menus_work)) 
+		return FALSE;
 
-	release_sprites ();
-	save_screen ();
-	redraw_sprites ();
-	/* put_block (0, 0, GFX_WIDTH - 1, console.y); */
-	put_screen ();
+	if (!menu_active) {
+		clock_val = game.clock_enabled;
+		game.clock_enabled = FALSE;
 
-	/* calc size of horizontal menu */
-	for (men = master_menu->next; men; h_max_menu++, men=men->next);
+		release_sprites ();
+		save_screen ();
+		redraw_sprites ();
+		put_screen ();
 
- 	/* calc size of vertical menus */
-   	for (x = 0, men = master_menu->next; x < h_cur_menu; x++)
-   		men = men->next;
-   	for (v_max_menu = 0; men; v_max_menu++, men = men->down);
-
-   	draw_horizontal_menu_bar (h_cur_menu, h_max_menu);
-   	draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
-
-	game.keypress = 0;
-	while (42) {
-		int x;
-
-		main_cycle (FALSE);
-		x = game.keypress;
-		game.keypress = 0;
-
-    		switch (x) {
-    		case KEY_ESCAPE:
+		/* calc size of horizontal menu */
+		for (men = master_menu->next; men; h_max_menu++, men=men->next);
+	
+ 		/* calc size of vertical menus */
+   		for (i = 0, men = master_menu->next; i < h_cur_menu; i++)
+   			men = men->next;
+   		for (v_max_menu = 0; men; v_max_menu++, men = men->down);
+	
+   		draw_horizontal_menu_bar (h_cur_menu, h_max_menu);
+   		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
+		menu_active = TRUE;
+	}
+	
+    	switch (key) {
+	case KEY_ESCAPE:
+		goto exit_menu;
+    	case KEY_ENTER:
+    		men = master_menu->next;
+    		for (i = 0; i < h_cur_menu; i++, men = men->next);
+    		men = men->down;
+    		for (i = 0; i < v_cur_menu; i++, men=men->down);
+    		if (men->enabled) {
+    			game.events[men->event].occured = TRUE;
 			goto exit_menu;
-    		case KEY_ENTER:
-    			men = master_menu->next;
-    			for (x = 0; x < h_cur_menu; x++, men = men->next);
-    			men = men->down;
-    			for (x = 0; x < v_cur_menu; x++, men=men->down);
-    			if (men->enabled) {
-    				game.events[men->event].occured = TRUE;
-				goto exit_menu;
-    			}
-    			break;
-    		case KEY_DOWN:
-    			if (1 + v_cur_menu >= v_max_menu - 1)
-				break;
-    		    	v_cur_menu++;
-			draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
-    			break;
-    		case KEY_UP:
-    			if(v_cur_menu <= 0)
-				break;
-    			v_cur_menu--;
-    			draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
-    			break;
-    		case KEY_RIGHT:
-    			if (1 + h_cur_menu >= h_max_menu)
-				break;
-    			h_cur_menu++;
-			release_sprites ();
-			restore_screen_area ();
-			redraw_sprites ();
-			/* put_block (0, 0, GFX_WIDTH - 1, console.y); */
-			put_screen ();
-
-			/* calc size of vertical menus */
-			for(x = 0, men = master_menu->next; x<h_cur_menu; x++)
-				men=men->next;
-			for (v_max_menu = 0; men; v_max_menu++, men=men->down);
-			v_cur_menu = 0;
-			draw_horizontal_menu_bar (h_cur_menu, h_max_menu);
-    			draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
-    			break;
-    		case KEY_LEFT:
-    			if (h_cur_menu <= 0)
-				break;
-    			h_cur_menu--;
-			release_sprites ();
-			restore_screen_area ();
-			redraw_sprites ();
-			/* put_block (0, 0, GFX_WIDTH - 1, console.y); */
-			put_screen ();
-
-			/* calc size of vertical menus */
-			for (x = 0, men = master_menu->next; x<h_cur_menu; x++)
-				men=men->next;
-			for (v_max_menu = 0; men; v_max_menu++, men=men->down);
-			v_cur_menu = 0;
-			draw_horizontal_menu_bar (h_cur_menu, h_max_menu);
-    			draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
-    			break;
     		}
-    	}
-exit_menu:
+    		break;
+    	case KEY_DOWN:
+    		if (1 + v_cur_menu >= v_max_menu - 1)
+			break;
+    	    	v_cur_menu++;
+		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
+    		break;
+    	case KEY_UP:
+    		if(v_cur_menu <= 0)
+			break;
+    		v_cur_menu--;
+    		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
+    		break;
+    	case KEY_RIGHT:
+    		if (1 + h_cur_menu >= h_max_menu)
+			break;
+    		h_cur_menu++;
+		release_sprites ();
+		restore_screen_area ();
+		redraw_sprites ();
+		put_screen ();
 
+		/* calc size of vertical menus */
+		for(i = 0, men = master_menu->next; i < h_cur_menu; i++)
+			men=men->next;
+		for (v_max_menu = 0; men; v_max_menu++, men = men->down);
+		v_cur_menu = 0;
+		draw_horizontal_menu_bar (h_cur_menu, h_max_menu);
+    		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
+    		break;
+    	case KEY_LEFT:
+    		if (h_cur_menu <= 0)
+			break;
+    		h_cur_menu--;
+		release_sprites ();
+		restore_screen_area ();
+		redraw_sprites ();
+		put_screen ();
+
+		/* calc size of vertical menus */
+		for (i = 0, men = master_menu->next; i < h_cur_menu; i++)
+			men=men->next;
+		for (v_max_menu = 0; men; v_max_menu++, men=men->down);
+		v_cur_menu = 0;
+		draw_horizontal_menu_bar (h_cur_menu, h_max_menu);
+    		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
+    		break;
+    	}
+	return TRUE;
+
+exit_menu:
 	release_sprites ();
 	restore_screen ();
 	redraw_sprites ();
 
 	setvar (V_key, 0);
 	game.clock_enabled = clock_val;
-	game.input_mode = input_val;
+	old_input_mode ();
+	_D (_D_WARN "exit_menu: input mode reset to %d", game.input_mode);
+	menu_active = FALSE;
+
+	return TRUE;
 }
 
 

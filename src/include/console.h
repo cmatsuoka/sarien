@@ -36,7 +36,6 @@ struct sarien_console {
 	int index;
 	int y;
 	int first_line;
-	int input_key;
 	int count;
 	char *line[CONSOLE_LINES_BUFFER];
 };
@@ -55,6 +54,7 @@ extern struct sarien_console console;
 
 #endif /* USE_CONSOLE */
 
+int	console_keyhandler	(int);
 int	console_init	(void);
 void	console_cycle	(void);
 void	console_lock	(void);

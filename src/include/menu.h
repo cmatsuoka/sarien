@@ -20,8 +20,8 @@ void	deinit_menus	(void);
 void	add_menu	(char *);
 void	add_menu_item	(char *, int);
 void	submit_menu	(void);
-void	do_menus	(void);
 void	menu_set_item	(int, int);
+int	menu_keyhandler	(int);
 
 #ifdef __cplusplus
 };

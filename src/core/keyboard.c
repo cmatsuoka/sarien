@@ -25,9 +25,6 @@
 UINT8  buffer[40];
 UINT8  last_sentence[40];
 
-static int xInput, yInput;
-static int IsGetString=FALSE;
-
 #ifdef USE_CONSOLE
 extern struct sarien_console console;
 #endif
@@ -37,6 +34,14 @@ extern struct agi_view_table view_table[];
 /* FIXME */
 extern int open_dialogue;
 
+struct string_data {
+	int x;
+	int y;
+	int len;
+	int str;
+};
+
+struct string_data stringdata;
 
 /*
  * IBM-PC keyboard scancodes
@@ -95,40 +100,13 @@ void clean_input ()
  * It's safe to return last_sentence because all the functions who call
  * get_string copy the result into another buffer
  */
-char *get_string (int x, int y, int len)
+void get_string (int x, int y, int len, int str)
 {
-	UINT8 old_max_chars = getvar (V_max_input_chars);
-	int tmp;
-
-	tmp = game.input_mode;
-	game.input_mode = INPUT_GETSTRING;
-
-	setvar (V_max_input_chars, len);
-
-	xInput = x;
-	yInput = y;
-
-	while (IsGetString) {
-		poll_timer ();		/* msdos driver -> does nothing */
-		update_timer ();
-
-		poll_keyboard ();
-
-#ifdef USE_CONSOLE
-		if (console.active && console.input_active)
-			handle_console_keys ();
-		else
-			handle_keys ();
-		console_cycle ();
-#else
-		handle_keys ();
-#endif
-	}
-
-	game.input_mode = tmp;
-	setvar (V_max_input_chars, old_max_chars);
-
-	return last_sentence;
+	new_input_mode (INPUT_GETSTRING);
+	stringdata.x = x;
+	stringdata.y = y;
+	stringdata.len = len;
+	stringdata.str = str;
 }
 
 
@@ -154,9 +132,9 @@ void print_line_prompt ()
     		}
 
     		/* cursor prompt */
-    		if (IsGetString) {
-    			print_character (xInput + (k + 1) * CHAR_COLS, yInput,
-    				txt_char, txt_fg, txt_bg );
+    		if (game.input_mode == INPUT_GETSTRING) {
+    			print_character (stringdata.x + (k + 1) * CHAR_COLS,
+				stringdata.y, txt_char, txt_fg, txt_bg );
     		} else {
     			print_character ((k + 1) * CHAR_COLS,
 				game.line_user_input * CHAR_LINES,
@@ -206,72 +184,48 @@ void clean_keyboard ()
  * It handles console keys and insulates AGI from the console. In the main
  * loop, handle_keys() handles keyboard input and ego movement.
  */
-void poll_keyboard ()
+int poll_keyboard ()
 {
-	int i, key = 0;
-
-	setvar (V_word_not_found, 0);
-
-#ifdef USE_CONSOLE
-	if (!console.active || !console.input_active)
-#endif
-	{
-		for (i = 0; i < MAX_DIRS; i++)
-			game.events[i].occured = FALSE;
-	}
+	int key = 0;
 
 	/* If a key is ready, rip it */
 	while (keypress ()) {
 		key = get_key ();
 		_D ("key %02x pressed", key);
+	}
 
-#ifdef USE_CONSOLE
-		if (console_keyhandler (key))
-			continue;
+	return key;
+}
 
-		if (console.active && console.input_active)
-			continue;
-#endif
-		_D ("key = %d", key);
 
-		/* For controller() */
-		for (i = 0; game.input_mode != INPUT_MENU && i < MAX_DIRS; i++){
-			switch (game.events[i].event) {
-			case eSCAN_CODE:
-				if (game.events[i].data == KEY_SCAN(key) &&
-					KEY_ASCII(key) == 0)
-				{
-					_D ("event: scan code");
-					game.events[i].occured = TRUE;
-					report("event SC:%i occured\n", i);
-				}
-				break;
-			case eKEY_PRESS:
-				if (game.events[i].data == KEY_ASCII(key) &&
-					KEY_SCAN(key) == 0)
-				{
-					_D ("event: key press");
-					game.events[i].occured = TRUE;
-					report ("event AC:%i occured\n", i);
-				}
-				break;
+void handle_controller (int key)
+{
+	int i;
+
+	for (i = 0; i < MAX_DIRS; i++)
+		game.events[i].occured = FALSE;
+
+	for (i = 0; i < MAX_DIRS; i++){
+		int data = game.events[i].data;
+		switch (game.events[i].event) {
+		case eSCAN_CODE:
+			if (data == KEY_SCAN(key) && KEY_ASCII(key) == 0) {
+				_D ("event: scan code");
+				game.events[i].occured = TRUE;
+				report("event SC:%i occured\n", i);
 			}
+			break;
+		case eKEY_PRESS:
+			if (data == KEY_ASCII(key) && KEY_SCAN(key) == 0) {
+				_D ("event: key press");
+				game.events[i].occured = TRUE;
+				report ("event AC:%i occured\n", i);
+			}
+			break;
 		}
 	}
 
-#ifdef USE_CONSOLE
-	if (key == CONSOLE_ACTIVATE_KEY key == CONSOLE_SWITCH_KEY)
-		return;
-
-	if (console.active && console.input_active) {
-		if (key == CONSOLE_SCROLLUP_KEY || key == CONSOLE_SCROLLDN_KEY)
-			return;
-		console.input_key = KEY_ASCII (key);
-		return;	
-	}
-#endif
-
-	if (game.input_mode == INPUT_NORMAL && !KEY_ASCII (key)) {
+	if (!KEY_ASCII (key)) {
 		switch (key) {
 		case KEY_UP:         move_ego (1); break;
 		case KEY_DOWN:       move_ego (5); break;
@@ -284,160 +238,178 @@ void poll_keyboard ()
 		}
 		return;
 	}
-
-	if (key)
-		game.keypress = key;
-
-	/* If you comment this out all keystrokes will be echoed */
-	if (game.input_mode != INPUT_NONE || KEY_ASCII (key) == KEY_ENTER)
-		setvar (V_key, KEY_ASCII (key));
-
 }
 
 
-void handle_keys ()
+void handle_getstring (int key)
 {
-	UINT8 *p=NULL;
-	int key, c = 0;
-	static UINT8  old_input_mode = INPUT_NONE;
-	static UINT8  new_line = 1;
-	static UINT8  formated_entry[256];
-	static UINT16 bufindex = 0;
+	static int pos = 0;		/* Cursor position */
 
-	key = getvar (V_key);
-	if (!key)
+	if (KEY_ASCII(key) == 0)
 		return;
 
 	_D ("handling key: %02x", key);
-	setvar (V_key, 0);
  	
 	switch (key) {
 	case KEY_ENTER:
-		_D (("KEY_ENTER"));
-
-		/* remove all the crap from string */
-		p = buffer;
-		while (*p && *p == 0x20)	/* Remove all leading spaces */
-			p++;
-
-		if (IsGetString) {
-			strcpy (last_sentence, p);
-			IsGetString = FALSE;
-		} else {
-			while (*p) {	
- 				/* Squash spaces */
-				if (*p == 0x20 && *(p + 1) == 0x20) {	
-					p++;
-					continue;
-				}
-				formated_entry[c++] = tolower (*p);
-				p++;
-			}
-			formated_entry[c++] = 0;
-
-			/* Handle string only if it's not empty */
-			if (formated_entry[0]) {
-				strcpy (last_sentence, formated_entry);
-				dictionary_words (last_sentence);
-			}
-		}
-
-		/* Clear to start a new line*/
-		new_line         = 1;
-		bufindex         = 0;
-		buffer[bufindex] = 0;
-
+		_D ("KEY_ENTER");
+		buffer[pos] = 0;
+		strcpy (game.strings[stringdata.str], buffer);
+		buffer[pos = 0] = 0;
+		new_input_mode (INPUT_NORMAL);
 		break;
 	case KEY_ESCAPE:
-		_D (("KEY_ESCAPE"));
-		if (getflag (F_menus_work))
-			do_menus ();
+		_D ("KEY_ESCAPE");
+		new_input_mode (INPUT_MENU);
 		break;
 	case 0x08:
-		if (!bufindex)
+		if (!pos)
 			break;
 
-		if (IsGetString) { 
-			print_character (xInput + (bufindex + 1) * CHAR_COLS,
-				yInput, txt_char, txt_bg, txt_bg );
-		} else {
-			print_character ((bufindex + 1) * CHAR_COLS,
-				game.line_user_input * CHAR_LINES,
-				txt_char, txt_bg, txt_bg);
-		}
+		/* Echo */
+		print_character (stringdata.x + (pos + 1) * CHAR_COLS,
+			stringdata.y, txt_char, txt_bg, txt_bg );
 
-		bufindex--;
-		buffer[bufindex]=0;
+		pos--;
+		buffer[pos] = 0;
 		break;
 	default:
 		if (key < 0x20 || key > 0x7f)
 			break;
 
-		if (bufindex >= getvar (V_max_input_chars))
-			return;
+		if (pos >= stringdata.len)
+			break;
 
-		buffer[bufindex++] = key;
-		buffer[bufindex] = 0;
+		buffer[pos++] = key;
+		buffer[pos] = 0;
 
-		if (IsGetString) {
-			print_character (xInput + (bufindex * CHAR_COLS),
-				yInput, buffer[bufindex - 1], txt_fg, txt_bg );
-		} else {
-			print_character (bufindex * CHAR_COLS,
-				game.line_user_input * CHAR_LINES,
-				buffer[bufindex - 1], txt_fg, txt_bg);
+		/* Echo */
+		print_character (stringdata.x + (pos * CHAR_COLS),
+			stringdata.y, buffer[pos - 1], txt_fg, txt_bg);
+		break;
+	}
+}
+
+
+void handle_keys (int key)
+{
+	UINT8 *p=NULL;
+	int c = 0;
+	static UINT8  old_input_mode = INPUT_NONE;
+	static UINT8  new_line = 1;
+	static UINT8  formated_entry[256];
+	static UINT16 pos = 0;
+
+	setvar (V_word_not_found, 0);
+
+	if (!KEY_ASCII(key))
+		return;
+
+	_D ("handling key: %02x", key);
+ 	
+	switch (key) {
+	case KEY_ENTER:
+		_D (("KEY_ENTER"));
+
+		/* Remove all leading spaces */
+		for (p = buffer; *p && *p == 0x20; p++);
+
+		/* Copy to internal buffer */
+		for (; *p; p++) {	
+			/* Squash spaces */
+			if (*p == 0x20 && *(p + 1) == 0x20) {	
+				p++;
+				continue;
+			}
+			formated_entry[c++] = tolower (*p);
 		}
+		formated_entry[c++] = 0;
+
+		/* Handle string only if it's not empty */
+		if (formated_entry[0]) {
+			strcpy (last_sentence, formated_entry);
+			dictionary_words (last_sentence);
+		}
+
+		/* Clear to start a new line*/
+		new_line = 1;
+		buffer[pos = 0] = 0;
+
+		break;
+	case KEY_ESCAPE:
+		_D (("KEY_ESCAPE"));
+		new_input_mode (INPUT_MENU);
+		break;
+	case KEY_BACKSPACE:
+		/* Ignore backspace at start of line */
+		if (pos == 0) break;
+
+		print_character ((pos + 1) * CHAR_COLS,
+			game.line_user_input * CHAR_LINES,
+			txt_char, txt_bg, txt_bg);
+
+		buffer[--pos] = 0;
+		break;
+	default:
+		/* Ignore invalid keystrokes */
+		if (key < 0x20 || key > 0x7f)
+			break;
+
+		/* Maximum input size reached */
+		if (pos >= getvar (V_max_input_chars))
+			break;
+
+		buffer[pos++] = key;
+		buffer[pos] = 0;
+
+		print_character (pos * CHAR_COLS, game.line_user_input *
+			CHAR_LINES, buffer[pos - 1], txt_fg, txt_bg);
 		break;
 	}
 
 	if (old_input_mode != game.input_mode) {
 		old_input_mode = game.input_mode;
-
-		if (game.input_mode == INPUT_NORMAL) {
-			print_line_prompt();
-		} else {
-			cmd_clear_lines (game.line_user_input,
-				game.line_user_input, txt_bg);
-		}
-	} else if (game.input_mode == INPUT_NORMAL) {
+		print_line_prompt();
+	} else {
 		if (new_line) {
 			new_line = 0;
 
-			/* TODO: Should handle IsGetString */
-
-           		if (!IsGetString) {
-	   			cmd_clear_lines (game.line_user_input,
-					game.line_user_input, txt_bg);
-	   			print_text (agi_printf (game.strings[0], 0), 0, 0,
-					game.line_user_input * CHAR_LINES,
-					40, txt_fg, txt_bg);
-       			}
+	   		cmd_clear_lines (game.line_user_input,
+				game.line_user_input, txt_bg);
+	   		print_text (agi_printf (game.strings[0], 0), 0, 0,
+				game.line_user_input * CHAR_LINES,
+				40, txt_fg, txt_bg);
 		}
 
 		/* Print txt_char */
-		if (IsGetString) {
-			print_character (xInput + ((bufindex + 1) * CHAR_COLS),
-				yInput, txt_char, txt_fg, txt_bg);
-		} else {
-			print_character ((bufindex + 1) * CHAR_COLS,
-				game.line_user_input * CHAR_LINES, txt_char,
-				txt_fg, txt_bg );
-		}
+		print_character ((pos + 1) * CHAR_COLS,
+			game.line_user_input * CHAR_LINES, txt_char,
+			txt_fg, txt_bg );
 	}
 }
 
 
 int wait_key ()
 {
-	_D (_D_WARN "waiting...");
-	while(42) {
-		int x;
+	int key;
 
-		main_cycle (FALSE);
-		if ((x = getvar (V_key))) {
-			setvar (V_key, 0);
-			return x;
+	_D (_D_WARN "waiting...");
+	while (42) {
+		poll_timer ();		/* msdos driver -> does nothing */
+
+		key = poll_keyboard ();
+
+		if (!console_keyhandler (key)) {
+			if (key == KEY_ENTER || key == KEY_ESCAPE)
+				break;
 		}
+
+		console_cycle ();
 	}
+
+	release_sprites ();
+	restore_screen ();
+
+	return key;
 }
 

@@ -122,6 +122,9 @@ static void process_events ()
 		case KeyPress:
 			XLookupString (&event.xkey, buf, 1, &k, NULL);
 			switch (key = k) {
+			case XK_BackSpace:
+				key = KEY_BACKSPACE;
+				break;
 			case XK_Shift_L:
 			case XK_Shift_R:
 				key = 0;

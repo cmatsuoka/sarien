@@ -17,6 +17,7 @@
 #include "logic.h"
 #include "gfx_agi.h"
 #include "gfx_base.h"
+#include "keyboard.h"
 #include "text.h"
 
 extern struct agi_logic logics[];
@@ -138,7 +139,7 @@ end:
 void textbox (char *message, int x, int y, int len)
 {
 	/* if x | y = -1, then centre the box */
-	int xoff, yoff, lin;
+	int xoff, yoff, lin, h, w;
 	char *msg, *m;
 
 	_D ("(\"%s\", %d, %d, %d)", message, x, y, len);
@@ -152,28 +153,32 @@ void textbox (char *message, int x, int y, int len)
 
 	m = msg = word_wrap_string (message, &len);
 
-	for (lin = 1; *m; m++)
+	for (lin = 1; *m; m++) {
 		if (*m == '\n')
 			lin++;
+	}
 
 	_D (": lin=%d", lin);
 
 	if (lin * CHAR_LINES > GFX_HEIGHT)
 		lin = (GFX_HEIGHT / CHAR_LINES);
 
+	w = (len + 2) * CHAR_COLS;
+	h = (lin + 2) * CHAR_LINES;
+
 	if (xoff == -1)
-		xoff = (GFX_WIDTH - ((len + 2) * CHAR_COLS)) / 2;
+		xoff = (GFX_WIDTH - w) / 2;
 
 	if (yoff == -1)
-		yoff = (GFX_HEIGHT - 2 * CHAR_LINES - ((lin + 2) * CHAR_LINES)) / 2;
+		yoff = (GFX_HEIGHT - 2 * CHAR_LINES - h) / 2;
 
-	draw_box (xoff, yoff, xoff + ((len + 2) * CHAR_COLS), yoff + ((lin + 2) * CHAR_LINES),
-		MSG_BOX_COLOUR, MSG_BOX_LINE, LINES, game.line_min_print * CHAR_LINES);
+	draw_box (xoff, yoff, xoff + w, yoff + h, MSG_BOX_COLOUR, MSG_BOX_LINE,
+		LINES, game.line_min_print * CHAR_LINES);
 
 	print_text2 (2, msg, 0, CHAR_COLS + xoff, CHAR_LINES + yoff, len + 1,
 		MSG_BOX_TEXT, MSG_BOX_COLOUR);
 
-	put_block (xoff, yoff, xoff + ((len + 2) * CHAR_COLS), yoff + ((lin + 2) * CHAR_LINES));
+	put_block (xoff, yoff, xoff + w, yoff + h);
 
 	free (msg);
 }
@@ -183,7 +188,6 @@ void message_box (char *message, ...)
 {
 	char x[512];
 	va_list	args;
-	int tmp;
 
 	_D ("(message, ...)");
 	va_start (args, message);
@@ -201,21 +205,8 @@ void message_box (char *message, ...)
 	 */
 	save_screen ();
 	redraw_sprites ();
-
-	/* FR: Messy...
-	 * CM: Blarghts
-	 */
-
-	//tmp = game.input_mode;
-
-	//game.input_mode = INPUT_NONE;
 	textbox (x, -1, -1, -1);
 	wait_key();
-
-	//game.input_mode = tmp;
-
-	release_sprites ();
-	restore_screen ();
 }
 
 
@@ -355,4 +346,6 @@ void update_status_line (int force)
 			o_sound ? "On " : "Off");
 	}
 }
+
+
 

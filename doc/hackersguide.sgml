@@ -30,8 +30,45 @@
 <title>Introduction</title>
 
 <sect1 id="intro-base">
-<title>Basic concepts</title>
+<title>Sarien basics</title>
 <para>
+  Sarien is a portable implementation of the Sierra On-Line Adventure
+  Game Interpreter (AGI) written in C language. It runs in a variety
+  of enviroments including the X Window System and MS-Windows. The
+  interpreter runs in a single thread, and in some platforms an optional
+  sound thread can generate PCM audio via real-time software synthesis.
+</para><para>
+  Sarien exceeds the original AGI interpreter in many aspects, and its
+  goal is to correctly implement the complete set of AGI instructions
+  and be able to execute AGI scripts written for Sierra's interpreter.
+  There is, however, no official specification of the AGI system
+  published by Sierra or its designers. Instead, all the information
+  currently available about AGI internals is result of investigative
+  work performed by third parties. As a consequence, many script runtime
+  errors exist and are caused not by design or implementation errors,
+  but by incomplete or incorrect specifications. Produce a document
+  containing the full AGI specifications is still a work in progress.
+</para><para>
+  For those not yet familiar with the AGI system, a study of the
+  currently available documentation is recommended. In a few words,
+  it manages a number of graphic, textual and musical resources using
+  a script language (called the "Logic" language) which is compiled
+  to bytecode and executed by the interpreter. To work in Sarien
+  development, using an AGI development suite is highly recommended.
+  AGI Studio is the standard development tool, and is currently
+  available for Windows (Peter Kelly's original implementation) and
+  UNIX systems (Helen Zommer's Qt-based implementation). Both tools
+  are licensed under the GNU General Public License.
+</para><para>
+  As mentioned before, the most likely source of script execution errors 
+  is the lack of complete specifications. Problems arising from partial
+  or incorrect implementation of instructions can range from screen
+  corruption to in-game errors or even interpreter crashes. The current
+  implementation of the sprite management system, for instance, was based
+  on trial-and-error; it works in most cases but produces heavy screen
+  corruption in a few situations. The list of known problems is not
+  small, and can be verified in the Sarien project bug tracker at
+  Sourceforge.
 </para>
 </sect1>
 
@@ -195,6 +232,70 @@
 </para><para>
   To achieve maximum portability, the following guidelies should be
   observed when writing code for Sarien:
+
+  <itemizedlist>
+    <listitem><para>
+      Never assume specific sizes for <function/int/, <function/short/ and
+      <function/long/ data types (it is safe, however to assume that the
+      <function/int/ type has at least 16 bits). When a specific data
+      type size is needed, use <function/SINT8/, <function/SINT16/ and
+      <function/SINT32/ for signed integers and <function/UINT8/,
+      <function/UINT16/ and <function/UINT32/ for unsigned integers.
+    </para></listitem>
+
+    <listitem><para>
+      Use the <function/char/ type for strings to avoid excessive typecasting.
+      <function/char/ can be safely assumed as having 8 bits. Don't assume
+      <function/char/ as signed or unsigned, it can vary between platforms.
+    </para></listitem>
+
+    <listitem><para>
+      Use <function/int/ for integers which not require a specific data
+      type size. It can be assumed as a signed value with at least 16 bits. 
+      Using <function/int/ instead of a specific sized integer data type
+      allows the compiler to generate optimized and properly aligned code
+      for that platform.
+    </para></listitem>
+
+    <listitem><para>
+      Multibyte data types can be either big or little-endian. To read
+      values from resource files, use the support functions
+      <function/hilo_getword()/, <function/hilo_getdword()/,
+      <function/lohi_getword()/ and <function/lohi_getdword()/. For
+      other situations, the <parameter/WORDS_BIGENDIAN/ macro will be
+      defined if the host architecture is big-endian.
+    </para></listitem>
+
+    <listitem><para>
+      Avoid using compiler-specific features such as pragmas, nonstandard
+      data types (e.g. <function/long long/) or nonstandard preprocessor
+      directives (e.g. variable argument macros) in core files. If needed,
+      place them in the header files.
+    </para></listitem>
+
+    <listitem><para>
+      Use standard C <function>/* */</function> comments instead of
+      C++ <function>//</function> comments.
+    </para></listitem>
+
+    <listitem><para>
+      Avoid adding platform-specific code in <filename>src/core/</filename>.
+      Whenever possible, write portable code or move the platform-specific
+      code to a driver. Use conditional compiling only if absolutely necessary.
+    </para></listitem>
+
+    <listitem><para>
+      Certain POSIX-defined functions and header files are not available
+      in many platforms, these include <function/usleep()/, <function/glob()/,
+      <function/gettimeofday()/ among others. 
+    </para></listitem>
+
+    <listitem><para>
+      Don't use foating-point code. It can result in a serious performance
+      hit in some platforms.
+    </para></listitem>
+
+  </itemizedlist>
 </para>
 </sect1>
 
@@ -211,7 +312,9 @@
       <filename/configure/ script in systems running a POSIX shell and
       <application/GNU Make/. The configuration script produces a suitable
       <filename/Rules/ file which is included by all Makefiles in the
-      system.
+      system. Extra functionality provided by the standard Makefiles for
+      <application/GNU make/ include the <parameter/dist/ target to produce
+      a distribution package.
     </para></listitem>
     <listitem><para>
       Systems with <application/GNU Make/ but not supported by
@@ -242,16 +345,76 @@
     </para></listitem>
   </itemizedlist>
 </para><para>
-  Extra functionality provided by the standard Makefiles for
-  <application/GNU make/ include the <parameter/dist/ target to produce
-  a distribution package.
-
+  In the source code tree, source code goes into the <filename>src/</filename> 
+  directory. Architecture-independent source files are placed under
+  <filename>src/core/</filename>, while graphic and sound drivers and
+  filesystem access functions have a separate set of files for each
+  supported platform. These files go under their own directories in
+  <filename>src/graphics/</filename>, <filename>src/sound</filename> and
+  <filename>src/fileglob/</filename>.
+</para><para>
+  After building, executable binaries can be found in <filename>bin/</filename>.
+  In each subdirectory, object files produced by the compiler are archived
+  in <filename>lib/libagi.a</filename><footnote><para>If you're in a POSIX
+  environment. The actual library file name varies with the platform
+  where the build takes place.</para></footnote>, which is later linked to
+  the application main file. Currently <filename>src/core/main.c</filename>
+  is the main file for <filename>bin/sarien</filename> and 
+  <filename>src/core/picview.c</filename> is the main file for
+  <filename>bin/picview</filename>.
 </para>
 </sect1>
 
 <sect1 id="intro-style">
 <title>Coding style</title>
 <para>
+  There is no strict enforcement of a coding style to follow, but a few
+  conventions should be followed to make code maintenance easier. Good
+  coding styles for Sarien include the K&amp;R style and the Linux kernel 
+  style. Don't use the GNU coding style: it's ugly, hard to read and wastes
+  too much vertical space.
+</para><para>
+  So here are the conventions to follow. (They summarize a number of
+  style elements already in use in the source code, so just reading
+  the existing codebase and using a similar style will result in
+  style-compliant code.)
+
+  <itemizedlist>
+    <listitem><para>
+       Indent with tabs, regardless of the tab size you use (8 characters
+       is the standard tab size, and therefore it's the recommended size).
+       Try to make lines fit in 80 columns, using 8 space tabs.
+    </para></listitem>
+    <listitem><para>
+       Don't use Hungarian notation in variable names.
+       Use lower case variable names, with underscores to separate words
+       if necessary. Avoid excessively long variable names. Try to use
+       canonical variable names for counters (<parameter/i/, <parameter/j/,
+       <parameter/k/), cartesian coordinates (<parameter/x/, <parameter/y/)
+       and temporary storage (<parameter/tmp/).
+    </para></listitem>
+    <listitem><para>
+       Use uppercase names for macros, except when it mimics a function.
+       If a macro contains more than one statement, protect it using
+       <literal/do { ... } while (0)/ constructs.
+    </para></listitem>
+    <listitem><para>
+       Avoid excessive typedefing. In many cases it's convenient to know
+       that a certain data type is a structure or an union and not a
+       scalar. It's also helpful to know the indirection levels we're
+       working with.
+    </para></listitem>
+    <listitem><para>
+       Add comments to the code, especially in confusing or likely to be
+       misunderstood passages. Due to its trial-and-error nature, many
+       functions perform non-obvious or hackish tasks. Code clean-ups
+       are frequent and tend to eliminate obscure constructions, and
+       commenting hacks helps this process. Sometimes a kludge can't be
+       avoided, so be sure to document it. Avoid intentional obfuscation
+       at any cost.
+    </para></listitem>
+  </itemizedlist>
+  
 </para>
 </sect1>
 
@@ -273,6 +436,12 @@
 
 <sect1 id="arch-data">
 <title>Data structures</title>
+<para>
+</para>
+</sect1>
+
+<sect1 id="arch-func">
+<title>Support functions</title>
 <para>
 </para>
 </sect1>
@@ -333,9 +502,8 @@
     <varlistentry>
       <term><parameter/INPUT_NONE/</term>
       <listitem><para>
-        When mode is set to <parameter/INPUT_NONE/, <keycap>ENTER</keycap>
-        and <keycap>ESC</keycap> are handled for message boxes, and special
-        key events are tested for controller actions. 
+        When mode is set to <parameter/INPUT_NONE/, only controller events
+	are tested.
       </para></listitem>
     </varlistentry>
   </variablelist>
@@ -344,23 +512,52 @@
   The interpreter architecture doesn't allow key handling to be implemented
   in a interrupt handler for portability reasons. Instead, keyboard events
   are polled in the main loop and retrieved from a queue prepared by the
-  architecture-specific driver. Currently message box, the menu system and
-  <function/get.string/ have their own loops, ideally we should have a
-  single key event handler in the main loop checking the input mode
-  dispatching events according to the input mode.
+  architecture-specific driver. The key event is retrieved from the queue
+  in a single point and dispatched to different handlers according to
+  the the input mode described above. Notable exceptions to this rule
+  are blocking and timed message box key handling (pressing <keycap/ENTER/
+  or <keycap/ESC/ dismisses box) and string input: in these cases execution
+  is trapped inside an internal loop<footnote><para>Sarien can't perform
+  such checks in the main loop because these events can happen in the
+  middle of a logic script execution, and the main loop is called once
+  per interpreter cycle.</para></footnote>. The console thread must be
+  called from all closed loops of the interpreter.
+  
+</para><para>
+  Between the keyboard polling and key event dispatcher is the console
+  key handler. The console key handler is completely transparent to the
+  rest of the system: when the console is active all key events are
+  handled by its own handler before reaching the dispatcher.
 </para>
 </sect1>
 
 <sect1 id="input-mouse">
-<title>Mouse</title>
+<title>Mouse input</title>
 <para>
+  AGI games (at least in the IBM-PC) were not designed to accept mouse
+  input. All game interaction is done through the keyboard. However, a
+  few functions would clearly benefit from mouse (or other pointing
+  device) input: the menus, dialog boxes and even a "click to walk"
+  interface could be implemented. Mouse input is currently not supported
+  in Sarien, but it can be eventually be added. It's important not to
+  block this possibility when implementing the keyboard input system.
 </para>
 </sect1>
 
 <sect1 id="input-grafitti">
-<title>Grafitti</title>
+<title>Grafitti input</title>
 <para>
+  If mouse handling was not in the original AGI design, Grafitti input
+  was not in the original Sarien design. While designed with portability
+  in mind, Sarien's target environment was always a desktop computer.
+  Handheld devices are a completely different universe, with extremely
+  limited memory and storage resources and no keyboard. If we want to
+  port Sarien to handhelds, it's important to consider Grafitti and
+  other handwritten input systems as alternatives when designing the
+  keyboard input system. For instance, how function keys should be
+  handled?
 </para>
+
 </sect1>
 
 </chapter>

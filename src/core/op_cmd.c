@@ -477,7 +477,11 @@ void cmd_word_to_string (UINT8 sn, UINT8 wn)
 /* FIXME: remove lowlevel print_text() call from here */
 void cmd_get_num (UINT8 logic, UINT8 msg, UINT8 num)
 {
+	_D (_D_CRIT "Commented out!");
+#if 0
 	char *p;
+
+	game.input_mode = INPUT_GETSTRING;
 
 	if (logics[logic].texts != NULL && (msg-1) <= logics[logic].num_texts) {
 		p = agi_printf (logics[logic].texts[msg-1], logic);
@@ -488,6 +492,7 @@ void cmd_get_num (UINT8 logic, UINT8 msg, UINT8 num)
 			p++;
 		setvar (num, (UINT8)atoi (p));
 	}
+#endif
 }
 
 
@@ -671,13 +676,15 @@ void cmd_shake_screen (UINT8 n)
 
 void cmd_accept_input ()
 {
-	game.input_mode = INPUT_NORMAL;
+	_D (_D_WARN "accepting input");
+	new_input_mode (INPUT_NORMAL);
 }
 
 
 void cmd_stop_input ()
 {
-	game.input_mode = INPUT_NONE;
+	_D (_D_WARN "not accepting input");
+	new_input_mode (INPUT_NONE);
 	cmd_clear_lines (game.line_user_input, game.line_user_input + 1, 0 );
 }
 
@@ -705,27 +712,21 @@ void cmd_get_posn (UINT8 entry, UINT8 x1, UINT8 y1)
 
 void cmd_get_string (UINT8 logic, UINT8 str, UINT8 msg, UINT8 y, UINT8 x, UINT8 len)
 {
-	char *p;
-	int tmp;
+	char *p;	/* Prompt message */
+	
+	new_input_mode (INPUT_GETSTRING);
+	x *= CHAR_COLS;
+	y *= CHAR_LINES;
 
-	tmp = game.input_mode;
-	game.input_mode = INPUT_GETSTRING;
-
-	if (logics[logic].texts!=NULL && (msg-1)<=logics[logic].num_texts) {
-
-		//open_dialogue=1;
-
+	if (logics[logic].texts != NULL && logics[logic].num_texts >= (msg - 1)) {
 		p = agi_printf (logics[logic].texts[msg-1], logic);
-		print_text (p, 0, x * CHAR_COLS, y * CHAR_LINES,
-			strlen (p), txt_fg, txt_bg);
-		p = get_string (x * CHAR_COLS + CHAR_COLS * (strlen (p) - 1),
-			y * CHAR_LINES, len);
-		strcpy (game.strings[str], p );
-
-		//open_dialogue = 0;
+		print_text (p, 0, x, y, strlen (p), txt_fg, txt_bg);
+		get_string (x + (strlen (p) - 1) * CHAR_COLS, y, len, str);
 	}
 
-	game.input_mode = tmp;
+	do {
+		main_cycle ();
+	} while (game.input_mode == INPUT_GETSTRING);
 }
 
 
@@ -890,14 +891,13 @@ void cmd_print_at (UINT8 logic, UINT8 msg, SINT8 y, SINT8 x, SINT8 len)
 			_D (_D_WARN "msg_box_secs2 = %ld", msg_box_secs2);
 
 			do {
-				main_cycle (FALSE);
-
-				if (getvar (V_key) == KEY_ENTER) {
+				main_cycle ();
+				if (game.keypress == KEY_ENTER) {
 					_D (_D_WARN "KEY_ENTER");
 					setvar (V_window_reset, 0);
+					game.keypress = 0;
 					break;
 				}
-				setvar (V_key, 0);
 			} while (game.msg_box_ticks > 0);
 		} else {
 			_D (_D_WARN "f15==0, v21==0 ==> waitkey");
@@ -1087,7 +1087,7 @@ void cmd_step_size (UINT8 entry, UINT8 v)
 
 void cmd_show_mem ()
 {
-	message_box ((UINT8*)"Free memory is irrelevant, "
+	message_box ("Free memory is irrelevant, "
 		"we have plenty of it to go around.");
 }
 
@@ -1097,7 +1097,7 @@ void cmd_quit (UINT8 f)
 	if (f) {
 		game.quit_prog_now = TRUE;
 	} else {
-		message_box ((UINT8*)"   Press ENTER to quit.\n"
+		message_box ("   Press ENTER to quit.\n"
 			"Press ESC to keep playing.");
 
 		switch (KEY_ASCII (game.keypress)) {
@@ -1180,7 +1180,8 @@ void cmd_animate_obj (UINT8 entry)
 
 void cmd_menu_input ()
 {
-	do_menus ();
+	_D (_D_WARN "activating menu");
+	new_input_mode (INPUT_MENU);
 }
 
 
@@ -2160,7 +2161,7 @@ void run_logic (int lognum)
 				redraw_sprites ();
 				console_prompt ();
 				do {
-					main_cycle (TRUE);
+					main_cycle ();
 				} while (!debug.steps && debug.enabled);
 				console_lock ();
 				release_sprites ();

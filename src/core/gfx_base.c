@@ -148,11 +148,13 @@ static int k_x1, k_y1, k_x2, k_y2;
 
 void _save_screen ()
 {
+	_D (_D_WARN "Saving screen");
 	memcpy (back_buffer, layer1_data, GFX_WIDTH * GFX_HEIGHT);
 }
 
 void _restore_screen ()
 {
+	_D (_D_WARN "Restoring screen");
 	memcpy (layer1_data, back_buffer, GFX_WIDTH * GFX_HEIGHT);
 }
 
@@ -183,6 +185,7 @@ void _flush_screen_area ()
 
 /* Based on LAGII 0.1.5 by XoXus */
 /* Works on the 320x200 visible screen */
+/* main_cycle() calls obviously shouldn't be here! */
 void shake_screen (int n)
 {
 #define MAG 3
@@ -196,10 +199,10 @@ void shake_screen (int n)
 			&b[GFX_WIDTH * i], GFX_WIDTH - MAG);
 
 	for (i = 0; i < (2 * n); i++) {
-		main_cycle (TRUE);
+		//main_cycle (TRUE);
 		memcpy (layer1_data, c, GFX_WIDTH * GFX_HEIGHT);
 		flush_block (0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
-		main_cycle (TRUE);
+		//main_cycle (TRUE);
 		memcpy (layer1_data, b, GFX_WIDTH * GFX_HEIGHT);
 		flush_block (0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
 	}

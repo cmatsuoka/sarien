@@ -166,7 +166,7 @@ void	decrypt		(UINT8 *mem, int len);
 void	release_sprites	(void);
 void	update_status_line(int);
 
-void main_cycle (int);
+int main_cycle (void);
 
 #ifdef __cplusplus
 };

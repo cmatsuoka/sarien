@@ -364,7 +364,6 @@ int console_init ()
 	console.index = 0;
 	console.y = 150;
 	console.first_line = CONSOLE_LINES_BUFFER - CONSOLE_LINES_ONSCREEN;
-	console.input_key = 0;
 
 	debug.enabled = 0;
 	debug.opcodes = 0;
@@ -503,76 +502,6 @@ void report (char *message, ...)
 }
 
 
-void handle_console_keys ()
-{
-	UINT16 k;
-	static char buffer[CONSOLE_INPUT_SIZE];
-	SINT16 y1,y2;
-	char m[2];
-
-	y1 = console.y - 10;
-	y2 = console.y - 1;
-
-	if (y1<0) y1 = 0;
-	if (y2<0) y2 = 0;
-
-	if ((k = console.input_key)) {
-		if (k != KEY_ENTER && console.first_line != CONSOLE_LINES_BUFFER -
-			CONSOLE_LINES_ONSCREEN) {
-			console.first_line = CONSOLE_LINES_BUFFER -
-				CONSOLE_LINES_ONSCREEN;
-			build_console_layer ();
-		}
-		console.count = -1;
-	}
-
-	switch (k) {
-	case KEY_ENTER:
-		console_lock ();
-		console.index = 0;
-		report ("\n");
-
-		if (console_parse (buffer) != 0)
-			report ("What? Where?\n");
-
-		buffer[0] = 0;
-		console_prompt ();
-		break;
-	case 0x08:
-       		if (!console.index)
-			break;
-		console.line[CONSOLE_LINES_BUFFER-1][console.index]=0;
-		*m = CONSOLE_CURSOR_EMPTY;
-		print_text_layer (m, 0, (console.index+1)*8, 190, 2,
-			CONSOLE_COLOR, 0);
-		flush_block ((console.index+1)*8, y1, (console.index+1)*8+7, y2);
-       		console.index--;
-       		buffer[console.index] = 0;
-		break;
-	default:
-        	if (k >= 0x20 && k <= 0x7f && (console.index < CONSOLE_INPUT_SIZE - 2))
-		{
-			char l[42];
-			buffer[console.index] = k;
-			*m=k;m[1]=0;
-			console.index++;
-
-			sprintf (l, "%s%c",
-				console.line[CONSOLE_LINES_BUFFER-1],k);
-			free (console.line[CONSOLE_LINES_BUFFER-1]);
-			console.line[CONSOLE_LINES_BUFFER-1]=strdup(l);
-
-			buffer[console.index] = 0;
-			print_text_layer (m, 0, console.index*8, 190, 2,
-				CONSOLE_COLOR, 0);
-			flush_block (console.index*8, y1, console.index*8+7, y2);
-		}
-               	break;
-	
-	}
-	console.input_key = 0;
-}
-
 
 void console_cycle ()
 {
@@ -580,6 +509,7 @@ void console_cycle ()
 	static UINT8 blink = 0;
 	static UINT8 cursor[] = "  ";
 
+	/* Initial console auto-hide timer */
 	if (console.count > 0)
 		console.count--;
 	if (console.count == 0) {
@@ -632,9 +562,72 @@ void console_cycle ()
 }
 
 
+/* Return TRUE if key was handled */
 int console_keyhandler (int k)
 {
+	static char buffer[CONSOLE_INPUT_SIZE];
+	SINT16 y1,y2;
+	char m[2];
+
+	if (!console.active) {
+		if (k == CONSOLE_ACTIVATE_KEY) {
+			console.active = 1;
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+	if (!console.input_active) {
+		if (k == CONSOLE_SWITCH_KEY) {
+			console.input_active = 1;
+			return TRUE;
+		}
+		if (k == CONSOLE_ACTIVATE_KEY) {
+			console.active = 0;
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+	y1 = console.y - 10;
+	y2 = console.y - 1;
+
+	if (y1 < 0) y1 = 0;
+	if (y2 < 0) y2 = 0;
+
+	if (k) {
+		if (k != KEY_ENTER && console.first_line != CONSOLE_LINES_BUFFER -
+			CONSOLE_LINES_ONSCREEN) {
+			console.first_line = CONSOLE_LINES_BUFFER -
+				CONSOLE_LINES_ONSCREEN;
+			build_console_layer ();
+		}
+		console.count = -1;
+	}
+
 	switch (k) {
+	case KEY_ENTER:
+		console_lock ();
+		console.index = 0;
+		report ("\n");
+
+		if (console_parse (buffer) != 0)
+			report ("What? Where?\n");
+
+		buffer[0] = 0;
+		console_prompt ();
+		break;
+	case KEY_BACKSPACE:
+       		if (!console.index)
+			break;
+		console.line[CONSOLE_LINES_BUFFER-1][console.index]=0;
+		*m = CONSOLE_CURSOR_EMPTY;
+		print_text_layer (m, 0, (console.index+1)*8, 190, 2,
+			CONSOLE_COLOR, 0);
+		flush_block ((console.index+1)*8, y1, (console.index+1)*8+7, y2);
+       		console.index--;
+       		buffer[console.index] = 0;
+		break;
 	case CONSOLE_ACTIVATE_KEY:
 		if ((console.active = !console.active))
 			build_console_layer ();
@@ -678,7 +671,24 @@ int console_keyhandler (int k)
 				CONSOLE_LINES_ONSCREEN;
 		break;
 	default:
-		return FALSE;
+        	if (k >= 0x20 && k <= 0x7f && (console.index < CONSOLE_INPUT_SIZE - 2))
+		{
+			char l[42];
+			buffer[console.index] = k;
+			*m=k;m[1]=0;
+			console.index++;
+
+			sprintf (l, "%s%c",
+				console.line[CONSOLE_LINES_BUFFER-1],k);
+			free (console.line[CONSOLE_LINES_BUFFER-1]);
+			console.line[CONSOLE_LINES_BUFFER-1]=strdup(l);
+
+			buffer[console.index] = 0;
+			print_text_layer (m, 0, console.index*8, 190, 2,
+				CONSOLE_COLOR, 0);
+			flush_block (console.index*8, y1, console.index*8+7, y2);
+		}
+               	break;
 	}
 
 	return TRUE;
@@ -711,6 +721,11 @@ void console_lock ()
 void console_prompt ()
 {
 	/* dummy */
+}
+
+int console_keyhandler (int i)
+{
+	return FALSE;
 }
 
 #endif /* USE_CONSOLE */

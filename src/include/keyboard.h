@@ -52,11 +52,12 @@ extern	UINT8		scancode_table[];
 
 void	init_words	(void);
 void	clean_input	(void);
-void	poll_keyboard	(void);
+int	poll_keyboard	(void);
 void	clean_keyboard	(void);
-void	handle_keys	(void);
-void	handle_console_keys	(void);
-char	*get_string	(int, int, int);
+void	handle_keys	(int);
+void	handle_getstring(int);
+void	handle_controller(int);
+void	get_string	(int, int, int, int);
 UINT16	agi_get_keypress(void);
 int	wait_key	(void);
 

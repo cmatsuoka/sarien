@@ -20,6 +20,7 @@
 #include "sound.h"
 #include "opcodes.h"
 #include "console.h"
+#include "menu.h"
 
 #define TICK_SECONDS 20
  
@@ -529,24 +530,55 @@ void update_timer ()
 }
 
 
-void main_cycle (int accept_key)
+static int old_mode = -1;
+void new_input_mode (int i)
 {
+	old_mode = game.input_mode;
+	game.input_mode = i;
+}
+
+void old_input_mode ()
+{
+	game.input_mode = old_mode;
+}
+
+/* If main_cycle returns FALSE, don't process more events! */
+int main_cycle ()
+{
+	int key;
+
 	poll_timer ();		/* msdos driver -> does nothing */
 	update_timer ();
 
-	poll_keyboard ();
+	key = poll_keyboard ();
 
-#ifdef USE_CONSOLE
-	if (console.active && console.input_active)
-		handle_console_keys ();
-	else
-#endif
-	if (accept_key)
-		handle_keys ();
+	if (!console_keyhandler (key)) {
+		switch (game.input_mode) {
+		case INPUT_NORMAL:
+			setvar (V_key, KEY_ASCII (key));
+			handle_controller (key);
+			handle_keys (key);
+			if (key) game.keypress = key;
+			break;
+		case INPUT_GETSTRING:
+			setvar (V_key, KEY_ASCII (key));
+			handle_controller (key);
+			handle_getstring (key);
+			break;
+		case INPUT_MENU:
+			setvar (V_key, KEY_ASCII (key));
+			menu_keyhandler (key);
+			console_cycle ();
+			return FALSE;
+		case INPUT_NONE:
+		default:
+			handle_controller (key);
+			if (key) game.keypress = key;
+			break;
+		}
+	}
 
-#ifdef USE_CONSOLE
 	console_cycle ();
-#endif
 
 	if (getvar (V_window_reset) > 0) {
 		game.msg_box_ticks = getvar (V_window_reset) * 10;
@@ -555,6 +587,8 @@ void main_cycle (int accept_key)
 
 	if (game.msg_box_ticks > 0)
 		game.msg_box_ticks--;
+
+	return TRUE;
 }
 
 
@@ -574,7 +608,6 @@ int run_game2 ()
 	setflag (F_sound_on, TRUE);		/* enable sound */
 	setvar (V_time_delay, 2);		/* "normal" speed */
 
-	//game.allow_kyb_input = FALSE;
 	game.new_room_num = 0;
 	game.quit_prog_now = FALSE;
 	game.clock_enabled = TRUE;
@@ -593,7 +626,8 @@ int run_game2 ()
 	clean_keyboard ();
 
 	do {
-		main_cycle (TRUE);
+		if (!main_cycle ())
+			continue;
 
 		x = 1 + clock_count;		/* x = 1..TICK_SECONDS */
 		y = getvar (V_time_delay);	/* 1/20th of second delay */
