@@ -1,24 +1,16 @@
-/*
- *  Sarien AGI :: Copyright (C) 1998 Dark Fiber
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999 Dark Fiber, (C) 1999,2001 Claudio Matsuoka
+ *  
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
 /*
  *
- * Win32 console experimental port by Rosinha <rosinha@helllabs.org>
+ * Win32 port by Felipe Rosinha <rosinha@helllabs.org>
  *
  */
 #include <ctype.h>
@@ -94,20 +86,20 @@ static int  scale = 1;
 volatile UINT32 c_ticks;
 volatile UINT32 c_count;
 
-static UINT16 init_vidmode (void);
-static UINT16 deinit_vidmode (void);
-static void   put_block (UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2);
-static void INLINE _put_pixel (UINT16 x, UINT16 y, UINT16 c);
-static UINT8 keypress (void);
-static UINT16 get_key (void);
-static void new_timer (void);
-static void gui_put_block (UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2);
+static int	init_vidmode	(void);
+static int	deinit_vidmode	(void);
+static void	put_block	(int, int, int, int);
+static void	_put_pixel	(int, int, int);
+static int	keypress	(void);
+static int	get_key		(void);
+static void	new_timer	(void);
+static void	gui_put_block	(int, int, int, int);
 
-static UINT16 set_palette (UINT8 *pal, UINT16 scol, UINT16 numcols);
+static int	set_palette	(UINT8 *, int, int);
 
-static unsigned int __stdcall GuiThreadProc(void *param);
+static unsigned int __stdcall GuiThreadProc(void *);
 
-static __GFX_DRIVER GFX_WIN32 = {
+static struct gfx_driver GFX_WIN32 = {
 	init_vidmode,
 	deinit_vidmode,
 	put_block,
@@ -118,6 +110,7 @@ static __GFX_DRIVER GFX_WIN32 = {
 };
 
 extern struct sarien_options opt;
+extern struct gfx_driver *gfx;
 
 
 LRESULT CALLBACK
@@ -317,14 +310,14 @@ int init_machine (int argc, char **argv)
 	return err_OK;
 }
 
-int deinit_machine (void)
+int deinit_machine ()
 {
 	DeleteCriticalSection(&g_key_queue.cs);
 	DeleteCriticalSection(&g_screen.cs);
 	return err_OK;
 }
 
-static UINT16 init_vidmode (void)
+static int init_vidmode ()
 {
 	unsigned id;
 
@@ -433,7 +426,7 @@ exx:
 	return 0;	
 }
 
-static UINT16 deinit_vidmode (void)
+static int deinit_vidmode (void)
 {
 	PostMessage(hwndMain, WM_QUIT, 0, 0);
 	CloseHandle(g_hThread);
@@ -445,7 +438,7 @@ static UINT16 deinit_vidmode (void)
 
 #if 0
 /* Based on LAGII 0.1.5 by XoXus */
-static void shake_screen (UINT8 times)
+static void shake_screen (int times)
 {
 #define MAG 4
 	int  i, alt;
@@ -495,20 +488,21 @@ static void shake_screen (UINT8 times)
 #endif
 
 /* put a block onto the screen */
-void put_block (UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2) //th0
+void put_block (int x1, int y1, int x2, int y2) //th0
 {
-	xyxy * p = (xyxy*)malloc(sizeof(xyxy));
+	xyxy *p = (xyxy*)malloc(sizeof(xyxy));
 	if (p == NULL) // no way
 		return;
+
 	p->x1 = x1;
 	p->x2 = x2;
 	p->y1 = y1;
 	p->y2 = y2;
+
 	PostMessage(hwndMain, WM_PUT_BLOCK, 0, (LPARAM)p);
 }
 
-//1
-static void gui_put_block (UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
+static void gui_put_block (int x1, int y1, int x2, int y2) //1
 {
 	HDC hDC;
 
@@ -555,19 +549,18 @@ static void gui_put_block (UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
 
 /* put pixel routine */
 /* Some errors! Handle color depth */
-static void INLINE _put_pixel (UINT16 x, UINT16 y, UINT16 c)
+static void _put_pixel (int x, int y, int c)
 {
 	register int i, j;
-        int          offset;
-        BYTE         *screen_surface = g_screen.screen_pixels; /* Word aligned! */
+        int offset;
+        BYTE *screen_surface = g_screen.screen_pixels; /* Word aligned! */
 	EnterCriticalSection(&g_screen.cs);
 
         y = GFX_HEIGHT - y - 1;
 
-	if (scale == 1)
+	if (scale == 1) {
 		*(screen_surface + x + (y * GFX_WIDTH)) = c;
-	else
-	{
+	} else {
 		x = x * scale; 
 		y = y * scale;
 
@@ -582,23 +575,26 @@ static void INLINE _put_pixel (UINT16 x, UINT16 y, UINT16 c)
 
 }
  
-static UINT8 keypress (void)
+static int keypress (void)
 {
-	UINT8 b;
+	int b;
+
 	EnterCriticalSection(&g_key_queue.cs);
 	b = g_key_queue.start != g_key_queue.end;
 	LeaveCriticalSection(&g_key_queue.cs);
+
 	return b;
 }
 
-static UINT16 get_key (void)
+static int get_key (void)
 {
-	UINT16 k;
+	int k;
+
 	while (!keypress()){
 		new_timer ();
 	}
-
 	key_dequeue(k);
+
 	return k;
 }
 
@@ -634,7 +630,7 @@ static void new_timer ()
 }
 
 /* Primitive palette functions */
-static UINT16 set_palette (UINT8 *pal, UINT16 scol, UINT16 numcols)
+static int set_palette (UINT8 *pal, int scol, int numcols)
 {
 	int          i, j;
 	HDC          hDC;
