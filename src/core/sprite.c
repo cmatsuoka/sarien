@@ -60,8 +60,10 @@ static void *pool_alloc (int size)
 {
 	UINT8 *x;
 
-/* Adjust size to 32-bit boundary to prevent data misalignment errors */
-	size = (size+3)&~3;
+	/* Adjust size to 32-bit boundary to prevent data misalignment
+	 * errors. 
+	 */
+	size = (size + 3) & ~3;
 
 	x = pool_top;
 	pool_top += size;
@@ -109,11 +111,18 @@ blit_pixel (UINT8 *p, UINT8 *end, UINT8 col, int spr, int width, int *hidden)
 {
 	int epr, pr;		/* effective and real priorities */
 
+	/* CM: priority 15 overrides control lines and is ignored when
+	 *     tracking effective priority. This tweak is needed to fix
+	 *     bug #451768, and should not affect Sierra games because
+	 *     sprites shouldn't have priority 15 (like the AGI Mouse
+	 *     demo "mouse pointer")
+	 */
+
 	/* Check if we're on a control line */
 	if ((pr = *p & 0xf0) < 0x30) {
 		UINT8 *p1;
 		/* Yes, get effective priority going down */
-		for (p1 = p; (epr = *p1 & 0xf0) < 0x30; p1 += width) {
+		for (p1 = p; (epr = *p1 & 0xf0) < 0x30 || epr == 0xf0; p1 += width) {
 			if (p1 >= end) {
 				epr = 0x40;
 				break;
@@ -124,14 +133,18 @@ blit_pixel (UINT8 *p, UINT8 *end, UINT8 col, int spr, int width, int *hidden)
 	}
 
 	if (spr >= epr) {
-		/* Keep control line information visible,
-		 * but put our priority over water (0x30)
-		 * surface
+		/* Keep control line information visible, but put our
+		 * priority over water (0x30) surface
 		 */
 		*p = (pr < 0x30 ? pr : spr) | col;
 		*hidden = FALSE;
-	}
 
+		/* Except if our priority is 15, which should never happen
+		 * (fixes bug #451768)
+		 */
+		if (spr == 0xf0)
+			*p = spr | col;
+	}
 }
 
 #ifdef USE_HIRES
@@ -202,7 +215,7 @@ static int blit_cel (int x, int y, int spr, struct view_cel *c)
 
 	for (i = 0; i < c->height; i++) {
 		p = p0;
-		while (*q){
+		while (*q) {
 			col = (*q & 0xf0) >> 4;
 			for (j = *q & 0x0f; j; j--, p += 1 - 2 * m) {
 				if (col != t) {

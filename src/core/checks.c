@@ -66,11 +66,11 @@ static int check_clutter (struct vt_entry *v)
 			continue;
 
 		if (v->y_pos == u->y_pos)
-			return 1;
+			goto return_1;
 
 		if (v->y_pos > u->y_pos) {
 			if (v->y_pos2 < u->y_pos2)
-				return 1;
+				goto return_1;
 		}
 
 		if (v->y_pos >= u->y_pos)
@@ -79,6 +79,8 @@ static int check_clutter (struct vt_entry *v)
 		if (v->y_pos <= u->y_pos)
 			continue;
 
+return_1:
+		_D (_D_WARN "check returns 1");
 		return 1;
 	}
 	

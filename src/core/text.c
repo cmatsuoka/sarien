@@ -197,8 +197,10 @@ void print_text_console (char *msg, int x, int y, int len, int fg, int bg)
 
 /**
  * Wrap text line to the specified width. 
+ * @param str  String to wrap.
+ * @param len  Length of line.
  */
-char* word_wrap_string (char *mesg, int *len)
+char* word_wrap_string (char *str, int *len)
 {
 	/* If the message has a long word (longer than 31 character) then
 	 * loop in line 239 (for (; *v != ' '; v--, c--);) can wrap
@@ -210,7 +212,7 @@ char* word_wrap_string (char *mesg, int *len)
 	char *msg, *v, *e;
 	int maxc, c, l = *len;
 
-	v = msg = strdup (mesg);
+	v = msg = strdup (str);
 	e = msg + strlen (msg);
 	maxc = 0;
 
