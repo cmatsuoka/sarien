@@ -69,21 +69,21 @@ static void update_view (struct vt_entry *v)
 			_D ("cel %d (last = %d)", cel + 1, last_cel);
 			if (++cel != last_cel)
 				break;
-			setflag (v->parm1, TRUE);
-			v->flags &= ~CYCLING;
-			v->direction = 0;
-			v->cycle = CYCLE_NORMAL;
 		}
+		setflag (v->parm1, TRUE);
+		v->flags &= ~CYCLING;
+		v->direction = 0;
+		v->cycle = CYCLE_NORMAL;
 		break;
 	case CYCLE_REV_LOOP:
-		if (cel == 0) {
-			setflag (v->parm1, TRUE);
-			v->flags &= ~CYCLING;
-			v->direction = 0;
-			v->cycle = CYCLE_NORMAL;
-		} else {
-			cel--;
+		if (cel) {
+			if (--cel)
+				break;
 		}
+		setflag (v->parm1, TRUE);
+		v->flags &= ~CYCLING;
+		v->direction = 0;
+		v->cycle = CYCLE_NORMAL;
 		break;
 	case CYCLE_REVERSE:
 		if (cel == 0) {

@@ -369,6 +369,7 @@ cmd(force_update) {
 }
 
 cmd(reverse_loop) {
+	_D (_D_WARN "o%d, f%d", p0, p1);
 	vt.cycle = CYCLE_REV_LOOP;
 	vt.flags |= (DONTUPDATE|UPDATE|CYCLING);
 	vt.parm1 = p1;
@@ -377,13 +378,10 @@ cmd(reverse_loop) {
 
 cmd(end_of_loop) {
 	_D (_D_WARN "o%d, f%d", p0, p1);
-	vt.flags |= (DONTUPDATE|UPDATE|CYCLING);
 	vt.cycle = CYCLE_END_OF_LOOP; 
+	vt.flags |= (DONTUPDATE|UPDATE|CYCLING);
 	vt.parm1 = p1;
-
-	/* Seems to be necessary in KQ4 (bug #475912) */
-	if (agi_get_release () == 0x3086)
-		vt.current_cel = 0;
+	setflag (p1, FALSE);
 }
 
 cmd(block) {
