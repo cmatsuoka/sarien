@@ -199,9 +199,7 @@ void poll_keyboard ()
 {
 	UINT16 xkey, c1;
 
-	//key = 0x0;
-
-	if (getvar (V_key != KEY_ENTER))
+	if (getvar (V_key) != KEY_ENTER)
 		setvar (V_key, key = 0);
 
 	setvar (V_word_not_found, 0);
@@ -447,6 +445,7 @@ int wait_key ()
 {
 	int x;
 
+	_D (_D_WARN "waiting...");
 	while(42) {
 		main_cycle (FALSE);
 

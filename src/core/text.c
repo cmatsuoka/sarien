@@ -185,6 +185,7 @@ void message_box (char *message, ...)
 {
 	char x[512];
 	va_list	args;
+	int tmp;
 
 	_D ("(message, ...)");
 	va_start (args, message);
@@ -203,15 +204,17 @@ void message_box (char *message, ...)
 	save_screen ();
 	redraw_sprites ();
 
-	/* FR:
-	 * Messy...
+	/* FR: Messy...
+	 * CM: Blarghts
 	 */
-	game.allow_kyb_input = FALSE;
 
+	tmp = game.allow_kyb_input;
+
+	game.allow_kyb_input = TRUE;
 	textbox (x, -1, -1, -1);
 	game.message_box_key = wait_key();
 
-	game.allow_kyb_input = TRUE;
+	game.allow_kyb_input = tmp;
 
 	release_sprites ();
 	restore_screen ();

@@ -1321,9 +1321,9 @@ void cmd_load_game ()
 {
 	/* CM: we'll implemente the browser later */
 	if (load_game ("savetest.iff") == err_OK)
-		message_box ((UINT8*)"Gamed loaded.");
+		message_box ("Gamed loaded.");
 	else
-		message_box ((UINT8*)"Error loading game.");
+		message_box ("Error loading game.");
 	redraw_sprites ();
 }
 
@@ -2141,6 +2141,7 @@ void run_logic (int lognum)
 	}
 
 	if (getflag (F_new_room_exec)) {
+		_D (_D_WARN "new room, horizon = %d", game.horizon);
 		if (view_table[EGO_VIEW_TABLE].y_pos <= game.horizon)
 			view_table[EGO_VIEW_TABLE].y_pos = game.horizon + 1;
 	}
