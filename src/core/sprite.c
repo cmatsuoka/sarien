@@ -41,7 +41,7 @@ struct sprite {
  * Blitter functions
  */
 
-static void blit_cel (int x, int y, int spr, struct view_cel *c)
+static int blit_cel (int x, int y, int spr, struct view_cel *c)
 {
 	UINT8 *p0, *p, *q = NULL;
 #ifdef USE_HIRES
@@ -49,6 +49,7 @@ static void blit_cel (int x, int y, int spr, struct view_cel *c)
 #endif
 	int i, j, t;
 	int epr, pr;		/* effective and real priorities */
+	int hidden = TRUE;
 
 	p0 = &game.sbuf[x + y * _WIDTH];
 #ifdef USE_HIRES
@@ -86,6 +87,7 @@ static void blit_cel (int x, int y, int spr, struct view_cel *c)
 				*h = *(h + 1) =
 #endif
 				*p = (pr < 0x30 ? pr : spr) | *q;
+				hidden = FALSE;
 			}
 #ifdef USE_HIRES
 			h += 2;
@@ -96,6 +98,8 @@ static void blit_cel (int x, int y, int spr, struct view_cel *c)
 		h0 += _WIDTH * 2;
 #endif
 	}
+
+	return hidden;
 }
 
 static void objs_savearea (struct sprite *s)
@@ -242,7 +246,7 @@ static void spr_addlist (struct list_head *head, struct vt_entry *v)
 }
 
 /**
- * Sort sprintes from lower y values to build a sprite list.
+ * Sort sprites from lower y values to build a sprite list.
  */
 static struct list_head *
 build_list (struct list_head *head, int (*test)(struct vt_entry *))
@@ -396,11 +400,16 @@ static void erase_sprites (struct list_head *head)
 static void blit_sprites (struct list_head *head)
 {
 	struct list_head *h = NULL;
+	int hidden;
 
 	list_for_each (h, head, next) {
 		struct sprite *s = list_entry (h, struct sprite, list);
 		objs_savearea (s);
-		blit_cel (s->x_pos, s->y_pos, s->v->priority, s->v->cel_data);
+		hidden = blit_cel (s->x_pos, s->y_pos, s->v->priority,
+			s->v->cel_data);
+		if (s->v->entry == 0) {		/* if ego, update f1 */
+			setflag (F_ego_invisible, hidden);
+		}
 	}
 }
 

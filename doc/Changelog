@@ -29,10 +29,12 @@ Revision History
 	- added mouse support in the picture viewer
 	- added SGML man page (use docbook-to-man to create the roff file)
 	- added AGI Mouse 1.0 protocol emulation
-	- Merged Richard Houle's MacOS X port
-	- Merged Paul Hill's Amiga port
-	- Merged Vasyl Tsvirkunov's PocketPC port
-	- Added experimental support to noise channel
+	- merged Richard Houle's MacOS X port
+	- merged Paul Hill's Amiga port
+	- merged Vasyl Tsvirkunov's PocketPC port
+	- added experimental support to noise channel
+	- implemented picture offset according to status line
+	- implemented invisible ego signaling
 
 0.6.2 (20010826)
 	- fixed cmd_clear_rect() to prevent crash with the IIgs demo

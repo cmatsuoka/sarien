@@ -62,7 +62,7 @@ enum {
  */
 enum {
 	F_ego_water = 0,		/* 0 */
-	F_ego_invis,
+	F_ego_invisible,
 	F_entered_cli,
 	F_ego_touched_p2,
 	F_said_accepted_input,
