@@ -69,21 +69,21 @@ static void kill_mode ();
 static int init_vidmode (void);
 static int deinit_vidmode (void);
 static int set_palette (UINT8 *, int, int);
-static void put_block (int, int, int, int);
-static void _put_pixel (int, int, int);
-static int keypress (void);
-static int get_key (void);
+static void x11_put_block (int, int, int, int);
+static void x11_put_pixel (int, int, int);
+static int x11_keypress (void);
+static int x11_get_key (void);
 
-static void new_timer (void);
+static void x11_timer (void);
 
 static struct gfx_driver GFX_x11 = {
 	init_vidmode,
 	deinit_vidmode,
-	put_block,
-	_put_pixel,
-	new_timer,
-	keypress,
-	get_key
+	x11_put_block,
+	x11_put_pixel,
+	x11_timer,
+	x11_keypress,
+	x11_get_key
 };
 
 #ifdef XF86DGA
@@ -514,7 +514,7 @@ static int deinit_vidmode ()
 
 
 /* put a block onto the screen */
-static void put_block (int x1, int y1, int x2, int y2)
+static void x11_put_block (int x1, int y1, int x2, int y2)
 {
 	if (x1 >= GFX_WIDTH)
 		x1 = GFX_WIDTH - 1;
@@ -550,7 +550,7 @@ static void put_block (int x1, int y1, int x2, int y2)
 
 /* put pixel routine */
 /* will optimize this later */
-static void _put_pixel (int x, int y, int c)
+static void x11_put_pixel (int x, int y, int c)
 {
 	register int cp = rgb_palette[c];
 	register int i, j;
@@ -574,19 +574,19 @@ static void _put_pixel (int x, int y, int c)
 }
 
 
-static int keypress ()
+static int x11_keypress ()
 {
 	process_events ();
 	return key_queue_start != key_queue_end;
 }
 
 
-static int get_key ()
+static int x11_get_key ()
 {
 	UINT16 k;
 
 	while (key_queue_start == key_queue_end)	/* block */
-		new_timer ();
+		x11_timer ();
 
 	key_dequeue(k);
 
@@ -594,7 +594,7 @@ static int get_key ()
 }
 
 
-static void new_timer ()
+static void x11_timer ()
 {
 	struct timeval tv;
 	struct timezone tz;

@@ -90,7 +90,7 @@ elif test "${with_svgalib}" = "yes"; then
 	fi
 else
 	AC_PATH_X
-	if test ! -z "${ac_x_includes}"; then
+	if test ! -z "${ac_cv_have_x}"; then
 		CONSOLE_DRIVER="x11"
 		AC_PATH_XTRA
 		AC_CHECK_HEADERS(X11/extensions/XShm.h \
