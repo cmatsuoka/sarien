@@ -250,7 +250,12 @@ static void ccmd_ver ()
 
 static void ccmd_crc ()
 {
+	char name[80];
 	report ("0x%05x\n", game.crc);
+	if (match_crc (game.crc, get_config_file(), name, 80))
+		report("%s\n", name);
+	else
+		report("Unknown game\n(config file: %s)\n", get_config_file());
 	return;
 }
 
