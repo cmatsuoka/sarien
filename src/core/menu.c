@@ -340,6 +340,8 @@ void submit_menu ()
 
 	_D (_D_WARN "Submitting menu");
 
+	/* add_about_option (); */
+
 	/* If a menu has no options, delete it */
 	for (h = (&menubar)->prev; h != (&menubar); h = h2) {
 		m = list_entry (h, struct agi_menu, list);

@@ -35,10 +35,10 @@ Extra features:
 * Sierra v3 games finishable					30%
 * Sierra v2 games accurate					50%
 * Multi-slot savegames						90%
-* Fix quit/restart problems					30%
+* Fix quit/restart problems					70%
 * Major homemade games finishable				 0%
 * Macintosh port						70%
-* unk commands implemented					80%
+* unk commands implemented					90%
 
 0.9.0:
 
