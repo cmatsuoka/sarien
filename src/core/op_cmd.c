@@ -723,7 +723,7 @@ void cmd_get_string (UINT8 logic, UINT8 str, UINT8 msg, UINT8 y, UINT8 x, UINT8 
 
 		p=agi_printf (logics[logic].texts[msg-1], logic);
 		print_text (p, 0, x * 8, y * 8, strlen (p), txt_fg, txt_bg);
-		p = get_string ((x * 8) + (8 * (strlen (p) - 1)), y*8, len);
+		p = get_string (x * CHAR_COLS + CHAR_COLS * (strlen (p) - 1), y*CHAR_LINES, len);
 		strcpy (game.strings[str], p );
 
 		open_dialogue=0;
@@ -753,13 +753,13 @@ void cmd_clear_lines (UINT8 sl, UINT8 el, UINT8 c)
 	if (c != 0)
 		c = 15;
 
-	z = (1+el)*8;
+	z = (1+el)*CHAR_LINES;
 
-	for (y = sl * 8; y < z; y++)
+	for (y = sl * CHAR_LINES; y < z; y++)
 		for (x = 0; x < GFX_WIDTH; x++)
 			put_pixel (x, y, c);
 
-	put_block (0, sl * 8, GFX_WIDTH - 1, sl * 8 + z - 1);
+	put_block (0, sl * CHAR_LINES, GFX_WIDTH - 1, sl * CHAR_LINES + z - 1);
 }
 
 

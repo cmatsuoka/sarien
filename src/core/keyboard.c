@@ -105,21 +105,21 @@ void print_line_prompt ()
 		if (open_dialogue==0){
 
       		print_text (agi_printf (game.strings[0], 0), 0, 0,
-    			game.line_user_input * 8, 40, txt_fg, txt_bg );
+    			game.line_user_input * CHAR_LINES, 40, txt_fg, txt_bg );
 
 
     		/* internal keyboard buffer */
     		for (k = 0; buffer[k]; k++) {
-    			print_character ((k + 1) * 8, game.line_user_input * 8,
+    			print_character ((k + 1) * CHAR_COLS, game.line_user_input * CHAR_LINES,
     				buffer[k], txt_fg, txt_bg );
     		}
 
     		/* cursor prompt */
     		if (IsGetString) {
-    			print_character (xInput + ((k + 1) * 8), yInput,
+    			print_character (xInput + (k + 1) * CHAR_COLS, yInput,
     				txt_char, txt_fg, txt_bg );
     		} else {
-    			print_character ((k + 1) * 8, game.line_user_input * 8,
+    			print_character ((k + 1) * CHAR_COLS, game.line_user_input * CHAR_LINES,
     				txt_char, txt_fg, txt_bg );
     		}
 

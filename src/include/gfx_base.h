@@ -20,6 +20,7 @@ extern "C"{
 #define GFX_HEIGHT	160
 #define CHAR_COLS	4
 #define CHAR_LINES	6
+#define PIC_HEIGHT	(22 * CHAR_LINES)
 #else
 #define GFX_WIDTH	320
 #define GFX_HEIGHT	200

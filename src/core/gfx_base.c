@@ -61,7 +61,7 @@ static int x_min = GFX_WIDTH, x_max = 0, y_min = GFX_HEIGHT, y_max = 0;
 void put_pixel_buffer (int x, int y, int c)
 {
 #ifdef PALMOS
-	y = y * 140 / 168;	/* ick! */
+	y = y * PIC_HEIGHT / 168;	/* ick! */
 #else
 	x <<= 1;
 	put_pixel (x + 1, y, c);
@@ -322,7 +322,7 @@ void do_blit ()
 {
 	if (x_min < x_max && y_min < y_max) {
 #ifdef PALMOS
-		gfx->put_block (x_min, y_min * 140 / 168, x_max + 1, y_max * 140 / 168);
+		gfx->put_block (x_min, y_min * PIC_HEIGHT / 168, x_max + 1, y_max * PIC_HEIGHT / 168);
 #else
 		gfx->put_block (x_min << 1, y_min, (x_max << 1) + 1, y_max);
 #endif

@@ -42,14 +42,14 @@ static void draw_horizontal_menu_bar (int cur_menu, int max_menu)
 	int cx, cy, z;
 
 	/* draw our empty title bar */
-	for (cy = 0; cy < 8; cy++)
+	for (cy = 0; cy < CHAR_LINES; cy++)
 		for (cx = 0; cx < GFX_WIDTH; cx++)
 			put_pixel (cx, cy, MENU_BG);
 
 	/* draw menu titles */
 	men = master_menu->next;
 
-	cx = 8;
+	cx = CHAR_COLS;
 	for (z = 0; men; z++, men = men->next) {
 		if (men->text) {
 			if(z == cur_menu) {
@@ -59,12 +59,12 @@ static void draw_horizontal_menu_bar (int cur_menu, int max_menu)
 				print_text (men->text, 0, cx, 0, 40,
 					MENU_FG, MENU_BG);
 			}
-			cx += (1 + strlen ((char*)men->text)) * 8;
+			cx += (1 + strlen ((char*)men->text)) * CHAR_COLS;
 		}
 	}
 
-	/* FIXME: call update_status() */
-	put_block (0, 0, 320, 8);
+	/* FIXME: call update_status()? */
+	put_block (0, 0, GFX_WIDTH, CHAR_LINES);
 }
 
 
@@ -101,16 +101,16 @@ static void draw_vertical_menu (int h_menu, int cur_men, int max_men)
 	if (cx + len > 40 && len < 40)
 		cx = 38 - len;
 
-	cx *= 8;
-	cy = 8;
-	draw_box (cx, cy, cx + ((2 + len)<<3), ((2 + max_men)<<3),
-		MENU_BG, MENU_LINE, LINES, 0);
+	cx *= CHAR_COLS;
+	cy = CHAR_LINES;
+	draw_box (cx, cy, cx + ((2 + len) * CHAR_COLS),
+		((2 + max_men) * CHAR_LINES), MENU_BG, MENU_LINE, LINES, 0);
 
 	men = down;
-	x = cx + 8;
-	y = cy + 8;
+	x = cx + CHAR_COLS;
+	y = cy + CHAR_LINES;
 
-	for (z = 0; men; z++, y += 8, men = men->down) {
+	for (z = 0; men; z++, y += CHAR_LINES, men = men->down) {
 		l = strlen (men->text);
 		memmove (menu, men->text, l);
 		memset (menu + l, ' ', len - l);
@@ -122,7 +122,7 @@ static void draw_vertical_menu (int h_menu, int cur_men, int max_men)
 			print_text (menu, 0, x, y, len + 2, MENU_FG, MENU_BG);
 	}
 
-	put_block (cx, cy, cx + ((2 + len)<<3), (2 + max_men) << 3);
+	put_block (cx, cy, cx + ((2 + len) * CHAR_COLS), (2 + max_men) * CHAR_LINES);
 }
 
 
