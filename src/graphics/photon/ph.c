@@ -1,22 +1,13 @@
-/*
- *  Sarien AGI :: Copyright (C) 1998 Dark Fiber
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999 Dark Fiber, (C) 1999,2001 Claudio Matsuoka
+ *  
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  the Free Software Foundation; see docs/COPYING for further details.
  *
  *  Photon graphics module by Jeremy Penner, jeremy@astra.mb.ca
- *
  */
 
 #include <stdio.h>
@@ -37,7 +28,8 @@
 #include "gfx.h"
 #include "keyboard.h"
 
-extern UINT8 optFullScreen;
+extern struct sarien_options opt;
+extern struct gfx_driver *gfx;
 
 static int scale = 1;
 static int key_control = 0;
@@ -57,18 +49,20 @@ static int key_queue_end = 0;
 #define key_dequeue(k) do { (k) = key_queue[key_queue_start++]; \
 	key_queue_start %= KEY_QUEUE_SIZE; } while (0)
 
-static UINT16 init_vidmode (void);
-static UINT16 deinit_vidmode (void);
-static void put_block (UINT16, UINT16, UINT16, UINT16);
-static void _put_pixel (UINT16, UINT16, UINT16);
-static UINT8 keypress (void);
-static UINT16 get_key (void);
-static void new_timer (void);
 
-void photon_thread(void *pidarg);
-static void ph_raw_draw_cb (PtWidget_t *widget, PhTile_t *damage);
-static int ph_keypress_cb (PtWidget_t *widget, void *data, PtCallbackInfo_t *cb);
-static int ph_cause_damage (void *data, int rcvid, void *message, size_t mbsize);
+static int	init_vidmode	(void);
+static int	deinit_vidmode	(void);
+static void	put_block	(int, int, int, int);
+static void	_put_pixel	(int, int, int);
+static int	keypress	(void);
+static int	get_key		(void);
+static void	new_timer	(void);
+
+void		photon_thread	(void *);
+static void	ph_raw_draw_cb	(PtWidget_t *, PhTile_t *);
+static int	ph_keypress_cb	(PtWidget_t *, void *, PtCallbackInfo_t *);
+static int	ph_cause_damage	(void *, int, void *, size_t);
+
 
 static pthread_t ph_tid;
 static PhImage_t *phimage;
@@ -80,8 +74,7 @@ static PtWidget_t *rawwidget;
 static int ph_coid;
 static int ph_chid;
 
-static __GFX_DRIVER GFX_ph =
-{
+static struct gfx_driver GFX_ph = {
 	init_vidmode,
 	deinit_vidmode,
 	put_block,
@@ -110,7 +103,7 @@ int deinit_machine (void)
 }
 
 
-static UINT16 init_vidmode (void)
+static int init_vidmode (void)
 {
 	int i;
 
@@ -136,7 +129,7 @@ static UINT16 init_vidmode (void)
 }
 
 
-static UINT16 deinit_vidmode (void)
+static int deinit_vidmode ()
 {
 
 	fprintf (stderr, "ph: deiniting video mode\n");
@@ -150,7 +143,7 @@ static UINT16 deinit_vidmode (void)
 
 
 /* put a block onto the screen */
-static void put_block (UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
+static void put_block (int x1, int y1, int x2, int y2)
 {
 	PhRect_t rect;
 
@@ -180,7 +173,7 @@ static void put_block (UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
 
 
 /* put pixel routine */
-static void _put_pixel (UINT16 x, UINT16 y, UINT16 c)
+static void _put_pixel (int x, int y, int c)
 {
 	register int i, j;
 
@@ -206,9 +199,9 @@ static void _put_pixel (UINT16 x, UINT16 y, UINT16 c)
 }
 
 
-static UINT8 keypress (void)
+static int keypress ()
 {
-	UINT8 retcode;
+	int retcode;
 
 	pthread_sleepon_lock(); // Watch those threads!  This ain't atomic.
 	retcode = key_queue_start != key_queue_end ? TRUE : FALSE;
@@ -218,18 +211,17 @@ static UINT8 keypress (void)
 }
 
 
-static UINT16 get_key (void)
+static int get_key (void)
 {
-	UINT16 k;
+	int k;
 
-	pthread_sleepon_lock();
+	pthread_sleepon_lock ();
 	
 	while (key_queue_start == key_queue_end)	/* block */
 		pthread_sleepon_wait(key_queue);
+	key_dequeue (k);
 
-	key_dequeue(k);
-
-	pthread_sleepon_unlock();
+	pthread_sleepon_unlock ();
 
 	return k;
 }

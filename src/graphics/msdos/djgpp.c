@@ -30,35 +30,36 @@
 
 BITMAP *screen_buffer;
 
-UINT16	IBM_init_vidmode(void);
-UINT16	IBM_deinit_vidmode(void);
-void	IBM_blit_block(UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2);
-void	IBM_put_pixel(UINT16 x, UINT16 y, UINT16 c);
-void	IBM_dummy(void);
-UINT16	IBM_get_key(void);
-UINT8	IBM_keypress(void);
+int	IBM_init_vidmode	(void);
+int	IBM_deinit_vidmode	(void);
+void	IBM_blit_block		(int, int, int, int);
+void	IBM_put_pixel		(int, int, int);
+void	IBM_dummy		(void);
+int	IBM_get_key		(void);
+int	IBM_keypress		(void);
 
 
 #define TICK_SECONDS 20
 
-__GFX_DRIVER	GFX_ibm=
-	{
-		IBM_init_vidmode,
-		IBM_deinit_vidmode,
-		IBM_blit_block,
-		IBM_put_pixel,
-		IBM_dummy,
-		IBM_keypress,
-		IBM_get_key
-	};
+struct gfx_driver GFX_ibm= {
+	IBM_init_vidmode,
+	IBM_deinit_vidmode,
+	IBM_blit_block,
+	IBM_put_pixel,
+	IBM_dummy,
+	IBM_keypress,
+	IBM_get_key
+};
+
 
 void IBM_dummy(void)
 {
-	static UINT32	cticks=(SINT32)-1;
+	static UINT32 cticks=(SINT32)-1;
 
-	while(cticks==clock_ticks);
+	while (cticks == clock_ticks);
 	cticks=clock_ticks;
 }
+
 
 void new_timer(void)
 {
@@ -67,8 +68,7 @@ void new_timer(void)
 END_OF_FUNCTION(new_timer);
 
 
-
-int init_machine(int argc, char **argv)
+int init_machine (int argc, char **argv)
 {
 	gfx=&GFX_ibm;
 
@@ -90,7 +90,8 @@ int init_machine(int argc, char **argv)
 	return err_OK;
 }
 
-int deinit_machine(void)
+
+int deinit_machine ()
 {
 	destroy_bitmap(screen_buffer);
 	remove_int(IBM_dummy);
@@ -100,15 +101,15 @@ int deinit_machine(void)
 	return err_OK;
 }
 
-UINT16 IBM_init_vidmode(void)
+
+int IBM_init_vidmode ()
 {
 	int i;
 	RGB p;
 
 	set_gfx_mode(GFX_VGA, 320, 200, 0, 0);
 
-	for(i=0; i<16; i++)
-	{
+	for(i=0; i<16; i++) {
 		p.r=palette[(i*3)+0];
 		p.g=palette[(i*3)+1];
 		p.b=palette[(i*3)+2];
@@ -120,17 +121,18 @@ UINT16 IBM_init_vidmode(void)
 	return err_OK;
 }
 
-UINT16 IBM_deinit_vidmode(void)
+
+int IBM_deinit_vidmode (void)
 {
-	set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-	screen_mode=TXT_MODE;
+	set_gfx_mode (GFX_TEXT, 0, 0, 0, 0);
+	screen_mode = TXT_MODE;
 
 	return err_OK;
 }
 
 
 /* blit a block onto the screen */
-void IBM_blit_block(UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
+void IBM_blit_block (int x1, int y1, int x2, int y2)
 {
 	int h;
 	int w;
@@ -151,29 +153,31 @@ void IBM_blit_block(UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
 	//blit(screen_buffer, screen, 0, 0, 0, 0, 320, 200);
 }
 
-void IBM_put_pixel(UINT16 x, UINT16 y, UINT16 c)
+
+void IBM_put_pixel (int x, int y, int c)
 {
 	//screen_buffer[y * 320 + x] = (c & 0xFF);
 	screen_buffer->line[y][x]=(c&0xFF);
 }
 
 
-UINT8 IBM_keypress(void)
+int IBM_keypress ()
 {
 	return !!keypressed();
 }
 
 
-UINT16 IBM_get_key(void)
+int IBM_get_key ()
 {
 	UINT16 key;
 
 	key=readkey();
 
-	if((key&0x00FF)==0)
-		key=key&0xFF00;
+	if ((key & 0x00FF) == 0)
+		key &= 0xFF00;
 	else
-		key=key&0x00FF;
+		key &= 0x00FF;
 
 	return key;
 }
+

@@ -33,43 +33,42 @@
 
 UINT8	*screen_buffer;
 
-void	(__interrupt __far *prev_08)(void);
-void	__interrupt __far new_timer(void);
-UINT16	IBM_init_vidmode(void);
-UINT16	IBM_deinit_vidmode(void);
-void	IBM_blit_block(UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2);
-void	IBM_put_pixel(UINT16 x, UINT16 y, UINT16 c);
-void	IBM_dummy(void);
-UINT16	IBM_get_key(void);
-UINT8	IBM_keypress(void);
+void	(__interrupt __far *prev_08)	(void);
+void	__interrupt __far new_timer	(void);
+int	IBM_init_vidmode		(void);
+int	IBM_deinit_vidmode		(void);
+void	IBM_blit_block			(int, int, int, int);
+void	IBM_put_pixel			(int, int, int);
+void	IBM_dummy			(void);
+int	IBM_get_key			(void);
+int	IBM_keypress			(void);
 
 
 #define TICK_SECONDS 18
 
-__GFX_DRIVER	GFX_ibm=
-	{
-		IBM_init_vidmode,
-		IBM_deinit_vidmode,
-		IBM_blit_block,
-		IBM_put_pixel,
-		IBM_dummy,
-		IBM_keypress,
-		IBM_get_key
-	};
+struct gfx_driver GFX_ibm = {
+	IBM_init_vidmode,
+	IBM_deinit_vidmode,
+	IBM_blit_block,
+	IBM_put_pixel,
+	IBM_dummy,
+	IBM_keypress,
+	IBM_get_key
+};
 
 void IBM_dummy(void)
 {
 	/* dummy */
-	static UINT32	cticks=(SINT32)-1;
+	static UINT32 cticks = (SINT32)-1;
 
 	while(cticks==clock_ticks);
 	cticks=clock_ticks;
 }
 
 
-int init_machine(int argc, char **argv)
+int init_machine (int argc, char **argv)
 {
-	gfx=&GFX_ibm;
+	gfx = &GFX_ibm;
 
 	screen_mode=GFX_MODE;
 	screen_buffer=(UINT8*)malloc(GFX_WIDTH*GFX_HEIGHT);
@@ -84,22 +83,22 @@ int init_machine(int argc, char **argv)
 	return err_OK;
 }
 
-int deinit_machine(void)
+int deinit_machine ()
 {
-	free(screen_buffer);
-	_dos_setvect(0x08, prev_08);
+	free (screen_buffer);
+	_dos_setvect (0x08, prev_08);
 
 	return err_OK;
 }
 
-UINT16 IBM_init_vidmode(void)
+int IBM_init_vidmode ()
 {
-	union REGS	r;
+	union REGS r;
 	int i;
 
-	memset(&r, 0x0, sizeof(union REGS));
-	r.w.ax=0x13;
-	int386(0x10, &r, &r);
+	memset (&r, 0x0, sizeof(union REGS));
+	r.w.ax = 0x13;
+	int386 (0x10, &r, &r);
 
 	__outp(0x3C8, 0l);
 	for(i=0; i<16*3; i++)
@@ -110,13 +109,14 @@ UINT16 IBM_init_vidmode(void)
 	return err_OK;
 }
 
-UINT16 IBM_deinit_vidmode(void)
-{
-	union REGS	r;
 
-	memset(&r, 0x0, sizeof(union REGS));
-	r.w.ax=0x03;
-	int386(0x10, &r, &r);
+int IBM_deinit_vidmode ()
+{
+	union REGS r;
+
+	memset (&r, 0x0, sizeof(union REGS));
+	r.w.ax = 0x03;
+	int386 (0x10, &r, &r);
 
 	screen_mode=TXT_MODE;
 
@@ -153,25 +153,25 @@ void IBM_put_pixel(UINT16 x, UINT16 y, UINT16 c)
 }
 
 
-UINT8 IBM_keypress(void)
+int IBM_keypress ()
 {
 	return !!kbhit();
 }
 
 
-UINT16 IBM_get_key(void)
+int IBM_get_key ()
 {
-	union REGS	r;
-	UINT16	key;
+	union REGS r;
+	UINT16 key;
 
 	memset (&r, 0, sizeof(union REGS));
 	int386 (0x16, &r, &r);
 
 	key=r.h.ah*256;
-	if(r.h.al==0)
-		key&=0xFF00;
+	if (r.h.al==0)
+		key &= 0xFF00;
 	else
-		key=r.h.al;
+		key = r.h.al;
 
 	return key;
 }
@@ -180,7 +180,7 @@ UINT16 IBM_get_key(void)
 /* lucky we call no other routines inside our timer */
 /* coz SS!=DS and watcom wants SS==DS but it aint inside a timer! */
 
-void __interrupt __far new_timer(void)
+void __interrupt __far new_timer (void)
 {
 //	union REGS	r;
 //	UINT16		key;
