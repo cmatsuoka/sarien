@@ -45,6 +45,7 @@
 
 - Jeremy Penner <jeremy@astra.mb.ca>
   * QNX Photon port
+  * MacOS Carbon sound driver
 
 - Peter Hawkins <>
   * Savegame fixes
@@ -86,6 +87,9 @@
 
 - Benjamin Zale <junior_aepi@users.sourceforge.net>
   * MacOS X fixes
+
+- Brian Peek <brian@ganksoft.com>
+  * Dreamcast port
 
 
 Special thanks to:

@@ -74,7 +74,6 @@ static void motion_followego (struct vt_entry *v)
 	int ego_x, ego_y;
 	int obj_x, obj_y;
 	int dir;
-	int k;
 
 	ego_x = game.view_table[0].x_pos + game.view_table[0].x_size / 2;
 	ego_y = game.view_table[0].y_pos;
@@ -112,10 +111,12 @@ static void motion_followego (struct vt_entry *v)
 	}
 
 	if (v->parm3 != 0) {
+		int k;
+
 		/* DF: this is ugly and I dont know why this works, but
 		 * other line does not! (watcom complained about lvalue)
 		 *
-		 * if ( ((SINT8)v->parm3 -= v->step_size) < 0)
+		 * if (((SINT8)v->parm3 -= v->step_size) < 0)
 		 *	v->parm3 = 0;
 		 */
 		k = v->parm3;
@@ -183,8 +184,8 @@ void check_all_motions ()
 
 /**
  * Check if given entry is at destination point.
- * This function is used to check if an object with move.obj type motion
- * has reached its final destination coordinates.
+ * This function is used to updated the flags of an object with move.obj
+ * type motion that * has reached its final destination coordinates.
  * @param  v  Pointer to view table entry
  */
 void in_destination (struct vt_entry *v)
@@ -210,12 +211,19 @@ void move_obj (struct vt_entry *v)
 }
 
 /**
- *
+ * Get direction from motion coordinates
+ * This function gets the motion direction from the current and previous
+ * object coordinates and the step size.
+ * @param  x0  Original x coordinate of the object
+ * @param  y0  Original y coordinate of the object
+ * @param  x   x coordinate of the object
+ * @param  y   y coordinate of the object
+ * @param  s   step size
  */
-int get_direction (int x, int y, int x0, int y0, int s)
+int get_direction (int x0, int y0, int x, int y, int s)
 {
 	int dir_table[9] = { 8, 1, 2, 7, 0, 3, 6, 5, 4 };
-	return dir_table [check_step(x0 - x, s) + 3 * check_step(y0 - y, s)];
+	return dir_table [check_step(x - x0, s) + 3 * check_step(y - y0, s)];
 }
 
 /* end: motion.c */
