@@ -69,7 +69,6 @@ static INLINE void _PUSH (struct point_xy *c)
 
 		if (stack_num_segs <= ++stack_seg) {
 			_D ("new stack (#%d)", stack_num_segs);
-printf ("%d\n", coreleft());
 			stack[stack_num_segs] = malloc (sizeof (struct point_xy)
 				* STACK_SEG_SIZE);
 			assert (stack[stack_num_segs] != NULL);
