@@ -20,8 +20,9 @@ MAKEFILE	= Makefile
 STRIP		= strip
 
 SOUND_DRIVER	= dummy
-CONSOLE_DRIVER	= x11
-FILEIO_DRIVER	= unix
+CONSOLE_DRIVER	= palmos
+FILEIO_DRIVER	= palmos
+MAIN_FILE	= palmos
 
 #
 # Ideally it should not be necessary to tweak parameters below this line

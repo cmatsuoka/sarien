@@ -10,7 +10,10 @@
 
 #include <stdio.h>
 #include <string.h>
+
+#ifndef PALMOS
 #include <ctype.h>
+#endif
 
 #include "sarien.h"
 #include "agi.h"

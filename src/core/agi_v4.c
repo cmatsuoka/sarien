@@ -262,7 +262,7 @@ static int agi_v4_detect_game (char *gn)
 	memset(&palmagi, 0x0, sizeof(struct PalmOSAGI));
 	strcpy(pdb_file, gn);
 
-	fp=fopen(pdb_file, "rb");
+	fp = fopen (pdb_file, "rb");
 	if(fp!=NULL)
 	{
 		fread(&PDBHeader, 1, sizeof(struct pdb_pdbheader), fp);
@@ -738,8 +738,8 @@ UINT16 pdb_read_word(UINT8 *mem)
 {
 	UINT16	w;
 
-	w=mem[1];
-	w+=mem[0]<<8;
+	w = (UINT16)mem[1];
+	w += (UINT16)mem[0]<<8;
 
 	return w;
 }
@@ -748,10 +748,10 @@ UINT32 pdb_read_dword(UINT8 *mem)
 {
 	UINT32 w;
 
-	w=mem[3];
-	w+=mem[2]<<8;
-	w+=mem[1]<<16;
-	w+=mem[0]<<24;
+	w = (UINT32)mem[3];
+	w += (UINT32)mem[2]<<8;
+	w += (UINT32)mem[1]<<16;
+	w += (UINT32)mem[0]<<24;
 	
 	return w;
 }

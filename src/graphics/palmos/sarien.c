@@ -14,6 +14,14 @@ void mainloop (void);
 static UInt32 timeout, ticks;
 
 
+char *strdup (char *s)
+{
+	char *r = malloc (strlen (s) + 1);
+	strcpy (r, s);
+	return r;
+}
+
+
 static Boolean MainFormHandleEvent (EventPtr e)
 {
     Boolean handled = false;

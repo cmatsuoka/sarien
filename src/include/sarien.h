@@ -20,6 +20,7 @@ extern "C"{
 #define USE_PCM_SOUND
 #define USE_IIGS_SOUND
 #define USE_HIRES
+#define USE_COMMAND_LINE
 #define AGDS_SUPPORT
 #define OPT_LIST_OBJECTS
 #define OPT_PICTURE_VIEWER
@@ -30,6 +31,7 @@ extern "C"{
 #  undef USE_CONSOLE
 #  undef USE_PCM_SOUND
 #  undef USE_HIRES
+#  undef USE_COMMAND_LINE
 #  undef AGDS_SUPPORT
 #  undef OPT_LIST_OBJECTS
 #  undef OPT_PICTURE_VIEWER
@@ -41,6 +43,8 @@ extern "C"{
 #ifdef FAKE_PALMOS
 #  undef USE_CONSOLE
 #  undef USE_PCM_SOUND
+#  undef USE_HIRES
+#  undef USE_COMMAND_LINE
 #  undef AGDS_SUPPORT
 #  undef OPT_LIST_OBJECTS
 #  undef OPT_PICTURE_VIEWER
@@ -83,6 +87,8 @@ extern "C"{
 #  define malloc(x)	((void *)NewPtr (x))
 #  define calloc(x,s)	((void *)NewPtrClear ((x) * (s)))
 #  define free(x)	DisposePtr ((Ptr)(x))
+#  undef USE_HIRES
+#  undef USE_COMMAND_LINE
 #endif
 
 

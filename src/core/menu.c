@@ -21,7 +21,7 @@
 #include "list.h"
 
 
-struct menu {
+struct agi_menu {
 	struct list_head list;		/**< list head for menubar list */
 	struct list_head down;		/**< list head for menu options */
 	int index;			/**< number of menu in menubar */
@@ -32,7 +32,7 @@ struct menu {
 	char *text;			/**< menu name */
 };
 
-struct menu_option {
+struct agi_menu_option {
 	struct list_head list;		/**< list head for menu options */
 	int enabled;			/**< option is enabled or disabled */
 	int event;			/**< menu event */
@@ -43,13 +43,13 @@ struct menu_option {
 static LIST_HEAD(menubar);
 
 
-static struct menu *get_menu (int i)
+static struct agi_menu *get_menu (int i)
 {
 	struct list_head *h;
-	struct menu *m;
+	struct agi_menu *m;
 
 	list_for_each (h, &menubar, next) {
-		m = list_entry (h, struct menu, list);
+		m = list_entry (h, struct agi_menu, list);
 		if (m->index == i)
 			return m;
 	}
@@ -57,16 +57,16 @@ static struct menu *get_menu (int i)
 	return NULL;
 }
 
-static struct menu_option *get_menu_option (int i, int j)
+static struct agi_menu_option *get_menu_option (int i, int j)
 {
 	struct list_head *h;
-	struct menu *m;
-	struct menu_option *d;
+	struct agi_menu *m;
+	struct agi_menu_option *d;
 
 	m = get_menu (i);
 
 	list_for_each (h, &m->down, next) {
-		d = list_entry (h, struct menu_option, list);
+		d = list_entry (h, struct agi_menu_option, list);
 		if (d->index == j)
 			return d;
 	}
@@ -77,7 +77,7 @@ static struct menu_option *get_menu_option (int i, int j)
 static void draw_menu_bar ()
 {
 	struct list_head *h;
-	struct menu *m;
+	struct agi_menu *m;
 	int c, i;
 
 #ifdef FANCY_BOX
@@ -88,7 +88,7 @@ static void draw_menu_bar ()
 
 	i = 0; c = 1;
 	list_for_each (h, &menubar, next) {
-		m = list_entry (h, struct menu, list);
+		m = list_entry (h, struct agi_menu, list);
 #ifdef FANCY_BOX
 		draw_text (m->text, 0, m->col * CHAR_COLS,
 			3, 40, MENU_FG, MENU_BG);
@@ -103,7 +103,7 @@ static void draw_menu_bar ()
 
 static void draw_menu_hilite (int cur_menu)
 {
-	struct menu *m;
+	struct agi_menu *m;
 
 	m = get_menu (cur_menu);
 	_D ("[%s]", m->text);
@@ -121,8 +121,8 @@ static void draw_menu_hilite (int cur_menu)
 static void draw_menu_option (int h_menu)
 {
 	struct list_head *h;
-	struct menu *m = NULL;
-	struct menu_option *d = NULL;
+	struct agi_menu *m = NULL;
+	struct agi_menu_option *d = NULL;
 
 	/* find which vertical menu it is */
 	m = get_menu (h_menu);
@@ -135,7 +135,7 @@ static void draw_menu_option (int h_menu)
 		MENU_BG, MENU_LINE);
 
 	list_for_each (h, &m->down, next) {
-		d = list_entry (h, struct menu_option, list);
+		d = list_entry (h, struct agi_menu_option, list);
 		draw_text (d->text, 0, (m->wincol + 1) * CHAR_COLS,
 			(d->index + 2) * CHAR_LINES + d->index * 2,
 			m->width + 2, MENU_FG, MENU_BG);
@@ -145,7 +145,7 @@ static void draw_menu_option (int h_menu)
 		(1 + m->height + 2) * CHAR_LINES, MENU_BG, MENU_LINE);
 
 	list_for_each (h, &m->down, next) {
-		d = list_entry (h, struct menu_option, list);
+		d = list_entry (h, struct agi_menu_option, list);
 		print_text (d->text, 0, m->wincol + 1, d->index + 2,
 			m->width + 2, MENU_FG, MENU_BG);
 #endif
@@ -154,8 +154,8 @@ static void draw_menu_option (int h_menu)
 
 static void draw_menu_option_hilite (int h_menu, int v_menu)
 {
-	struct menu *m;
-	struct menu_option *d;
+	struct agi_menu *m;
+	struct agi_menu_option *d;
 
 	m = get_menu (h_menu);
 	d = get_menu_option (h_menu, v_menu);
@@ -221,15 +221,15 @@ void init_menus ()
 void deinit_menus ()
 {
 	struct list_head *h, *v;
-	struct menu *m = NULL;
-	struct menu_option *d = NULL;
+	struct agi_menu *m = NULL;
+	struct agi_menu_option *d = NULL;
 
 	/* scan all menus for event number # */
 
 	list_for_each (h, &menubar, next) {
-		m = list_entry (h, struct menu, list);
+		m = list_entry (h, struct agi_menu, list);
 		list_for_each (v, &m->down, next) {	
-			d = list_entry (v, struct menu_option, list);
+			d = list_entry (v, struct agi_menu_option, list);
 			list_del (v);
 			free (d);
 		}
@@ -241,9 +241,9 @@ void deinit_menus ()
 
 void add_menu (char *s)
 {
-	struct menu *m;
+	struct agi_menu *m;
 
-	m = malloc (sizeof (struct menu));
+	m = malloc (sizeof (struct agi_menu));
 	m->text = strdup (s);
 	while (m->text[strlen(m->text) - 1] == ' ')
 		m->text[strlen(m->text) - 1] = 0;
@@ -266,17 +266,17 @@ void add_menu (char *s)
 
 void add_menu_item (char *s, int code)
 {
-	struct menu *m;
-	struct menu_option *d;
+	struct agi_menu *m;
+	struct agi_menu_option *d;
 	int l;
 
-	d = malloc (sizeof (struct menu_option));
+	d = malloc (sizeof (struct agi_menu_option));
 	d->text = strdup (s);
 	d->enabled = TRUE;
 	d->event = code;
 	d->index = v_index++;
 
-	m = list_entry (menubar.prev, struct menu, list);
+	m = list_entry (menubar.prev, struct agi_menu, list);
 	m->height++;
 
 	v_max_menu[m->index] = d->index;
@@ -304,9 +304,9 @@ int menu_keyhandler (int key)
 	static int h_cur_menu = 0;
 	static int v_cur_menu = 0;
 	static int menu_active = FALSE;
-	struct menu_option *d;
+	struct agi_menu_option *d;
 	struct list_head *h;
-	struct menu *m;
+	struct agi_menu *m;
 	static int button_used = 0;
 
 	if (!getflag (F_menus_work)) 
@@ -330,7 +330,7 @@ int menu_keyhandler (int key)
 			hmenu = 0;
 
 			list_for_each (h, &menubar, next) {
-				m = list_entry (h, struct menu, list);
+				m = list_entry (h, struct agi_menu, list);
 				if (mouse_over_text (0, m->col, m->text)) {
 					break;
 				} else {
@@ -347,13 +347,13 @@ int menu_keyhandler (int key)
 			}
 		} else {
 			/* not in menubar */
-			struct menu_option *d;
+			struct agi_menu_option *d;
 
 			vmenu = 0;
 
 			m = get_menu (h_cur_menu);
 			list_for_each (h, &m->down, next) {	
-				d = list_entry (h, struct menu_option, list);
+				d = list_entry (h, struct agi_menu_option, list);
 				if (mouse_over_text (2 + d->index,
 					m->wincol + 1, d->text))
 				{
@@ -388,7 +388,7 @@ int menu_keyhandler (int key)
 			/* see which option we selected */
 			m = get_menu (h_cur_menu);
 			list_for_each (h, &m->down, next) {	
-				d = list_entry (h, struct menu_option, list);
+				d = list_entry (h, struct agi_menu_option, list);
 				if (mouse_over_text (2 + d->index, m->wincol + 1, d->text)) {
 					/* activate that option */
 					if (d->enabled) {
@@ -475,15 +475,15 @@ exit_menu:
 void menu_set_item (int event, int state)
 {
 	struct list_head *h, *v;
-	struct menu *m = NULL;
-	struct menu_option *d = NULL;
+	struct agi_menu *m = NULL;
+	struct agi_menu_option *d = NULL;
 
 	/* scan all menus for event number # */
 
 	list_for_each (h, &menubar, next) {
-		m = list_entry (h, struct menu, list);
+		m = list_entry (h, struct agi_menu, list);
 		list_for_each (v, &m->down, next) {	
-			d = list_entry (v, struct menu_option, list);
+			d = list_entry (v, struct agi_menu_option, list);
 			if (d->event == event) {
 				d->enabled = state;
 				return;

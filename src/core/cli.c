@@ -8,13 +8,14 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#if !defined PALMOS && !defined WIN32
+#include "sarien.h"
+
+#ifdef USE_COMMAND_LINE
 
 #include <stdio.h>
 #include <string.h>
 #include <getopt.h>
 
-#include "sarien.h"
 #include "sound.h"
 
 extern char *optarg;
@@ -293,4 +294,4 @@ int parse_cli (int argc, char **argv)
 	return ec;
 }
 
-#endif /* !PALMOS && !WIN32 */
+#endif /* USE_COMMAND_LINE */
