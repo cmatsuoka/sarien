@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+
 #include "sarien.h"
 #include "agi.h"
 #include "gfx.h"
@@ -28,9 +29,14 @@
 
 /* A bunch of global variables. Ick. */
 
+struct agi_game game;
+
+#if 0
 UINT8		*gname=NULL;		/* lead in id (eg, goldrush GR */
 UINT8		*gdir=NULL;		/* game dir (for v3 games, eg GR<dir> */
 UINT8		*gid=NULL;		/* game id */
+#endif
+
 UINT8		path[1024];		/* holds expanded paths for files */
 UINT8		horizon;		/* horizon marker */
 struct agi_loader *loader;		/* loader */
@@ -56,8 +62,6 @@ UINT32		game_flags;		/* game flags!! (important) */
 
 volatile UINT32	msg_box_secs2;		/* message box timeout in sec/2 */
 
-//UINT8	*exec_name;			/* copy of argv[0] */
-
 extern struct sarien_options opt;
 extern struct agi_picture pictures[];
 extern struct agi_logic logics[];
@@ -70,7 +74,7 @@ int agi_init ()
 {
 	int ec, i;
 
-	gid = NULL;			/* clean out GAME ID */
+	//gid = NULL;			/* clean out GAME ID */
 
 #if 0
 	/* clean out game info */
@@ -194,11 +198,13 @@ int agi_deinit ()
 	reset_graphics ();		/* clean out video memory */
 	clean_input ();			/* remove all words from memory */
 
+#if 0
 	/* release game ID if one is present */
 	if (gid != NULL) {
 		free(gid);
 		gid=NULL;
 	}
+#endif
 
 #if 0
 	/* release game name if present */

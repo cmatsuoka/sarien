@@ -24,6 +24,7 @@
 #include <ctype.h>
 
 #include "sarien.h"
+#include "agi.h"
 #include "gfx.h"
 #include "opcodes.h"
 #include "view.h"
@@ -34,7 +35,7 @@
 #define code (logics[lognum].data)
 
 
-extern    UINT8   *gid;
+//extern    UINT8   *gid;
 
 extern struct agi_view_table view_table[];
 extern struct agi_logic logics[];
@@ -164,7 +165,7 @@ void break_copy_protection (int lognum)
 	switch(lognum) {
 	case 6:
 		/* lsl1 bypass questions */
-		if (!strcmp (gid, "LLLLL")) {
+		if (!strcmp (game.id, "LLLLL")) {
 			if (!memcmp (lsl1data_find, (code+ip), 30))
 				memmove ((code+ip), lsl1data_fix, 9);
 		}
@@ -172,7 +173,7 @@ void break_copy_protection (int lognum)
 
 	case 125:
 		/* gold rush code break */
-		if (!strcmp (gid, "GR")) {
+		if (!strcmp (game.id, "GR")) {
 			if (!memcmp (grdata_find, (code+ip), 30))
 				memmove((code+ip), grdata_fix, 12);
 		}
@@ -180,7 +181,7 @@ void break_copy_protection (int lognum)
 
 	case 140:
 		/* kings quest 4 code break */
-		if (!strcmp (gid, "KQ4")) {
+		if (!strcmp (game.id, "KQ4")) {
 			if(memcmp(kq4data_find, (code+ip),  29)==0)
 				memmove((code+ip), kq4data_fix, 6);
 		}

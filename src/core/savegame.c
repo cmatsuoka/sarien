@@ -98,7 +98,7 @@ int save_game (char *s, char *d)
 	f = fopen (s, "w");
 
 	/* IFF chunk sizes */
-	s_agid = strlen (gid) + 1;
+	s_agid = strlen (game.id) + 1;
 	s_gcrc = 4;
 	s_desc = WORD_ALIGN (strlen (d) + 1);
 	s_vars = WORD_ALIGN (MAX_VARS) + 4;
@@ -116,8 +116,8 @@ int save_game (char *s, char *d)
 	/* Game ID */
 	if (s_agid) {
 		iff_newchunk ("AGID", s_agid, f);
-		fwrite (gid, 1, strlen (gid) + 1, f);
-		s_agid -= strlen (gid) + 1;
+		fwrite (game.id, 1, strlen (game.id) + 1, f);
+		s_agid -= strlen (game.id) + 1;
 		iff_chunk_pad (s_agid, f);
 	}
 	
@@ -314,12 +314,12 @@ static void get_agid (int size, UINT8 *buffer)
 {
 	_D (("(%d, %p)", size, buffer));
 
-	if (size < strlen (gid)) {
+	if (size < strlen (game.id)) {
 		loading_ok = 0;
 		return;
 	}
 
-	if (memcmp (buffer, gid, strlen (gid)))
+	if (memcmp (buffer, game.id, strlen (game.id)))
 		loading_ok = 0;
 }
 

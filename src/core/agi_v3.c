@@ -53,7 +53,7 @@ int agi_v3_detect_game (UINT8 *gn)
 	int l;
 
 	_D (("(\"%s\")", gn));
-	gdir = strdup (gn);
+	strncpy (game.dir, gn, 8);
 
 	strcpy (x, "*vol.0");
 	fixpath (GAMEDIR, x);
@@ -65,7 +65,7 @@ int agi_v3_detect_game (UINT8 *gn)
 		if (l >= 5)
 			l -= 5;
 		xname[l] = 0;
-		gname = xname;
+		strncpy (game.name, xname, 8);
 
 		agi_v3.int_version = 0x3149;	/* setup for 3.002.149 */
 		ec = v3id_game();

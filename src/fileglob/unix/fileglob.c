@@ -59,14 +59,13 @@ void fixpath (int flag, char *fname)
 {
 	_D (("(%d, \"%s\")", flag, fname));
 
-	if (gdir != NULL)
-		strcpy((char*)path, (char*)gdir);
+	strcpy (path, game.dir);
 
 	if(*path && path[strlen((char*)path)-1]!='/')
 		strcat((char*)path, "/");
 		    
 	if(flag==1)
-		strcat((char*)path, (char*)gname);
+		strcat (path, game.name);
 
 	strcat((char*)path, (char*)fname);
 	if(path[strlen((char*)path)-1]=='.')

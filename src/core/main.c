@@ -57,8 +57,10 @@ static int detect_game (char *gn)
 	if (gn == NULL)		/* assume current directory */
 		gn = get_current_directory ();
 
+#if 0
 	if (gname == NULL)
 		gname = strdup ("");
+#endif
 
 	loader = &agi_v2;
 	ec = loader->detect_game (gn);

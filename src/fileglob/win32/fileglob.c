@@ -1,19 +1,11 @@
-/*
- *  Sarien AGI :: Copyright (C) 1998 Dark Fiber
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
 #include <stdlib.h>
@@ -31,10 +23,8 @@
 int __file_exists (char *fname)
 {
 	int rc;
-
 	struct _finddata_t fdata;
 
-	_D (("(\"%s\")", fname));
 	fdata.attrib = _A_NORMAL | _A_ARCH | _A_RDONLY;
 	rc = (0 >= _findfirst (fname, &fdata));
 
@@ -68,8 +58,7 @@ void fixpath (int flag, char *fname)
 {
 	/* _D (("(%d, %s)", flag, fname)); */
 
-	if (gdir != NULL)
-		strcpy (path, gdir);
+	strcpy (path, game.dir);
 
 	if(*path && (path[strlen (path)-1]!='\\' && path[strlen(path)-1] != '/'))
 	{
@@ -80,14 +69,14 @@ void fixpath (int flag, char *fname)
 	}
 		    
 	if(flag==1)
-		strcat (path, gname);
+		strcat (path, game.name);
 
 	strcat (path, fname);
 }
 
 
-char *get_current_directory (void)
+char *get_current_directory ()
 {
-    return(".");
+    return ".";
 }
 

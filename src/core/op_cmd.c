@@ -1465,13 +1465,17 @@ void cmd_log ()
 
 void cmd_set_game_id (UINT8 logic, UINT8 msg)
 {
+#if 0
 	if (gid != NULL)
 		free (gid);
+#endif
 
-	gid = logics[logic].texts && (msg - 1) <= logics[logic].num_texts ?
-		strdup (logics[logic].texts[msg - 1]) : strdup ("");
+	if (logics[logic].texts && (msg - 1) <= logics[logic].num_texts)
+		strncpy (game.id, logics[logic].texts[msg - 1], 8);
+	else
+		game.id[0] = 0;
 
-	report ("Game ID: \"%s\"\n", gid);
+	report ("Game ID: \"%s\"\n", game.id);
 }
 
 

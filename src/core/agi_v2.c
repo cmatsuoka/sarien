@@ -49,7 +49,7 @@ static int agi_v2_detect_game (UINT8 *gn)
 {
 	int ec = err_Unk;
 
-	gdir=gn;
+	strncpy (game.dir, gn, 8);
 
 	fixpath (NO_GAMEDIR, (UINT8*)LOGDIR);
 	if (__file_exists (path))
