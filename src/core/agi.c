@@ -53,6 +53,8 @@ int agi_init ()
 	memset (&game_info, 0, sizeof(struct game_id_list));
 #endif
 
+	_D("()");
+
 	/* set the font */
 	font= opt.agds ? font_russian : font_english;
 
@@ -109,8 +111,8 @@ int agi_init ()
 
 	ec = loader->init ();		/* load vol files, etc */
 
-	if(ec == err_OK)
-		ec=load_objects((UINT8*)OBJECTS);
+	if (ec == err_OK)
+		ec = load_objects ((UINT8*)OBJECTS);
 
 	/* CM: ec= commented out, demogs has no words.tok */
 	if(ec == err_OK)
@@ -121,13 +123,13 @@ int agi_init ()
 
 	/* Load logic 0 into memory, set cache flag for logic 0 */
 	if(ec == err_OK) {
-		ec = loader->load_resource(rLOGIC, 0);
+		ec = loader->load_resource (rLOGIC, 0);
 		game.dir_logic[0].flags |= RES_CACHED;	/* keep this one cached */
 	}
 
 	/* if cached, enable caching options */
 	if (opt.cache) {
-		for(i=0; i<MAX_DIRS; i++) {
+		for (i = 0; i < MAX_DIRS; i++) {
 			game.dir_logic[i].flags |= RES_CACHED;
 			game.dir_pic[i].flags |= RES_CACHED;
 			game.dir_view[i].flags |= RES_CACHED;
@@ -210,6 +212,4 @@ int agi_deinit ()
 
 	return ec;
 }
-
-
 

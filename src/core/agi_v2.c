@@ -18,7 +18,7 @@
 #include "view.h"
 #include "logic.h"
 #include "sound.h"
-#include "gfx_agi.h"
+//#include "gfx_agi.h"
 #include "console.h"
 
 static int agi_v2_init (void);
@@ -216,10 +216,14 @@ UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 		fread (&x, 1, 5, fp);
 		if (hilo_getword (x) == 0x1234) {
 			agid->len = lohi_getword (x + 3);
-			data = (UINT8*)calloc (1, agid->len + 32);
+			data = calloc (1, agid->len + 32);
+printf ("%s %d\n", path, agid->len);
 			if (data != NULL)
 				fread (data, 1, agid->len, fp);
 		} else {
+			/* FIXME: call some panic handler instead of
+			 *        deiniting directly
+			 */
 			deinit_video_mode ();
 			fprintf (stderr, "ACK! BAD RESOURCE!!!\n");
 			exit (0);
@@ -234,11 +238,11 @@ UINT8* agi_v2_load_vol_res (struct agi_dir *agid)
 	return data;
 }
 
+
 /*
  * Loads a resource into memory, a raw resource is loaded in
  * with above routine, then further decoded here.
  */
-
 int agi_v2_load_resource (int restype, int resnum)
 {
 	int ec = err_OK;
@@ -251,6 +255,7 @@ int agi_v2_load_resource (int restype, int resnum)
 	switch (restype) {
 	case rLOGIC:
 		if (~game.dir_logic[resnum].flags & RES_LOADED) {
+			_D (_D_WARN "loading logic resource %d", resnum);
 			agi_v2.unload_resource (rLOGIC, resnum);
 			/* load raw resource into data */
 			data = agi_v2_load_vol_res (&game.dir_logic[resnum]);
@@ -274,13 +279,16 @@ int agi_v2_load_resource (int restype, int resnum)
 		 * unload the resource (caching == off) and reload it
 		 */
 
+		_D (_D_WARN "loading picture resource %d", resnum);
 		if (game.dir_pic[resnum].flags & RES_LOADED)
 			break;
 
 		/* if loaded but not cached, unload it */
 		/* if cached but not loaded, etc */
 		agi_v2.unload_resource (rPICTURE, resnum);
-		if ((data = agi_v2_load_vol_res (&game.dir_pic[resnum])) != NULL) {
+		data = agi_v2_load_vol_res (&game.dir_pic[resnum]);
+
+		if (data != NULL) {
 			pictures[resnum].rdata = data;
 			game.dir_pic[resnum].flags |= RES_LOADED;
 		} else {
@@ -288,11 +296,13 @@ int agi_v2_load_resource (int restype, int resnum)
 		}
 		break;
 	case rSOUND:
+		_D (_D_WARN "loading sound resource %d", resnum);
 		if (game.dir_sound[resnum].flags & RES_LOADED)
 			break;
 
-		_D (_D_WARN "loading sound resource %d", resnum);
-		if ((data = agi_v2_load_vol_res (&game.dir_sound[resnum])) != NULL) {
+		data = agi_v2_load_vol_res (&game.dir_sound[resnum]);
+
+		if (data != NULL) {
 			sounds[resnum].rdata = data;
 			game.dir_sound[resnum].flags |= RES_LOADED;
 			decode_sound (resnum);
@@ -306,17 +316,18 @@ int agi_v2_load_resource (int restype, int resnum)
 		 * can we cache the view? or must we reload it all
 		 * the time?
 		 */
+		if (game.dir_view[resnum].flags & RES_LOADED)
+			break;
 
-		if (~game.dir_view[resnum].flags & RES_LOADED) {
-    			agi_v2.unload_resource (rVIEW, resnum);
-    			if ((data = agi_v2_load_vol_res (&game.dir_view[resnum]))) {
-    				views[resnum].rdata = data;
-    				game.dir_view[resnum].flags |= RES_LOADED;
-    				ec = decode_view (resnum);
-    			} else {
-    				ec=err_BadResource;
-			}
-    		}
+		_D (_D_WARN "loading view resource %d", resnum);
+    		agi_v2.unload_resource (rVIEW, resnum);
+    		if ((data = agi_v2_load_vol_res (&game.dir_view[resnum]))) {
+    			views[resnum].rdata = data;
+    			game.dir_view[resnum].flags |= RES_LOADED;
+    			ec = decode_view (resnum);
+    		} else {
+    			ec=err_BadResource;
+		}
 		break;
 	default:
 		ec = err_BadResource;

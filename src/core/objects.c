@@ -21,7 +21,7 @@
 extern struct agi_game game;
 
 struct agi_object *objects;		/* objects in the game */
-//int num_objects;
+
 
 int load_objects (char *fname)
 {
@@ -30,6 +30,7 @@ int load_objects (char *fname)
 	UINT32 flen;
 	UINT8 *mem;
 
+	_D ("(fname = %s)", fname);
 	padsize = game.game_flags & ID_AMIGA ? 4 : 3;
 
 	game.num_objects = 0;
@@ -38,12 +39,13 @@ int load_objects (char *fname)
 	fixpath (NO_GAMEDIR, fname);
 	report ("Loading objects: %s\n", path);
 
-	if ((fp = fopen((char*)path, "rb")) == NULL)
+	if ((fp = fopen(path, "rb")) == NULL)
 		return err_BadFileOpen;
 
 	fseek (fp, 0, SEEK_END);
 	flen = ftell (fp);
 	fseek (fp, 0, SEEK_SET);
+	_D ("flen = %d", flen);
 
 	if ((mem = calloc (1, flen + 32)) == NULL) {
 		fclose (fp);
@@ -78,6 +80,7 @@ int load_objects (char *fname)
 	}
 
 	game.num_objects = lohi_getword(mem) / padsize;
+	_D ("num_objects = %d", game.num_objects);
 
     	if ((objects = calloc (game.num_objects, sizeof(struct agi_object))) == NULL) {
 		fclose (fp);

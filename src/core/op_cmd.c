@@ -125,12 +125,14 @@ void cmd_call (UINT8 log)
 
 void cmd_load_view (UINT8 view)
 {
+	_D("(view = %d", view);
 	loader->load_resource (rVIEW, view);
 }
 
 
 void cmd_load_logic (UINT8 log)
 {
+	_D("(logic = %d", log);
 	loader->load_resource (rLOGIC, log);
 #ifdef DISABLE_COPYPROTECTION
 	break_copy_protection (log);
@@ -838,7 +840,7 @@ void cmd_status_line_off ()
 
 void cmd_load_sound (UINT8 s)
 {
-	_D ("(%d)", s);
+	_D ("(sound = %d)", s);
 	loader->load_resource (rSOUND, s);
 }
 
@@ -1530,6 +1532,7 @@ void cmd_rand_num (UINT8 n0, UINT8 n1, UINT8 var)
 
 void cmd_load_pic (UINT8 pic)
 {
+	_D("(pic = %d)", pic);
 	loader->load_resource (rPICTURE, getvar (pic));
 }
 
@@ -1538,7 +1541,7 @@ extern int greatest_kludge_of_all_time;
 
 void cmd_draw_pic (UINT8 pic)
 {
-	_D (_D_WARN, "(pic = %d)", getvar(pic));
+	_D (_D_WARN "(pic = %d)", getvar(pic));
 	pic_clear_flag = TRUE;
 	decode_picture (getvar (pic));
 	/* CM: needed for nonblocking window removal
@@ -2188,7 +2191,7 @@ void run_logic (int lognum)
 	UINT8	p[16];
 
 	/* If logic not loaded, load it */
-	if ((game.dir_logic[lognum].flags & RES_LOADED) != RES_LOADED) {
+	if (~game.dir_logic[lognum].flags & RES_LOADED) {
 		loader->load_resource (rLOGIC, lognum);
 #ifdef DISABLE_COPYPROTECTION
 		break_copy_protection (lognum);
