@@ -25,13 +25,26 @@ static void put_hires_pixel (int x, int y)
 
 static void fix_pixel_bothsides (int x, int y)
 {
-	UINT8 *p;
+	UINT8 *p, *s;
 
+	/* Sometimes a solid color area in the lo-res pic is made
+	 * with lines, and we want to keep this  effect in the
+	 * hi-res pic.
+	 */
 	p = &game.hires[y * (_WIDTH * 2) + x];
 	if ((*(p - 2) & 0x0f) == scr_colour)
 		put_hires_pixel (x - 1, y);
 	if ((*(p + 2) & 0x0f) == scr_colour)
 		put_hires_pixel (x + 1, y);
+
+	/* If two lines are contiguous in the lo-res pic, make them
+	 * contiguous in the hi-res pic. This condition is needed
+	 * in some scenes like in front of Lefty's in LSL1, to draw
+	 * the pole. Note: it adds artifacting in some cases.
+	 */
+	s = &game.sbuf[y * _WIDTH + x / 2];
+	if ((*(p - 1) & 0x0f) != (*(s - 1) & 0x0f))
+		put_hires_pixel (x - 1, y);
 }
 
 
@@ -418,12 +431,14 @@ static void hires_fill ()
 
 #define plotHiresPatternPoint() do {					\
 	if (patCode & 0x20) {						\
-		if ((splatterMap[bitPos>>3] >> (7-(bitPos&7))) & 1)	\
-			put_hires_pixel(x1, y1);			\
+		if ((splatterMap[bitPos>>3] >> (7-(bitPos&7))) & 1) {	\
+			if (rnd(4)) put_hires_pixel(x1*2, y1);		\
+			if (!rnd(4))put_hires_pixel(x1*2+1, y1);	\
+		}							\
 		bitPos++;						\
 		if (bitPos == 0xff)					\
 			bitPos=0;					\
-	} else put_hires_pixel(x1, y1);					\
+	} else put_hires_pixel(x1*2, y1);				\
 } while (0)
 
 /**************************************************************************
@@ -483,7 +498,7 @@ static void plot_hires_pattern(UINT8 x, UINT8 y)
 		y = penSize;
 
 	for (y1 = y - penSize; y1 <= y + penSize; y1++) {
-		for (x1 = x * 2-(penSize+1); x1<=x * 2+penSize; x1++) {
+		for (x1 = x - (penSize+1)/2; x1<=x + penSize/2; x1++) {
 			if (patCode & 0x10) {		/* Square */
 				plotHiresPatternPoint();
 			} else {			/* Circle */
