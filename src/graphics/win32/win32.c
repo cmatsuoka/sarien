@@ -227,9 +227,9 @@ static void update_mouse_pos(int x, int y)
 {
 	mouse.x = x;
 	mouse.y = y;
-	if (opt.scale != 0) {
-		mouse.x /= opt.scale;
-		mouse.y /= opt.scale;
+	if (scale != 0) {
+		mouse.x /= scale;
+		mouse.y /= scale;
 	}
 
 	/* for mouse we make the inverse transform of ASPECT_RATIO */

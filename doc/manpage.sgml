@@ -148,17 +148,16 @@
   </varlistentry>
 
   <varlistentry>
-    <term/<parameter/-p, --picture-viewer//
+    <term/<parameter/-o, --list-objects//
     <listitem><para>
-      Run the interpreter in picture viewer mode. See the PICTURE
-      VIEWER section below for further information on this mode.
+      List game objects and exit.
     </para></listitem>
   </varlistentry>
 
   <varlistentry>
-    <term/<parameter/-o, --list-objects//
+    <term/<parameter/-p, --picture-viewer//
     <listitem><para>
-      List game objects and exit.
+      Run the interpreter in picture viewer mode.
     </para></listitem>
   </varlistentry>
 
@@ -410,23 +409,13 @@
 
 </refsect1>
 
-<refsect1>
-<title/PICTURE VIEWER/
-<para>
-</para>
-</refsect1>
-
-<refsect1>
-<title/EXAMPLES/
-<para>
-</para>
-</refsect1>
-
+<!--
 <refsect1>
 <title/BUGS/
 <para>
 </para>
 </refsect1>
+-->
 
 <refsect1>
 <title/FILES/
@@ -438,16 +427,18 @@
 <title/AUTHORS/
 <para>
   Stuart George, Lance Ewing, Claudio Matsuoka, Felipe Rosinha,
-  Igor Nesterov, Vasyl Tsvirkunov, Thomas Akesson and others, See
-  the AUTHORS file in the distribution package for a complete list.
+  Igor Nesterov, Vasyl Tsvirkunov, Thomas Akesson and others. See
+  the AUTHORS file in the distribution package for a complete list
+  of contributors.
 </para>
 </refsect1>
 
+<!--
 <refsect1>
 <title/SEE ALSO/
 <para>
 </para>
 </refsect1>
-
+-->
 
 </refentry>

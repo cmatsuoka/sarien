@@ -36,6 +36,8 @@ Revision History
 	- added CGA palette emulation
 	- added CGA video card support for PC DOS
 	- added icon and menu resources to the win32 port
+	- added runtime screen size, palette and aspect ratio settings
+	  to the win32 port
 
 0.7.0 (20011122)
 	- added QNX4 native sound driver (untested)
