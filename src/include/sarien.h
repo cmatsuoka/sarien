@@ -31,7 +31,6 @@ extern "C"{
 #define OPT_LIST_OBJECTS
 #define OPT_PICTURE_VIEWER
 #define OPT_LIST_DICT
-#define FANCY_BOX
 
 #include "console.h"
 
@@ -83,14 +82,14 @@ extern "C"{
 #  define _D_INFO
 #  define _D_CRIT
 #  define _D_WARN
-#  ifdef __GNUC__
+#  if defined (__GNUC__) && !defined (NATIVE_MACOSX)
 #    define _D(args...)
 #  else
 #    ifdef _D
 #      undef _D
 #    endif
      void _D(char *, ...);
-#  endif /* __GNUC__ */
+#  endif /* __GNUC__ && !NATIVE_MACOSX */
 #endif /* _TRACE */
 
 

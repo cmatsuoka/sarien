@@ -21,8 +21,10 @@
 #include "graphics.h"
 
 
+#ifndef MACOSX_SDL
 volatile UINT32 clock_ticks;
 volatile UINT32 clock_count;
+#endif
 
 extern int optind;
 
@@ -30,7 +32,7 @@ struct sarien_options opt;
 struct game_id_list game_info;
 struct agi_game game;
 
-#if !defined(_TRACE) && !defined(__GNUC__)
+#if !defined(_TRACE) && !defined(__GNUC__) && !defined(NATIVE_MACOSX)
 INLINE void _D (char *s, ...) { s = s; }
 #endif
 

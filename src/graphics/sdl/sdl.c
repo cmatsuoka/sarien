@@ -271,6 +271,11 @@ static void process_events ()
 
 	while (SDL_PollEvent (&event) > 0) {
 		switch (event.type) {
+		case SDL_QUIT:
+			deinit_video ();
+			deinit_machine ();
+			exit (0);
+			break;
 		case SDL_MOUSEBUTTONDOWN:
 			key = (event.button.button == 1) ?
 				BUTTON_LEFT : BUTTON_RIGHT;

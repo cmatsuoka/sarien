@@ -167,7 +167,9 @@ static UINT8 console_parse (char *b)
 	if (!_p3) _pn = 2;
 	if (!_p2) _pn = 1;
 	if (!_p1) _pn = 0;
+#ifndef __APPLE__
 	_D (_D_WARN "number of parameters: %d", _pn);
+#endif
 
 	for (i = 0; i < num_ccmd; i++) {
 		d = &ccmd_list[i];
@@ -190,8 +192,10 @@ static UINT8 console_parse (char *b)
 			p[2] = _p3 ? (char)strtoul (_p3, NULL, 0) : 0;
 			p[3] = _p4 ? (char)strtoul (_p4, NULL, 0) : 0;
 			p[4] = _p5 ? (char)strtoul (_p5, NULL, 0) : 0;
+#ifndef __APPLE__
 			_D (_D_WARN "ccmd: %s %d %d %d",
 				logic_names_cmd[i].name, p[0], p[1], p[2]);
+#endif
 
 			execute_agi_command (i, p); 
 
