@@ -434,6 +434,15 @@
     </varlistentry>
 
     <varlistentry>
+      <term><varname role="macro"/USE_HIRES/</term>
+      <listitem><para>
+        Enable hi-res pictures. If not defined, it will reduce memory
+        footprint and code complexity. Recommended for systems with
+        severe memory restrictions such as PalmOS.
+      </para></listitem>
+    </varlistentry>
+
+    <varlistentry>
       <term><varname role="macro"/FAKE_PALMOS/</term>
       <listitem><para>
         Set the output window geometry to 160x160 pixels and select the
@@ -957,21 +966,14 @@ int console_init ()
 
 <sect1 id="gfx-sprite">
 <title>Sprite management</title>
-
-<sect2 id="gfx-reposition">
-<title>Repositioning sprites</title>
 <para>
-
 </para>
+</sect1>
 
-  <figure id="fig-reposition" float="1">
-    <title>Sprite reposition algorithm</title>
-    <graphic fileref="images/hg/reposition.eps" format="eps">
-  </figure>
-
-
-</sect2>
-
+<sect1 id="gfx-hires">
+<title>High-res pictures</title>
+<para>
+</para>
 </sect1>
 
 </chapter>

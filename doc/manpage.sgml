@@ -1,0 +1,281 @@
+<!DOCTYPE RefEntry PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
+        <!ENTITY lt "<">
+        <!ENTITY gt ">">
+        <!ENTITY amp "&">
+]>
+
+<refentry>
+
+<refmeta>
+  <refentrytitle/SARIEN/
+  <manvolnum/6/
+</refmeta>
+
+<refnamediv>
+  <refname/Sarien/
+  <refpurpose/a Sierra AGI resource interpreter engine/
+</refnamediv>
+
+<refsynopsisdiv>
+  <cmdsynopsis><command>
+<application/sarien/ <optional/<parameter/-A|--amiga// <optional/<parameter/-a|--agds// <optional/<parameter/-C|--crc// <optional/<parameter/-d|--list-dictionary// <optional/<parameter/-E|--emulate-sound/ <optional/<parameter/-F|--full-screen// <replaceable/type// <optional/<parameter/-g|--no-gfx-optimizations// <optional/<parameter/-H|--hires/ <property/0|1// <optional/<parameter/-h|--help// <optional/<parameter/-L|--list-games// <optional/<parameter/-n|--no-sound// <optional/<parameter/-p|--picture-viewer// <optional/<parameter/-o|--list-objects// <optional/<parameter/-S|--scale/ <replaceable/num// <optional/<parameter/-r|--aspect-ratio/ <property/0|1// <optional/<parameter/-v|--emulate-version/ <replaceable/version// <optional/<parameter/-V|--version// <optional/<parameter/-x|--no-x-shm// <optional/<replaceable/gamedir//
+  </command></cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1>
+<title/DESCRIPTION/
+<para>
+  <application/Sarien/ decodes and plays games written for the Sierra
+  On-Line Adventure Game Interpreter (AGI) system, such as Leisure Suit
+  Larry in the Land of the Lounge Lizards, Space Quest I and II, and
+  King's Quest I to IV. Currently AGI versions 2 and 3 are recognized;
+  support for older AGI v1 games is not available.
+</para>
+</refsect1>
+
+<refsect1>
+<title/OPTIONS/
+
+<variablelist>
+  <listentry>
+    <term/<parameter/-A, --amiga//
+    <listitem><para>
+      Tell the interpreter to read Amiga word-aligned resource files.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/-a, --agds//
+    <listitem><para>
+      Tell the interpreter to read AGDS games.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/-C, --crc//
+    <listitem><para>
+      Compute the CRC of the game resources and exit.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/-d, --list-dictionary//
+    <listitem><para>
+      List dictionary words and exit.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/-E, --emulate-sound/ <replaceable/type//
+    <listitem><para>
+      Set the sound generator to emulate the output of Sierra's AGI in
+      different platforms. The available types are: <parameter/pc/,
+      <parameter/mac/ and <parameter/amiga/.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/-F, --full-screen//
+    <listitem><para>
+      Run the interpreter in full-screen mode, if supported by the
+      graphics driver. This mode is currently supported only by the SDL
+      driver.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/-g, --no-gfx-optimizations//
+    <listitem><para>
+      Disable any graphics driver optimizations in use by the graphics
+      driver. This option should be used with the X11 driver if the
+      display is being exported to a server with different endianness.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/-H, --hires/ <property/0|1//
+    <listitem><para>
+      Enable or disable double horizontal resolution for picture
+      drawing. When it's enabled pictures look better, but some artifacting
+      may appear. Hi-res mode can be also enabled or disabled from the
+      interpreter console at runtime.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/-h, --help//
+    <listitem><para>
+      Display a summary of available command-line parameters.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/-L, --list-games//
+    <listitem><para>
+      List recognized games and versions.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/-n, --no-sound//
+    <listitem><para>
+      Disable sound output.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/-p, --picture-viewer//
+    <listitem><para>
+      Run the interpreter in picture viewer mode. See the PICTURE
+      VIEWER section below for further information on this mode.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/-o, --list-objects//
+    <listitem><para>
+      List game objects and exit.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/-S, --scale/ <replaceable/num//
+    <listitem><para>
+      Set window scaling to <replaceable/num/. This option is available
+      in windowed graphics environments only. (Default scale is 2.)
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/-r, --aspect-ratio/ <property/0|1//
+    <listitem><para>
+      Enable or disable aspect ratio correction for square-pixel graphics
+      modes to match the PC EGA 320x200 display.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/-v, --emulate-version/ <replaceable/version//
+    <listitem><para>
+      Emulate the specified AGI version, overriding any autodetected
+      defaults. Valid version numbers are: 2.089, 2.272, 2.440, 2.917,
+      2.936, 3.002.086, 3.002.149.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/-V, --version//
+    <listitem><para>
+      Show version number and exit.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/-x, --no-x-shm//
+    <listitem><para>
+      Disable X11 shared memory extension. This option should be used
+      if you're exporting the display to a remote X server.
+    </para></listitem>
+  </listentry>
+</variablelist>
+
+</refsect1>
+
+<refsect1>
+<title/USER INPUT/
+<para>
+  The interpreter accepts user input using the keyboard or the mouse.
+  The mouse can be used to set ego destination, dismiss message boxes and
+  select menu options (left button) or enable and disable the interpreter
+  console (right button). User commands (such as <command/EXAMINE ROOM/
+  or <command/RESTORE GAME/ can be typed in the user input area.
+</para><para>
+  The following special keys are recognized during gameplay:
+</para>
+
+<variablelist>
+  <listentry>
+    <term/<parameter/Arrow keys, numeric keypad//
+    <listitem><para>
+      Control direction of ego walk. The destination point can be also
+      set left-clicking on the desired location. Selecting the same
+      direction twice or pressing <keycap/5/ on the numeric keypad causes
+      ego to stop.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/<keycap/`///
+    <listitem><para>
+      Switch the interpter console on and off.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/<keycap/F11///
+    <listitem><para>
+      Toggle debug information on the status line. If enabled, the current
+      room number, previous room number, current ego coordinates and last
+      clicked coordinates are shown on the status line.
+    </para></listitem>
+  </listentry>
+
+  <listentry>
+    <term/<parameter/<keycap/F12///
+    <listitem><para>
+      Show or hide the priority screen. 
+    </para></listitem>
+  </listentry>
+
+<para>
+  Other keys are set by the game being executed. Traditionally
+  <keycap/F3/ is used to echo the last command line, and <keycap/TAB/
+  is used to show the inventory items. Please refer to the game
+  documentation or on-line help for a list of the supported keystrokes.
+</para>
+</refsect1>
+
+<refsect1>
+<title/CONSOLE COMMANDS/
+<para>
+</para>
+</refsect1>
+
+<refsect1>
+<title/PICTURE VIEWER/
+<para>
+</para>
+</refsect1>
+
+<refsect1>
+<title/EXAMPLES/
+<para>
+</para>
+</refsect1>
+
+<refsect1>
+<title/BUGS/
+<para>
+</para>
+</refsect1>
+
+<refsect1>
+<title/FILES/
+<para>
+</para>
+</refsect1>
+
+<refsect1>
+<title/AUTHORS/
+<para>
+</para>
+</refsect1>
+
+<refsect1>
+<title/SEE ALSO/
+<para>
+</para>
+</refsect1>
+
+
+</refentry>

@@ -21,11 +21,13 @@ Revision History
 	- implemented set.pri.base (used in KQ4)
 	- implemented echo.line (to repeat last input line with F3)
 	- implemented adj.ego.move.to.xy (for click-to-walk interface)
+	- added mouse event support to the X11, SDL and Win32 drivers
 	- added debug info on status line (activated with key F11)
 	- implemented click-to-walk mouse interface
 	- menu system rewritten to allow mouse operation
-	- added mouse event support to the X11, SDL and Win32 drivers
 	- added experimental hi-res picture mode
+	- added mouse support in the picture viewer
+	- added SGML man page (use docbook-to-man to create the roff file)
 
 0.6.1 (20010722)
 	- fixed QNX build and Photon driver
