@@ -16,13 +16,14 @@
 
 @interface SarienView : NSView
 {
-    unsigned int *screen;
-    CGImageRef    screenImage;
-    NSLock       *mutex;
+	unsigned int *screen;
+	CGImageRef    screenImage;
+	NSLock       *mutex;
 
-    unichar key_queue[KEY_QUEUE_SIZE];
-    int     key_queue_start;
-    int     key_queue_end;
+	unichar key_queue[KEY_QUEUE_SIZE];
+	int     key_queue_start;
+	int     key_queue_end;
+	BOOL	key_alt;
 }
 
 - (unsigned int*)screenContent;
