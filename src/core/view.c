@@ -71,7 +71,7 @@ static void _set_cel (struct vt_entry *v, int n)
 
 static void _set_loop (struct vt_entry *v, int n)
 {
-	_D (_D_WARN "vt entry #%d, loop = %d", v->entry, n);
+	_D ("vt entry #%d, loop = %d", v->entry, n);
 	v->current_loop = n;
 	v->loop_data = &game.views[v->current_view].loop[n];
 	v->num_cels = v->loop_data->num_cels;
@@ -257,15 +257,18 @@ void set_cel (struct vt_entry *v, int n)
 	assert (v->num_cels >= n);
 
 	_set_cel (v, n);
+
+	/* If position isn't appropriate, update it accordingly */
 	if (v->x_pos + v->x_size > _WIDTH) {
-		v->flags |= FLAG10;
+		v->flags |= UPDATE_POS;
 		v->x_pos = _WIDTH - v->x_size;
 	}
 	if (v->y_pos - v->y_size + 1 < 0) {
-		v->flags |= FLAG10;
+		v->flags |= UPDATE_POS;
 		v->y_pos = v->y_size - 1;
 	}
 	if (v->y_pos <= game.horizon && (~v->flags & IGNORE_HORIZON)) {
+		v->flags |= UPDATE_POS;
 		v->y_pos = game.horizon + 1;
 	}
 }

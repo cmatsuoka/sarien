@@ -6,6 +6,7 @@ Tested ports:
          Compiler  Driver    Driver   Graphics  Graphics    Sound
 ---------+-------+---------+---------+---------+---------+---------+
  MS-DOS  |Watcom |   Raw   |  dummy  |    no   |   yes   |    no   |
+ MS-DOS  |Turbo C|   Raw   |  dummy  |    no   |   yes   |    no   |
 ---------+-------+---------+---------+---------+---------+---------+
  Linux   |  gcc  |   X11   |OSS,ALSA |   yes   |    no   |   yes   |
  Linux   |  gcc  | SVGAlib |OSS,ALSA |    no   |   yes   |   yes   |
@@ -29,7 +30,8 @@ Tested ports:
 ---------+-------+---------+---------+---------+---------+---------+
 
 The Linux/X11 driver is known to work in the following architectures:
-IA32 (i386), PowerPC, IA64, S/390.
+IA32 (i386), PowerPC, IA64, S/390. The NetBSD, FreeBSD and BeOS ports
+have been tested on IA32. The Solaris port has been tested on Sparc.
 
 
 Not integrated to the main tree:
@@ -62,7 +64,6 @@ In progress:
          Compiler  Driver    Driver   Graphics  Graphics    Sound
 ---------+-------+---------+---------+---------+---------+---------+
  MS-DOS  | DJGPP | allegro | allegro |    no   |   yes   |   yes   |
- MS-DOS  |Turbo C|   Raw   |  dummy  |    no   |   yes   |    no   |
 ---------+-------+---------+---------+---------+---------+---------+
  OS/2    |   ?   |  DIVE   |  DART   |   yes   |    no   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+

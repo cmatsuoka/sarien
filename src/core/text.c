@@ -341,7 +341,7 @@ char *agi_sprintf (char *s)
 	char z[16], *p;
 	int xx, xy;
 
-	_D (_D_WARN "logic %d, '%s'", game.lognum, s);
+	_D ("logic %d, '%s'", game.lognum, s);
 	/* turn a AGI string into a real string */
 	p = x;
 

@@ -314,7 +314,7 @@ cmd(reposition) {
 	int dx = (SINT8)_v[p1], dy = (SINT8)_v[p2];
 
 	_D ("dx=%d, dy=%d", dx, dy);
-	vt.flags |= FLAG10;
+	vt.flags |= UPDATE_POS;
 
 	if (dx < 0 && vt.x_pos < dx)
 		vt.x_pos = 0;
@@ -332,14 +332,14 @@ cmd(reposition) {
 cmd(reposition_to) {
 	vt.x_pos = p1;
 	vt.y_pos = p2;
-	vt.flags |= FLAG10;
+	vt.flags |= UPDATE_POS;
 	fix_position (p0);
 }
 
 cmd(reposition_to_v) {
 	vt.x_pos = _v[p1];
 	vt.y_pos = _v[p2];
-	vt.flags |= FLAG10;
+	vt.flags |= UPDATE_POS;
 	fix_position (p0);
 }
 

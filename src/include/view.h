@@ -91,7 +91,7 @@ struct vt_entry {
 #define MOTION		0x0080
 #define ON_WATER	0x0100
 #define IGNORE_OBJECTS	0x0200
-#define FLAG10		0x0400		/* ?!? */
+#define UPDATE_POS	0x0400		/* ?!? */
 #define ON_LAND		0x0800
 #define DONTUPDATE	0x1000		/* ?!? */
 #define FIX_LOOP	0x2000
