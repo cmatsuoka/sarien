@@ -149,32 +149,7 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 		game.ver = 0;	/* Enable conf file warning */
 	}
 
-	/* Execute the game */
-    	do {
-		_D(_D_WARN "game loop");
-
-		if (game.state < STATE_RUNNING) {
-			ec = agi_init ();
-			game.state = STATE_RUNNING;
-		}
-
-		if (ec == err_OK) {
-			/* setup machine specific AGI flags, etc */
-			setvar (V_computer, 0);	/* IBM PC */
-			setvar (V_soundgen, 1);	/* IBM PC SOUND */
-			setvar (V_max_input_chars, 38);
-			setvar (V_monitor, 0x3); /* EGA monitor */
-			game.horizon = HORIZON;
-			game.player_control = FALSE;
-
-			ec = run_game();
-		}
-
-		/* deinit our resources */
-		game.state = STATE_LOADED;
-		agi_deinit ();
-
-    	} while (ec == err_RestartGame);
+	ec = run_game ();
 
 	deinit_sound ();
 	deinit_video ();
@@ -223,5 +198,4 @@ bail_out:
 
 	return ec;
 }
-
 

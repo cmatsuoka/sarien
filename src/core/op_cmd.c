@@ -663,8 +663,7 @@ cmd(get_num) {
 	flush_lines (22, 22);
 }
 
-cmd(set_cursor_char)
-{
+cmd(set_cursor_char) {
 	if (cur_logic->texts != NULL && (p0 - 1) <= cur_logic->num_texts) {
 		game.cursor_char = *cur_logic->texts[p0 - 1];
 	} else {
@@ -724,8 +723,7 @@ cmd(clear_text_rect) {
 	flush_block (x1, y1, x2, y2);
 }
 
-cmd(toggle_monitor)
-{
+cmd(toggle_monitor) {
 	report ("toggle.monitor\n");
 #ifdef USE_HIRES
 	opt.hires = !opt.hires;

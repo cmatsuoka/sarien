@@ -22,23 +22,23 @@ Extra features:
 
 0.7.0:
 
-* Demopacks 1-4 100% accurate					98%
+* Demopacks 1-4 100% accurate					OK
 * Main Sierra v2 games finishable (LSL1, KQ1-2, PQ1, SQ1-2)	OK
 * AGDS game finishable						OK
-* Sierra v3 games + KQ3 playable				OK
+* Sierra v3 games playable					OK
 * Fix quit/restart crashes					OK
 * Fix hi-res mode problems					OK
 * Amiga port							OK
 
 0.8.0:
 
-* Sierra v3 games + KQ3 finishable				10%
-* Sierra v2 games accurate					30%
-* Multi-slot savegames						 0%
-* Fix quit/restart problems					 0%
+* Sierra v3 games finishable					30%
+* Sierra v2 games accurate					50%
+* Multi-slot savegames						90%
+* Fix quit/restart problems					30%
 * Major homemade games finishable				 0%
-* Macintosh port						50%
-* unk commands implemented					40%
+* Macintosh port						70%
+* unk commands implemented					80%
 
 0.9.0:
 
@@ -49,7 +49,7 @@ Extra features:
 
 1.0:
 
-* All games 100% accurate					 5%
+* All games 100% accurate					20%
 
 1.1+:
 

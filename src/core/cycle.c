@@ -157,7 +157,6 @@ static void print_line_prompt ()
 	}
 }
 
-
 void update_timer ()
 {
 	if (!game.clock_enabled)
@@ -301,7 +300,7 @@ int main_cycle ()
 	return TRUE;
 }
 
-int run_game ()
+static int play_game ()
 {
 	int ec = err_OK;
 
@@ -309,9 +308,13 @@ int run_game ()
 	stop_sound ();
 	clear_screen (0);
 
-	setflag (F_logic_zero_firsttime, TRUE);	/* not in 2.917 */
-	setflag (F_new_room_exec, TRUE);	/* needed for MUMG and SQ2! */
-	setflag (F_restart_game, FALSE);
+	setvar (V_computer, 0);	/* IBM PC */
+	setvar (V_soundgen, 1);	/* IBM PC SOUND */
+	setvar (V_max_input_chars, 38);
+	setvar (V_monitor, 0x3); /* EGA monitor */
+	game.horizon = HORIZON;
+	game.player_control = FALSE;
+
 	setflag (F_sound_on, TRUE);		/* enable sound */
 	setvar (V_time_delay, 2);		/* "normal" speed */
 
@@ -361,4 +364,33 @@ int run_game ()
 	return ec;
 }
 
+
+int run_game ()
+{
+	int ec = err_OK;
+
+	setflag (F_logic_zero_firsttime, TRUE);	/* not in 2.917 */
+	setflag (F_new_room_exec, TRUE);	/* needed for MUMG and SQ2! */
+	setflag (F_restart_game, FALSE);
+
+	/* Execute the game */
+    	do {
+		_D(_D_WARN "game loop");
+
+		if (game.state < STATE_RUNNING) {
+			if (agi_init () != err_OK)
+				break;
+			game.state = STATE_RUNNING;
+		}
+
+		ec = play_game();
+
+		/* deinit our resources */
+		game.state = STATE_LOADED;
+		agi_deinit ();
+
+    	} while (ec == err_RestartGame);
+
+	return ec;
+}
 
