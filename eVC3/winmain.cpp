@@ -36,7 +36,7 @@ struct game_id_list game_info;
 struct agi_game game;
 
 
-static void open_file (HINSTANCE hThisInst, char *s)
+static bool open_file (HINSTANCE hThisInst, char *s)
 {
 	TCHAR buffer[MAX_PATH];
 	EXTIMAGE ei[3] =
@@ -62,9 +62,11 @@ static void open_file (HINSTANCE hThisInst, char *s)
 		char* lastdir = strrchr(s, '\\');
 		if(lastdir)
 			*lastdir = 0;
+		return true;
 	}
+	else
+		return false;
 }
-
 
 int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPWSTR lpszArgs, int nWinMode)
 {
@@ -79,12 +81,44 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPWSTR lpszArgs, in
 	c_unc = GetCommandLine();
 	WideCharToMultiByte(CP_ACP, 0, c_unc, -1, c_asc, 1024, NULL, NULL);
 
-	for (c = c_asc; *c && *c != 0x20; c++);
+	filename[0] = 0;
+	c = c_asc;
+	if(*c)
+	{
+		int l;
+		if(*c == '\"')
+		{
+			for(c++; *c && *c != '\"'; c++) ;
+			if(*c)
+				c++;
+		}
+		else
+			for(; *c && *c != ' '; c++) ; 
+		
+		for(; *c && *c == ' '; c++) ;
 
-//	if (*c)
-//		strcpy (filename, ++c);
-//	else
-	open_file (hThisInst, filename);
+		if(*c == '\"')
+		{
+			c ++;
+			if(*c)
+			{
+				l = strlen(c);
+				if(c[l-1] == '\"')
+					c[l-1] = 0;
+			}
+		}
+		l = strlen(c);
+		if(l > 4 && c[l-4] == '.' && tolower(c[l-3]) == 'o' && tolower(c[l-2]) == 'v' && tolower(c[l-1]) == 'l')
+		{
+			for(l--; l>=0 && c[l] != '\\' && c[l] != '/'; l--);
+			if(l>=0)
+				c[l] = 0;
+		}
+		strcpy(filename, c);
+	}
+
+	if(!filename[0] && !open_file (hThisInst, filename))
+		exit(0);
 
 	init_machine (1, 0);
 
@@ -107,6 +141,8 @@ int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPWSTR lpszArgs, in
 	{
 		game.state = STATE_LOADED;
 	}
+	else
+		goto bail_out;
 
 	init_sound ();
 

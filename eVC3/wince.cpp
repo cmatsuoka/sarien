@@ -30,9 +30,15 @@
 #include "graphics.h"
 #include "keyboard.h"
 #include "console.h"
+#include "text.h"
+/* Prevent name conflict */
+#undef snprintf
 #include "win32.h"
 
 #include "resource.h"
+
+#define USE_F_KEYS
+#define SMOOTH
 
 static LPTSTR szAppName = TEXT("Pocket Sarien");
 static GXDisplayProperties gxdp;
@@ -43,7 +49,14 @@ static HWND hwndMB = NULL;
 
 typedef unsigned char UBYTE;
 static UBYTE* screen;
+#ifdef SMOOTH
+static UBYTE* palRed;
+static UBYTE* palGreen;
+static UBYTE* palBlue;
+#else
 static unsigned short* pal;
+#endif
+
 
 static int	wince_init_vidmode	(void);
 static int	wince_deinit_vidmode(void);
@@ -55,6 +68,11 @@ static void	wince_new_timer		(void);
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam);
 
+#ifdef USE_F_KEYS
+void setup_extra_windows(HWND hwndTop);
+void adjust_extra_windows();
+HWND hwndFKeys;
+#endif
 
 static struct gfx_driver gfx_wince =
 {
@@ -85,10 +103,16 @@ void set_palette(int ent, UBYTE r, UBYTE g, UBYTE b)
 {
 	if (ent >= 256)
 		return;
+#ifdef SMOOTH
+	palRed[ent] = r;
+	palGreen[ent] = g;
+	palBlue[ent] = b;
+#else
 	if(gxdp.ffFormat & kfDirect565)
 		pal[ent] = ((r&0xf8)<<(11-3))|((g&0xfc)<<(5-2))|((b&0xf8)>>3);
 	else if(gxdp.ffFormat & kfDirect555)
 		pal[ent] = ((r&0xf8)<<(10-3))|((g&0xf8)<<(5-2))|((b&0xf8)>>3);
+#endif
 }
 
 
@@ -136,9 +160,19 @@ static int wince_init_vidmode()
 	hwndMB = smbi.hwndMB;
 	
 	screen = new UBYTE[GFX_WIDTH*GFX_HEIGHT];
+#ifdef SMOOTH
+	palRed = new UBYTE[256];
+	palGreen = new UBYTE[256];
+	palBlue = new UBYTE[256];
+	if(!palRed || !palGreen || !palBlue)
+		return err_Unk;
+#else
 	pal = new unsigned short[256];
+	if(!pal)
+		return err_Unk;
+#endif
 
-	if(!screen || !pal)
+	if(!screen)
 		return err_Unk;
 
 	memset(screen, 0, GFX_WIDTH*GFX_HEIGHT);
@@ -150,7 +184,6 @@ static int wince_init_vidmode()
 	SetForegroundWindow(hwndMain);
 	SHFullScreen(hwndMain, SHFS_SHOWSIPBUTTON);
 	SHFullScreen(hwndMain, SHFS_HIDETASKBAR);
-	SHSipPreference(hwndMain, SIP_UP);
 
 	gxdp = GXGetDisplayProperties();
 	gxkl = GXGetDefaultKeys(GX_NORMALKEYS);
@@ -161,6 +194,9 @@ static int wince_init_vidmode()
 	for(i=17; i<256; i++)
 		set_palette(i, 0, 255, 0);
 
+#ifdef USE_F_KEYS
+	setup_extra_windows(hwndMain);
+#endif
 
 	return err_OK;
 }
@@ -181,7 +217,14 @@ static int wince_deinit_vidmode(void)
 	GXCloseDisplay();
 
 	delete[] screen;
+#ifdef SMOOTH
+	delete[] palRed;
+	delete[] palGreen;
+	delete[] palBlue;
+#else
 	delete[] pal;
+#endif
+
 
 	PostMessage(hwndMain, WM_QUIT, 0, 0);
 	return err_OK;
@@ -209,6 +252,7 @@ static void wince_new_timer()
 }
 
 #define REPEATED_KEYMASK	(1<<30)
+#define RELEASED_KEYMASK	(1<<31)
 #define KEY_QUEUE_SIZE		16
 
 static struct{
@@ -255,7 +299,7 @@ static void wince_put_block(int x1, int y1, int x2, int y2)
 	if(!active)
 		return;
 
-/* Somehow this function get called with unchecked bounds causing visual artefacts */
+/* Somehow this function gets called with unchecked bounds causing visual artefacts */
 	if(x2 > 319)
 		x2 = 319;
 	if(y2 > 199)
@@ -272,6 +316,11 @@ static void wince_put_block(int x1, int y1, int x2, int y2)
 	
 	static long pixelstep;
 	static long linestep;
+
+#ifdef SMOOTH
+	static bool b565 = (gxdp.ffFormat & kfDirect565);
+	x1 &= ~3;
+#endif
 
 	scr_ptr = screen + x1 + y1*GFX_WIDTH;
 	scr_ptr_limit = screen + x2 + y2*GFX_WIDTH;
@@ -291,12 +340,48 @@ static void wince_put_block(int x1, int y1, int x2, int y2)
 			dst = scraddr;
 			while(src < src_limit)
 			{
+#ifdef SMOOTH
+			/* Let's see how fast that CPU is */
+				UBYTE r, g, b;
+				r = (3*palRed[*(src+0)] + palRed[*(src+1)])>>2;
+				g = (3*palGreen[*(src+0)] + palGreen[*(src+1)])>>2;
+				b = (3*palBlue[*(src+0)] + palBlue[*(src+1)])>>2;
+
+				if(b565)
+					*(unsigned short*)dst = ((r&0xf8)<<(11-3))|((g&0xfc)<<(5-2))|((b&0xf8)>>3);
+				else
+					*(unsigned short*)dst = ((r&0xf8)<<(10-3))|((g&0xf8)<<(5-2))|((b&0xf8)>>3);
+				dst += pixelstep;
+
+				r = (palRed[*(src+1)] + palRed[*(src+2)])>>1;
+				g = (palGreen[*(src+1)] + palGreen[*(src+2)])>>1;
+				b = (palBlue[*(src+1)] + palBlue[*(src+2)])>>1;
+
+				if(b565)
+					*(unsigned short*)dst = ((r&0xf8)<<(11-3))|((g&0xfc)<<(5-2))|((b&0xf8)>>3);
+				else
+					*(unsigned short*)dst = ((r&0xf8)<<(10-3))|((g&0xf8)<<(5-2))|((b&0xf8)>>3);
+				dst += pixelstep;
+
+				r = (palRed[*(src+2)] + 3*palRed[*(src+3)])>>2;
+				g = (palGreen[*(src+2)] + 3*palGreen[*(src+3)])>>2;
+				b = (palBlue[*(src+2)] + 3*palBlue[*(src+3)])>>2;
+
+				if(b565)
+					*(unsigned short*)dst = ((r&0xf8)<<(11-3))|((g&0xfc)<<(5-2))|((b&0xf8)>>3);
+				else
+					*(unsigned short*)dst = ((r&0xf8)<<(10-3))|((g&0xf8)<<(5-2))|((b&0xf8)>>3);
+				dst += pixelstep;
+
+				src += 4;
+#else
 				if((unsigned long)src & 3)
 				{
 					*(unsigned short*)dst = pal[*src];
 					dst += pixelstep;
 				}
 				src ++;
+#endif
 			}
 			scraddr += linestep;
 			scr_ptr += GFX_WIDTH;
@@ -317,9 +402,11 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 	int x, y;
 	RECT		 rc;
 
-	switch (nMsg) {
+	switch (nMsg)
+	{
 	case WM_CREATE:
 		memset(&sai, 0, sizeof(sai));
+		SHSipPreference(hwnd, SIP_INPUTDIALOG);
 		return 0;
 	case WM_DESTROY:
 		wince_deinit_vidmode ();
@@ -338,18 +425,23 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 	case WM_PAINT:
 		hDC = BeginPaint (hwndMain, &ps);
 		EndPaint (hwndMain, &ps);
+		SHSipPreference(hwndMain, SIP_UP); /* Hack! */
+#ifdef USE_F_KEYS
+		adjust_extra_windows();
+#endif
+		/* It does not happen often but I don't want to see tooltip traces */
+		wince_put_block(0, 0, 319, 199);
 		return 0;
 	case WM_ACTIVATE:
 		if(!active)
 		{
 			active = true;
 			GXResume();
-			SetForegroundWindow(hwndMain);
-			SHFullScreen(hwndMain, SHFS_SHOWSIPBUTTON);
-			SHFullScreen(hwndMain, SHFS_HIDETASKBAR);
 		}
-		SHHandleWMActivate(hwnd, wParam, lParam, &sai, 0);
-		SHSipPreference(hwndMain, SIP_UP);
+		SHHandleWMActivate(hwnd, wParam, lParam, &sai, SHA_INPUTDIALOG);
+#ifdef USE_F_KEYS
+		adjust_extra_windows();
+#endif
 		return 0;
 	case WM_HIBERNATE:
 		if(active)
@@ -358,25 +450,22 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			GXSuspend();
 		}
 		return 0;
-//	case WM_SETTINGCHANGE:
-//		SHHandleWMSettingChange(hwnd, wParam, lParam, &sai);
-//		return 0;
+	case WM_SETTINGCHANGE:
+		SHHandleWMSettingChange(hwnd, wParam, lParam, &sai);
+#ifdef USE_F_KEYS
+		adjust_extra_windows();
+#endif
+		return 0;
 	case WM_COMMAND:
 		switch(wParam)
 		{
 		case IDC_ABOUT:
-			SHSipPreference(hwndMain, SIP_DOWN);
-			GXSuspend();
-			active = false;
-			MessageBox(hwndMain, TEXT("Pocket Sarien rev.2\n\nPorted by Vasyl Tsvirkunov\nhttp://pocketatari.retrogames.com"),
-				TEXT("Pocket Sarien"), MB_OK|MB_APPLMODAL);
-			active = true;
-			GXResume();
-			wince_put_block(0, 0, 319, 199);
-			SetForegroundWindow(hwndMain);
-			SHFullScreen(hwndMain, SHFS_SHOWSIPBUTTON);
-			SHFullScreen(hwndMain, SHFS_HIDETASKBAR);
-			SHSipPreference(hwndMain, SIP_UP);
+			message_box("Pocket Sarien rev.3\n"
+				        "Ported by Vasyl Tsvirkunov\n"
+						"http://pocketatari.\n"
+						"               retrogames.com\n\n"
+						"Visit Sarien homepage at\n"
+						"http://sarien.sourceforge.net");
 			break;
 		case IDC_EXIT:
 			DestroyWindow(hwndMain);
@@ -393,17 +482,23 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case WM_LBUTTONDOWN:
-		key = BUTTON_LEFT;
-		mouse.button = TRUE;
-		mouse.x = LOWORD(lParam)*4/3;
-		mouse.y = HIWORD(lParam);
+		if(HIWORD(lParam)<200)
+		{
+			key = BUTTON_LEFT;
+			mouse.button = TRUE;
+			mouse.x = LOWORD(lParam)*4/3;
+			mouse.y = HIWORD(lParam);
+		}
 		break;
 
 	case WM_RBUTTONDOWN:
-		key = BUTTON_RIGHT;
-		mouse.button = TRUE;
-		mouse.x = LOWORD(lParam)*4/3;
-		mouse.y = HIWORD(lParam);
+		if(HIWORD(lParam)<200)
+		{
+			key = BUTTON_RIGHT;
+			mouse.button = TRUE;
+			mouse.x = LOWORD(lParam)*4/3;
+			mouse.y = HIWORD(lParam);
+		}
 		break;
 
 	case WM_LBUTTONUP:
@@ -412,20 +507,16 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		return 0;
 
 	case WM_MOUSEMOVE:
-		mouse.x = LOWORD(lParam)*4/3;
-		mouse.y = HIWORD(lParam);
+		if(HIWORD(lParam)<200)
+		{
+			mouse.x = LOWORD(lParam)*4/3;
+			mouse.y = HIWORD(lParam);
+		}
 		return 0;
 
 	case WM_KEYDOWN:
-		/* Keycode debug:
-		 * report ("%02x\n", (int)wParam);
-		 */
-		switch (key = (int)wParam) {
-		case VK_LWIN:
-		case VK_RWIN: /* don't ask */
-		case VK_SHIFT:
-			key = 0;
-			break;
+		switch(wParam)
+		{
 		case VK_UP:
 			if(!(lParam & REPEATED_KEYMASK))
 				key = KEY_UP;
@@ -458,19 +549,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			if(!(lParam & REPEATED_KEYMASK))
 				key = KEY_DOWN_LEFT;
 			break;
-		case VK_RETURN:
-			key = KEY_ENTER;
-			break;
-		case VK_BACK:
-			key = KEY_BACKSPACE;
-			break;
-		case VK_ADD:
-			key = '+';
-			break;
-		case VK_SUBTRACT:
-			key = '-';
-			break;
-/*
 		case VK_F1:
 			key = 0x3b00;
 			break;
@@ -504,33 +582,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		case VK_SNAPSHOT:
 			key = KEY_PRIORITY;
 			break;
-*/
-		case VK_BACKSLASH:
-		case VK_ESCAPE:
-			key = KEY_ESCAPE;
-			break;
-		case VK_COMMA:
-			key = GetKeyState (VK_SHIFT) & 0x8000 ? '<' : ',';
-			break;
-		case VK_PERIOD:
-			key = GetKeyState (VK_SHIFT) & 0x8000 ? '>' : '.';
-			break;
-		case VK_SLASH:
-			key = GetKeyState (VK_SHIFT) & 0x8000 ? '?' : '/';
-			break;
-		case VK_SPACE:
-			key = ' ';
-			break;
-/*
-#ifdef USE_CONSOLE
-		case 192:
-			key = CONSOLE_ACTIVATE_KEY;
-			break;
-		case 193:
-			key = CONSOLE_SWITCH_KEY;
-			break;
-#endif
-*/
 		default:
 			if(key == gxkl.vkA)
 			{
@@ -539,43 +590,31 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			}
 			else if(key == gxkl.vkB)
 			{
-				key = 0x1b;
+				key = KEY_ESCAPE;
 				break;
 			}
+#ifdef USE_CONSOLE
 			else if(key == gxkl.vkC)
 			{
 				key = CONSOLE_ACTIVATE_KEY;
 				break;
 			}
-			if (!isprint(key))
-				break;
-
-
-			/* Must exist a better way to do that! */
-			if (GetKeyState (VK_CAPITAL) & 0x1) {
-				if (GetKeyState (VK_SHIFT) & 0x8000)
-					key = key + 32;
-			} else {
-				if (!(GetKeyState (VK_SHIFT) & 0x8000))
-					key = key + 32;
-			}
-#if 0
-			/* Control and Alt modifier */
-			if (GetAsyncKeyState (VK_CONTROL) & 0x8000)
-				key = (key & ~0x20) - 0x40;
-			else 
-				if (GetAsyncKeyState (VK_MENU) & 0x8000)
-					key = scancode_table[(key & ~0x20) - 0x41] << 8;
 #endif
-
-			break;
-
 		};
+		break;
 
-		_D (": key = 0x%02x ('%c')", key, isprint(key) ? key : '?');
+	case WM_CHAR:
+		if(!(lParam & RELEASED_KEYMASK)) /* pressed? */
+		{
+			key = (int)wParam;
+			if(key == '\\')
+				key = KEY_ESCAPE; /* menu */
+		}
+		else
+			return 0;
 		break;
 	};
-			
+
 	/* Keyboard message handled */
 	if (key) {
 		key_enqueue (key);
@@ -584,3 +623,101 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 
 	return DefWindowProc (hwnd, nMsg, wParam, lParam);
 }
+
+#ifdef USE_F_KEYS
+/* Window for F-key input. Hack but some people asked for it. */
+LRESULT CALLBACK FWindowProc(HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMsg)
+	{
+	case WM_CREATE:
+		return 0;
+	case WM_PAINT:
+		{
+			HDC          hDC;
+			PAINTSTRUCT  ps;
+			RECT		 rc;
+			hDC = BeginPaint(hwnd, &ps);
+			GetClientRect(hwnd, &rc);
+			HGDIOBJ oldPen = SelectObject(hDC, (HGDIOBJ)GetStockObject(BLACK_PEN));
+			HGDIOBJ oldBr = SelectObject(hDC, (HGDIOBJ)GetStockObject(WHITE_BRUSH));
+			HGDIOBJ oldFont = SelectObject(hDC, (HGDIOBJ)GetStockObject(SYSTEM_FONT));
+			int rcWidth = rc.right-rc.left;
+			RECT rcItem;
+			rcItem.top = rc.top;
+			rcItem.bottom = rc.bottom;
+			POINT pts[2];
+			pts[0].y = rc.top;
+			pts[1].y = rc.bottom;
+			TCHAR text[4];
+			for(int i=0; i<10; i++)
+			{
+				wsprintf(text, TEXT("F%d"), i+1);
+				rcItem.left = rc.left+rcWidth*i/10;
+				rcItem.right = rc.left+rcWidth*(i+1)/10;
+				pts[0].x = pts[1].x = rcItem.right;
+				Polyline(hDC, pts, 2);
+				DrawText(hDC, text, -1, &rcItem, DT_CENTER|DT_VCENTER);
+			}
+			SelectObject(hDC, oldPen);
+			SelectObject(hDC, oldBr);
+			SelectObject(hDC, oldFont);
+			EndPaint(hwnd, &ps);
+		}
+		return 0;
+	case WM_LBUTTONDOWN:
+		{
+			int x = LOWORD(lParam);
+			RECT rc; GetWindowRect(hwnd, &rc);
+			int fnum = x*10/(rc.right-rc.left);
+			PostMessage(hwndMain, WM_KEYDOWN, VK_F1+fnum, 0);
+		}
+		return 0;
+	}
+
+	return DefWindowProc(hwnd, nMsg, wParam, lParam);
+}
+
+void setup_extra_windows(HWND hwndTop)
+{
+	LPTSTR fkeyname = TEXT("fkeys");
+
+	WNDCLASS wc;
+	wc.style = CS_HREDRAW | CS_VREDRAW;
+	wc.lpfnWndProc = FWindowProc;
+	wc.cbClsExtra = 0;
+	wc.cbWndExtra = 0;
+	wc.hInstance = GetModuleHandle(NULL);
+	wc.hIcon = NULL;
+	wc.hCursor = NULL;
+	wc.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);
+	wc.lpszMenuName = NULL;
+	wc.lpszClassName = fkeyname;
+	RegisterClass(&wc);
+	
+	hwndFKeys = CreateWindow(fkeyname,
+		fkeyname,
+		WS_VISIBLE|WS_CHILD,
+		0,
+		200,
+		GetSystemMetrics(SM_CXSCREEN),
+		20,
+		hwndTop,
+		(HMENU)100,
+		GetModuleHandle(NULL),
+		NULL);
+}
+
+void adjust_extra_windows()
+{
+	SIPINFO si;
+	si.cbSize = sizeof(SIPINFO);
+	SHSipInfo(SPI_GETSIPINFO, 0, &si, 0);
+	if(si.fdwFlags & SIPF_ON)
+	{
+		int bottom = si.rcVisibleDesktop.bottom;
+		SetWindowPos(hwndFKeys, 0, 0, 200, GetSystemMetrics(SM_CXSCREEN), bottom-200,
+			SWP_NOACTIVATE|SWP_NOOWNERZORDER|SWP_NOZORDER);
+	}
+}
+#endif

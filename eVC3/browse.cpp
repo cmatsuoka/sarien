@@ -163,6 +163,8 @@ void cFileBrowserView::UpdateView(HWND hwndDlg, BOOL bChangePath)
 {
 	HWND hwndList = GetDlgItem(hwndDlg, 1000);
 	HWND hwndCombo = GetDlgItem(hwndDlg, 1001);
+	HWND hwndEdit = GetDlgItem(hwndDlg, 1002);
+	HWND hwndOK = GetDlgItem(hwndDlg, IDOK);
 
 	if(bChangePath)
 	{
@@ -287,8 +289,10 @@ void cFileBrowserView::UpdateView(HWND hwndDlg, BOOL bChangePath)
 	// NEED TO SORT ITEMS HERE!
 	}
 
+	EnableWindow(hwndOK, FALSE);	
+
 	TCHAR string[MAX_PATH];
-	GetWindowText(GetDlgItem(hwndDlg, 1002), string, MAX_PATH);
+	GetWindowText(hwndEdit, string, MAX_PATH);
 	bInternalSelect = true;
 	if(string[0])
 	{
@@ -301,6 +305,7 @@ void cFileBrowserView::UpdateView(HWND hwndDlg, BOOL bChangePath)
 			ListView_SetItemState(hwndList, item, LVIS_SELECTED, LVIS_SELECTED);
 			ListView_EnsureVisible(hwndList, item, FALSE);
 		}
+		EnableWindow(hwndOK, TRUE);	
 	}
 	else
 	{
@@ -324,6 +329,7 @@ void cFileBrowserView::BrowserUp(HWND hwndDlg, int depth)
 	if(ptr)
 		*ptr = 0;
 
+	SetWindowText(GetDlgItem(hwndDlg, 1002), TEXT(""));
 	UpdateView(hwndDlg, TRUE);
 }
 
@@ -341,12 +347,12 @@ void cFileBrowserView::BrowserDown(HWND hwndDlg, LPTSTR item)
 			wcscpy(currentFolder, fullpath);
 			wcscat(currentFolder, TEXT("\\"));
 
+			SetWindowText(GetDlgItem(hwndDlg, 1002), TEXT(""));
 			UpdateView(hwndDlg, TRUE);
 		}
 		else
 		{
 			SetWindowText(GetDlgItem(hwndDlg, 1002), item);
-
 			UpdateView(hwndDlg, FALSE);
 		}
 	}
@@ -359,6 +365,8 @@ void cFileBrowserView::BrowserDown(HWND hwndDlg, LPTSTR item)
 			pclose = wcsrchr(currentFolder, '\\');
 			pclose++;
 			*pclose = 0;
+
+			SetWindowText(GetDlgItem(hwndDlg, 1002), TEXT(""));
 			UpdateView(hwndDlg, TRUE);
 		}
 	}
