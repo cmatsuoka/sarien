@@ -45,7 +45,7 @@ void iff_register (char *id, void (*loader) ())
 		f->prev = NULL;
 	} else {
 		struct iff_info *i;
-		for (i = iff_head; i->next; i = i->next);
+		for (i = iff_head; i->next; i = i->next) {}
 		i->next = f;
 		f->prev = i;
 	}
@@ -57,7 +57,7 @@ void iff_release ()
 {
 	struct iff_info *i;
 
-	for (i = iff_head; i->next; i = i->next);
+	for (i = iff_head; i->next; i = i->next) {}
 	while (i->prev) {
 		i = i->prev;
 		free (i->next);

@@ -250,8 +250,8 @@ int agi_v2_load_resource (int t, int n)
 			/* load raw resource into data */
 			data = agi_v2_load_vol_res (&game.dir_logic[n]);
 
-			ec = (game.logics[n].data = data) ?
-				decode_logic (n) : err_BadResource;
+			game.logics[n].data = data;
+			ec = data ? decode_logic (n) : err_BadResource;
 
 			game.logics[n].sIP = 2;
        		}
@@ -308,7 +308,8 @@ int agi_v2_load_resource (int t, int n)
 
 		_D (_D_WARN "loading view resource %d", n);
     		agi_v2.unload_resource (rVIEW, n);
-    		if ((data = agi_v2_load_vol_res (&game.dir_view[n]))) {
+    		data = agi_v2_load_vol_res (&game.dir_view[n]);
+    		if (data) {
     			game.views[n].rdata = data;
     			game.dir_view[n].flags |= RES_LOADED;
     			ec = decode_view (n);

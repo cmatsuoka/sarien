@@ -134,7 +134,7 @@ static void motion_followego (struct vt_entry *v)
 	} else if (v->flags & DIDNT_MOVE) {
 		int d;
 
-		while ((v->direction = rnd (9)) == 0);
+		while ((v->direction = rnd (9)) == 0) {}
 
 		d = (abs (ego_y - obj_y) + abs (ego_x - obj_x)) / 2 + 1;
 
@@ -143,7 +143,7 @@ static void motion_followego (struct vt_entry *v)
 			return;
 		}
 
-		while ((v->parm3 = rnd (d)) < v->step_size);
+		while ((v->parm3 = rnd (d)) < v->step_size) {}
 		return;
 	}
 

@@ -59,7 +59,6 @@ ObjFiles-68K    =  ¶
 				  "{ObjDir}agi_v2.c.o" ¶
 				  "{ObjDir}agi_v3.c.o" ¶
 				  "{ObjDir}checks.c.o" ¶
-				  "{ObjDir}cli.c.o" ¶
 				  "{ObjDir}console.c.o" ¶
 				  "{ObjDir}cycle.c.o" ¶
 				  "{ObjDir}font.c.o" ¶
@@ -71,7 +70,6 @@ ObjFiles-68K    =  ¶
 				  "{ObjDir}keyboard.c.o" ¶
 				  "{ObjDir}logic.c.o" ¶
 				  "{ObjDir}lzw.c.o" ¶
-				  "{ObjDir}main.c.o" ¶
 				  "{ObjDir}menu.c.o" ¶
 				  "{ObjDir}motion.c.o" ¶
 				  "{ObjDir}objects.c.o" ¶

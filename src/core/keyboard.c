@@ -246,7 +246,7 @@ void handle_keys (int key)
 		_D (("KEY_ENTER"));
 
 		/* Remove all leading spaces */
-		for (p = buffer; *p && *p == 0x20; p++);
+		for (p = buffer; *p && *p == 0x20; p++) {}
 
 		/* Copy to internal buffer */
 		for (; *p; p++) {	

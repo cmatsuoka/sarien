@@ -45,22 +45,26 @@ static UINT32 match_crc (UINT32 crc, char *path)
 
 	while (!feof(f)) {
 		fgets (buf, 256, f);
-		if ((c = strchr (buf, '#')))
-			*c = 0;
+		c = strchr (buf, '#');
+		if (c) *c = 0;
 
 		/* Remove spaces at end of line */
 		if (strlen (buf)) {
 			for (c = buf + strlen (buf) - 1;
-				*c == ' ' || *c == '\t'; *c-- = 0);
+				*c == ' ' || *c == '\t'; *c-- = 0) {}
 		}
 
 
-		if (!(t = strtok (buf, " \t\n")))
+		t = strtok (buf, " \t\n");
+		if (t == NULL)
 			continue;
 		id = strtoul (t, NULL, 0);
-		if (!(t = strtok (NULL, " \t\n")))
+
+		t = strtok (NULL, " \t\n");
+		if (t == NULL)
 			continue;
 		ver = strtoul (t, NULL, 0);
+
 		t = strtok (NULL, "\n");
 
 		if (id == crc) {
@@ -81,7 +85,7 @@ static UINT32 match_crc (UINT32 crc, char *path)
 				}
 				t++;
 
-				for (; *t == ' ' || *t == '\t'; t++);
+				for (; *t == ' ' || *t == '\t'; t++) {}
 			}
 
 			report ("AGI game detected: %s\n\n", t);
@@ -149,7 +153,8 @@ static UINT32 match_version (UINT32 crc)
 	sprintf (buf, "%s/.sarienrc", getenv ("HOME"));
 #endif
 
-	if (!(ver = match_crc (crc, buf)))
+	ver = match_crc (crc, buf);
+	if (!ver)
 		ver = match_crc (crc, "/etc/sarien.conf");
 #endif
 #endif

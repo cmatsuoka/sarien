@@ -74,8 +74,8 @@ static UINT8 console_parse (char *b)
 	struct console_command *d;
 	int i;
 
-	for (; *b && *b == ' '; b++);	/* eat spaces */
-	for (; *b && b[strlen(b) - 1] == ' '; b[strlen(b) - 1] = 0);
+	for (; *b && *b == ' '; b++) {}	/* eat spaces */
+	for (; *b && b[strlen(b) - 1] == ' '; b[strlen(b) - 1] = 0) {}
 	if (!*b)
 		return 0;
 
@@ -374,7 +374,7 @@ static void console_cmd (char *cmd, char *dsc, void (*handler))
 		return;
 	}
 
-	for (d = ccmd_head; d->next; d = d->next);
+	for (d = ccmd_head; d->next; d = d->next) {}
 	d->next = c;
 }
 
@@ -684,7 +684,8 @@ int console_keyhandler (int k)
        		buffer[console.index] = 0;
 		break;
 	case CONSOLE_ACTIVATE_KEY:
-		if ((console.active = !console.active))
+		console.active = !console.active;
+		if (console.active)
 			build_console_layer ();
 		break;
 	case CONSOLE_SWITCH_KEY:

@@ -31,7 +31,7 @@ struct game_id_list game_info;
 struct agi_game game;
 
 #ifndef _TRACE
-INLINE void _D (char *s, ...) { }
+INLINE void _D (char *s, ...) { s = s; }
 #endif
 
 

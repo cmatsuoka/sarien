@@ -182,8 +182,8 @@ void add_menu_item (char *message, int code)
 	struct agi_menu *m1 = NULL;
 
 	_D (_D_WARN "Adding menu item: %s", message);
-	for (m1 = menu; m1->next; m1 = m1->next);
-	for (; m1->down; m1 = m1->down);
+	for (m1 = menu; m1->next; m1 = m1->next) {}
+	for (; m1->down; m1 = m1->down) {}
 
 	m1->down = calloc (1, sizeof(struct agi_menu));
 	m1 = m1->down;
@@ -219,16 +219,16 @@ int menu_keyhandler (int key)
 
 		/* calc size of horizontal menu */
 		h_max_menu = 0;
-		for (men = master_menu->next; men; h_max_menu++, men=men->next);
+		for (men = master_menu->next; men; h_max_menu++, men=men->next) {}
 	
  		/* calc size of vertical menus */
 		v_max_menu = 0;
    		for (i = 0, men = master_menu->next; i < h_cur_menu; i++)
    			men = men->next;
-   		for (v_max_menu = 0; men; v_max_menu++, men = men->down);
+   		for (v_max_menu = 0; men; v_max_menu++, men = men->down) {}
 	
    		draw_horizontal_menu_bar (h_cur_menu, h_max_menu);
-   		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
+   		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu) {}
 		menu_active = TRUE;
 	}
 	
@@ -239,9 +239,9 @@ int menu_keyhandler (int key)
     	case KEY_ENTER:
 		_D (_D_WARN "KEY_ENTER");
     		men = master_menu->next;
-    		for (i = 0; i < h_cur_menu; i++, men = men->next);
+    		for (i = 0; i < h_cur_menu; i++, men = men->next) {}
     		men = men->down;
-    		for (i = 0; i < v_cur_menu; i++, men = men->down);
+    		for (i = 0; i < v_cur_menu; i++, men = men->down) {}
     		if (men->enabled) {
 			_D ("event %d registered", men->event);
     			game.ev_scan[men->event].occured = TRUE;
@@ -273,7 +273,7 @@ int menu_keyhandler (int key)
 		/* calc size of vertical menus */
 		for(i = 0, men = master_menu->next; i < h_cur_menu; i++)
 			men=men->next;
-		for (v_max_menu = 0; men; v_max_menu++, men = men->down);
+		for (v_max_menu = 0; men; v_max_menu++, men = men->down) {}
 		v_cur_menu = 0;
 		draw_horizontal_menu_bar (h_cur_menu, h_max_menu);
     		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
@@ -289,7 +289,7 @@ int menu_keyhandler (int key)
 		/* calc size of vertical menus */
 		for (i = 0, men = master_menu->next; i < h_cur_menu; i++)
 			men=men->next;
-		for (v_max_menu = 0; men; v_max_menu++, men=men->down);
+		for (v_max_menu = 0; men; v_max_menu++, men=men->down) {}
 		v_cur_menu = 0;
 		draw_horizontal_menu_bar (h_cur_menu, h_max_menu);
     		draw_vertical_menu (h_cur_menu, v_cur_menu, v_max_menu);
