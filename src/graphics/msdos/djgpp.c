@@ -24,11 +24,10 @@ static BITMAP *screen_buffer;
 static int	init_vidmode	(void);
 static int	deinit_vidmode	(void);
 static void	blit_block	(int, int, int, int);
-static void	put_pixel	(int, int, int);
+static void	put_pixel	(int x, int y, int c);
 static void	dummy		(void);
 static int	get_key		(void);
 static int	keypress	(void);
-
 
 #define TICK_SECONDS 20
 
