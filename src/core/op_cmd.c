@@ -430,7 +430,7 @@ cmd(move_obj_v) {
 	vt.parm3 = vt.step_size;
 	vt.parm4 = p4;
 
-	if (p3 != 0)
+	if (_v[p3] != 0)
 		vt.step_size = _v[p3];
 	
 	setflag (p4, FALSE);
