@@ -16,7 +16,7 @@ static UInt32 timeout, ticks;
 
 char *strdup (char *s)
 {
-	char *r = malloc (strlen (s) + 1);
+	char *r = MemPtrNew (strlen (s) + 1);
 	strcpy (r, s);
 	return r;
 }
@@ -166,7 +166,8 @@ UInt32 PilotMain (UInt16 cmd, MemPtr cmdPBP, UInt16 launchFlags)
 
 	ticks = SysTicksPerSecond() / FRAME_RATE;
 
-	EventLoop();
+	run_game ();
+	/* EventLoop(); */
 	StopApplication();
 
 	WinDeleteWindow (buffer, false);

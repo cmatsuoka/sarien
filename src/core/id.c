@@ -8,6 +8,8 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
+#ifndef PALMOS
+
 #include <stdio.h>
 #include <string.h>
 #include "sarien.h"
@@ -359,3 +361,4 @@ int setup_v3_game (int ver, UINT32 crc)
 	return ec;
 }
 
+#endif

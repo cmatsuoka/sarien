@@ -10,7 +10,9 @@
 
 #include <stdio.h>
 #include <string.h>
+#ifndef PALMOS
 #include <ctype.h>
+#endif
 #include "sarien.h"
 
 #ifdef OPT_PICTURE_VIEWER

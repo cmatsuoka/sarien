@@ -5,7 +5,7 @@ APPNAME = "Sarien"
 APPID = "FAGI"
 
 OBJS = $(TARGET).o
-LIBS =
+LIBS = -L../../../lib -lagi
 
 CC = m68k-palmos-coff-gcc
 
