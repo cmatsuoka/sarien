@@ -105,7 +105,7 @@ static void blit_textbox (char *p, int y, int x, int len)
 		x = y = -1;
 
 	if (len <= 0 || len >= 40)
-		len = 30;
+		len = 32;
 
 	xoff = x * CHAR_COLS;
 	yoff = y * CHAR_LINES;
@@ -214,6 +214,10 @@ char* word_wrap_string (char *mesg, int *len)
 
 	while (42) {
 		_D ("[%s], %d", msg, maxc);
+		if (strchr (v, ' ') == NULL && strlen (v) > l) {
+			_D (_D_CRIT "Word too long in message");
+			l = strlen (v);
+		}
 		while ((c = strcspn (v, "\n")) <= l) {
 			if (c > maxc)
 				maxc = c;
