@@ -415,11 +415,8 @@ void cmd_release_loop (UINT8 entry)
 void cmd_reverse_loop (UINT8 entry, UINT8 p1)
 {
 	_D ("(%d, %d)", entry, p1);
-	vt.parm1        = p1;
+	vt.parm1 = p1;
 	vt.cycle_status = CYCLE_REV_LOOP;
-/*	
-   vt.end_of_loop_flag = TRUE; 
-*/
 	vt.flags |= UPDATE | CYCLING;
 }
 
@@ -434,11 +431,8 @@ void cmd_reverse_cycle (UINT8 entry)
 void cmd_end_of_loop (UINT8 entry, UINT8 p1)
 {
 	_D ("(%d, %d)", entry, p1);
-	vt.parm1        = p1;
+	vt.parm1 = p1;
 	vt.cycle_status = CYCLE_END_OF_LOOP; 
-/*
-	vt.end_of_loop_flag = TRUE;
-*/
 	vt.flags |= UPDATE | CYCLING;
 }
 

@@ -145,21 +145,8 @@ void unload_view (int n)
 			free (views[n].loop[x].cel);
 	}
 
-	if (views[n].loop != NULL)
-		free(views[n].loop);
-
-	views[n].loop = NULL;
-
-	/* free the description associated with the view */
-
-	/*
-	if (views[n].descr != NULL)
-		free (views[n].descr);
-	views[n].descr = NULL;
-	*/
+	free (views[n].loop);
 	free (views[n].descr);
-
-	/* release RAW data for view */
 	free (views[n].rdata);
 
 	game.dir_view[n].flags &= ~RES_LOADED;
@@ -331,7 +318,6 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int priority, int ma
 			for (y1 = y; y1 < c->height; y1++) {
 				for (x1 = x; x1 < c->width; x1++) {
 					int idx = y1 * _WIDTH + x1;
-					//priority_data[y1*_WIDTH+x1] = margin;
 					if (xdata_data[idx] >= 4)
 						xdata_data[idx] = margin;
 				}
@@ -436,7 +422,7 @@ void draw_obj (int vt)
 
 	/* copy background (priority map) */
 	v->bg_pri = (UINT8*)malloc(v->bg_x_size * v->bg_y_size);
-	get_bitmap (v->bg_pri, xdata_data /*priority_data*/, v->bg_x, v->bg_y, v->bg_x_size,
+	get_bitmap (v->bg_pri, xdata_data, v->bg_x, v->bg_y, v->bg_x_size,
 		v->bg_y_size);
 
 	/* FR:

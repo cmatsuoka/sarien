@@ -31,69 +31,61 @@ extern struct agi_logic logics[];
 extern struct agi_view views[];
 extern struct agi_view_table view_table[];
 
+
 static void update_objects ()
 {
-	int i, ccel;
+	int i;
 
-	/* copy the bitmaps onto the screen */
 	for(i = 0; i < MAX_VIEWTABLE; i++) {
-#define VT view_table[i]
-		/* FR
-		 * Changed here 
-		 */
-		if (!(VT.flags & UPDATE))
+		struct agi_view_table *vt_obj = &view_table[i];
+
+		if (!(vt_obj->flags & UPDATE))
 			continue;
 
-		if (!(VT.flags & ANIMATED) || !(VT.flags & DRAWN))
+		if ((~vt_obj->flags & ANIMATED) || (~vt_obj->flags & DRAWN))
 			continue;
 
-		if (VT.flags & CYCLING) {
-			VT.cycle_time_count++;
+		if (vt_obj->flags & CYCLING) {
+			int cel, num_cels;
 
-			if (VT.cycle_time_count <= VT.cycle_time) {
+			vt_obj->cycle_time_count++;
+
+			if (vt_obj->cycle_time_count <= vt_obj->cycle_time) {
 				/* --draw_obj(i); */
 				continue;
 			}
 
-			VT.cycle_time_count = 1;
-			ccel = VT.current_cel;
+			vt_obj->cycle_time_count = 1;
+			cel = vt_obj->current_cel;
+			num_cels = VT_LOOP(view_table[i]).num_cels;
 
-			switch (VT.cycle_status) {
+			switch (vt_obj->cycle_status) {
 			case CYCLE_NORMAL:
-				if(++ccel >= VT_LOOP(VT).num_cels) 
-					ccel = 0;
-				set_cel (i, ccel);
+				if(++cel >= num_cels) 
+					cel = 0;
 				break;
  			case CYCLE_END_OF_LOOP:		
- 				if(++ccel >= VT_LOOP(VT).num_cels) {
-					VT.flags &= ~CYCLING;
-					setflag (VT.parm1, TRUE);
-  				} else {
- 					set_cel (i, ccel);
+ 				if(++cel >= num_cels) {
+					cel--;
+					vt_obj->flags &= ~CYCLING;
+					setflag (vt_obj->parm1, TRUE);
 				}
  				break;
 			case CYCLE_REV:			/* reverse cycle */
-				if(--ccel < 0)
-					ccel = VT_LOOP(VT).num_cels - 1;
-
-				set_cel (i, ccel);
+				if(--cel < 0)
+					cel = num_cels - 1;
 				break;
  			case CYCLE_REV_LOOP:
- 				if (--ccel < 0) {
-					VT.flags &= ~CYCLING;
-					setflag (VT.parm1, TRUE);
+ 				if (--cel < 0) {
+					cel = 0;
+					vt_obj->flags &= ~CYCLING;
+					setflag (vt_obj->parm1, TRUE);
  				} 
- 				set_cel (i, ccel);
  				break;
 			}
-		} else {
-			if ((ccel = VT.current_cel) >= VT_LOOP(VT).num_cels)
-				ccel = 0;
-
-			set_cel (i, ccel);
+			set_cel (i, cel);
 		}
 	} 
-#undef VT
 }
 
 
@@ -135,10 +127,13 @@ static int check_borders (int em, int x, int y)
 	vt_obj = &view_table[em];
 	dir = vt_obj->direction;
 
+#if 0
 /* FIXME: this test shouldn't be here, but DDP demo intro in
  *        demopack 6 fails if non-ego objects hit the border
  */
 if (em == EGO_VIEW_TABLE) {
+#endif
+
 	v = em == EGO_VIEW_TABLE ? V_border_touch_ego : V_border_touch_obj;
 
 	if (x < 0 && (dir == 8 || dir == 7 || dir == 6)) {
@@ -172,7 +167,11 @@ if (em == EGO_VIEW_TABLE) {
 		setvar (v, 1);
 		return -1;
 	}
+
+#if 0
 }
+#endif
+
 	return 0;
 }
 
@@ -262,7 +261,6 @@ static int check_surface (int em, int x, int y)
 static void normal_motion (int em, int x, int y)
 {
 	struct agi_view_table *vt_obj;
-	int before, after;
 
 	if (VT_VIEW(view_table[em]).loop == NULL) {
 		_D(_D_CRIT "Attempt to access NULL view_table[%d].loop", em);
@@ -278,19 +276,22 @@ static void normal_motion (int em, int x, int y)
 
 	vt_obj = &view_table[em];
 
-	before = check_control_lines (em, vt_obj->x_pos, vt_obj->y_pos);
+	/* Positions should be adjusted if the object is stepping
+	 * on a control line, as reported by Nat Budin
+	 */
+	while (check_control_lines (em, vt_obj->x_pos, vt_obj->y_pos)) {
+		if (vt_obj->x_pos > 0)
+			vt_obj->x_pos--;
+		if (vt_obj->y_pos < _HEIGHT)
+			vt_obj->y_pos++;
+	}
 
 	x += vt_obj->x_pos;
 	y += vt_obj->y_pos;
 
-	after = check_borders (em, x, y) ||
-		check_control_lines (em, x, y) ||
-		check_surface (em, x, y);
-
-	if (!before && after) {
-		_D (_D_WARN "object %d hit border", em);
+	if (check_borders (em, x, y) || check_control_lines (em, x, y) ||
+		check_surface (em, x, y))
 		return;
-	}
 
 	/* New object direction */
 	adj_direction (em, y - vt_obj->y_pos, x - vt_obj->x_pos);

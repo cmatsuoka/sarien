@@ -24,7 +24,7 @@ volatile UINT32 clock_ticks;
 volatile UINT32 clock_count;
 struct sarien_options opt;
 
-UINT8	show_screen_mode = 'x';
+static UINT8 mode;
 
 extern UINT8 *font, font_english[];
 
@@ -36,18 +36,13 @@ INLINE void _D (char *s, ...) { }
 static int view_pictures ()
 {
 	int ec = err_OK;
-	UINT32 resnum = 0;
 	char x[64];
-	int i, pic, dir = 1;
+	int i, pic = 0, dir = 1;
 
-	show_screen_mode = 'v';
+	mode = 'v';
 
 	for (i = 0; ec == err_OK; i = 1) {
-		for (pic = resnum; ; ) {
-			/* scan for resource */
-			if (game.dir_pic[pic].offset != _EMPTY)
-				break;
-
+		while (game.dir_pic[pic].offset == _EMPTY) {
 			pic += dir;
 			if (pic < 0)
 				pic = MAX_DIRS - 1;
@@ -61,65 +56,54 @@ static int view_pictures ()
 				}
 			}
 		}
-		resnum = pic;
-
-		if ((ec = agi_load_resource (rPICTURE, resnum)) != err_OK)
+		
+		if ((ec = agi_load_resource (rPICTURE, pic)) != err_OK)
 			continue;
 
-		sprintf (x, "Picture:%3li     [drawing]     Show: %3s",
-			resnum, 0 /*opt.showscreendraw*/ ? " on" : "off");
+		sprintf (x, "Picture:%3i     [drawing]     Show: %3s",
+			pic, 0 /*opt.showscreendraw*/ ? " on" : "off");
 		print_text (x, 0, 4, 190, strlen (x) + 1, 15, 0);
 
 		/* decodes the raw data to useable form */
-		decode_picture (resnum);
-
-		//show_buffer (show_screen_mode);
+		decode_picture (pic);
+		show_buffer (mode);
 
 update_statusline:
 		sprintf (x, "V:Vis C:Con P:Pri X:P+C   +:Next -:Prev");
 		print_text (x, 0, 4, 170, strlen (x) + 1, 15, 0);
 		sprintf (x, "R:Redraw      D:Show toggle      Q:Quit");
 		print_text (x, 0, 4, 180, strlen (x) + 1, 15, 0);
-		sprintf (x, "Picture:%3li                   Show: %3s",
-			resnum, opt.showscreendraw ? " on" : "off");
+		sprintf (x, "Picture:%3i                   Show: %3s",
+			pic, opt.showscreendraw ? " on" : "off");
 		print_text (x, 0, 4, 190, strlen (x) + 1, 15, 0);
 
 		put_screen ();
 
 		while (42) {
+			decode_picture (pic);
     			switch (tolower (get_key() & 0xFF)) {
     			case 'q':
 				goto end_view;
     			case 'v':
-				show_screen_mode = 'v';
-    				dump_screenX ();
+				show_buffer (mode = 'v');
     				break;
     			case 'p':
     			case 'z':
-				show_screen_mode = 'p';
-#if 0 /* temporarily commented out for tests --claudio */
-    				dump_pri (resnum);
-#endif
+				show_buffer (mode = 'p');
  				break;
     			case 'c':
-				show_screen_mode = 'c';
-#if 0 /* temporarily commented out for tests --claudio */
-    				dump_con (resnum);
-#endif
+				show_buffer (mode = 'c');
 				break;
 			case 'd':
 				opt.showscreendraw = !opt.showscreendraw;
 				goto update_statusline;
     			case 'x':
-				show_screen_mode = 'x';
-#if 0 /* temporarily commented out for tests --claudio */
-    				dump_x (resnum);
-#endif
+				show_buffer (mode = 'x');
   				break;
 			case 'r':
 				goto next_pic;
     			case '+':
-    				pic = resnum;
+    				
  				if (pic < MAX_DIRS - 1)
     					pic++;
     				else
@@ -127,7 +111,7 @@ update_statusline:
     				dir = 1;
 				goto next_pic;
     			case '-':
-    				pic = resnum;
+    				
     				if (pic > 0)
     					pic--;
     				else
@@ -138,8 +122,8 @@ update_statusline:
     			}
     		}
 next_pic:
-    		agi_unload_resource (rPICTURE, resnum);
-    		resnum = pic;
+    		agi_unload_resource (rPICTURE, pic);
+    		
 	}
 
 end_view:
@@ -240,18 +224,15 @@ void show_buffer (int mode)
 	case 'x':
 		put_block_buffer (xdata_data);
 		break;
-#if 0
 	case 'c':
-		put_block_buffer (control_data);
-		break;
 	case 'p':
-		put_block_buffer (priority_data);
 		break;
-#endif
 	case 'v':
 	default:
 		dump_screenX ();
 		break;
 	}
+	put_screen ();
 }
+
 
