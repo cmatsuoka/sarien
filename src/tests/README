@@ -54,7 +54,7 @@ Sometimes a test can't be executed because a prerequisite is missing,
 and that doesn't mean a failure. Skipped tests don't count as successful
 or failed tests. To skip tests in a module, use test_disable(module,reason)
 where "module" is the module handler and "reason" is a free-form string 
-that explains why the following tests hae been skipped. To re-enable
+that explains why the following tests have been skipped. To re-enable
 tests, use test_enable(module).
 
 Example:
@@ -66,6 +66,9 @@ Example:
 			test_disable(module, "Not enough buffers");
 		TEST("buffering", test_buffers(5));
 	}
+
+The result of the most recently executed test is stored in the
+test_previous variable.
 
 
 Executing tests

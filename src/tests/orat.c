@@ -6,6 +6,8 @@
 
 static char msg_buffer[MAX_LEN];
 
+int test_previous;
+
 
 void test_register_module (struct test_suite *s, TEST_MODULE((*func)), char *name)
 {
@@ -86,7 +88,10 @@ void test_summarize (struct test_suite *s)
 		s->failed, 100 * s->failed / total,
 		s->skipped, 100 * s->skipped / total);
 
-	printf ("\n*** Elapsed time: %ds\n", (int)(s->t1 - s->t0));
+	printf ("\n");
+	printf ("*** %s test result: %s\n", s->name,
+		s->failed > 0 ? "Failed" : "Passed");
+	printf ("*** Elapsed time: %ds\n", (int)(s->t1 - s->t0));
 
 	list_for_each (h, &s->module_list, next) {
 		struct test_module *m = list_entry(h, struct test_module, list);
@@ -139,7 +144,7 @@ void test_prepare (struct test_module *module)
 
 void test_execute (struct test_suite *s, struct test_module *m, char *name, test_result i)
 {
-	switch (i) {
+	switch (test_previous = i) {
 	case TEST_OK:
 		printf ("+++");
 		s->succeeded++;

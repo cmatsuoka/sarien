@@ -4,7 +4,8 @@ XCFLAGS =
 OBJS	=
 DFILES	= Makefile
 CFILES	=
-DDIRS	= include filesys sound graphics core tests
+DDIRS	= include filesys sound graphics core
+XDDIRS	= tests
 XDFILES =
 LIB	=
 

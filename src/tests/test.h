@@ -12,5 +12,6 @@ TEST_MODULE(test_arith);
 TEST_MODULE(test_flag);
 TEST_MODULE(test_picture);
 TEST_MODULE(test_random);
+TEST_MODULE(test_inventory);
 
 

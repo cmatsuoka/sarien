@@ -55,7 +55,7 @@ dummy:
 clean distclean::
 	rm -f *.o errlist depend $(BIN) $(CFILES)
 ifdef DDIRS
-	@for i in $(DDIRS); do \
+	@for i in $(DDIRS) $(XDDIRS); do \
 		(cd $$i; [ -f $(MAKEFILE) ] && $(MAKE) $@) \
 	done; true
 endif
@@ -77,7 +77,7 @@ $(LIB): $(LIB)($(OBJS) $(XOBJS))
 subdist:
 	cp -dp $(DFILES) $(XDFILES) $(DISTDIR)
 ifdef DDIRS
-	for i in $(DDIRS); do \
+	for i in $(DDIRS) $(XDDIRS); do \
 		mkdir $(DISTDIR)/$$i; \
 		( cd $$i; \
 		if [ -f $(MAKEFILE) ]; then \

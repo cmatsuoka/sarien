@@ -66,5 +66,7 @@ void	test_disable		(struct test_module *, char *);
 void	test_enable		(struct test_module *);
 int	test_report		(char *, ...);
 
+extern int test_previous;
+
 
 #endif /* __ORAT_H */
