@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -23,14 +23,14 @@ struct sound_driver sound_dummy = {
 };
 
 
-int dummy_init_sound (SINT16 *buffer)
+static int dummy_init_sound (SINT16 *buffer)
 {
 	report ("sound_dummy: sound output disabled\n");
 	return 0;
 }
 
 
-void dummy_close_sound (void)
+static void dummy_close_sound ()
 {
 }
 

@@ -94,39 +94,7 @@ struct agi_loader {
 };
 
 
-#if 0
-Moved to struct agi_game above
-extern	UINT8	*gdir;
-extern	UINT8	*gname;
-extern	UINT8	*gid;
-#endif
-
 extern	UINT8	path[];
-
-#if 0
-Moved to struct agi_game above
-extern	struct agi_dir	dir_logic[];
-extern	struct agi_dir	dir_pic[];
-extern	struct agi_dir	dir_view[];
-extern	struct agi_dir	dir_sound[];
-
-extern	UINT8	horizon;
-extern	UINT8		flags[];
-extern	UINT8		vars[];
-extern	UINT8		line_status;
-extern	UINT8		line_user_input;
-extern	UINT8		line_min_print;
-extern	UINT16		message_box_key;
-
-extern	UINT16		ego_in_new_room;
-extern	UINT8		control_mode;
-extern	UINT8		quit_prog_now;
-extern	UINT8		status_line;
-extern	UINT8		allow_kyb_input;
-extern	UINT8		clock_enabled;
-extern	UINT8		timed_message_box;
-extern	UINT32		game_flags;
-#endif
 
 int	agi_init	(void);
 int	agi_deinit	(void);

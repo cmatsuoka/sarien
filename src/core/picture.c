@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -26,17 +26,17 @@ struct point {
 
 struct agi_picture pictures[MAX_DIRS];
 
-UINT8	*data;
-UINT32	flen;
-UINT32	foffs;
+static UINT8	*data;
+static UINT32	flen;
+static UINT32	foffs;
 
-UINT8	patCode;
-UINT8	patNum;
-UINT8	we_are_drawing;
-UINT8	pri_on;
-UINT8	scr_on;
-UINT8	scr_colour;
-UINT8	pri_colour;
+static UINT8	patCode;
+static UINT8	patNum;
+static UINT8	we_are_drawing;
+static UINT8	pri_on;
+static UINT8	scr_on;
+static UINT8	scr_colour;
+static UINT8	pri_colour;
 
 UINT8	screen2[_WIDTH * _HEIGHT];
 UINT8	screen_data[_WIDTH * _HEIGHT];
@@ -64,7 +64,7 @@ void dump_screen (int resnum)
 }
 
 
-void dump_screen2 (void)
+void dump_screen2 ()
 {
 	put_block_buffer (screen_data, 0, 0, _WIDTH, _HEIGHT);
 	put_screen();
@@ -142,13 +142,13 @@ static void clear_priority ()
 }
 
 
-static void put_virt_screen_pixel (UINT16 x, UINT16 y)
+static void put_virt_screen_pixel (int x, int y)
 {
 	screen2[y * _WIDTH + x] = scr_colour;
 }
 
 
-static void put_virt_pri_pixel (UINT16 x, UINT16 y)
+static void put_virt_pri_pixel (int x, int y)
 {
 	xdata_data[y * _WIDTH + x] = pri_colour;
 
@@ -198,7 +198,7 @@ static int stack_num_segs;
 static int stack_seg;
 static int stack_ptr;
 
-INLINE void _PUSH(struct point *c)
+static INLINE void _PUSH (struct point *c)
 {
 	if (stack_ptr >= STACK_SEG_SIZE) {
 		/* Allocate new stack segment */
@@ -208,8 +208,8 @@ INLINE void _PUSH(struct point *c)
 		}
 		if (stack_num_segs <= ++stack_seg) {
 			_D ((": new stack (#%ld)", stack_num_segs));
-			stack[stack_num_segs++] = malloc (sizeof (struct point) *
-				STACK_SEG_SIZE);
+			stack[stack_num_segs++] = malloc (sizeof (struct point)
+				* STACK_SEG_SIZE);
 		}
 		stack_ptr = 0;
 	}
@@ -219,7 +219,8 @@ INLINE void _PUSH(struct point *c)
 	stack_ptr++;
 }
 
-INLINE void _POP (struct point *c)
+
+static INLINE void _POP (struct point *c)
 {
 	if (stack_ptr == 0) {
 		if (stack_seg == 0)
@@ -483,7 +484,7 @@ static void x_corner ()
 		x1 = x2;
 		y2 = next_byte;
 
-		if(y2>=0xF0)
+		if (y2 >= 0xF0)
 			break;
 
 		draw_line (x1, y1, x1, y2);
@@ -703,7 +704,7 @@ UINT8* convert_v2_v3_pic (UINT8 *data, UINT32 len)
 **************************************************************************/
 void splitPriority (int resnum)
 {
-	UINT16 x, y;
+	int x, y;
 	register UINT8 *p, *c;
 
 	_D (("()"));
@@ -930,7 +931,7 @@ int unload_picture (int resnum)
 	/* remove visual buffer & priority buffer if they exist */
 	if (game.dir_pic[resnum].flags & RES_LOADED) {
 		if (~game.dir_pic[resnum].flags & 0x80) {
-			free (pictures[resnum].pdata);	/* free priority image */
+			free (pictures[resnum].pdata);	/* free prio image */
 			free (pictures[resnum].sdata);	/* free screen image */
 			free (pictures[resnum].cdata);	/* free control image */
 			free (pictures[resnum].xdata);	/* free p+c image */

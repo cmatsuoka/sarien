@@ -271,7 +271,7 @@ struct agi_logicnames logic_names_cmd[]= {
 };
 
 
-void debug_console (UINT16 lognum, UINT8 mode, char *str)
+void debug_console (int lognum, int mode, char *str)
 {
 	struct agi_logicnames *x;
 	UINT8 a, c, z;

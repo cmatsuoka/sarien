@@ -1,34 +1,22 @@
-/*
- *  Sarien AGI :: Copyright 		(C) 1999 Dark Fiber 
- *
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  		(at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#ifndef __AGI_OPCODES
-#define __AGI_OPCODES
+#ifndef __AGI_OPCODES_H
+#define __AGI_OPCODES_H
 
 #ifdef __cplusplus
 extern "C"{
 #endif
 
-//extern UINT16	new_room_num;
-//extern UINT8	exit_all_logics;
-
-int	run_logic (int);
-
+int	run_logic		(int);
+void	execute_agi_command	(UINT8, UINT16, UINT8 *);
 
 void	cmd_version		(void);
 void	cmd_discard_pic		(void);
@@ -185,11 +173,8 @@ void	cmd_inc			(UINT8);
 void	cmd_dec			(UINT8);
 
 
-
-void execute_agi_command (UINT8, UINT16, UINT8 *);
-
 #ifdef __cplusplus
-extern "C"{
+extern "C" {
 #endif
 
 struct sarien_debug {
@@ -211,12 +196,10 @@ extern	struct agi_logicnames	logic_names_test[];
 extern	struct agi_logicnames	logic_names_cmd[];
 extern	struct agi_logicnames	logic_names_if[];
 
-void	debug_console (UINT16 lognum, UINT8 mode, char *str);
-
-UINT16 test_if_code(UINT16 lognum);
-
-void new_room(UINT16 r);
-void break_copy_protection (int);
+void	debug_console	(int, int, char *);
+int	test_if_code	(int);
+void	new_room	(int);
+void	break_copy_protection (int);
 
 #ifdef __cplusplus
 };

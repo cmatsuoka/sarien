@@ -1,3 +1,4 @@
+# $Id$
 
 XCFLAGS	= -I../include
 OBJS	= global.o agi_v2.o agi_v3.o agi.o cli.o words.o objects.o \

@@ -1,20 +1,11 @@
-/*
- *  Sarien AGI :: Copyright (C) 1999 Dark Fiber 
- *
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
 #include <stdio.h>
@@ -37,14 +28,14 @@ extern struct agi_object *objects;
 extern struct agi_event events[];
 extern UINT8 quit_prog_now;
 
-UINT16	test_if_code	(UINT16);
-UINT8	test_obj_right	(UINT8, UINT8, UINT8, UINT8, UINT8);
-UINT8	test_obj_centre	(UINT8, UINT8, UINT8, UINT8, UINT8);
-UINT8	test_obj_in_box	(UINT8, UINT8, UINT8, UINT8, UINT8);
-UINT8	test_posn	(UINT8, UINT8, UINT8, UINT8, UINT8);
-UINT8	test_said	(UINT8, UINT8 *);
-UINT8	test_controller	(UINT8);
-UINT8	test_keypressed	(void);
+//UINT16	test_if_code	(UINT16);
+static UINT8	test_obj_right	(UINT8, UINT8, UINT8, UINT8, UINT8);
+static UINT8	test_obj_centre	(UINT8, UINT8, UINT8, UINT8, UINT8);
+static UINT8	test_obj_in_box	(UINT8, UINT8, UINT8, UINT8, UINT8);
+static UINT8	test_posn	(UINT8, UINT8, UINT8, UINT8, UINT8);
+static UINT8	test_said	(UINT8, UINT8 *);
+static UINT8	test_controller	(UINT8);
+static UINT8	test_keypressed	(void);
 
 #define ip (logics[lognum].cIP)
 #define code (logics[lognum].data)
@@ -59,7 +50,7 @@ UINT8	test_keypressed	(void);
 			(!strcmp((char*)strings[s1], (char*)strings[s2]))
 
 
-UINT8 test_keypressed ()
+static UINT8 test_keypressed ()
 {
 	int x;
 
@@ -71,7 +62,7 @@ UINT8 test_keypressed ()
 }
 
 
-UINT8 test_controller (UINT8 cont)
+static UINT8 test_controller (UINT8 cont)
 {
 	int r;
 
@@ -82,7 +73,7 @@ UINT8 test_controller (UINT8 cont)
 }
 
 
-INLINE UINT8 test_posn (UINT8 cel, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
+static UINT8 test_posn (UINT8 cel, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 {
 	return view_table[cel].x_pos >= x1 &&
 		view_table[cel].y_pos >= y1 &&
@@ -91,7 +82,7 @@ INLINE UINT8 test_posn (UINT8 cel, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 }
 
 
-INLINE UINT8 test_obj_in_box (UINT8 obj, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
+static UINT8 test_obj_in_box (UINT8 obj, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 {
 	return view_table[obj].x_pos >= x1 &&
 		view_table[obj].y_pos >= y1 &&
@@ -101,7 +92,7 @@ INLINE UINT8 test_obj_in_box (UINT8 obj, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 
 
 /* if obj is in centre of box */
-INLINE UINT8 test_obj_centre (UINT8 obj, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
+static UINT8 test_obj_centre (UINT8 obj, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 {
 	return (view_table[obj].x_pos + view_table[obj].x_size / 2) >= x1 &&
 		(view_table[obj].x_pos + view_table[obj].x_size / 2) <= x2 &&
@@ -111,7 +102,7 @@ INLINE UINT8 test_obj_centre (UINT8 obj, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 
 
 /* if object N is in right corner */
-UINT8 test_obj_right(UINT8 obj, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
+static UINT8 test_obj_right(UINT8 obj, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 {
 	return (view_table[obj].x_pos + view_table[obj].x_size - 1) >= x1 &&
 		(view_table[obj].x_pos + view_table[obj].x_size - 1) <= x2 &&
@@ -121,7 +112,7 @@ UINT8 test_obj_right(UINT8 obj, UINT8 x1, UINT8 y1, UINT8 x2, UINT8 y2)
 
 
 /* When player has entered something, it is parsed elsewhere */
-UINT8 test_said (UINT8 nwords, UINT8 *cc)
+static UINT8 test_said (UINT8 nwords, UINT8 *cc)
 {
 	UINT16	c, z = 0, nEgoWords = num_ego_words;
 
@@ -184,7 +175,7 @@ UINT8 test_said (UINT8 nwords, UINT8 *cc)
 }
 
 
-UINT16 test_if_code (UINT16 lognum)
+int test_if_code (int lognum)
 {
 	int ec = TRUE, retval = TRUE;
 	UINT8	op;

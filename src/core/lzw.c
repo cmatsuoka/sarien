@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -34,22 +34,22 @@ UINT32	*prefix_code;
 UINT8	*append_character;
 UINT8	*decode_stack;
 static SINT32 input_bit_count=0;	/* Number of bits in input bit buffer */
-static UINT32	input_bit_buffer=0L;
+static UINT32 input_bit_buffer=0L;
 
-void initLZW(void)
+void initLZW ()
 {
-	decode_stack=(UINT8*)calloc(1, 8192);
-	prefix_code=(UINT32*)malloc(TABLE_SIZE*sizeof(UINT32));
-	append_character=(UINT8*)malloc(TABLE_SIZE*sizeof(UINT8));
-	input_bit_count=0;		/* Number of bits in input bit buffer */
-	input_bit_buffer=0L;
+	decode_stack = calloc (1, 8192);
+	prefix_code= malloc (TABLE_SIZE * sizeof(UINT32));
+	append_character= malloc (TABLE_SIZE * sizeof(UINT8));
+	input_bit_count = 0;	/* Number of bits in input bit buffer */
+	input_bit_buffer = 0L;
 }
 
-void closeLZW(void)
+void closeLZW ()
 {
-	free(decode_stack);
-	free(prefix_code);
-	free(append_character);
+	free (decode_stack);
+	free (prefix_code);
+	free (append_character);
 }
 
 /***************************************************************************
@@ -58,14 +58,15 @@ void closeLZW(void)
 ** Purpose: To adjust the number of bits used to store codes to the value
 ** passed in.
 ***************************************************************************/
-SINT32 setBITS(SINT32 value)
+int setBITS (SINT32 value)
 {
-	if(value==MAXBITS)
+	if (value == MAXBITS)
 		return TRUE;
 
 	BITS = value;
 	MAX_VALUE = (1 << BITS) - 1;
 	MAX_CODE = MAX_VALUE - 1;
+
 	return FALSE;
 }
 
@@ -81,14 +82,14 @@ UINT8 *decode_string(UINT8 *buffer, UINT32 code)
 	UINT32 i;
 
 	for (i = 0; code > 255; ) {
-		*buffer++=append_character[code];
+		*buffer++ = append_character[code];
 		code=prefix_code[code];
-		if (i++>=4000) {
-			fprintf(stderr, "lzw: error in code expansion.\n");
+		if (i++ >= 4000) {
+			fprintf (stderr, "lzw: error in code expansion.\n");
 			abort ();
 		}
 	}
-	*buffer=code;
+	*buffer = code;
 
 	return buffer;
 }
@@ -98,7 +99,7 @@ UINT8 *decode_string(UINT8 *buffer, UINT32 code)
 **
 ** Purpose: To return the next code from the input buffer.
 ***************************************************************************/
-UINT32 input_code(UINT8 **input)
+UINT32 input_code (UINT8 **input)
 {
 	UINT32 r;
 
@@ -178,6 +179,6 @@ void LZW_expand(UINT8 *in, UINT8 *out, SINT32 len)
 			lzwnew = input_code(&in);
 		}
 	}
-	closeLZW();
+	closeLZW ();
 }
 
