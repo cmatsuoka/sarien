@@ -14,9 +14,23 @@ Directories:
 ./src/fileglob		Fileglobbing drivers
 ./src/utils		Lance Ewing's AGI utilities
 
+The following compilers/environments can be used to build sarien:
+
+	Compiler	Operating System
+	--------------- ---------------------------------	
+	GNU C Compiler	UNIX, Linux, BeOS, QNX Neutrino
+	Cygwin/Mingw32	Win32 or cross-compiled
+	Visual C++	Win32
+	MIPSpro		IRIX
+	DJGPP		MS-DOS, uses Allegro
+	Watcom C	MS-DOS
+	Turbo C		MS-DOS
+
+
 To build in UNIX platforms, run './configure; make'. ./configure --help
-will show the build options. If you're using mingw32, go32 or djgpp, copy
-the appropriate ruleset from rulesets/ to ./Rules.
+will show the build options. If you're using mingw32 or djgpp with a
+UNIX-like shell (ksh, bash), copy the appropriate ruleset from rulesets/
+to ./Rules.
 
 To build using VC++, check the files in the appropriate directory.
 

@@ -30,7 +30,7 @@
 #endif
 #ifdef __TURBOC__
 #define __outp(a, b)	outportb(a, b)
-#fi
+#endif
 
 #define move_memory(a, b, c) memmove((char*)a, (char*)b, (UINT32)c)
 
@@ -73,7 +73,7 @@ static void pc_timer ()
 	static UINT32 cticks = 0;
 
 	while (cticks == clock_ticks);
-	cticks=clock_ticks;
+	cticks = clock_ticks;
 }
 
 

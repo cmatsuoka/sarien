@@ -29,14 +29,19 @@
 
 
 #ifdef __TURBOC__
-#define GFX_AREA (64000)
-#else
-#define GFX_AREA (GFX_WIDTH * GFX_HEIGHT)
+
+static far UINT8 sarien_screen[64000];
+#ifdef USE_CONSOLE
+static far UINT8 console_screen[64000];
 #endif
 
-static UINT8 sarien_screen[GFX_AREA];
+#else
+
+static UINT8 sarien_screen[GFX_WIDTH * GFX_HEIGHT];
 #ifdef USE_CONSOLE
-static UINT8 console_screen[GFX_AREA];
+static UINT8 console_screen[GFX_WIDTH * GFX_HEIGHT];
+#endif
+
 #endif
 
 
