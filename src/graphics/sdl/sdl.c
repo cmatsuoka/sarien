@@ -1,19 +1,11 @@
-/*
- *  Sarien AGI :: Copyright (C) 1998 Dark Fiber
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999 Dark Fiber, (C) 1999,2001 Claudio Matsuoka
+ *  
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
 /* SDL support written by Claudio Matsuoka <claudio@helllabs.org>
@@ -64,8 +56,8 @@ static int key_queue_end = 0;
 
 static int init_vidmode (void);
 static int deinit_vidmode (void);
-static void put_block (UINT16, UINT16, UINT16, UINT16);
-static void inline _put_pixel (UINT16, UINT16, UINT16);
+static void put_block (int, int, int, int);
+static void inline _put_pixel (int, int, int);
 
 static void new_timer (void);
 static Uint32 timer_function (Uint32);
@@ -75,11 +67,10 @@ static volatile UINT32 tick_timer = 0;
 
 #define TICK_SECONDS 20
 
-UINT8 is_keypress(void);
-UINT16 get_keypress(void);
+int is_keypress(void);
+int get_keypress(void);
 
-static __GFX_DRIVER GFX_sdl =
-{
+static struct gfx_driver GFX_sdl = {
 	init_vidmode,
 	deinit_vidmode,
 	put_block,
@@ -88,6 +79,8 @@ static __GFX_DRIVER GFX_sdl =
 	is_keypress,
 	get_keypress
 };
+
+extern struct gfx_driver *gfx;
 
 
 static void process_events ()
@@ -299,7 +292,7 @@ static int deinit_vidmode (void)
 
 
 /* put a block onto the screen */
-static void put_block (UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
+static void put_block (int x1, int y1, int x2, int y2)
 {
 	if (x1 >= GFX_WIDTH)
 		x1 = GFX_WIDTH - 1;
@@ -320,15 +313,14 @@ static void put_block (UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
 }
 
 
-static void inline sdl_put_pixel (UINT16 x, UINT16 y, UINT16 c)
+static void inline sdl_put_pixel (int x, int y, int c)
 {
 	UINT32 pixel;
 	UINT8 *bits, bpp;
 
 	pixel = SDL_MapRGB (screen->format, color[c].r, color[c].g, color[c].b);
 
-	if (SDL_MUSTLOCK (screen))
-	{
+	if (SDL_MUSTLOCK (screen)) {
 		if (SDL_LockSurface (screen) < 0)
 			return;
 	}
@@ -366,16 +358,13 @@ static void inline sdl_put_pixel (UINT16 x, UINT16 y, UINT16 c)
 
 
 /* put pixel routine */
-static void inline _put_pixel (UINT16 x, UINT16 y, UINT16 c)
+static void inline _put_pixel (int x, int y, int c)
 {
 	register int i, j;
 
-	if (scale == 1)
-	{
+	if (scale == 1) {
 		sdl_put_pixel (x, y, c);
-	}
-	else
-	{
+	} else {
 		for (i = 0; i < scale; i++)
 			for (j = 0; j < scale; j++)
 				sdl_put_pixel (x * scale + i, y * scale + j, c);
@@ -383,7 +372,7 @@ static void inline _put_pixel (UINT16 x, UINT16 y, UINT16 c)
 }
 
 
-UINT8 is_keypress (void)
+int is_keypress (void)
 {
 	process_events ();
 
@@ -391,13 +380,12 @@ UINT8 is_keypress (void)
 }
 
 
-UINT16 get_keypress (void)
+int get_keypress (void)
 {
-	UINT16 k;
+	int k;
 
 	while (key_queue_start == key_queue_end)	/* block */
 		new_timer ();
-
 	key_dequeue(k);
 
 	return k;

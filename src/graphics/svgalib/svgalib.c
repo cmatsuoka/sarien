@@ -1,19 +1,11 @@
-/*
- *  Sarien AGI :: Copyright (C) 1998 Dark Fiber
+/*  Sarien - A Sierra AGI resource interpreter engine
+ *  Copyright (C) 1999 Dark Fiber, (C) 1999,2001 Claudio Matsuoka
+ *  
+ *  $Id$
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
 /*
@@ -36,26 +28,39 @@
 #include "sarien.h"
 #include "gfx.h"
 #include "keyboard.h"
-#include "svgalib.h"
 
 static UINT8 *video_buffer;
 static void *svgalib_framebuffer;
 
 static int scale = 1;
-static int key = 0;
+static int key_value= 0;
 static int key_control = 0;
 static int key_alt = 0;
 static int __argc;
 static char **__argv;
-
 
 UINT32 clock_ticks;
 UINT32 clock_count;
 
 #define TICK_SECONDS 20
 
-static __GFX_DRIVER GFX_svgalib =
-{
+
+//static int svgalib_key_init (void);
+
+//static void svgalib_key_close (void);
+//static void svgalib_key_flush (void);
+//static void svgalib_key_update (void);
+//static void svgalib_key_handler (int scancode, int press);
+
+static int	init_vidmode	(void);
+static int	deinit_vidmode	(void);
+static void	put_block	(int, int, int, int);
+static void	_put_pixel	(int, int, int);
+static void	new_timer	(void);
+static int	keypress	(void);
+static int	get_key		(void);
+
+static struct gfx_driver GFX_svgalib = {
 	init_vidmode,
 	deinit_vidmode,
 	put_block,
@@ -65,55 +70,9 @@ static __GFX_DRIVER GFX_svgalib =
 	get_key
 };
 
+extern struct gfx_driver *gfx;
 
 static char key_state[128];
-
-static UINT8 svgalib_key_init ()
-{
-	int err;
-
-	err = atexit (svgalib_key_close);
-	if (err) {
-		fprintf (stderr, "Couldn't register svgalib_key_close"
-							"with atexit!\n");
-		perror ("atexit");
-		return err_Unk;
-	}
-
-	err = keyboard_init ();
-	if (err) {
-		fprintf (stderr, "Couldn't init. keyboard!\n");
-		return err_Unk;
-	}
-
-	keyboard_seteventhandler (svgalib_key_handler);
-	svgalib_key_flush ();
-
-	return err_OK;
-}
-
-
-static void svgalib_key_close ()
-{
-	keyboard_setdefaulteventhandler ();
-	keyboard_clearstate ();
-	keyboard_translatekeys (0);
-	keyboard_close ();
-}
-
-
-static void svgalib_key_flush ()
-{
-	keyboard_update ();
-	keyboard_clearstate ();
-	memset (key_state, 0, 128);
-}
-
-
-static void svgalib_key_update ()
-{
-	keyboard_update ();
-}
 
 
 static struct mapping {
@@ -176,70 +135,70 @@ static void svgalib_key_handler (int scancode, int press)
 
 	if ((scancode == SCANCODE_LEFTSHIFT) ||
 	    (scancode == SCANCODE_RIGHTSHIFT))
-		key = 0;
+		key_value= 0;
 	else if (scancode == SCANCODE_LEFTCONTROL) {
 		key_control |= 1;
-		key = 0;
+		key_value= 0;
 	}
 	else if (scancode == SCANCODE_RIGHTCONTROL) {
 		key_control |= 2;
-		key = 0;
+		key_value= 0;
 	}
 	else if (scancode == SCANCODE_LEFTALT) {
 		key_alt |= 1;
-		key = 0;
+		key_value= 0;
 	}
 	else if (scancode == SCANCODE_RIGHTALT) {
 		key_alt |= 2;
-		key = 0;
+		key_value= 0;
 	}
 	else if ((scancode == SCANCODE_CURSORUP) ||
 	    (scancode == SCANCODE_CURSORBLOCKUP))
-		key = KEY_UP;
+		key_value= KEY_UP;
 	else if ((scancode == SCANCODE_CURSORDOWN) ||
 	    (scancode == SCANCODE_CURSORBLOCKDOWN))
-		key = KEY_DOWN;
+		key_value= KEY_DOWN;
 	else if ((scancode == SCANCODE_CURSORLEFT) ||
 	    (scancode == SCANCODE_CURSORBLOCKLEFT))
-		key = KEY_LEFT;
+		key_value= KEY_LEFT;
 	else if ((scancode == SCANCODE_CURSORRIGHT) ||
 	    (scancode == SCANCODE_CURSORBLOCKRIGHT))
-		key = KEY_RIGHT;
+		key_value= KEY_RIGHT;
 	else if (scancode == SCANCODE_CURSORUPLEFT)
-		key = KEY_UP_LEFT;
+		key_value= KEY_UP_LEFT;
 	else if (scancode == SCANCODE_CURSORUPRIGHT)
-		key = KEY_UP_RIGHT;
+		key_value= KEY_UP_RIGHT;
 	else if (scancode == SCANCODE_CURSORDOWNLEFT)
-		key = KEY_DOWN_LEFT;
+		key_value= KEY_DOWN_LEFT;
 	else if (scancode == SCANCODE_CURSORDOWNRIGHT)
-		key = KEY_DOWN_RIGHT;
+		key_value= KEY_DOWN_RIGHT;
 	else if ((scancode == SCANCODE_ENTER) ||
 	    (scancode == SCANCODE_KEYPADENTER))
-		key = KEY_ENTER;
+		key_value= KEY_ENTER;
 	else if (scancode == SCANCODE_KEYPADPLUS)
-		key = '+';
+		key_value= '+';
 	else if (scancode == SCANCODE_KEYPADMINUS)
-		key = '-';
+		key_value= '-';
 	else if (scancode == SCANCODE_REMOVE)
-		key = 0x53;
+		key_value= 0x53;
 	else if (scancode == SCANCODE_INSERT)
-		key = 0x52;
+		key_value= 0x52;
 	else if ((scancode >= SCANCODE_F1) &&
 	    (scancode <= SCANCODE_F10)) {
 		int ftable[10] = {
 			0x3B00, 0x3C00, 0x3D00, 0x3E00, 0x3F00,
 			0x4000, 0x4100, 0x4200, 0x4300, 0x4400};
-		key = ftable[(scancode - SCANCODE_F1)];
+		key_value= ftable[(scancode - SCANCODE_F1)];
 	}
 	else if (scancode == SCANCODE_ESCAPE)
-		key = KEY_ESCAPE;
+		key_value= KEY_ESCAPE;
 	else {
-		/* Map scancode to ASCII key */
+		/* Map scancode to ASCII key_value*/
 		for (i=0; ; i++) {
 			if (key_map[i].scancode == 0)
 				break;
 			if (key_map[i].scancode == scancode) {
-				key = key_map[i].ascii;
+				key_value= key_map[i].ascii;
 				break;
 			}
 		}
@@ -247,16 +206,65 @@ static void svgalib_key_handler (int scancode, int press)
 		    INRANGE (scancode, SCANCODE_A, SCANCODE_L) ||
 		    INRANGE (scancode, SCANCODE_Z, SCANCODE_M)) {
 			if (key_control || key_alt) {
-				key &= ~0x20;
-				key -= 0x40;
+				key_value&= ~0x20;
+				key_value-= 0x40;
 			}
 			if (key_alt) {
 				key--;
-				key = (scancode_table[key] << 8);
+				key_value= (scancode_table[key] << 8);
 			}
 		}
 	}
 }
+
+
+static void svgalib_key_close ()
+{
+	keyboard_setdefaulteventhandler ();
+	keyboard_clearstate ();
+	keyboard_translatekeys (0);
+	keyboard_close ();
+}
+
+
+static void svgalib_key_flush ()
+{
+	keyboard_update ();
+	keyboard_clearstate ();
+	memset (key_state, 0, 128);
+}
+
+
+static void svgalib_key_update ()
+{
+	keyboard_update ();
+}
+
+
+static int svgalib_key_init ()
+{
+	int err;
+
+	err = atexit (svgalib_key_close);
+	if (err) {
+		fprintf (stderr, "Couldn't register svgalib_key_close"
+							"with atexit!\n");
+		perror ("atexit");
+		return err_Unk;
+	}
+
+	err = keyboard_init ();
+	if (err) {
+		fprintf (stderr, "Couldn't init. keyboard!\n");
+		return err_Unk;
+	}
+
+	keyboard_seteventhandler (svgalib_key_handler);
+	svgalib_key_flush ();
+
+	return err_OK;
+}
+
 
 
 static void process_events ()
@@ -265,7 +273,7 @@ static void process_events ()
 }
 
 
-UINT16 init_machine (int argc, char **argv)
+int init_machine (int argc, char **argv)
 {
 	gfx = &GFX_svgalib;
 
@@ -282,13 +290,13 @@ UINT16 init_machine (int argc, char **argv)
 }
 
 
-UINT16 deinit_machine ()
+int deinit_machine ()
 {
 	return err_OK;
 }
 
 
-static UINT16 init_vidmode ()
+static int init_vidmode ()
 {
 	int err, i;
 
@@ -337,7 +345,7 @@ static UINT16 init_vidmode ()
 }
 
 
-static UINT16 deinit_vidmode ()
+static int deinit_vidmode ()
 {
 	vga_setmode (TEXT);
 	if (video_buffer)
@@ -348,7 +356,7 @@ static UINT16 deinit_vidmode ()
 
 
 /* put a block onto the screen */
-static void put_block (UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
+static void put_block (int x1, int y1, int x2, int y2)
 {
 	int i, h;
 
@@ -369,31 +377,31 @@ static void put_block (UINT16 x1, UINT16 y1, UINT16 x2, UINT16 y2)
 
 
 /* put pixel routine */
-static void inline _put_pixel (UINT16 x, UINT16 y, UINT16 c)
+static void _put_pixel (int x, int y, int c)
 {
 	/* XoXus: FIXME: Is this a 16-bit color? */
 	video_buffer[y * 320 + x] = (c & 0xFF);
 }
 
 
-static UINT8 keypress ()
+static int keypress ()
 {
 	process_events ();
 	return !!key;
 }
 
 /* XoXus: FIXME: Should get_keypress block? */
-static UINT16 get_key ()
+static int get_key ()
 {
 	UINT16 k;
 
 	process_events ();
-	while (key == 0) {
+	while (key_value== 0) {
 		process_events ();
 	}
 
 	k = key;
-	key = 0;
+	key_value= 0;
 	return k;
 }
 
@@ -403,15 +411,14 @@ static void new_timer ()
 	struct timeval tv;
 	struct timezone tz;
 	static double msec = 0.0;
-	static int msg_box_ticks = 0;
+	//static int msg_box_ticks = 0;
 	double m, dm;
 	
 	gettimeofday (&tv, &tz);
 	m = 1000.0 * tv.tv_sec + tv.tv_usec / 1000.0;
 
 	dm = m - msec;
-	while (dm < 45)
-	{
+	while (dm < 45) {
 		usleep (5000);
 		gettimeofday (&tv, &tz);
 		m = 1000.0 * tv.tv_sec + tv.tv_usec / 1000.0;

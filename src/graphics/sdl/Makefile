@@ -1,3 +1,4 @@
+# $Id$
 
 XCFLAGS	= -I../../include
 OBJS	= sdl.o

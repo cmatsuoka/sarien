@@ -1,3 +1,5 @@
+# $Id$
+
 XCFLAGS	= -I../../include
 OBJS	= svgalib.o
 DFILES	= Makefile $(OBJS:.o=.c) svgalib.h
