@@ -183,13 +183,11 @@ void add_view_table (int entry, int vw)
 
 	if (view_table[entry].current_view != vw || getflag(F_new_room_exec)) {	
 		view_table[entry].current_view = vw;
-		//view_table[entry].view = &views[vw];
 
 		view_table[entry].bg_scr = NULL;
 		view_table[entry].bg_pri = NULL;
 		view_table[entry].motion = MOTION_NORMAL;
 		view_table[entry].cycle_status = CYCLE_NORMAL;
-		//view_table[entry].num_loops = views[vw].num_loops;
 
 		/* Loop numbers should be retained, this checks if a loop number
 		 * is sane for the given view
@@ -217,33 +215,35 @@ void add_view_table (int entry, int vw)
 				set_loop (entry, 1);
 				break;
 			}
-		} else {
-			if (views[vw].num_loops == 4) {
-				switch(view_table[entry].direction) {
-				case 0:
-					// set_loop (entry, 0);
-					// In this case the loop number is retained from the previous object
-					break;
-				case 1:
-					set_loop (entry, 3);
-					break;
-				case 2:
-				case 3:
-				case 4:
-					set_loop (entry, 0);
-					break;
-				case 5:
-					set_loop (entry, 2);
-					break;
-				case 6:
-				case 7:
-				case 8:
-					set_loop (entry, 1);
-					break;
-				}
-			} else {
-				set_loop (entry, 0); /* Default loop? */
+		} else if (views[vw].num_loops == 4) {
+			switch(view_table[entry].direction) {
+			case 0:
+				// set_loop (entry, 0);
+				// In this case the loop number is retained from the previous object
+				break;
+			case 1:
+				set_loop (entry, 3);
+				break;
+			case 2:
+			case 3:
+			case 4:
+				set_loop (entry, 0);
+				break;
+			case 5:
+				set_loop (entry, 2);
+				break;
+			case 6:
+			case 7:
+			case 8:
+				set_loop (entry, 1);
+				break;
 			}
+		} else {
+			/* CM: Can't set loop to zero here, it produces
+			 * the SSSRA bug.
+			 *
+			 * set_loop (entry, 0);	// Default loop?
+			 */
 		}
 
 		/* Sanity check */
@@ -268,25 +268,26 @@ void add_view_table (int entry, int vw)
 }
 
 
-void set_cel (int entry, int c)
+void set_cel (int entry, int cel)
 {
-	if (c >= VT_LOOP(view_table[entry]).num_cels) {
+	_D ("(entry = %d, cel = %d)", entry, cel);
+	if (cel >= VT_LOOP(view_table[entry]).num_cels) {
 		report ("Oops! attempt to set cel(=%d) > num_cels(=%d)\n",
-			c, VT_LOOP(view_table[entry]).num_cels);
-		c = 0;
+			cel, VT_LOOP(view_table[entry]).num_cels);
+		cel = 0;
 	}
 
-	view_table[entry].current_cel = c;
+	view_table[entry].current_cel = cel;
 }
 
 
 void set_loop (int entry, int loop)
 {
+	_D ("(entry = %d, loop = %d)", entry, loop);
 	if (loop >= VT_VIEW(view_table[entry]).num_loops)
 		loop = 0;
 
-	if (view_table[entry].current_loop != loop || getflag(F_new_room_exec))
-	{
+	if (view_table[entry].current_loop != loop || getflag(F_new_room_exec)) {
 		view_table[entry].current_loop = loop;
 		set_cel (entry, view_table[entry].current_cel);
 	}
