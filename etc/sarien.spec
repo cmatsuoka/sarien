@@ -12,7 +12,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Sarien is an open source, portable implementation of the Sierra On-Line
 Adventure Game Interpreter (AGI), and is able to run AGI version 2 and
 version 3 games such as Space Quest 1 and 2, King's Quest 1 to 4, Gold
-Rush! and Leisure Suit Larry in the Land of the Lounge Lizards).
+Rush! and Leisure Suit Larry in the Land of the Lounge Lizards.
 
 %prep
 %setup -q -n %{name}-20010901

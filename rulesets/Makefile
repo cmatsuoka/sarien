@@ -2,7 +2,7 @@
 
 XCFLAGS =
 OBJS	=
-DFILES	= Makefile Rules.djgpp Rules.go32 Rules.mingw32 Rules.xmingw32
+DFILES	= Makefile Rules.cygwin Rules.djgpp Rules.go32 Rules.mingw32 Rules.xmingw32
 CFILES	=
 DDIRS	=
 XDFILES =
