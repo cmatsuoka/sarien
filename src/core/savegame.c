@@ -19,14 +19,13 @@
 #include <string.h>
 #include <assert.h>
 
-#ifndef DREAMCAST
-#ifndef __MPW__
+#if !defined(DREAMCAST) && !defined(__MPW__)
 #  ifndef __DICE__
 #    include <sys/stat.h>
 #  endif
 #  include <sys/types.h>
 #endif
-#endif
+
 #ifdef WIN32
 #  include <direct.h>
 #endif

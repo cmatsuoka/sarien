@@ -16,12 +16,12 @@ static int check_position (struct vt_entry *v)
 {
 	_D ("check position @ %d, %d", v->x_pos, v->y_pos);
 
-	if (	v->x_pos < 0 ||
-		v->x_pos + v->x_size > _WIDTH ||
-		v->y_pos - v->y_size + 1 < 0 ||
-		v->y_pos < v->y_size || /* not in AGI 2.917, but MH1 needs it */
-		v->y_pos >= _HEIGHT ||
-		((~v->flags & IGNORE_HORIZON) && v->y_pos <= game.horizon))
+	if (v->x_pos < 0 ||
+	    v->x_pos + v->x_size > _WIDTH ||
+	    v->y_pos - v->y_size + 1 < 0 ||
+	    v->y_pos < v->y_size || /* not in AGI 2.917, but MH1 needs it */
+	    v->y_pos >= _HEIGHT ||
+	    ((~v->flags & IGNORE_HORIZON) && v->y_pos <= game.horizon))
 	{
 		_D (_D_WARN "check position failed: x=%d, y=%d, h=%d, w=%d",
 			v->x_pos, v->y_pos, v->x_size, v->y_size);
@@ -32,7 +32,7 @@ static int check_position (struct vt_entry *v)
 }
 
 /**
- * Checks if there's another object on the way
+ * Check if there's another object on the way
  */
 static int check_clutter (struct vt_entry *v)
 {
@@ -42,33 +42,29 @@ static int check_clutter (struct vt_entry *v)
 		return 0;
 
 	for_each_vt_entry (u) {
-		if ((u->flags & (ANIMATED|DRAWN)) != (ANIMATED|DRAWN))
+		if ((u->flags & (ANIMATED|DRAWN)) != (ANIMATED|DRAWN) ||
+		    u->flags & IGNORE_OBJECTS)
 			continue;
 
-		if (u->flags & IGNORE_OBJECTS)
-			continue;
-
+		/* Same object, check next */
 		if (v->entry == u->entry)
 			continue;
 
-		if (v->x_pos + v->x_size < u->x_pos)
+		/* No horizontal overlap, check next */
+		if (v->x_pos + v->x_size < u->x_pos ||
+		    v->x_pos > u->x_pos + u->x_size)
 			continue;
 
-		if (v->x_pos > u->x_pos + u->x_size)
-			continue;
-
+		/* Same y, return error! */ 
 		if (v->y_pos == u->y_pos)
 			goto return_1;
 
-		if (v->y_pos > u->y_pos) {
-			if (v->y_pos2 < u->y_pos2)
-				goto return_1;
-		}
+		/* Crossed the baseline, return error! */
+	 	if ((v->y_pos > u->y_pos && v->y_pos2 < u->y_pos2))
+			goto return_1;
 
-		if (v->y_pos >= u->y_pos)
-			continue;
-
-		if (v->y_pos2 <= u->y_pos2)
+		/* Didn't cross baseline */
+		if (v->y_pos >= u->y_pos || v->y_pos2 <= u->y_pos2)
 			continue;
 
 return_1:
@@ -150,7 +146,11 @@ _check_ego:
  */
 
 /**
- *
+ * Update position of objects
+ * This function updates the position of all animated, updating view
+ * table entries according to its motion type, step size, etc. The
+ * new position must be valid according to the sprite positioning
+ * rules, otherwise the previous position will be kept.
  */
 void update_position ()
 {

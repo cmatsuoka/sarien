@@ -7,6 +7,7 @@ Tested ports:
 ---------+-------+---------+---------+---------+---------+---------+
  MS-DOS  |Watcom | Raw VGA |  dummy  |    no   |   yes   | Stuart  |
  MS-DOS  |Turbo C| Raw VGA |  dummy  |    no   |   yes   | claudio |
+ MS-DOS  | DJGPP | allegro | allegro |    no   |   yes   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
  Linux   |  gcc  |   X11   |OSS,ALSA |   yes   |    no   | claudio |
  Linux   |  gcc  | SVGAlib |OSS,ALSA |    no   |   yes   |  XoXus  |
@@ -17,11 +18,13 @@ Tested ports:
  AIX 4   |  gcc  |   X11   |  dummy  |   yes   |    no   |         |
  IRIX    |MIPSpro|   X11   |   sgi   |   yes   |    no   | aheikin |
 ---------+-------+---------+---------+---------+---------+---------+
+ QNX	 |  gcc  |  Photon |  ALSA   |   yes   |   yes   | jpenner |
+---------+-------+---------+---------+---------+---------+---------+
  BeOS 5  |  gcc  |   SDL   |   SDL   |   yes   |   yes   | claudio |
 ---------+-------+---------+---------+---------+---------+---------+
- MacOS X |   ?   |  Cocoa  |  dummy  |   yes   |    ?    |drzoltan |
+ MacOS X |   ?   |  Cocoa  | Carbon  |   yes   |    ?    |drzoltan |
 ---------+-------+---------+---------+---------+---------+---------+
- QNX	 |   ?   |  Photon |    ?    |    ?    |    ?    | jpenner |
+Dreamcast|   ?   |   dc    |   dc    |    no   |   yes   |brianpeek|
 ---------+-------+---------+---------+---------+---------+---------+
  Windows |Mingw32|   DIB   |  dummy  |   yes   |    no   |rosinha, |
  Windows*|Mingw32|   SDL   |   SDL   |   yes   |   yes   |igor,matt|
@@ -64,25 +67,14 @@ Untested, expected to work:
 ---------+-------+---------+---------+---------+---------+---------+
 
 
-In progress:
-
-                  Graphics   Sound    Windowed  Fullscreen
-         Compiler  Driver    Driver   Graphics  Graphics    Sound
----------+-------+---------+---------+---------+---------+---------+
- MS-DOS  | DJGPP | allegro | allegro |    no   |   yes   |   yes   |
----------+-------+---------+---------+---------+---------+---------+
- Linux   |  gcc  |XF86 DGA |OSS,ALSA |    no   |   yes   |   yes   |
----------+-------+---------+---------+---------+---------+---------+
- MacOS   |  MPW  |  macos  |  macos  |   yes   |    no   |   yes   |
----------+-------+---------+---------+---------+---------+---------+
-
-
 Incomplete, assistance required:
 
                   Graphics   Sound    Windowed  Fullscreen
          Compiler  Driver    Driver   Graphics  Graphics    Sound
 ---------+-------+---------+---------+---------+---------+---------+
  OS/2    |   ?   |  DIVE   |  DART   |   yes   |    no   |   yes   |
+---------+-------+---------+---------+---------+---------+---------+
+ MacOS   |  MPW  |  macos  |  macos  |   yes   |    no   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
 
 

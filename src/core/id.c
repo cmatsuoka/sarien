@@ -186,7 +186,6 @@ int v2id_game ()
 	char *fn[] = { "viewdir", "logdir", "picdir", "snddir",
 		"words.tok", "object", "" };
 
-	/*_D (_D_WARN);*/
 	buff = malloc (8192);
 
 	for (crc = y = 0; fn[y][0]; y++) {

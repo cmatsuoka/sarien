@@ -49,8 +49,7 @@ int decode_objects(UINT8* mem, UINT32 flen)
 	/* alloc memory for object list
 	 * byte 3 = number of animated objects. this is ignored.. ??
 	 */
-	if (lohi_getword(mem) / padsize >= 256)
-	{
+	if (lohi_getword(mem) / padsize >= 256) {
 #ifdef AGDS_SUPPORT
     		/* die with no error! AGDS game needs not to die to work!! :( */
 		return err_OK;
@@ -69,14 +68,17 @@ int decode_objects(UINT8* mem, UINT32 flen)
 
     	/* build the object list */
     	for (i = 0, so = padsize; i < game.num_objects; i++, so += padsize) {
+		int offset;
+
 		(objects + i)->location = lohi_getbyte (mem + so + 2);
-    		if ((lohi_getword (mem + so) + padsize) < flen) {
-			(objects+i)->name = strdup (mem +
-				(lohi_getword (mem + so) + padsize));
+		offset = lohi_getword (mem + so) + padsize;
+
+    		if (offset < flen) {
+			(objects + i)->name = strdup (mem + offset);
 	    	} else {
 	    		printf ("ERROR: object %i name beyond object filesize! "
-				"(%04x)\n", i, (lohi_getword (mem + so) + 3));
-	    		(objects+i)->name = strdup ("");
+				"(%04x > %04x)\n", i, offset, flen);
+	    		(objects + i)->name = strdup ("");
 	    	}
     	}
 	report ("Reading objects: %d objects read.\n", game.num_objects);
