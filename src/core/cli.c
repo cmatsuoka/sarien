@@ -33,7 +33,9 @@ static void help (int argc, char **argv)
 #endif
 "  -A --amiga         Forces the game to be seen as an Amiga word padded game.\n"
 "  -C --crc           CRC and identify the game files and stop.\n"
+#ifndef PCCGA
 "  -c --cga-palette   Use PC CGA video mode emulation.\n"
+#endif
 #ifdef OPT_LIST_DICT
 "  -d --list-dictionary\n"
 "                     List dictionary words.\n"
@@ -43,7 +45,9 @@ static void help (int argc, char **argv)
 "                     Emulate the sound of Sierra AGI running in different\n"
 "                     computers. Valid emulations are pc, mac and amiga\n"
 #endif
+#ifndef PCCGA
 "  -e --ega-palette   Use PC EGA palette instead of amiga-ish palette\n"
+#endif
 "  -L --list-games    List all the games in the ID file\n"
 "  -F --full-screen   Run in full-screen mode if allowed by the graphics device\n"
 "  -g --no-gfx-optimizations\n"
@@ -116,7 +120,9 @@ int parse_cli (int argc, char **argv)
 		{ "amiga",		0, 0, 'A'},
 		{ "emulate-version",	1, 0, 'v' },
 		{ "crc",		0, 0, 'C'},
+#ifndef PCCGA
 		{ "cga-palette",	0, 0, 'c'},
+#endif
 		{ "list-games",		0, 0, 'L'},
 #ifdef OPT_LIST_DICT
 		{ "list-dictionary",	0, 0, 'd' },
@@ -125,7 +131,9 @@ int parse_cli (int argc, char **argv)
 #ifndef __MSDOS__
 		{ "emulate-sound",	1, 0, 'E' },
 #endif
+#ifndef PCCGA
 		{ "ega-palette",	0, 0, 'e' },
+#endif
 		{ "full-screen",	0, 0, 'F' },
 #ifdef USE_HIRES
 		{ "hires",		1, 0, 'H' },
@@ -204,9 +212,11 @@ int parse_cli (int argc, char **argv)
 		case 'C':
 			opt.gamerun = GAMERUN_CRC;
 			break;
+#ifndef PCCGA
 		case 'c':
 			opt.cgaemu = TRUE;
 			break;
+#endif
 #ifdef OPT_LIST_DICT
 		case 'd':
 			opt.gamerun = GAMERUN_WORDS;
@@ -225,9 +235,11 @@ int parse_cli (int argc, char **argv)
 				exit (0);
 			}
 			break;
+#ifndef PCCGA
 		case 'e':
 			opt.egapal = TRUE;
 			break;
+#endif
 		case 'F':
 			opt.fullscreen = TRUE;
 			break;

@@ -385,8 +385,10 @@ int run_game ()
 {
 	int ec = err_OK;
 
+#ifdef USE_HIRES
 	if (opt.cgaemu)
 		opt.hires = 0;
+#endif
 
 	/* Execute the game */
     	do {

@@ -3,11 +3,12 @@ $Id$
 Tested ports:
 
                   Graphics   Sound    Windowed  Fullscreen
-         Compiler  Driver    Driver   Graphics  Graphics  Aut/Maint.
+  Port   Compiler  Driver    Driver   Graphics  Graphics  Aut/Maint.
 ---------+-------+---------+---------+---------+---------+---------+
  MS-DOS  |Watcom | Raw VGA |  dummy  |    no   |   yes   | Stuart  |
  MS-DOS  |Turbo C| Raw VGA |  dummy  |    no   |   yes   | claudio |
- MS-DOS  | DJGPP | allegro | allegro |    no   |   yes   |   yes   |
+ MS-DOS  |Turbo C| Raw CGA |  dummy  |    no   |   yes   | claudio |
+ MS-DOS  | DJGPP | allegro | allegro |    no   |   yes   | Stuart  |
 ---------+-------+---------+---------+---------+---------+---------+
  Linux   |  gcc  |   X11   |OSS,ALSA |   yes   |    no   | claudio |
  Linux   |  gcc  | SVGAlib |OSS,ALSA |    no   |   yes   |  XoXus  |
@@ -35,7 +36,7 @@ Dreamcast|   ?   |   dc    |   dc    |    no   |   yes   |brianpeek|
  Windows |Cygwin |   DIB   |  WinMM  |   yes   |    no   |ryan&more|
  Windows |VC/Cyg | DirectX |  WinMM  |   yes   |   yes   |  tarix  | 
 ---------+-------+---------+---------+---------+---------+---------+
- WinCE   | eVC3  |  WinCE  |  WinCE  |    no   |   yes   |  Vasyl  |
+ PocketPC| eVC3  |  WinCE  |  WinCE  |    no   |   yes   |  Vasyl  |
 ---------+-------+---------+---------+---------+---------+---------+
  OS/2    |  gcc  |   X11   |  dummy  |   yes   |    no   | Martin  |
 ---------+-------+---------+---------+---------+---------+---------+
@@ -52,7 +53,7 @@ on Sparc.
 Not integrated to the main tree:
 
                   Graphics   Sound    Windowed  Fullscreen
-         Compiler  Driver    Driver   Graphics  Graphics    Sound
+  Port   Compiler  Driver    Driver   Graphics  Graphics    Sound
 ---------+-------+---------+---------+---------+---------+---------+
  Acorn   |   ?   |    ?    |    ?    |    ?    |    ?    |    ?    |
 ---------+-------+---------+---------+---------+---------+---------+
@@ -63,7 +64,7 @@ Not integrated to the main tree:
 Untested, expected to work:
 
                   Graphics   Sound    Windowed  Fullscreen
-         Compiler  Driver    Driver   Graphics  Graphics    Sound
+  Port   Compiler  Driver    Driver   Graphics  Graphics    Sound
 ---------+-------+---------+---------+---------+---------+---------+
  OpenBSD |  gcc  |   X11   |   BSD   |   yes   |    no   |    no   |
  HP-UX   |  gcc  |   X11   |  dummy  |   yes   |    no   |    no   |
@@ -74,7 +75,7 @@ Untested, expected to work:
 Incomplete, assistance required:
 
                   Graphics   Sound    Windowed  Fullscreen
-         Compiler  Driver    Driver   Graphics  Graphics    Sound
+  Port   Compiler  Driver    Driver   Graphics  Graphics    Sound
 ---------+-------+---------+---------+---------+---------+---------+
  OS/2    |   ?   |  DIVE   |  DART   |   yes   |    no   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
@@ -82,7 +83,7 @@ Incomplete, assistance required:
 
 Planned:
                   Graphics   Sound    Windowed  Fullscreen
-         Compiler  Driver    Driver   Graphics  Graphics    Sound
+  Port   Compiler  Driver    Driver   Graphics  Graphics    Sound
 ---------+-------+---------+---------+---------+---------+---------+
  PalmOS  |  gcc  |  palm   |  palm   |    no   |   yes   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+

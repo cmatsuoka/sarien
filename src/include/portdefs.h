@@ -25,6 +25,10 @@ static char g_vmu_port[2];
 #  undef USE_MOUSE
 #endif
 
+#ifdef PCCGA
+#  undef USE_HIRES
+#endif
+
 #ifdef PALMOS
 #  include <PalmOS.h>
 #  undef USE_CONSOLE

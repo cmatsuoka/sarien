@@ -143,7 +143,7 @@ static void pc_put_block (int x1, int y1, int x2, int y2)
 	y1 &= ~1;			/* Always start at an even line */
 
 	h = y2 - y1 + 1;
-	w = (x2 - x1) / 4 + 1;
+	w = (x2 - x1 + 1) / 4 + 1;
 	p = 40 * y1 + x1 / 4;		/* Note: (GFX_WIDTH / 4) * (y1 / 2) */
 	p2 = p + 40 * y1;
 

@@ -1,0 +1,262 @@
+#
+# Makefile for Turbo C++ 3.0
+#
+# $Id$
+#
+
+.AUTODEPEND
+
+.PATH.obj = LIB
+
+#		*Translator Definitions*
+CC = tcc +SARIEN.CFG
+TASM = TASM
+TLIB = tlib
+TLINK = tlink
+LIBPATH = \TC\LIB
+INCLUDEPATH = SRC\INCLUDE;\TC\INCLUDE;SRC\CORE
+
+
+#		*Implicit Rules*
+.c.obj:
+  $(CC) -c {$< }
+
+#		*List Macros*
+
+OBJS	= agi.obj agi_v2.obj agi_v3.obj checks.obj cli.obj console.obj \
+	  cycle.obj font.obj getopt.obj getopt1.obj global.obj graphics.obj \
+	  id.obj inv.obj keyboard.obj logic.obj lzw.obj main.obj \
+	  menu.obj motion.obj objects.obj op_cmd.obj op_dbg.obj op_test.obj \
+	  patches.obj picture.obj rand.obj savegame.obj silent.obj sound.obj \
+	  sprite.obj text.obj view.obj words.obj tcglob.obj dummy.obj \
+	  path.obj pccga.obj picview.obj
+
+#		*Explicit Rules*
+sarien: sarien.cfg $(OBJS)
+   $(CC) -eagi @&&|
+lib\agi.obj
+lib\agi_v2.obj
+lib\agi_v3.obj
+lib\checks.obj
+lib\cli.obj
+lib\console.obj
+lib\cycle.obj
+lib\font.obj
+lib\getopt.obj
+lib\getopt1.obj
+lib\global.obj
+lib\graphics.obj
+lib\id.obj
+lib\inv.obj
+lib\keyboard.obj
+lib\logic.obj
+lib\lzw.obj
+lib\main.obj
+lib\menu.obj
+lib\motion.obj
+lib\objects.obj
+lib\op_cmd.obj
+lib\op_dbg.obj
+lib\op_test.obj
+lib\patches.obj
+lib\picture.obj
+lib\rand.obj
+lib\savegame.obj
+lib\silent.obj
+lib\sound.obj
+lib\sprite.obj
+lib\text.obj
+lib\view.obj
+lib\words.obj
+lib\tcglob.obj
+lib\path.obj
+lib\dummy.obj
+lib\pccga.obj
+lib\picview.obj
+|
+   copy lib\agi.exe bin\sarien.exe
+
+
+
+#		*Individual File Dependencies*
+agi.obj: sarien.cfg src\core\agi.c 
+	$(CC) -c src\core\agi.c
+
+agi_v2.obj: sarien.cfg src\core\agi_v2.c 
+	$(CC) -c src\core\agi_v2.c
+
+agi_v3.obj: sarien.cfg src\core\agi_v3.c 
+	$(CC) -c src\core\agi_v3.c
+
+checks.obj: sarien.cfg src\core\checks.c 
+	$(CC) -c src\core\checks.c
+
+cli.obj: sarien.cfg src\core\cli.c 
+	$(CC) -c src\core\cli.c
+
+console.obj: sarien.cfg src\core\console.c 
+	$(CC) -c src\core\console.c
+
+cycle.obj: sarien.cfg src\core\cycle.c 
+	$(CC) -c src\core\cycle.c
+
+font.obj: sarien.cfg src\core\font.c 
+	$(CC) -c src\core\font.c
+
+getopt.obj: sarien.cfg src\core\getopt.c 
+	$(CC) -c src\core\getopt.c
+
+getopt1.obj: sarien.cfg src\core\getopt1.c 
+	$(CC) -c src\core\getopt1.c
+
+global.obj: sarien.cfg src\core\global.c 
+	$(CC) -c src\core\global.c
+
+graphics.obj: sarien.cfg src\core\graphics.c 
+	$(CC) -c src\core\graphics.c
+
+id.obj: sarien.cfg src\core\id.c 
+	$(CC) -c src\core\id.c
+
+inv.obj: sarien.cfg src\core\inv.c 
+	$(CC) -c src\core\inv.c
+
+keyboard.obj: sarien.cfg src\core\keyboard.c 
+	$(CC) -c src\core\keyboard.c
+
+logic.obj: sarien.cfg src\core\logic.c 
+	$(CC) -c src\core\logic.c
+
+lzw.obj: sarien.cfg src\core\lzw.c 
+	$(CC) -c src\core\lzw.c
+
+main.obj: sarien.cfg src\core\main.c 
+	$(CC) -c src\core\main.c
+
+menu.obj: sarien.cfg src\core\menu.c 
+	$(CC) -c src\core\menu.c
+
+motion.obj: sarien.cfg src\core\motion.c 
+	$(CC) -c src\core\motion.c
+
+objects.obj: sarien.cfg src\core\objects.c 
+	$(CC) -c src\core\objects.c
+
+op_cmd.obj: sarien.cfg src\core\op_cmd.c 
+	$(CC) -c src\core\op_cmd.c
+
+op_dbg.obj: sarien.cfg src\core\op_dbg.c 
+	$(CC) -c src\core\op_dbg.c
+
+op_test.obj: sarien.cfg src\core\op_test.c 
+	$(CC) -c src\core\op_test.c
+
+patches.obj: sarien.cfg src\core\patches.c 
+	$(CC) -c src\core\patches.c
+
+picture.obj: sarien.cfg src\core\picture.c 
+	$(CC) -c src\core\picture.c
+
+picview.obj: sarien.cfg src\core\picview.c 
+	$(CC) -c src\core\picview.c
+
+rand.obj: sarien.cfg src\core\rand.c 
+	$(CC) -c src\core\rand.c
+
+savegame.obj: sarien.cfg src\core\savegame.c 
+	$(CC) -c src\core\savegame.c
+
+silent.obj: sarien.cfg src\core\silent.c 
+	$(CC) -c src\core\silent.c
+
+sound.obj: sarien.cfg src\core\sound.c 
+	$(CC) -c src\core\sound.c
+
+sprite.obj: sarien.cfg src\core\sprite.c 
+	$(CC) -c src\core\sprite.c
+
+text.obj: sarien.cfg src\core\text.c 
+	$(CC) -c src\core\text.c
+
+view.obj: sarien.cfg src\core\view.c 
+	$(CC) -c src\core\view.c
+
+winmain.obj: sarien.cfg src\core\winmain.c 
+	$(CC) -c src\core\winmain.c
+
+words.obj: sarien.cfg src\core\words.c 
+	$(CC) -c src\core\words.c
+
+tcglob.obj: sarien.cfg src\filesys\msdos\tcglob.c 
+	$(CC) -c src\filesys\msdos\tcglob.c
+
+path.obj: sarien.cfg src\filesys\msdos\path.c 
+	$(CC) -c src\filesys\msdos\path.c
+
+dummy.obj: sarien.cfg src\sound\dummy\dummy.c 
+	$(CC) -c src\sound\dummy\dummy.c
+
+pccga.obj: sarien.cfg src\graphics\msdos\pccga.c 
+	$(CC) -c src\graphics\msdos\pccga.c
+
+#		*Compiler Configuration File*
+#
+# Turbo C++ Version 3.00 Copyright (c) 1992 Borland International
+# Syntax is: TCC [ options ] file[s]     * = default; -x- = turn switch x off
+#  -1      80186/286 Instructions    -2      80286 Protected Mode Inst.
+#  -Ax     Disable extensions        -B      Compile via assembly
+#  -C      Allow nested comments     -Dxxx   Define macro
+#  -Exxx   Alternate Assembler name  -G      Generate for speed
+#  -Ixxx   Include files directory   -K      Default char is unsigned
+#  -Lxxx   Libraries directory       -M      Generate link map
+#  -N      Check stack overflow      -O      Optimize jumps
+#  -P      Force C++ compile         -Qxxx   Memory usage control
+#  -S      Produce assembly output   -Txxx   Set assembler option
+#  -Uxxx   Undefine macro            -Vx     Virtual table control
+#  -X      Suppress autodep. output  -Yx     Overlay control
+#  -Z      Suppress register reloads -a      Generate word alignment
+#  -b    * Treat enums as integers   -c      Compile only
+#  -d      Merge duplicate strings   -exxx   Executable file name
+#  -fxx    Floating point options    -gN     Stop after N warnings
+#  -iN     Max. identifier length    -jN     Stop after N errors
+#  -k      Standard stack frame      -lx     Set linker option
+#  -mx     Set Memory Model          -nxxx   Output file directory
+#  -oxxx   Object file name          -p      Pascal calls
+#  -r    * Register variables        -u    * Underscores on externs
+#  -v      Source level debugging    -wxxx   Warning control
+#  -y      Produce line number info  -zxxx   Set segment names
+
+sarien.cfg: makefile.tc
+  copy &&|
+-ml
+-a
+-N
+-O
+-Z
+-d
+-r
+-vi-
+-w-ret
+-w-nci
+-w-inl
+-w-par
+-w-cpt
+-w-dup
+-w-pia
+-w-ill
+-w-sus
+-w-ext
+-w-ias
+-w-ibc
+-w-pre
+-w-nst
+-nLIB
+-I$(INCLUDEPATH)
+-DVERSION="0.8.0"
+-D__interrupt=interrupt
+-D__far=far
+-DPCCGA
+-L$(LIBPATH)
+-Ff
+| sarien.cfg
+
