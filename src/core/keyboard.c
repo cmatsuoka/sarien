@@ -195,7 +195,7 @@ void clean_keyboard ()
  * It handles console keys and insulates AGI from the console. In the main
  * loop, handle_keys() handles keyboard input and ego movement.
  */
-void poll_keyboard (void)
+void poll_keyboard ()
 {
 	UINT16 xkey, c1;
 
@@ -219,6 +219,7 @@ void poll_keyboard (void)
 			continue;
 
 		key = xkey;
+		_D ("key = %d", key);
 
 		if (console.active && console.input_active)
 			continue;
@@ -226,6 +227,7 @@ void poll_keyboard (void)
 		/* For controller() */
 		for (c1 = 0; c1 < MAX_DIRS; c1++) {
 
+#if 0
 			if (game.events[c1].data &&
 				game.events[c1].data == KEY_SCAN (xkey))
 			{
@@ -240,12 +242,14 @@ void poll_keyboard (void)
 					KEY_ASCII(xkey), eKEY_PRESS,
 					game.events[c1].event);
 			}
+#endif
 
 			switch (game.events[c1].event) {
 			case eSCAN_CODE:
 				if (game.events[c1].data == KEY_SCAN(key) &&
 					KEY_ASCII(key) == 0)
 				{
+					_D ("event: scan code");
 					game.events[c1].occured = TRUE;
 					report("event SC:%i occured\n", c1);
 				}
@@ -254,6 +258,7 @@ void poll_keyboard (void)
 				if (game.events[c1].data == KEY_ASCII(key) &&
 					KEY_SCAN(key) == 0)
 				{
+					_D ("event: key press");
 					game.events[c1].occured = TRUE;
 					report ("event AC:%i occured\n", c1);
 				}
@@ -269,10 +274,9 @@ void poll_keyboard (void)
 		console.input_key = KEY_ASCII (key);
 		key = 0;
 	} else {
-		/*
+		/* If you comment this out all keystrokes will be echoed */
 		if (!game.allow_kyb_input)
 			return;
-		*/
 
 		setvar (V_key, KEY_ASCII (key));
 	}
