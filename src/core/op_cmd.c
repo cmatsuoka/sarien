@@ -81,7 +81,7 @@ cmd(get_priority)	{ _v[p1] = vt.priority; }
 cmd(set_priority)	{ vt.flags |= FIXED_PRIORITY; vt.priority = p1; }
 cmd(set_priority_v)	{ vt.flags |= FIXED_PRIORITY; vt.priority = _v[p1]; }
 cmd(release_priority)	{ vt.flags &= ~FIXED_PRIORITY; }
-cmd(set_upper_left)	{ /* do nothing (AGI 2.917) */ p = p; }
+cmd(set_upper_left)	{ /* do nothing (AGI 2.917) */ }
 cmd(start_update)	{ start_update (&vt); }
 cmd(stop_update)	{ stop_update (&vt); }
 cmd(cur_view)		{ _v[p1] = vt.current_view; }
@@ -118,11 +118,11 @@ cmd(parse)		{ dictionary_words (agi_sprintf(game.strings[p0])); }
 cmd(set_text_attr)	{ game.color_fg = p0; game.color_bg = p1; }
 cmd(shake_screen)	{ shake_screen (p0); }
 cmd(word_to_string)	{ strcpy (game.strings[p0], game.ego_words[p1].word); }
-cmd(status_line_on)	{ game.status_line = TRUE; write_status (); p = p; }
-cmd(status_line_off)	{ game.status_line = FALSE; write_status (); p = p; }
+cmd(status_line_on)	{ game.status_line = TRUE; write_status (); }
+cmd(status_line_off)	{ game.status_line = FALSE; write_status (); }
 cmd(open_dialogue)	{ _D ("p0 = %d", p0); game.has_window = TRUE; }
 cmd(close_dialogue)	{ _D ("p0 = %d", p0); game.has_window = FALSE; }
-cmd(close_window)	{ close_window (); p = p; }
+cmd(close_window)	{ close_window (); }
 cmd(print)		{ print (cur_logic->texts[p0 - 1], 0, 0, 0); }
 cmd(print_v)		{ print (cur_logic->texts[_v[p0] - 1], 0, 0, 0); }
 cmd(print_at)		{ print (cur_logic->texts[p0 - 1], p1, p2, p3); }
@@ -130,28 +130,28 @@ cmd(print_at_v)		{ print (cur_logic->texts[_v[p0] - 1], p1, p2, p3); }
 cmd(show_obj)		{ show_obj (p0); }
 cmd(show_obj_v)		{ show_obj (_v[p0]); }
 cmd(play_sound)		{ start_sound (p0, p1); }
-cmd(stop_sound)		{ stop_sound (); p = p; }
-cmd(accept_input)	{ new_input_mode (INPUT_NORMAL); p = p; }
-cmd(prevent_input)	{ new_input_mode (INPUT_NONE); p = p; }
-cmd(menu_input)		{ new_input_mode (INPUT_MENU); p = p; }
+cmd(stop_sound)		{ stop_sound (); }
+cmd(accept_input)	{ new_input_mode (INPUT_NORMAL); }
+cmd(prevent_input)	{ new_input_mode (INPUT_NONE); }
+cmd(menu_input)		{ new_input_mode (INPUT_MENU); }
 cmd(enable_item)	{ menu_set_item (p0, TRUE); }
 cmd(disable_item)	{ menu_set_item (p0, FALSE); }
-cmd(submit_menu)	{ submit_menu (); p = p; }
-cmd(set_scan_start)	{ cur_logic->sIP = cur_logic->cIP; p = p; }
-cmd(reset_scan_start)	{ cur_logic->sIP = 2; p = p; }
-cmd(save_game)		{ savegame_dialog (); p = p; }
-cmd(load_game)		{ loadgame_dialog (); p = p; }
-cmd(init_disk)		{ /* do nothing */ p = p; }
-cmd(log)		{ /* do nothing */ p = p; }
-cmd(trace_on)		{ /* do nothing */ p = p; }
-cmd(trace_info)		{ /* do nothing */ p = p; }
-cmd(show_mem)		{ message_box ("Enough memory"); p = p; }
-cmd(toggle_monitor)	{ report ("Not implemented: toggle.monitor\n"); p = p; }
-cmd(init_joystick)	{ report ("Not implemented: init.joystick\n"); p = p; }
+cmd(submit_menu)	{ submit_menu (); }
+cmd(set_scan_start)	{ cur_logic->sIP = cur_logic->cIP; }
+cmd(reset_scan_start)	{ cur_logic->sIP = 2; }
+cmd(save_game)		{ savegame_dialog (); }
+cmd(load_game)		{ loadgame_dialog (); }
+cmd(init_disk)		{ /* do nothing */ }
+cmd(log)		{ /* do nothing */ }
+cmd(trace_on)		{ /* do nothing */ }
+cmd(trace_info)		{ /* do nothing */ }
+cmd(show_mem)		{ message_box ("Enough memory"); }
+cmd(toggle_monitor)	{ report ("Not implemented: toggle.monitor\n"); }
+cmd(init_joystick)	{ report ("Not implemented: init.joystick\n"); }
 cmd(script_size)	{ report ("Not implemented: script.size(%d)\n", p0); }
-cmd(echo_line)		{ report ("Not implemented: echo.line\n"); p = p; }
-cmd(cancel_line)	{ report ("Not implemented: cancel.line\n"); p = p; }
-cmd(obj_status_v)	{ report ("Not implemented: obj.status.v\n"); p = p; }
+cmd(echo_line)		{ report ("Not implemented: echo.line\n"); }
+cmd(cancel_line)	{ report ("Not implemented: cancel.line\n"); }
+cmd(obj_status_v)	{ report ("Not implemented: obj.status.v\n"); }
 
 /* unknown commands:
  * unk_170: Force savegame name -- j5
@@ -162,18 +162,18 @@ cmd(obj_status_v)	{ report ("Not implemented: obj.status.v\n"); p = p; }
  * unk_177: Disable menus completely -- j5
  * unk_181: Deactivate keypressed control (default control of ego)
  */
-cmd(unk_170)		{ message_box ("cmd_unk_170"); p = p; }
-cmd(unk_171)		{ message_box ("cmd_unk_171"); p = p; }
-cmd(unk_172)		{ message_box ("cmd_unk_172"); p = p; }
-cmd(unk_173)		{ message_box ("cmd_unk_173"); p = p; }
-cmd(unk_174)		{ message_box ("cmd_unk_174"); p = p; }
-cmd(unk_175)		{ message_box ("cmd_unk_175"); p = p; }
-cmd(unk_176)		{ message_box ("cmd_unk_176"); p = p; }
-cmd(unk_177)		{ message_box ("cmd_unk_177"); p = p; }
-cmd(unk_178)		{ message_box ("cmd_unk_178"); p = p; }
-cmd(unk_179)		{ message_box ("cmd_unk_179"); p = p; }
-cmd(unk_180)		{ message_box ("cmd_unk_180"); p = p; }
-cmd(unk_181)		{ message_box ("cmd_unk_181"); p = p; }
+cmd(unk_170)		{ message_box ("cmd_unk_170"); }
+cmd(unk_171)		{ message_box ("cmd_unk_171"); }
+cmd(unk_172)		{ message_box ("cmd_unk_172"); }
+cmd(unk_173)		{ message_box ("cmd_unk_173"); }
+cmd(unk_174)		{ message_box ("cmd_unk_174"); }
+cmd(unk_175)		{ message_box ("cmd_unk_175"); }
+cmd(unk_176)		{ message_box ("cmd_unk_176"); }
+cmd(unk_177)		{ message_box ("cmd_unk_177"); }
+cmd(unk_178)		{ message_box ("cmd_unk_178"); }
+cmd(unk_179)		{ message_box ("cmd_unk_179"); }
+cmd(unk_180)		{ message_box ("cmd_unk_180"); }
+cmd(unk_181)		{ message_box ("cmd_unk_181"); }
 
 
 
@@ -216,7 +216,6 @@ cmd(show_pic) {
 	cmd_close_window (NULL);
 	show_pic ();
 	game.picture_shown = 1;
-	p = p;				/* Prevent annoying MPW warning */
 }
 
 cmd(load_pic) {
@@ -228,7 +227,6 @@ cmd(load_pic) {
 cmd(discard_pic) {
 	_D (_D_WARN "--- discard pic ---");
 	/* do nothing */
-	p = p;				/* Prevent annoying MPW warning */
 }
 
 cmd(overlay_pic) {
@@ -252,7 +250,6 @@ cmd(show_pri_screen) {
 	show_pic ();
 	blit_both ();
 #endif
-	p = p;				/* Prevent annoying MPW warning */
 }
 
 cmd(animate_obj) {
@@ -346,7 +343,6 @@ cmd(force_update) {
 	erase_both ();
 	blit_both ();
 	checkmove_both ();
-	p = p;				/* Prevent annoying MPW warning */
 }
 
 cmd(reverse_loop) {
@@ -374,12 +370,10 @@ cmd(block) {
 
 cmd(unblock) {
 	game.block.active = FALSE;
-	p = p;				/* Prevent annoying MPW warning */
 }
 
 cmd(normal_motion) {
 	vt.motion = MOTION_NORMAL;
-	p = p;				/* Prevent annoying MPW warning */
 }
 
 cmd(stop_motion) {
@@ -406,7 +400,6 @@ cmd(player_control) {
 
 cmd(program_control) {
 	game.player_control = FALSE;
-	p = p;				/* Prevent annoying MPW warning */
 }
 
 cmd(follow_ego) {
@@ -480,7 +473,6 @@ cmd(pause) {
 	game.clock_enabled = FALSE;
 	message_box ("    Game is Paused.\nPress ENTER to continue.");
 	game.clock_enabled = tmp;
-	p = p;				/* Prevent annoying MPW warning */
 }
 
 cmd(set_menu) {
@@ -524,7 +516,6 @@ cmd(version) {
 	strncpy (q+1 + ((r-q > 0 ? r - q : 1) / 4), ver_msg, strlen (ver_msg));
 	sprintf (msg, q, maj, min);
 	message_box (msg);
-	p = p;				/* Prevent annoying MPW warning */
 }
 
 cmd(config_screen) {
@@ -542,7 +533,6 @@ cmd(text_mode) {
 	if (game.color_bg)
 		game.color_bg |= 0x08;
 	clear_screen (game.color_bg);
-	p = p;				/* Prevent annoying MPW warning */
 }
 
 cmd(graphics_mode) {
@@ -552,13 +542,11 @@ cmd(graphics_mode) {
 		show_pic ();
  		write_status ();
 	}
-	p = p;				/* Prevent annoying MPW warning */
 }
 
 cmd(status) {
 	inventory();
 	setvar (V_sel_item, 0xff);
-	p = p;				/* Prevent annoying MPW warning */
 }
 
 cmd(quit) {
@@ -588,7 +576,6 @@ cmd(restart_game) {
 	default:
 		break;
 	}
-	p = p;				/* Prevent annoying MPW warning */
 }
 
 cmd(distance) {
