@@ -1,5 +1,6 @@
 $Id$
 
+
 This is the original AGI Mouse 1.0 documentation from
 From http://www.classicgaming.com/agisci/am-prgov.shtml
 
@@ -110,4 +111,57 @@ the button is pressed, it jumps to room 3.
  draw(o2); 
 
 --------[ end of AGI Mouse documentation ]-------
+
+
+From dopefish_justin@yahoo.com Tue Aug 21 07:48:27 2001
+Date: Mon, 20 Aug 2001 20:14:35 -0700 (PDT)
+From: Justin the Almighty <dopefish_justin@yahoo.com>
+Reply-To: sarien-devel@lists.sourceforge.net
+To: sarien-devel@lists.sourceforge.net
+Subject: [sarien-devel] AGI Mouse clarification
+
+I figured out what the problem with AGI Mouse support is. It turns out,
+there are actually several different incarnations of AGI Mouse. AGI
+Mouse 1.0 and higher use the API described in agimouse.txt. Older
+versions (and I believe the new AGI Auto-Mouse) use a simpler,
+backward-compatible system:
+
+Moving the mouse a little bit in one direction (only eight ways) sets
+the ego moving that way. Moving it slightly in that direction again
+stops it (basically substitutes mouse mickeys for normal keyboard
+control). The left mouse button acts as the Enter key, the right as
+Escape, and the middle (if present) as F10. The original keys all work
+though, allowing backward- and forward-compatibility.
+
+The demo game is specially programmed to have the false ego move to the
+ego's position when Esc is pressed in "walk" mode (enabled by default
+or reactivated with the "walk" button) and have buttons along the top
+activate when Esc/right-button is pressed with the ego on top of them.
+The other buttons are senses, and trigger messages in different areas
+of the screen when Esc/right-button is pressed, for example to describe
+the door. The menu is reassigned to F10/middle-button to allow
+Esc/right-button to be used for this. It's essentially an SCI interface
+in AGI (but with cruder mouse support).
+
+This interface may be useful to enable in Sierra games like Manhunter
+II which use a similar cursor interface, only without native mouse support.
+
+=====
+--
+      __ ____ ___  __ __
+     |  |    |   \|  |  |  "If it ain't broke, you're not trying!"--Red Green
+     |  |  __|    |  | _|
+   __|  |__  |  | |   /_   ICQ: 76824935
+  |  |  |    |    |  |  |  dopefish_justin@yahoo.com
+  |______________/___|__|  http://dopefishjustin.tripod.com/
+
+__________________________________________________
+Do You Yahoo!?
+Make international calls for as low as $.04/minute with Yahoo! Messenger
+http://phonecard.yahoo.com/
+
+_______________________________________________
+sarien-devel mailing list
+sarien-devel@lists.sourceforge.net
+http://lists.sourceforge.net/lists/listinfo/sarien-devel
 
