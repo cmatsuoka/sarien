@@ -14,41 +14,21 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include "sarien.h"
+#include "sound.h"
+#include "rand.h"
 
-#include <sys/soundcard.h>
+static int playing;
+static struct channel_info chn[NUM_CHANNELS];
+static int endflag = -1;
+static UINT8 *song;
+struct sound_driver *snd;
+struct gfx_driver *gfx;
 
-#define BUFFER_SIZE 410
-#define WAVEFORM_SIZE 64
-#define USE_ENVELOPE
-#define USE_INTERPOLATION
-#define ENV_DECAY 32
-#define ENV_SUSTAIN 160
-
-struct agi_note {
-	unsigned char dur_lo;
-	unsigned char dur_hi;
-	unsigned char frq_0;
-	unsigned char frq_1;
-	unsigned char vol;
-};
-
-struct channel_info {
-	struct agi_note *ptr;
-	int end;
-	int freq;
-	int phase;
-	int vol;
-	int env;
-	int timer;
-};
+static short *snd_buffer;
 
 
-static int audio_fd;
-static short *buffer;
-static struct channel_info chn[4];
-
-
-static int waveform[64] = {
+static short waveform[64] = {
        0,   8,  16,  24,  32,  40,  48,  56,
       64,  72,  80,  88,  96, 104, 112, 120,
      128, 136, 144, 152, 160, 168, 176, 184,
@@ -60,96 +40,171 @@ static int waveform[64] = {
 };
 
 
-int init_sound ()
+void report (char *s, ...)
+{
+}
+
+static void stop_note (int i)
+{
+	chn[i].adsr = AGI_SOUND_ENV_RELEASE;
+
+	/* Stop chorus ;) */
+	if (i < 3)
+		stop_note (i + 4);
+
+#ifdef __TURBOC__
+	if (i == 0)
+		nosound ();
+#endif
+}
+
+static void play_note (int i, int freq, int vol)
+{
+	chn[i].phase = 0;
+	chn[i].freq = freq;
+	chn[i].vol = vol; 
+	chn[i].env = 0x10000;
+	chn[i].adsr = AGI_SOUND_ENV_ATTACK;
+
+	/* Add chorus ;) */
+	if (i < 3) {
+		int newfreq = freq * 1007 / 1000;
+		if (freq == newfreq)
+			newfreq++;
+		play_note (i + 4, newfreq, vol * 2 / 3);
+	}
+}
+
+void play_agi_sound ()
+{
+	int i, freq;
+
+	for (playing = i = 0; i < 4; i++) {
+		playing |= !chn[i].end;
+
+		if (chn[i].end)
+			continue;
+
+		if ((--chn[i].timer) <= 0) {
+			stop_note (i);
+			freq = ((chn[i].ptr->frq_0 & 0x3f) << 4)
+				| (int)(chn[i].ptr->frq_1 & 0x0f);
+
+			if (freq) {
+				UINT8 v = chn[i].ptr->vol & 0x0f;
+				play_note (i, freq * 10, v == 0xf ? 0 :
+					0xff - (v << 1));
+			}
+
+			chn[i].timer = ((int)chn[i].ptr->dur_hi << 8) |
+				chn[i].ptr->dur_lo;
+
+			if (chn[i].timer == 0xffff) {
+				chn[i].end = 1;
+				chn[i].vol = 0;
+				chn[i].env = 0;
+				/* Chorus */
+				if (i < 3) {
+					chn[i + 4].vol = 0;
+					chn[i + 4].env = 0;
+				}
+			}
+			chn[i].ptr++;
+		}
+	}
+}
+
+
+void play_sound ()
 {
 	int i;
 
-	/* Set sound device to 16 bit, 22 kHz mono */
+	if (endflag == -1)
+		return;
 
-	if ((audio_fd = open ("/dev/audio", O_WRONLY)) == -1)
-		return -1;
-	
-	i = AFMT_S16_LE;
-	ioctl (audio_fd, SNDCTL_DSP_SETFMT, &i);
-	i = 0;
-	ioctl (audio_fd, SNDCTL_DSP_STEREO, &i);
-	i = 22000;
-	ioctl (audio_fd, SNDCTL_DSP_SPEED, &i);
+	play_agi_sound ();
 
-	buffer = calloc (2, 2048);
-
-	return 0;
+	if (!playing) {
+		for (i = 0; i < NUM_CHANNELS; chn[i++].vol = 0);
+		endflag = -1;
+	}
 }
 
 
-void close_sound ()
-{
-	free (buffer);
-	close (audio_fd);
-}
-
-
-void mix_channels (int s)
+UINT32 mix_sound (void)
 {
 	register int i, p;
-	int c, b;
+	SINT16 *src;
+	int c, b, m;
 
-	memset (buffer, 0, s << 1);
+	memset (snd_buffer, 0, BUFFER_SIZE << 1);
 
-	for (c = 0; c < 3; c++) {
+	for (c = 0; c < NUM_CHANNELS; c++) {
 		if (!chn[c].vol)
 			continue;
 
-		p = chn[c].phase;
-		for (i = 0; i < s; i++) {
-
-			b = waveform[p >> 8];
-#ifdef USE_INTERPOLATION
-			b += ((waveform[((p >> 8) + 1) % WAVEFORM_SIZE] -
-				waveform[p >> 8]) * (p & 0xff)) >> 8;
-#endif
-#ifdef USE_ENVELOPE
-			if (chn[c].env >> 4 > chn[c].vol * ENV_SUSTAIN)
-				chn[c].env -= ENV_DECAY;
-			buffer[i] += (b * (chn[c].vol * chn[c].env >> 20)) >> 8;
-#else
-			buffer[i] += (b * chn[c].vol) >> 8;
-#endif
-			p += 11860 * 4 / chn[c].freq;
-			p %= WAVEFORM_SIZE << 8;
+		m = chn[c].flags & AGI_SOUND_ENVELOPE ?
+			chn[c].vol * chn[c].env >> 16 :
+			chn[c].vol;
+	
+		if (c != 3) {
+			src = chn[c].ins;
+	
+			p = chn[c].phase;
+			for (i = 0; i < BUFFER_SIZE; i++) {
+				b = src[p >> 8];
+				b += ((src[((p >> 8) + 1) % chn[c].size] -
+					src[p >> 8]) * (p & 0xff)) >> 8;
+				snd_buffer[i] += (b * m) >> 4;
+	
+				p += (UINT32)118600 * 4 / chn[c].freq;
+	
+				/* FIXME */
+				if (chn[c].flags & AGI_SOUND_LOOP) {
+					p %= chn[c].size << 8;
+				} else {
+					if (p >= chn[c].size << 8) {
+						p = chn[c].vol = 0;
+						chn[c].end = 1;
+						break;
+					}
+				}
+	
+			}
+			chn[c].phase = p;
+		} else {
+			/* Add white noise */
+			for (i = 0; i < BUFFER_SIZE; i++) {
+				b = rnd(256) - 128;
+				snd_buffer[i] += (b * m) >> 4;
+			}
 		}
-		chn[c].phase = p;
+
+		switch (chn[c].adsr) {
+		case AGI_SOUND_ENV_ATTACK:
+			/* not implemented */
+			chn[c].adsr = AGI_SOUND_ENV_DECAY;
+			break;
+		case AGI_SOUND_ENV_DECAY:
+			if (chn[c].env > chn[c].vol * ENV_SUSTAIN + ENV_DECAY) {
+				chn[c].env -= ENV_DECAY;
+			} else {
+				chn[c].env = chn[c].vol * ENV_SUSTAIN;
+				chn[c].adsr = AGI_SOUND_ENV_SUSTAIN;
+			}
+			break;
+		case AGI_SOUND_ENV_SUSTAIN:
+			break;
+		case AGI_SOUND_ENV_RELEASE:
+			if (chn[c].env >= ENV_RELEASE) {
+				chn[c].env -= ENV_RELEASE;
+			} else {
+				chn[c].env = 0;
+			}
+		}
 	}
 
-	for (i = 0; i < s; i++)
-		buffer[i] <<= 5;
-}
-
-
-void dump_buffer (int i)
-{
-	i *= 2;
-	for (; i -= write (audio_fd, buffer, i); );
-}
-
-
-void stop_note (int i)
-{
-	chn[i].vol = 0;
-}
-
-
-void play_note (int i, int freq, int vol)
-{
-	if (vol >= 255 || freq < 16 || freq >= 960)
-		vol = 0;
-	chn[i].freq = freq;
-	chn[i].phase = 0;
-	chn[i].vol = vol;
-#ifdef USE_ENVELOPE                                                             
-        chn[i].env = 0x100000;                                                  
-#endif                                                                          
-
+	return BUFFER_SIZE;
 }
 
 
@@ -157,8 +212,7 @@ void play_song (char *s)
 {
 	FILE *f;
 	struct stat st;
-	unsigned char *song;
-	int i, playing;
+	int i;
 
 	/* Open the AGI sound file and slurp it */
 	if (!(f = fopen (s, "r"))) {
@@ -171,43 +225,23 @@ void play_song (char *s)
 	fclose (f);
 
 	/* Initialize channel pointers */
-	for (i = 0; i < 4; i++) {
+	for (i = 0; i < NUM_CHANNELS; i++) {
+		chn[i].flags = AGI_SOUND_LOOP;
+		chn[i].flags |= AGI_SOUND_ENVELOPE;
+		chn[i].adsr = AGI_SOUND_ENV_ATTACK;
+		chn[i].ins = waveform;
+		chn[i].size = WAVEFORM_SIZE;
 		chn[i].ptr = (struct agi_note *)(song +
 			(song[i << 1] | (song[(i << 1) + 1] << 8)));
 		chn[i].timer = 0;
+		chn[i].vol = 0;
 		chn[i].end = 0;
 	}
 	
 	fprintf (stderr, "Playing %s... ", s);
 
-	for (playing = 1; playing; ) {
-		int freq;
-
-		for (playing = i = 0; i < 4; i++) {
-			playing |= !chn[i].end;
-			
-			if (chn[i].end)
-				continue;
-
-			if ((--chn[i].timer) <= 0) {
-				if (chn[i].ptr >= (struct agi_note *)song +
-					st.st_size)
-					break;
-				stop_note (i);
-				freq = ((chn[i].ptr->frq_0 & 0x3f) << 4)
-					| (int)(chn[i].ptr->frq_1 & 0x0f);
-				if (freq)
-					play_note (i, freq, chn[i].ptr->vol);
-				chn[i].timer = ((int)chn[i].ptr->dur_hi << 8) |
-					chn[i].ptr->dur_lo;
-				if (chn[i].timer == 0xffff)
-					chn[i].end = 1;
-				chn[i].ptr++;
-			}
-		}
-
-		mix_channels (400);
-		dump_buffer (400);
+	for (endflag = playing = 1; playing; ) {
+		sleep (1);
 	}
 
 	fprintf (stderr, "done\n");
@@ -222,7 +256,10 @@ int main (int argc, char **argv)
 	if (argc < 2)
 		return 0;
 
-	if (init_sound () != 0) {
+	snd_buffer = calloc (2, BUFFER_SIZE);
+	__init_sound ();
+
+	if (snd->init (snd_buffer) != 0) {
 		fprintf (stderr, "Can't initialize sound\n");
 		exit (-1);
 	}
@@ -231,7 +268,8 @@ int main (int argc, char **argv)
 		play_song (argv[i]);
 	}
 
-	close_sound ();
+	snd->deinit ();
 
 	return 0;
 }
+

@@ -23,6 +23,14 @@ extern "C"{
 #define SOUND_EMU_MAC	3
 #define SOUND_EMU_AMIGA	4
 
+#define SOUND_PLAYING   0x01
+#define WAVEFORM_SIZE   64
+#define ENV_ATTACK	10000		/**< envelope attack rate */
+#define ENV_DECAY       1000		/**< envelope decay rate */
+#define ENV_SUSTAIN     100		/**< envelope sustain level */
+#define ENV_RELEASE	7500		/**< envelope release rate */
+#define NUM_CHANNELS    7		/**< number of sound channels */
+
 /**
  * Sarien sound driver structure.
  */
@@ -40,6 +48,46 @@ struct agi_sound {
 	UINT8	*rdata;			/**< raw sound data */
 	UINT8	flags;			/**< sound flags */
 	UINT16	type;			/**< sound resource type */
+};
+
+/**
+ * AGI sound note structure.
+ */
+struct agi_note {
+	UINT8 dur_lo;			/**< LSB of note duration */
+	UINT8 dur_hi;			/**< MSB of note duration */
+	UINT8 frq_0;			/**< LSB of note frequency */
+	UINT8 frq_1;			/**< MSB of note frequency */
+	UINT8 vol;			/**< note volume */
+};
+
+/**
+ * Sarien sound channel structure.
+ */
+struct channel_info {
+#define AGI_SOUND_SAMPLE	0x0001
+#define AGI_SOUND_MIDI		0x0002
+#define AGI_SOUND_4CHN		0x0008
+	UINT32 type;
+	struct agi_note *ptr;
+#ifdef USE_PCM_SOUND
+	SINT16 *ins;
+	SINT32 size;
+	UINT32 phase;
+#endif
+#define AGI_SOUND_LOOP		0x0001
+#define AGI_SOUND_ENVELOPE	0x0002
+	UINT32 flags;
+#define AGI_SOUND_ENV_ATTACK	3
+#define AGI_SOUND_ENV_DECAY	2
+#define AGI_SOUND_ENV_SUSTAIN	1
+#define AGI_SOUND_ENV_RELEASE	0
+	UINT32 adsr;
+	SINT32 timer;
+	UINT32 end;
+	UINT32 freq;
+	UINT32 vol;
+	UINT32 env;
 };
 
 void	decode_sound		(int);
