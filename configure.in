@@ -15,26 +15,26 @@ AC_INIT(src/core/agi.c)
 AC_CONFIG_AUX_DIR(./scripts)
 AC_CANONICAL_HOST
 
-if test "${target}" = NONE -o "x${target}" = "x"; then
-	target=${host}
-	target_cpu=${host_cpu}
-	target_vendor=${host_vendor}
-	target_os=${host_os}
+if test "${host}" = NONE -o "x${host}" = "x"; then
+	host=${build}
+	host_cpu=${build_cpu}
+	host_vendor=${build_vendor}
+	host_os=${build_os}
 else
-	[ target_cpu=`echo $target | sed 's/^\([^-]*\)-[^-]*-.*$/\1/'` ]
-	[ target_vendor=`echo $target | sed 's/^[^-]*-\([^-]*\)-.*$/\1/'` ]
-	[ target_os=`echo $target | sed 's/^[^-]*-[^-]*-\(.*\)$/\1/'` ]
+	[ host_cpu=`echo $host | sed 's/^\([^-]*\)-[^-]*-.*$/\1/'` ]
+	[ host_vendor=`echo $host | sed 's/^[^-]*-\([^-]*\)-.*$/\1/'` ]
+	[ host_os=`echo $host | sed 's/^[^-]*-[^-]*-\(.*\)$/\1/'` ]
 fi
 
-echo "        target: ${target}"
-echo "    target CPU: ${target_cpu}"
-echo " target vendor: ${target_vendor}"
-echo "     target OS: ${target_os}"
+echo "        host: ${host}"
+echo "    host CPU: ${host_cpu}"
+echo " host vendor: ${host_vendor}"
+echo "     host OS: ${host_os}"
 
-if test "${target_cpu}" != "${host_cpu}" -o \
-	"${target_os}" != "${host_os}"; then
+if test "${host_cpu}" != "${build_cpu}" -o \
+	"${host_os}" != "${build_os}"; then
 	if test "x$CC" = "x"; then
-		CROSS_PREFIX="${target_cpu}-${target_os}-"
+		CROSS_PREFIX="${host_cpu}-${host_os}-"
 		CC="${CROSS_PREFIX}gcc"
 	fi
 fi
@@ -66,7 +66,7 @@ fi
 MAIN_FILE="main"
 EXE_SUFFIX=""
 
-case "${target_os}" in
+case "${host_os}" in
 beos*)
 	CFLAGS="$CFLAGS -I/boot/develop/tools/gnupro/include"
 	CPPFLAGS="$CPPFLAGS -I/boot/develop/tools/gnupro/include"
@@ -119,7 +119,7 @@ if test "${with_script}" = "yes"; then
 	CONSOLE_DRIVER="script"
 elif test "${ac_cv_header_Ph_h}" = "yes"; then
 	CONSOLE_DRIVER="photon"
-    if test "${target_os}" = "qnx"; then
+    if test "${host_os}" = "qnx"; then
       LIBS="${LIBS} -lphoton_s -lphrender_s"
     else
       LIBS="${LIBS} -lph -lphrender"
@@ -195,9 +195,9 @@ if test "${with_script}" = "yes"; then
 	SOUND_DRIVER="dummy"
 elif test "${with_sdl}" = "yes"; then
 	SOUND_DRIVER="sdl"
-else case ${target_os} in
+else case ${host_os} in
 linux*)
-	case ${target_cpu} in
+	case ${host_cpu} in
 	sparc)
 		SOUND_DRIVER="bsd"
 		;;
@@ -281,7 +281,7 @@ dummy|win32|sdl|freebsd|qnxalsa|amiga)
 	;;
 esac
 
-case "${target_os}" in
+case "${host_os}" in
 nto*)
 	if test "${ac_cv_header_sys_asoundlib_h}" = "yes"; then
 		SOUND_DRIVER="alsa"

@@ -6,7 +6,7 @@ OBJS	= global.o agi_v2.o agi_v3.o agi_v4.o agi.o cli.o words.o objects.o \
 	  picture.o view.o id.o logic.o op_test.o op_cmd.o op_dbg.o patches.o \
 	  keyboard.o menu.o font.o lzw.o getopt.o getopt1.o savegame.o \
 	  sound.o silent.o console.o cycle.o inv.o text.o graphics.o \
-	  sprite.o checks.o motion.o picview.o
+	  sprite.o checks.o motion.o picview.o rand.o
 GFILES	= agi_v2.c agi_v3.c agi_v4.c agi.c cli.c words.c view.c id.c \
 	  logic.c keyboard.c savegame.c sound.c silent.c console.c \
 	  cycle.c graphics.c sprite.c checks.c motion.c menu.c view.c
@@ -18,15 +18,11 @@ DDIRS	= dc palmos win32 macos
 XLIBS	= -L../../lib -lagi -lsarien
 
 LIB	= ../../lib/libagi.a
-LIB2	= ../../lib/libsarien.a
 
-all: fixcr $(LIB) $(LIB2) archfiles exefile
+all: fixcr $(LIB) archfiles exefile
 
 arch:
 	(cd $(CORE_ARCH); $(MAKE) all)
-
-$(LIB2): $(LIB2)(rand.o)
-	$(RANLIB) $(LIB2)
 
 include ../../Rules
 
@@ -34,7 +30,7 @@ archfiles: $(ARCH_SUBDIR)
 
 exefile: ../../bin/sarien$(EXE_SUFFIX)
 
-../../bin/sarien$(EXE_SUFFIX): $(MAIN_FILE).o $(LIB) $(LIB2)
+../../bin/sarien$(EXE_SUFFIX): $(MAIN_FILE).o $(LIB)
 	$(LD) $(LDFLAGS) $(XLDFLAGS) $(MAIN_FILE).o id.o $(XLIBS) $(X11LIBS) $(LIBS)
 
 graph: callgraph.ps
