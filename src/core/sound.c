@@ -19,7 +19,6 @@
 #include "agi.h"
 
 #define SOUND_PLAYING   0x01
-#define BUFFER_SIZE     410
 #define WAVEFORM_SIZE   64
 #define ENV_DECAY       1000		/**< envelope decay rate */
 #define ENV_SUSTAIN     100		/**< envelope sustain level */

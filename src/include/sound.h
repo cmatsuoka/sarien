@@ -15,6 +15,8 @@
 extern "C"{
 #endif
 
+#define BUFFER_SIZE	410
+
 #define SOUND_EMU_NONE	0
 #define SOUND_EMU_PC	1
 #define SOUND_EMU_TANDY	2
