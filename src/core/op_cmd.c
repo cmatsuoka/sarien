@@ -77,7 +77,6 @@ static int window_nonblocking = 0;	/* Yuck! Remove it later! */
 extern struct agi_logic logics[];
 extern struct agi_view views[];
 extern struct agi_view_table view_table[];
-extern struct agi_menu *menu;
 extern struct sarien_options opt;
 extern struct sarien_debug debug;
 
@@ -1212,45 +1211,15 @@ void cmd_menu_input ()
 
 void cmd_enable_item (UINT8 event)
 {
-	struct agi_menu *m0, *m1;
-
-	/* scan all menus for event number # */
-
-	for (m0 = menu->next; m0 != NULL; ) {
-		m1 = m0->down;
-		while (m1 != NULL) {
-			if (m1->event != event) {
-				m1 = m1->down;
-			} else {
-				m1->enabled = TRUE;
-				return;
-			}
-		}
-		if (m1 == NULL)
-			m0 = m0->next;
-	}
+	menu_set_item (event, TRUE);
 }
+
 
 void cmd_disable_item (UINT8 event)
 {
-	struct agi_menu *m0, *m1;
-
-	/* scan all menus for event number # */
-
-	for (m0 = menu->next; m0 != NULL; ) {
-		m1 = m0->down;
-		while (m1 != NULL) {
-			if (m1->event != event) {
-				m1 = m1->down;
-			} else {
-				m1->enabled = FALSE;
-				return;
-			}
-		}
-		if (m1 == NULL)
-			m0 = m0->next;
-	}
+	menu_set_item (event, FALSE);
 }
+
 
 void cmd_unk_170 ()
 {
@@ -1505,16 +1474,16 @@ void cmd_submit_menu ()
 void cmd_set_menu (UINT8 logic, UINT8 msg)
 {
 	_D ("(%d, %d)", logic, msg);
-	if (logics[logic].texts!=NULL && (msg-1)<=logics[logic].num_texts)
-		add_menu (logics[logic].texts[msg-1]);
+	if (logics[logic].texts != NULL && (msg - 1) <= logics[logic].num_texts)
+		add_menu (logics[logic].texts[msg - 1]);
 }
 
 
 void cmd_set_menu_item (UINT8 logic, UINT8 msg, UINT8 cont)
 {
 	_D ("(%d, %d, %d)", logic, msg, cont);
-	if (logics[logic].texts!=NULL && (msg-1)<=logics[logic].num_texts)
-		add_menu_item (logics[logic].texts[msg-1], cont);
+	if (logics[logic].texts != NULL && (msg - 1) <= logics[logic].num_texts)
+		add_menu_item (logics[logic].texts[msg - 1], cont);
 }
 
 

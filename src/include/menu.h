@@ -15,20 +15,13 @@
 extern "C"{
 #endif
 
-struct agi_menu {
-	struct agi_menu	*next;		/* next along */
-	struct agi_menu	*down;		/* next menu under this */
-	int enabled;			/* enabled or disabled */
-	int event;			/* menu event */
-	char *text;			/* text of menu item */
-};
-
 void	init_menus	(void);
 void	deinit_menus	(void);
 void	add_menu	(char *);
 void	add_menu_item	(char *, int);
 void	submit_menu	(void);
 void	do_menus	(void);
+void	menu_set_item	(int, int);
 
 #ifdef __cplusplus
 };

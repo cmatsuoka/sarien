@@ -15,7 +15,6 @@
 extern "C"{
 #endif
 
-
 struct agi_event {
 	UINT8	event;
 	UINT8	occured;
@@ -94,7 +93,7 @@ struct agi_game {
 	struct agi_picture pictures[MAX_DIRS];
 	struct agi_logic logics[MAX_DIRS];
 	struct agi_view views[MAX_DIRS];
-	struct agi_object *objects;
+	struct agi_sound sounds[MAX_DIRS];
 
 	/* view table */
 	struct agi_view_table view_table[MAX_VIEWTABLE];

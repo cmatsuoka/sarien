@@ -20,8 +20,17 @@
 #include "menu.h"
 #include "text.h"
 
+
+struct agi_menu {
+	struct agi_menu	*next;		/* next along */
+	struct agi_menu	*down;		/* next menu under this */
+	int enabled;			/* enabled or disabled */
+	int event;			/* menu event */
+	char *text;			/* text of menu item */
+};
+
 static struct agi_menu *master_menu;
-struct agi_menu *menu;
+static struct agi_menu *menu;
 
 extern struct sarien_console console;
 extern struct agi_game game;
@@ -293,5 +302,27 @@ exit_menu:
 
 	setvar (V_key, 0);
 	game.clock_enabled = clock_val;
+}
+
+
+void menu_set_item (int event, int state)
+{
+	struct agi_menu *m0, *m1;
+
+	/* scan all menus for event number # */
+
+	for (m0 = menu->next; m0 != NULL; ) {
+		m1 = m0->down;
+		while (m1 != NULL) {
+			if (m1->event != event) {
+				m1 = m1->down;
+			} else {
+				m1->enabled = state;
+				return;
+			}
+		}
+		if (m1 == NULL)
+			m0 = m0->next;
+	}
 }
 

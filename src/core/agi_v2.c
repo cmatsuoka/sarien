@@ -53,15 +53,15 @@ static int agi_v2_detect_game (char *gn)
 	if (__file_exists (path))
 		return err_InvalidAGIFile;
 
-	path = fixpath (NO_GAMEDIR, (UINT8*)PICDIR);
+	path = fixpath (NO_GAMEDIR, PICDIR);
 	if (__file_exists (path))
 		return err_InvalidAGIFile;
 
-	path = fixpath (NO_GAMEDIR, (UINT8*)SNDDIR);
+	path = fixpath (NO_GAMEDIR, SNDDIR);
 	if (__file_exists (path))
 		return err_InvalidAGIFile;
 
-	path = fixpath (NO_GAMEDIR, (UINT8*)VIEWDIR);
+	path = fixpath (NO_GAMEDIR, VIEWDIR);
 	if (__file_exists (path))
 		return err_InvalidAGIFile;
 
