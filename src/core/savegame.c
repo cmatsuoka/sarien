@@ -72,21 +72,18 @@ void release_image_stack(void)
 	stack_size = image_stack_pointer = 0;
 }
 
-void record_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3, SINT16 p4, SINT16 p5, SINT16 p6, SINT16 p7)
+void record_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3,
+	SINT16 p4, SINT16 p5, SINT16 p6, SINT16 p7)
 {
 	struct image_stack_element* pnew;
 
-	if(image_stack_pointer == stack_size)
-	{
-		if(stack_size == 0) /* first call */
-		{
-			image_stack = (struct image_stack_element*)malloc(INITIAL_IMAGE_STACK_SIZE*sizeof(struct image_stack_element));
+	if (image_stack_pointer == stack_size) {
+		if (stack_size == 0) {		/* first call */
+			image_stack = (struct image_stack_element *)malloc(INITIAL_IMAGE_STACK_SIZE*sizeof(struct image_stack_element));
 			stack_size = INITIAL_IMAGE_STACK_SIZE;
-		}
-		else /* has to grow */
-		{
+		} else {	/* has to grow */
 			struct image_stack_element* new_stack;
-			new_stack = (struct image_stack_element*)malloc(2*stack_size*sizeof(struct image_stack_element));
+			new_stack = (struct image_stack_element *)malloc(2*stack_size*sizeof(struct image_stack_element));
 			memcpy(new_stack, image_stack, stack_size*sizeof(struct image_stack_element));
 			free(image_stack);
 			image_stack = new_stack;
@@ -107,7 +104,8 @@ void record_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3, SINT16
 	pnew->parm7 = p7;
 }
 
-void replay_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3, SINT16 p4, SINT16 p5, SINT16 p6, SINT16 p7)
+void replay_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3,
+	SINT16 p4, SINT16 p5, SINT16 p6, SINT16 p7)
 {
 	switch(type) {
 	case ADD_PIC:
@@ -733,6 +731,7 @@ int savegame_dialog ()
 		37 * CHAR_COLS, 12 * CHAR_LINES);
 
 	get_string (2, 11, 33, MAX_STRINGS);
+	print_character (3, 11, game.cursor_char, MSG_BOX_COLOUR, MSG_BOX_TEXT);
         do { main_cycle (); } while (game.input_mode == INPUT_GETSTRING);
 	close_window ();
 

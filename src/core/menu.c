@@ -85,6 +85,7 @@ static void draw_menu_bar ()
 	draw_box (0, 0, GFX_WIDTH - 1, 12, MENU_BG, MENU_LINE, 0);
 #else
 	clear_lines (0, 0, MENU_BG);
+	flush_lines (0, 0);
 #endif
 
 	list_for_each (h, &menubar, next) {
@@ -97,7 +98,6 @@ static void draw_menu_bar ()
 #endif
 	}
 
-	flush_lines (0, 0);
 }
 
 
