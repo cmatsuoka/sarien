@@ -173,10 +173,8 @@ static void pc_put_pixels(int x, int y, int w, UINT8 *p)
  	for (s = &screen_buffer[80 * y + x / 4]; w; w--, x++, p++) {
 		shift = (x % 4) * 2;
 
-		if (*p > 16)	/* Sorry, no transparent colors */
-			c = 0;
-		else
-			c = *p; /*cga_map[*p];  FIXME! */
+		/* Sorry, no transparent colors */
+		c = *p > 15 ? 0 : cga_map[*p];
 
 		mask = 0xc0 >> shift;
 		val = (c & 0x03) << (6 - shift);
