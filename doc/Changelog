@@ -17,6 +17,7 @@ Revision History
 	- merged Brian Peek's SarienDC Dreamcast port
 	- added Mike Montague's DirectX driver
 	- added runtime option settings to MacOS port
+	- integrated MacOS X port to the main buildsystem
 	- checking null pointers when parsing AGI strings (closes: #491334)
 	- fixed game restart issues (closes: #457622)
 	- emulating AGI 2.440 animated sprites behaviour (closes: #546562)
@@ -36,8 +37,8 @@ Revision History
 	- fixed old position setting in AGI commands position, position.v
 	- fixed assignment of block bottom-right y coordinate (closes: #608126)
 	- fixed geometry of win32 window (closes: #606452, #604435)
+	- fixed menu controller data corruption (closes: #608671)
 	- enabling menu options on restart (closes: #607643)
-	- integrated MacOS X port to the main buildsystem
 	- added CGA palette emulation
 	- added CGA video card support for PC DOS
 	- added icon and menu resources to the win32 port

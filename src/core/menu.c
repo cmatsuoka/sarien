@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999,2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999,2002 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -481,7 +481,6 @@ int menu_keyhandler (int key)
 		if (d->enabled) {
 			_D ("event %d registered", d->event);
     			game.ev_scan[d->event].occured = TRUE;
-    			game.ev_scan[d->event].data = d->event;
 			goto exit_menu;
     		}
     		break;

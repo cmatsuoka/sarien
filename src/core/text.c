@@ -591,7 +591,7 @@ void write_status ()
 #endif
 		return;
 	}
-#endif
+#endif /* USE_CONSOLE */
 
 	if (!game.status_line) {
 		clear_lines (0, 0, 0);
@@ -638,6 +638,9 @@ void flush_lines (int l1, int l2)
 	flush_block (0, l1, GFX_WIDTH - 1, l2);
 }
 
+/**
+ *
+ */
 void draw_window (int x1, int y1, int x2, int y2)
 {
 	game.window.active = TRUE;
