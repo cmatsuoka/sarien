@@ -8,7 +8,7 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#if defined PALMOS || defined FAKE_PALMOS
+#if defined PALMOS
 
 #include <stdio.h>
 #include <string.h>
@@ -826,4 +826,4 @@ static int agi_v4_load_words(char *fname)
 	return ec;
 }
 
-#endif /* PALMOS || FAKE_PALMOS */
+#endif /* PALMOS */

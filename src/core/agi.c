@@ -22,7 +22,7 @@
 static struct agi_loader *loader;		/* loader */
 
 
-#if !defined PALMOS && !defined FAKE_PALMOS
+#ifndef PALMOS
 extern struct agi_loader agi_v2;
 extern struct agi_loader agi_v3;
 #else
@@ -198,7 +198,7 @@ int agi_detect_game (char *gn)
 	if (gn == NULL)		/* assume current directory */
 		gn = get_current_directory ();
 
-#if !defined PALMOS && !defined FAKE_PALMOS
+#ifndef PALMOS
 	loader = &agi_v2;
 	ec = loader->detect_game (gn);
 

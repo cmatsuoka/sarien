@@ -353,10 +353,8 @@ int keypress ()
  */
 int init_video ()
 {
-#if 0
-	fprintf (stderr, "Initializing graphics: resolution %dx%d (scale=%d)\n",
+	fprintf (stderr, "Initializing graphics: %dx%d (scale = %d)\n",
 		GFX_WIDTH, GFX_HEIGHT, opt.scale);
-#endif
 	init_console ();
 	return gfx->init_video_mode ();
 }
@@ -383,7 +381,12 @@ int deinit_video ()
  */
 void put_pixels_a (int x, int y, int n, UINT8 *p)
 {
-	y += 8;
+#ifdef FAKE_PALMOS
+	for (y += CHAR_LINES; n--; p++, x ++) {
+		*(UINT8 *)&sarien_screen[x + DEV_Y(y) * GFX_WIDTH] = *p & 0x0f;
+	}
+#else
+	y += CHAR_LINES;
 	for (x *= 2; n--; p++, x += 2) {
 		register UINT16 q = ((UINT16)*p << 8) | *p;
 #ifdef USE_CONSOLE
@@ -391,6 +394,7 @@ void put_pixels_a (int x, int y, int n, UINT8 *p)
 #endif
 		*(UINT16 *)&sarien_screen[x + y * GFX_WIDTH] = q & 0x0f0f;
 	}
+#endif
 }
 
 

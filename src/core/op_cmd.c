@@ -892,7 +892,7 @@ static void (*agi_command[182])(UINT8 *) = {
 int run_logic (int n)
 {
 	UINT8 op, p[CMD_BSIZE];
-	UINT8 *code				= NULL;
+	UINT8 *code = NULL;
 	int num;
 
 	/* If logic not loaded, load it */

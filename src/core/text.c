@@ -157,8 +157,10 @@ static void blit_textbox (char *p, int y, int x, int len)
 
 static void erase_textbox ()
 {
-	if (!game.window.active)
+	if (!game.window.active) {
+		_D ("no window active");
 		return;
+	}
 
 	_D (_D_WARN "x1=%d, y1=%d, x2=%d, y2=%d", game.window.x1,
 		game.window.y1, game.window.x2, game.window.y2);
