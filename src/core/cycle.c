@@ -23,6 +23,11 @@
 struct mouse mouse;
 #endif
  
+#ifndef MACOSX_SDL
+volatile UINT32 clock_ticks;
+volatile UINT32 clock_count;
+#endif
+
 
 /**
  * Set up new room.

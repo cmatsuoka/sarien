@@ -18,9 +18,6 @@
 #include "sprite.h"
 
 
-volatile UINT32 clock_ticks;
-volatile UINT32 clock_count;
-
 extern int optind;
 
 struct sarien_options opt;

@@ -22,9 +22,6 @@
 #include "sprite.h"
 
 
-volatile UINT32 clock_ticks;
-volatile UINT32 clock_count;
-
 struct sarien_options opt;
 struct game_id_list game_info;
 struct agi_game game;

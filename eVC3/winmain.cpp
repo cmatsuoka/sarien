@@ -26,9 +26,6 @@ void _D (char *s, ...) { }
 #endif
 
 
-volatile UINT32 clock_ticks;
-volatile UINT32 clock_count;
-
 //extern "C" UINT8 *font, font_english[];
 
 struct sarien_options opt;

@@ -592,7 +592,7 @@ static int select_slot (char *path)
 #ifndef PALMOS
 	int i, key, active = 0;
 	int rc = -1;
-	int hm = 2 * CHAR_COLS, vm = 3 * CHAR_LINES;	/* box margins */
+	int hm = 2, vm = 3;			/* box margins */
 	char desc[NUM_SLOTS][40];
 
 	for (i = 0; i < NUM_SLOTS; i++) {
@@ -625,9 +625,8 @@ static int select_slot (char *path)
 		char dstr[64];
 		for (i = 0; i < NUM_SLOTS; i++) {
 			sprintf (dstr, "[%-32.32s]", desc[i]);
-			draw_text (dstr,
-				0, hm + CHAR_COLS, vm + (4 + i) * CHAR_LINES,
-				(GFX_WIDTH - 2 * hm) / CHAR_COLS - 1,
+			print_text (dstr, 0, hm + 1, vm + 4 + i,
+				(40 - 2 * hm) - 1,
 				i == active ? MSG_BOX_COLOUR : MSG_BOX_TEXT,
 				i == active ? MSG_BOX_TEXT : MSG_BOX_COLOUR);
 
@@ -680,8 +679,12 @@ int savegame_dialog ()
 	char *buttons[] = { "Do as I say!", "I regret", NULL }; 
 	char dstr[200];
 	int rc, slot = 0;
-	int hm = 2 * CHAR_COLS, vm = 3 * CHAR_LINES;	/* box margins */
-	int x, y, w;
+	int hm, vm, hp, vp;			/* box margins */
+	int w;
+
+	hm = 2; vm = 3;
+	hp = hm * CHAR_COLS; vp = vm * CHAR_LINES;
+	w = (40 - 2 * hm) - 1;
 
 #ifdef DREAMCAST
 	uint8 addr, port, unit;
@@ -694,9 +697,7 @@ int savegame_dialog ()
 		message_box("No VMU found.");
 		return err_OK;
 	}
-#endif
-
-#ifndef DREAMCAST
+#else
 	if (get_app_dir (home, MAX_PATH) < 0) {
 		message_box ("Couldn't save game.");
 		return err_BadFileOpen;
@@ -709,24 +710,22 @@ int savegame_dialog ()
 #endif
 
 	erase_both ();
-	x = hm + CHAR_COLS;
-	y = vm + CHAR_COLS;
-	w = (GFX_WIDTH - 2 * hm) / CHAR_COLS - 1;
-	draw_window (hm, vm, GFX_WIDTH - hm, GFX_HEIGHT - vm);
-	draw_text ("Select a slot in which you wish to save the game:",
-		0, x, y, w, MSG_BOX_TEXT, MSG_BOX_COLOUR);
-	draw_text ("Press ENTER to select, ESC cancels",
-		0, x, vm + 17 * CHAR_LINES, w, MSG_BOX_TEXT, MSG_BOX_COLOUR);
+
+	draw_window (hp, vp, GFX_WIDTH - hp, GFX_HEIGHT - vp);
+	print_text ("Select a slot in which you wish to save the game:",
+		0, hm + 1, vm + 1, w, MSG_BOX_TEXT, MSG_BOX_COLOUR);
+	print_text ("Press ENTER to select, ESC cancels",
+		0, hm + 1, vm + 17, w, MSG_BOX_TEXT, MSG_BOX_COLOUR);
 
 	slot = select_slot (path);
 	if (slot < 0)	/* ESC pressed */
 		return err_OK;
 
 	/* Get savegame description */
-	draw_window (hm, vm + 5 * CHAR_LINES, GFX_WIDTH - hm,
-		GFX_HEIGHT - vm - 9 * CHAR_LINES);
-	draw_text ("Enter a description for this game:",
-		0, x, vm + 6 * CHAR_LINES, w, MSG_BOX_TEXT, MSG_BOX_COLOUR);
+	draw_window (hp, vp + 5 * CHAR_LINES, GFX_WIDTH - hp,
+		GFX_HEIGHT - vp - 9 * CHAR_LINES);
+	print_text ("Enter a description for this game:",
+		0, hm + 1, vm + 6, w, MSG_BOX_TEXT, MSG_BOX_COLOUR);
 	draw_rectangle (3 * CHAR_COLS, 11 * CHAR_LINES - 1,
 		37 * CHAR_COLS, 12 * CHAR_LINES, MSG_BOX_TEXT);
 	flush_block (3 * CHAR_COLS, 11 * CHAR_LINES - 1,
@@ -773,7 +772,12 @@ int loadgame_dialog ()
 #ifndef PALMOS
 	char home[MAX_PATH], path[MAX_PATH];
 	int rc, slot = 0;
-	int hm = 2 * CHAR_COLS, vm = 3 * CHAR_LINES;	/* box margins */
+	int hm, vm, hp, vp;			/* box margins */
+	int w;
+
+	hm = 2; vm = 3;
+	hp = hm * CHAR_COLS; vp = vm * CHAR_LINES;
+	w = (40 - 2 * hm) - 1;
 
 #ifdef DREAMCAST
 	uint8 addr, port, unit;
@@ -796,15 +800,11 @@ int loadgame_dialog ()
 #endif
 
 	erase_both ();
-	draw_window (hm, vm, GFX_WIDTH - hm, GFX_HEIGHT - vm);
-	draw_text ("Select a game which you wish to\nrestore:",
-		0, hm + CHAR_COLS, vm + CHAR_LINES,
-		(GFX_WIDTH - 2 * hm) / CHAR_COLS - 1,
-		MSG_BOX_TEXT, MSG_BOX_COLOUR);
-	draw_text ("Press ENTER to select, ESC cancels",
-		0, hm + CHAR_COLS, vm + 17 * CHAR_LINES,
-		(GFX_WIDTH - 2 * hm) / CHAR_COLS - 1,
-		MSG_BOX_TEXT, MSG_BOX_COLOUR);
+	draw_window (hp, vp, GFX_WIDTH - hp, GFX_HEIGHT - vp);
+	print_text ("Select a game which you wish to\nrestore:",
+		0, hm + 1, vm + 1, w, MSG_BOX_TEXT, MSG_BOX_COLOUR);
+	print_text ("Press ENTER to select, ESC cancels",
+		0, hm + 1, vm + 17, w, MSG_BOX_TEXT, MSG_BOX_COLOUR);
 
 	slot = select_slot (path);
 

@@ -25,7 +25,7 @@ static void print_text2 (int l, char *msg, int foff, int xoff, int yoff, int len
 	int x1, y1;
 	int maxx, minx, ofoff;
 	int update;
-	/* Note: Must be unsigned to use cyrillic characters! */
+	/* Note: Must be unsigned to use AGDS cyrillic characters! */
 	unsigned char *m;
 
 	/* kludge! */
@@ -178,11 +178,6 @@ static void erase_textbox ()
 /*
  * Public functions
  */
-
-void draw_text (char *msg, int f, int x, int y, int len, int fg, int bg)
-{
-	print_text2 (0, agi_sprintf (msg), f, x, y, len, fg, bg);
-}
 
 /**
  * Print text in the Sarien screen.
@@ -480,50 +475,51 @@ static char *safe_strcat (char *s, const char *t)
 
 /**
  * Formats AGI string.
+ * This function turns a AGI string into a real string expanding values
+ * according to the AGI format specifiers.
  * @param s  string containing the format specifier
  * @param n  logic number
  */
 #define MAX_LEN 768
 char *agi_sprintf (char *s)
 {
-	static char x[MAX_LEN], y[MAX_LEN];
+	static char x[MAX_LEN];
 	char z[16], *p;
-	int xx, xy;
 
 	_D ("logic %d, '%s'", game.lognum, s);
-	/* turn a AGI string into a real string */
 	p = x;
 
-	for (*p = xx = xy = 0; *s; ) {
+	for (*p = 0; *s; ) {
 		switch (*s) {
 		case '\\':
 			s++;
-			continue;
+			goto literal;
 		case '%':
 			s++;
 			switch (*s++) {
+			int i;
 			case 'v':
-				xx = strtoul (s, NULL, 10);
+				i = strtoul (s, NULL, 10);
 				while (*s >= '0' && *s <= '9')
 					s++;
-				sprintf (z, "%03i", getvar(xx));
+				sprintf (z, "%03i", getvar(i));
 
-				xy = 99;
-				if (*s=='|') {
+				i = 99;
+				if (*s == '|') {
 					s++;
-					xy = strtoul (s, NULL, 10);
+					i = strtoul (s, NULL, 10);
 					while (*s >= '0' && *s <= '9')
 						s++;
 				}
-				xx = 0;
-				if (xy == 99) {
-					/* remove all leading 0' */
-					/* dont remove the 3rd zero if 000 */
-					while(z[xx]=='0' && xx<2) xx++;
+
+				if (i == 99) {
+					/* remove all leading 0 */
+					/* don't remove the 3rd zero if 000 */
+					for (i = 0; z[i] == '0' && i < 2; i++);
+				} else {
+					i = 3 - i;
 				}
-				else
-					xx = 3 - xy;
-				safe_strcat(p, z + xx);
+				safe_strcat(p, z + i);
 				break;
 			case '0':
 				safe_strcat(p, object_name (strtoul (s, NULL, 10)-1));
@@ -550,22 +546,15 @@ char *agi_sprintf (char *s)
 			break;
 
 		default:
-#ifndef PALMOS
+		literal:
 			assert (p < x + MAX_LEN);
-#endif
 			*p++ = *s++;
 			*p = 0;
 			break;
 		}
 	}
 
-	p = x;
-	if (strchr (x, '%') != NULL) {
-		strcpy (y, x);
-		p = agi_sprintf (y);
-	}
-
-	return p;
+	return x;
 }
 
 /**

@@ -21,7 +21,12 @@
 static UINT8 *words;		/* words in the game */
 static UINT32 words_flen;	/* length of word memory */
 
-#ifndef HAVE_STRNDUP
+
+#ifdef HAVE_STRNDUP
+
+char*	strndup		(const char *s, size_t n);
+
+#else
 
 static char *strndup (char* src, int n)
 {

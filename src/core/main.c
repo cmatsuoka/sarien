@@ -21,12 +21,6 @@
 #include "graphics.h"
 #include "sprite.h"
 
-
-#ifndef MACOSX_SDL
-volatile UINT32 clock_ticks;
-volatile UINT32 clock_count;
-#endif
-
 extern int optind;
 
 struct sarien_options opt;

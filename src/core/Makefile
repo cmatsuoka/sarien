@@ -19,8 +19,9 @@ XLIBS	= -L../../lib -lagi -lsarien
 
 LIB	= ../../lib/libagi.a
 
-all: fixcr $(LIB) archfiles exefile
+all: $(LIB) archfiles exefile
 
+include ../../Version
 include ../../Rules
 
 exefile: ../../bin/sarien$(EXE_SUFFIX)
@@ -48,16 +49,6 @@ callgraph.dot: $(GFILES) Makefile ../../scripts/cflow2dot.pl
 	@echo "digraph sarien {" > $@
 	@cflow $(XCFLAGS) -gAP $(GFILES) 2>/dev/null | \
 		../../scripts/cflow2dot.pl > $@
-
-fixcr:
-	@grep "\\\$$" picture.c>/dev/null; \
-	if [ "$$?" = "0" ]; then \
-		echo Fixing carriage returns in picture.c; \
-		mv picture.c picture.c.orig; \
-		cat picture.c.orig | sed "s/\\\$$/\\\/" > picture.c; \
-	fi
-
-include ../../Version
 
 include depend
 
