@@ -8,13 +8,13 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
 #include "sarien.h"
 
 #ifdef OPT_PICTURE_VIEWER
 
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
 #include "agi.h"
 #include "graphics.h"
 #include "keyboard.h"
