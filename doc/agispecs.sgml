@@ -10,11 +10,15 @@
   <TitleAbbrev>AGI Specs</TitleAbbrev>
 
   <BookInfo>
+
+   <authorgroup>
     <Author>
      <firstname>Peter</firstname>
      <surname>Kelly</surname>
      <AuthorBlurb><Para>
-      Peter Kelly (<email>ptrkelly@ozemail.com.au</email>)
+      Peter Kelly (<email>ptrkelly@ozemail.com.au</email>) is one
+      of the original AGI hackers, and the editor of the first and
+      second editions of this document.
      </Para></AuthorBlurb>
     </Author>
 
@@ -22,7 +26,7 @@
      <firstname>Lance</firstname>
      <surname>Ewing</surname>
      <AuthorBlurb><Para>
-      Lance Ewing (<email></email>)
+      Lance Ewing (<email></email>) is one of the original AGI hackers.
      </Para></AuthorBlurb>
     </Author>
 
@@ -36,6 +40,7 @@
 
     <Author>
      <firstname>Anders</firstname>
+     <othername>M.</firstname>
      <surname>Olsson</surname>
      <AuthorBlurb><Para>
       Anders M. Olsson (<email></email>)
@@ -45,8 +50,9 @@
     <Author>
      <firstname>Alex</firstname>
      <surname>Simkin</surname>
+     <jobtitle>Author of AGDS</jobtitle>
      <AuthorBlurb><Para>
-      Alex Simkin (<email></email>)
+      Alex Simkin is the author of AGDS, a Russian clone of AGI.
      </Para></AuthorBlurb>
     </Author>
 
@@ -54,27 +60,44 @@
      <firstname>Ian</firstname>
      <surname>Schmidt</surname>
      <AuthorBlurb><Para>
-      Ian Schmidt (<email></email>)
+      Ian Schmidt
      </Para></AuthorBlurb>
     </Author>
+   </authorgroup>
 
-
-    <Author>
+   </authorgroup>
+    <editor>
      <firstname>Claudio</firstname>
+     <othername>S.</firstname>
      <surname>Matsuoka</surname>
+     <jobtitle>Sarien developer</jobtitle>
      <AuthorBlurb><Para>
       Claudio Matsuoka (<Email>claudio@helllabs.org</Email>) is the
       current maintainer of this document and the Sarien AGI interpreter.
      </Para></AuthorBlurb>
-    </Author>
+    </editor>
+   </authorgroup>
 
-    <Abstract><Para>
+   </authorgroup>
+    <othercredit>
+     <firstname>Vassili</firstname>
+     <surname>Bykov</surname>
+     <AuthorBlurb><Para>
+      Vassili Bykov translated the AGDS documentation from Russian
+      to English.
+     </Para></AuthorBlurb>
+    </othercredit>
+   </authorgroup>
+
+   <abstract>
+     <para>
       This document is a collection of all the information currently known
       about the structure and operation of the Adventure Game Interpreter,
       used in 1984--1989 for a variety of adventure games published by
       Sierra On-Line such as Space Quest I and II, and Leisure Suit Larry in
       the Land of the Lounge Lizards.
-    </Para></Abstract>
+     </para>
+    </abstract>
 
     <ReleaseInfo>
       $Id$
@@ -8686,8 +8709,8 @@ A:   ..............
 
 <sect1 id="otheragi"><title>Other AGI interpreters</title>
 <para>
-   Besides <ulink name="agds"/AGDS/ (which was the first non-Sierra
-   AGI interpreter), a number of
+   Besides <application><ulink name="agds"/AGDS/</application> (which
+   was the first non-Sierra AGI interpreter), a number of
    alternative interpreters have been brought to light in the last few years.
    None of them is fully functional at the time of this writing, although
    good progress is being made to have full compatibility with the original
@@ -8696,48 +8719,62 @@ A:   ..............
    platforms where the original AGI interpreter has never been ported,
    such as UNIX and BeOS. The new possibilities include four voice PCjr
    or sixteen-voice, digitally sampled IIgs sound replaying in the IBM-PC.
+</para><para>
 
    <variablelist>
-   <varlistentry><term/MEKA/ <listitem>
-   <para>
-   MEKA stands for ``Möller, Ewing and Kelly Adventure'' and has
-   been developed by AGI hackers Joakim Möller, Lance Ewing and Peter Kelly
-   using DJGPP and the Allegro library to run under MS-DOS. It has
-   support for both v2 and v3 games, and some routines from MEKA have been
-   reused in Sarien, specifcally the LZW decompression routines and modified
-   picture decoding routines.
-   </para>
-   </listitem></varlistentry>
 
-   <varlistentry><term/JAGI/ <listitem>
-   <para>
-   JAGI (1998) is a free AGI interpreter for Linux written in C by
-   Jens Christian Restemeier. JAGI uses GGI for graphics output and OSS
-   for sound. The latest available version is 0.1, distributed under
-   the GNU GPL. JAGI supports only v2 games.
-   </para>
-   </listitem></varlistentry>
+    <varlistentry>
+     <term/MEKA/
+     <listitem><para>
+       <application>MEKA<application> stands for ``Möller, Ewing and
+       Kelly Adventure'' and has been developed by AGI hackers
+       Joakim Möller, Lance Ewing and Peter Kelly using DJGPP and
+       the Allegro library to run under MS-DOS. It has support for both v2
+       and v3 games, and some routines from <application>MEKA</application>
+       have been reused in Sarien, specifcally the LZW decompression
+       routines and modified picture decoding routines.
+      </para></listitem>
+     </varlistentry>
 
-   <varlistentry><term/Sarien/ <listitem>
-   <para>
-   Formerly known as Yggdrasil, <ulink name="http://homepages.ihug.com.au/~entropy/agi/"/Sarien/ (1999) is a portable AGI interpreter
-   developed by Stuart George and distributed under the GNU GPL. It runs in the
-   MS-DOS and Linux platforms and is capable of playing v2 and v3 AGI and AGDS
-   games. (If you like acronyms, Sarien can be interpreted as a ``Sierra AGI
-   Resource Interpreter ENgine''.)
-   </para>
-   </listitem></varlistentry>
+     <varlistentry>
+      <term/JAGI/
+      <listitem><para>
+        <application>JAGI</application> (1998) is a free AGI interpreter
+        for Linux written in C by Jens Christian Restemeier.
+        <application>JAGI</application> uses GGI for graphics output and OSS
+        for sound. The latest available version is 0.1, distributed under
+        the GNU GPL. <application>JAGI</application> supports only v2 games.
+      </para></listitem>
+     </varlistentry>
 
-   <varlistentry><term/LAGII/ <listitem>
-   <para>
-   Developed by XoXus, the Linux AGI Interpreter, or
-   <ulink name="http://www.zip.com.au/~gsymonds/LAGII/"/LAGII/ (1999), runs
-   in the Linux console using SVGAlib. Currently it supports v2 games.
-   Fully expanded, LAGII stands for ``Linux Adventure Game Interpreter
-   Interpreter''. It is distributed under the GNU GPL.
-   </para>
-   </listitem></varlistentry>
-   </variablelist>
+     <varlistentry>
+      <term/Sarien/
+      <listitem><para>
+        Formerly known as Yggdrasil, <application>Sarien</application>
+        (1999) is a portable AGI interpreter developed by Stuart George
+        and distributed under the GNU GPL.
+        It runs in MS-DOS, Win32 and many Unix and Unix-like
+        systems such as Solaris, Linux and QNX, and is capable of playing
+        v2 and v3 AGI and AGDS games. (If you like acronyms,
+        <application>Sarien</application> can be expanded to
+        ``Sierra AGI Resource Interpreter ENgine''.)
+      </para></listitem>
+     </varlistentry>
+
+     <varlistentry>
+      <term/LAGII/
+      <listitem><para>
+        Developed by XoXus, the
+        <application>Linux AGI Interpreter<application>, or
+        <application>LAGII</application> (1999),
+        runs in the Linux console using SVGAlib. Currently it supports
+        v2 games. Fully expanded, LAGII stands for ``Linux Adventure
+        Game Interpreter Interpreter''. It is distributed under the
+        GNU GPL.
+      </para></listitem>
+     </varlistentry>
+
+    </variablelist>
 </para>
 </sect1>
 </chapter>
