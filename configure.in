@@ -4,6 +4,7 @@ AC_SUBST(CONSOLE_DRIVER)
 AC_SUBST(SOUND_DRIVER)
 AC_SUBST(FILEIO_DRIVER)
 AC_SUBST(MAIN_FILE)
+AC_SUBST(WIN_LDFLAGS)
 AC_SUBST(CROSS_PREFIX)
 
 AC_INIT(src/core/agi.c)
@@ -235,7 +236,7 @@ irix*)
 	fi
 	;;
 cygwin*)
-	LDFLAGS="${LDFLAGS} -Wl,--subsystem,windows,-e,_mainCRTStartup"
+	WIN_LDFLAGS="${LDFLAGS} -Wl,--subsystem,windows,-e,_mainCRTStartup"
 	LIBS="-lwinmm ${LIBS}"
 	SOUND_DRIVER="win32"
 	;;

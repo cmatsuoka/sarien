@@ -1,6 +1,7 @@
 # $Id$
 
 XCFLAGS	= -I../include
+XLDFLAGS= $(WINLDFLAGS)
 OBJS	= global.o agi_v2.o agi_v3.o agi_v4.o agi.o cli.o words.o objects.o \
 	  picture.o view.o id.o logic.o op_test.o op_cmd.o op_dbg.o patches.o \
 	  keyboard.o menu.o font.o lzw.o getopt.o getopt1.o savegame.o \
@@ -27,7 +28,7 @@ $(LIB2): $(LIB2)(rand.o)
 include ../../Rules
 
 ../../bin/sarien: $(MAIN_FILE).o ../../lib/libagi.a ../../lib/libsarien.a
-	$(LD) $(LDFLAGS) $(MAIN_FILE).o id.o $(XLIBS) $(X11LIBS) $(LIBS)
+	$(LD) $(LDFLAGS) $(XLDFLAGS) $(MAIN_FILE).o id.o $(XLIBS) $(X11LIBS) $(LIBS)
 
 graph: callgraph.ps
 
