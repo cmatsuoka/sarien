@@ -152,6 +152,7 @@ void _D(char *, ...);
 extern	UINT8	*exec_name;
 
 int	parse_cli	(int, char **);
+int	run_game	(void);
 
 
 UINT8	lohi_getbyte	(UINT8 *);
