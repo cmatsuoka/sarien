@@ -42,6 +42,7 @@ Revision History
 	- enabling menu options on restart (closes: #607643)
 	- fixed keyboard variables handling (closes: #763577)
 	- fixed X11 keyboard translation to honour numlock (closes: #767422)
+	- fixed option parsing in the config file (closes: #607247)
 	- fixed broken toggle.v AGI command
 	- fixed -C option to actually show the game CRC
 	- added "trigger" command to the interpreter console

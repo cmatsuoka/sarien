@@ -62,7 +62,7 @@ int decode_objects (UINT8* mem, UINT32 flen)
 	}
 
 	game.num_objects = lohi_getword(mem) / padsize;
-	_D ("num_objects = %d", game.num_objects);
+	_D ("num_objects = %d (padsize = %d)", game.num_objects, padsize);
 
 	if (alloc_objects (game.num_objects) != err_OK)
     		return err_NotEnoughMemory;

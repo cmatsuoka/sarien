@@ -110,7 +110,6 @@ UINT32 match_crc (UINT32 crc, char *path, char *name, int len)
 				*c == ' ' || *c == '\t'; *c-- = 0) {}
 		}
 
-
 		t = strtok (buf, " \t\r\n");
 		if (t == NULL)
 			continue;
@@ -122,6 +121,7 @@ UINT32 match_crc (UINT32 crc, char *path, char *name, int len)
 		ver = strtoul (t, NULL, 0);
 
 		t = strtok (NULL, "\n\r");
+		for (; *t == ' ' || *t == '\t'; t++);
 
 		if (id == crc) {
 			/* Now we must check options enclosed in brackets
