@@ -25,7 +25,7 @@ static void print_text2 (int l, char *msg, int foff, int xoff, int yoff, int len
 	int x1, y1;
 	int maxx, minx, ofoff;
 	int update;
-	/* Note: Must be unsigned to use cyrillic characters!! */
+	/* Note: Must be unsigned to use cyrillic characters! */
 	unsigned char *m;
 
 	/* kludge! */
@@ -46,7 +46,7 @@ static void print_text2 (int l, char *msg, int foff, int xoff, int yoff, int len
 		maxx  = 0;
 		minx  = GFX_WIDTH;
 		ofoff = foff;
-		for (m = msg, x1 = y1 = 0; *m; m++) {
+		for (m = (unsigned char*)msg, x1 = y1 = 0; *m; m++) {
 			if (*m >= 0x20 || *m == 1 || *m == 2 || *m == 3) {
 				/* FIXME */
 

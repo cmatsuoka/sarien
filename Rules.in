@@ -18,6 +18,9 @@ X11LIBS		= @X_LIBS@ @X_EXTRA_LIBS@
 SHELL		= /bin/sh
 MAKEFILE	= Makefile
 STRIP		= @CROSS_PREFIX@strip
+LINT		= lclint
+LINTFLAGS	= +matchanyintegral +charint +ignoresigns \
+		  -unrecog -predboolint -predboolothers -retvalint
 
 SOUND_DRIVER	= @SOUND_DRIVER@
 CONSOLE_DRIVER	= @CONSOLE_DRIVER@
@@ -27,12 +30,16 @@ MAIN_FILE	= @MAIN_FILE@
 #
 # Ideally it should not be necessary to tweak parameters below this line
 #
+.SUFFIXES: .c .o .a .so .html .sgml .lint
 
 .c.o:
 	$(CC) -c $(CFLAGS) $(XCFLAGS) -o $@ $<
 
 .o.so:
 	ld -shared -o $@ $<
+
+.c.lint:
+	$(LINT) $(LINTFLAGS) $(XCFLAGS) $<
 
 dummy:
 
@@ -50,6 +57,8 @@ distclean::
 depend:       
 	@echo Building dependencies...
 	@$(CC) $(CFLAGS) $(XCFLAGS) -M $(OBJS:.o=.c) $(XDEPS:.o=.c) >$@
+
+lint:
 
 $(OBJS): $(MAKEFILE)
 

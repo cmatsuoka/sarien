@@ -44,9 +44,9 @@ struct sprite {
 #undef ALLOC_DEBUG
 
 #ifdef USE_HIRES
-#  define POOL_SIZE 32000
+#  define POOL_SIZE 40000
 #else
-#  define POOL_SIZE 16000
+#  define POOL_SIZE 20000
 #endif
 static UINT8 sprite_pool[POOL_SIZE];
 static UINT8 *pool_top = (UINT8 *)sprite_pool;
