@@ -86,7 +86,7 @@ static void objs_savearea (struct sprite *s)
 	int y;
 	UINT8 *p0, *q;
 
-	if (s->y_pos >= _WIDTH)
+	if (s->y_pos >= _HEIGHT)
 		return;
 
 	p0 = &game.sbuf[s->x_pos + s->y_pos * _WIDTH];
@@ -103,7 +103,7 @@ static void objs_restorearea (struct sprite *s)
 	int y;
 	UINT8 *p0, *q;
 
-	if (s->y_pos >= _WIDTH)
+	if (s->y_pos >= _HEIGHT)
 		return;
 
 	p0 = &game.sbuf[s->x_pos + s->y_pos * _WIDTH];
