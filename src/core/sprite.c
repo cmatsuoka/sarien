@@ -490,16 +490,16 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 		/* add rectangle around object, don't clobber control
 		 * info in priority data
 		 */
-		p1 = &game.sbuf[x1 + (y2 - 10) * _WIDTH];
-		p2 = &game.sbuf[x2 + (y2 - 10) * _WIDTH];
-		for (y = y2 - 10; y <= y2; y++) {
+		p1 = &game.sbuf[x1 + (y2 - 4) * _WIDTH];
+		p2 = &game.sbuf[x2 + (y2 - 4) * _WIDTH];
+		for (y = y2 - 4; y <= y2; y++) {
 			if ((*p1 >> 4) >= 4) *p1 = (mar << 4) | (*p1 & 0x0f);
 			if ((*p2 >> 4) >= 4) *p2 = (mar << 4) | (*p2 & 0x0f);
 			p1 += _WIDTH;
 			p2 += _WIDTH;
 		}
 
-		p1 = &game.sbuf[x1 + (y2 - 10) * _WIDTH];
+		p1 = &game.sbuf[x1 + (y2 - 4) * _WIDTH];
 		p2 = &game.sbuf[x1 + y2 * _WIDTH];
 		for (x = x1; x <= x2; x++) {
 			if ((*p1 >> 4) >= 4) *p1 = (mar << 4) | (*p1 & 0x0f);
