@@ -40,7 +40,7 @@ extern "C"{
  * private files ($HOME in Unix, %USERPROFILE% in Win32)
  * DATADIR conflicts with ObjIdl.h in win32 SDK, renamed to DATA_DIR 
  */
-#if defined (WIN32) || defined (_M_MSDOS)
+#if defined (WIN32) || defined (__MSDOS__)
 #  define HOMEDIR "USERPROFILE"
 #  define DATA_DIR "Sarien"
 #else
@@ -62,7 +62,7 @@ extern "C"{
    typedef signed char		SINT8;
    typedef unsigned short	UINT16;
    typedef signed short		SINT16;
-#  ifdef _M_MSDOS
+#  ifdef __MSDOS__
      typedef unsigned long	UINT32;
      typedef signed long	SINT32;
 #  else

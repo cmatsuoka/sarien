@@ -1,9 +1,7 @@
 #
 # Makefile for Watcom C/C++ v10.6
 #
-
-#
-# Dependancies for Watcom C/C++ 10.6
+# $Id$
 #
 
 .silent
@@ -16,7 +14,7 @@ debug = all
 CP = wpp386
 CC = wcc386
 debug = all
-cflags = -zp2 -fpi87 -fp5 -d2 -s -zq -5r -oneatx -D_M_MSDOS
+cflags = -zp2 -fpi87 -fp5 -d2 -s -zq -5r -oneatx -D__MSDOS__
 O = obj
 
 .error:

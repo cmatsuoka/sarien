@@ -143,16 +143,15 @@ void inventory ()
 			/* DF : FIXME : get_key() is not console aware */
 			/* switch(wait_key()) */
 
-			switch(get_key()) {
+			switch (get_key()) {
 			case KEY_ENTER:
-				setvar(V_sel_item, intobj[fsel]);
-				report("show_obj() -> %i\n", intobj[fsel]);
-				setvar(V_sel_item, intobj[fsel]);
+				report ("show_obj() -> %i\n", intobj[fsel]);
+				setvar (V_sel_item, intobj[fsel]);
 				flag = FALSE;
 				break;
 			case KEY_ESCAPE:
-				setvar(V_sel_item, 0xff);
-				report("show_obj() -> %i\n", intobj[fsel]);
+				setvar (V_sel_item, 0xff);
+				report ("show_obj() -> %i\n", intobj[fsel]);
 				flag = FALSE;
 				break;
 			case KEY_UP:
@@ -207,5 +206,10 @@ void inventory ()
 	game.color_bg = old_bg;
 	print_line_prompt ();
 	flush_lines (game.line_user_input, 24);
+
+#if 0
+	if (getvar (V_sel_item) != 0xff)
+		show_obj (getvar (V_sel_item));
+#endif
 }
 

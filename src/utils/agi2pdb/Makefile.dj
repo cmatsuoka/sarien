@@ -4,7 +4,7 @@ RM=rm
 all: agi2pdb.exe
 
 agi2pdb.exe:
-	$(CC) -O2 -o agi2pdb.exe agi2pdb.c id.c global.c -D_M_MSDOS
+	$(CC) -O2 -o agi2pdb.exe agi2pdb.c id.c global.c -D__MSDOS__
 
 clean:
 	$(RM) agi2pdb.exe

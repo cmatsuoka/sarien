@@ -115,17 +115,14 @@ static UINT32 match_version (UINT32 crc)
 	strcat(buf, "/sarien.ini");
 	ver = match_crc (crc, buf);
 #else
-#ifdef _M_MSDOS
+#ifdef __MSDOS__
 	char buf[256];
 	int ver;
 	char *q;
 
-	if(getenv("SARIEN")!=NULL)
-	{
+	if (getenv ("SARIEN")!=NULL) {
 		sprintf(buf, "%s/%s", getenv("SARIEN"), "sarien.ini");
-	}
-	else
-	{
+	} else {
 		strcpy(buf, exec_name);
 		q=strchr(buf, 0x0);
 		q--;

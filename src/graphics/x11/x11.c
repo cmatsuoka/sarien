@@ -351,6 +351,18 @@ static void process_events ()
 			case XK_KP_Subtract:
 				key = '-';
 				break;
+			case XK_Page_Up:
+				key = KEY_PGUP;
+				break;
+			case XK_Page_Down:
+				key = KEY_PGDN;
+				break;
+			case XK_Home:
+				key = KEY_HOME;
+				break;
+			case XK_End:
+				key = KEY_END;
+				break;
 			case XK_F1:
 				key = 0x3b00;
 				break;

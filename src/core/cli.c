@@ -61,7 +61,7 @@ static void help (int argc, char **argv)
 #ifdef OPT_LIST_OBJECTS
 "  -o --list-objects  List objects.\n"
 #endif
-#ifndef _M_MSDOS
+#ifndef __MSDOS__
 "  -S --scale {num}   Window size scale (only for windowed graphics).\n"
 "  -r --fix-aspect-ratio\n"
 "                     Adjust aspect ratio to match the PC EGA 320x200 screen.\n"
@@ -243,7 +243,7 @@ int parse_cli (int argc, char **argv)
 			opt.forceload = TRUE;
 			opt.cache = TRUE;
 			break;
-#ifndef _M_MSDOS
+#ifndef __MSDOS__
 		case 'r':
 			opt.fixratio = TRUE;
 			break;
