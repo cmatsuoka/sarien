@@ -548,6 +548,16 @@
   rest of the system: when the console is active all key events are
   handled by its own handler before reaching the dispatcher.
 
+  <figure id="fig-keymenu" float="1">
+    <title>Key routing in menu mode</title>
+    <graphic fileref="images/hg/key_menu.eps" format="eps"></graphic>
+  </figure>
+
+  <xref linkend="fig-keymenu"> shows key event routing when the menu
+  is active. In this case, the main loop is "short-circuited" so timers
+  and script execution are paused. The same happens when the console
+  is active.
+
 </para><para>
   Key events are stored in the <parameter/V_key/ variable for AGI use.
   Controller events require ASCII and scan codes and are stored in the
