@@ -42,11 +42,9 @@
  */
 #ifdef __TURBOC__
 #  include <alloc.h>
-#  undef USE_CONSOLE
 #  undef USE_PCM_SOUND
 #  undef USE_HIRES
 #  undef USE_MOUSE
-#  undef AGDS_SUPPORT
 #  undef OPT_LIST_OBJECTS
 #  undef OPT_PICTURE_VIEWER
 #  undef OPT_LIST_DICT

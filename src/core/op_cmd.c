@@ -790,7 +790,11 @@ cmd(mouse_posn)	{
 }
 
 cmd(shake_screen) {
-//AGI Mouse 1.1 uses shake.screen values between 100 and 109 to set the palette
+	/*
+	 * AGI Mouse 1.1 uses shake.screen values between 100 and 109 to
+	 * set the palette.
+	 */
+#ifdef USE_MOUSE
 	if (opt.agimouse) {
 		if (p0 < 100 && p0 > 109 ) {
 			shake_screen (p0);
@@ -800,6 +804,7 @@ cmd(shake_screen) {
 		}
 	}
 	else
+#endif
 		shake_screen (p0);
 }
 
