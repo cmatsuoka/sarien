@@ -456,7 +456,7 @@ void blit_both ()
 void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 {
 	struct view_cel	*c = NULL;
-	int x1, y1, x2, y2;
+	int x1, y1, x2, y2, y3;
 	UINT8 *p1, *p2;
 
 	_D ("v=%d, l=%d, c=%d, x=%d, y=%d, p=%d, m=%d",
@@ -488,18 +488,22 @@ void add_to_pic (int view, int loop, int cel, int x, int y, int pri, int mar)
 	 */
 	if (mar < 4) {
 		/* add rectangle around object, don't clobber control
-		 * info in priority data
+		 * info in priority data. The box extends to the end of
+		 * its priority band!
 		 */
-		p1 = &game.sbuf[x1 + (y2 - 4) * _WIDTH];
-		p2 = &game.sbuf[x2 + (y2 - 4) * _WIDTH];
-		for (y = y2 - 4; y <= y2; y++) {
+		y3 = (y2 / 12) * 12;
+
+		p1 = &game.sbuf[x1 + y3 * _WIDTH];
+		p2 = &game.sbuf[x2 + y3 * _WIDTH];
+
+		for (y = y3; y <= y2; y++) {
 			if ((*p1 >> 4) >= 4) *p1 = (mar << 4) | (*p1 & 0x0f);
 			if ((*p2 >> 4) >= 4) *p2 = (mar << 4) | (*p2 & 0x0f);
 			p1 += _WIDTH;
 			p2 += _WIDTH;
 		}
 
-		p1 = &game.sbuf[x1 + (y2 - 4) * _WIDTH];
+		p1 = &game.sbuf[x1 + y3 * _WIDTH];
 		p2 = &game.sbuf[x1 + y2 * _WIDTH];
 		for (x = x1; x <= x2; x++) {
 			if ((*p1 >> 4) >= 4) *p1 = (mar << 4) | (*p1 & 0x0f);
