@@ -3,7 +3,7 @@ XCFLAGS = -I../include
 OBJS	=
 DFILES	= Makefile
 CFILES	=
-DDIRS	= oss sdl dummy alsa bsd solaris sgi win32
+DDIRS	= oss sdl dummy alsa bsd solaris sgi win32 freebsd
 XDFILES =
 LIB	=
 
