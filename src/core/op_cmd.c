@@ -117,10 +117,17 @@ void cmd_call (UINT8 log)
 }
 
 
-void cmd_load_view (UINT8 view)
+void cmd_load_view (UINT8 entry)
 {
-	_D("(view = %d)", view);
-	agi_load_resource (rVIEW, view);
+	_D("(view = %d)", entry);
+	agi_load_resource (rVIEW, entry);
+
+	/* FIXME : stops larry walking left on load */
+	if(entry==0 && game.control_mode==CONTROL_PLAYER)
+	{
+		vt.direction=0;
+		setvar(V_ego_dir, 0);
+	}
 }
 
 
