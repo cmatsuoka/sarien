@@ -10,11 +10,14 @@
 
 /*
  * Win32 port by Felipe Rosinha <rosinha@helllabs.org>
+ * Fixes and hacks by Igor Nesterov <nest@rtsnet.ru>
+ * Mouse support by Ryan Gordon <icculus@clutteredmind.org>
  */
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 #include <windows.h>
+#include <windowsx.h>
 #include <mmsystem.h>
 #include <stdio.h>
 #include <process.h>
@@ -144,6 +147,19 @@ static void INLINE gui_put_block (int x1, int y1, int x2, int y2)
 }
 
 
+static void update_mouse_pos(int x, int y)
+{
+	mouse.x = x;
+	mouse.y = y;
+	if (opt.scale != 0) {
+		mouse.x /= opt.scale;
+		mouse.y /= opt.scale;
+	}
+	if (opt.fixratio)
+		mouse.y = mouse.y * 5 / 6;
+}
+
+
 LRESULT CALLBACK
 MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
@@ -188,6 +204,27 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 	 */
 	case MM_WOM_DONE:
 		flush_sound ((PWAVEHDR) lParam);
+		return 0;
+
+	case WM_LBUTTONDOWN:
+		key = BUTTON_LEFT;
+		mouse.button = TRUE;
+		update_mouse_pos(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		break;
+
+	case WM_RBUTTONDOWN:
+		key = BUTTON_RIGHT;
+		mouse.button = TRUE;
+		update_mouse_pos(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		break;
+
+	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
+		mouse.button = FALSE;
+		return 0;
+
+	case WM_MOUSEMOVE:
+		update_mouse_pos(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
 		return 0;
 
 	case WM_SYSKEYDOWN:

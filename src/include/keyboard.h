@@ -32,10 +32,10 @@ extern "C"{
 #define KEY_STATUSLN	0xff61		/* F11 */
 #define KEY_PRIORITY	0xffc8		/* F12 */
 
-#define KEY_PGUP	0x4A2D		/* keypad + */
-#define KEY_PGDN	0x4E2B  	/* keypad - */
-#define KEY_HOME	0x352F  	/* keypad / */
-#define KEY_END		0x372A  	/* keypad * */
+#define KEY_PGUP	0x4900		/* Page Up (fixed by Ziv Barber) */
+#define KEY_PGDN	0x5100  	/* Page Down */
+#define KEY_HOME	0x4700  	/* Home */
+#define KEY_END		0x4f00  	/* End * */
 
 #define BUTTON_LEFT	0xF101		/* Left mouse button */
 #define BUTTON_RIGHT	0xF202		/* Right mouse button */
