@@ -505,12 +505,14 @@ static int init_vidmode ()
 		case 2: gfx_sdl.put_pixels = _put_pixels_16bits_scale1; break;
 		case 4: gfx_sdl.put_pixels = _put_pixels_32bits_scale1; break;
 		}
+		break;
 	case 2:
 		switch (screen->format->BytesPerPixel) {
 		case 1: gfx_sdl.put_pixels = _put_pixels_8bits_scale2; break;
 		case 2: gfx_sdl.put_pixels = _put_pixels_16bits_scale2; break;
 		case 4: gfx_sdl.put_pixels = _put_pixels_32bits_scale2; break;
 		}
+		break;
 	}
 
 	return err_OK;
