@@ -26,6 +26,7 @@ Revision History
 	  #540734, #540843, #540736)
 	- fixed object position test in cmd_reposition (closes: #518731)
 	- fixed end.of.loop and reverse.loop handling (closes: #475912)
+	- fixed left screen border detection for KQ4 (closes: #590462)
 	- added CGA palette emulation
 	- added CGA video card support for PC DOS
 
