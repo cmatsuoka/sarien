@@ -35,6 +35,7 @@ Revision History
 	- added input state field to savegame (closes: #590642)
 	- fixed old position setting in AGI commands position, position.v
 	- fixed geometry of win32 window (closes: #606452, #604435)
+	- enabling menu options on restart (closes: #607643)
 	- added CGA palette emulation
 	- added CGA video card support for PC DOS
 	- added icon and menu resources to the win32 port

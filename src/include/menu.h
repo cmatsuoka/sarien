@@ -15,13 +15,14 @@
 extern "C"{
 #endif
 
-void	init_menus	(void);
-void	deinit_menus	(void);
-void	add_menu	(char *);
-void	add_menu_item	(char *, int);
-void	submit_menu	(void);
+void	menu_init	(void);
+void	menu_deinit	(void);
+void	menu_add	(char *);
+void	menu_add_item	(char *, int);
+void	menu_submit	(void);
 void	menu_set_item	(int, int);
 int	menu_keyhandler	(int);
+void	menu_enable_all	(void);
 
 #ifdef __cplusplus
 };

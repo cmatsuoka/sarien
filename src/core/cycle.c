@@ -434,7 +434,7 @@ int run_game ()
 		agi_deinit ();
     	} while (ec == err_RestartGame);
 
-	deinit_menus ();
+	menu_deinit();
 
 	release_image_stack();
 

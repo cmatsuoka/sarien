@@ -127,7 +127,7 @@ cmd(stop_sound)		{ stop_sound (); }
 cmd(menu_input)		{ new_input_mode (INPUT_MENU); }
 cmd(enable_item)	{ menu_set_item (p0, TRUE); }
 cmd(disable_item)	{ menu_set_item (p0, FALSE); }
-cmd(submit_menu)	{ submit_menu (); }
+cmd(submit_menu)	{ menu_submit (); }
 cmd(set_scan_start)	{ cur_logic->sIP = cur_logic->cIP; }
 cmd(reset_scan_start)	{ cur_logic->sIP = 2; }
 cmd(save_game)		{ savegame_dialog (); }
@@ -509,13 +509,13 @@ cmd(pause) {
 cmd(set_menu) {
 	_D ("text %02x of %02x", p0, cur_logic->num_texts);
 	if (cur_logic->texts != NULL && p0 < cur_logic->num_texts)
-		add_menu (cur_logic->texts[p0 - 1]);
+		menu_add (cur_logic->texts[p0 - 1]);
 }
 
 cmd(set_menu_item) {
 	_D ("text %02x of %02x", p0, cur_logic->num_texts);
 	if (cur_logic->texts != NULL && p0 <= cur_logic->num_texts)
-		add_menu_item (cur_logic->texts[p0 - 1], p1);
+		menu_add_item (cur_logic->texts[p0 - 1], p1);
 }
 
 cmd(version) {
@@ -606,15 +606,16 @@ cmd(quit) {
 
 cmd(restart_game) {
 	char *buttons[] = { "Restart", "Continue", NULL };
+	int sel;
 	
-	stop_sound ();
-	/* FIXME: Test flag 16 */
+	stop_sound();
+	sel = getflag(F_auto_restart) ? 1 :
+		selection_box (" Restart game, or continue? \n\n\n", buttons);
 
-	if (selection_box (" Restart game, or continue? \n\n\n",
-		buttons) == 0)
-	{
+	if (sel == 0) {
 		game.quit_prog_now = 0xff;
 		setflag (F_restart_game, TRUE);
+		menu_enable_all();
 	}
 }
 

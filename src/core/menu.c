@@ -100,7 +100,6 @@ static void draw_menu_bar ()
 
 }
 
-
 static void draw_menu_hilite (int cur_menu)
 {
 	struct agi_menu *m;
@@ -244,7 +243,7 @@ static void add_about_option ()
  * Public functions
  */
 
-void init_menus ()
+void menu_init ()
 {
 	h_index = 0;
 	h_col = 1;
@@ -253,7 +252,7 @@ void init_menus ()
 }
 
 
-void deinit_menus ()
+void menu_deinit ()
 {
 	struct list_head *h, *h2, *v, *v2;
 	struct agi_menu *m = NULL;
@@ -278,7 +277,7 @@ void deinit_menus ()
 }
 
 
-void add_menu (char *s)
+void menu_add (char *s)
 {
 	struct agi_menu *m;
 
@@ -303,7 +302,7 @@ void add_menu (char *s)
 }
 
 
-void add_menu_item (char *s, int code)
+void menu_add_item (char *s, int code)
 {
 	struct agi_menu *m;
 	struct agi_menu_option *d;
@@ -332,7 +331,7 @@ void add_menu_item (char *s, int code)
 	list_add_tail (&d->list, &m->down);
 }
 
-void submit_menu ()
+void menu_submit ()
 {
 	struct list_head *h, *h2;
 	struct agi_menu *m = NULL;
@@ -528,7 +527,6 @@ exit_menu:
 	return TRUE;
 }
 
-
 void menu_set_item (int event, int state)
 {
 	struct list_head *h, *v;
@@ -537,6 +535,7 @@ void menu_set_item (int event, int state)
 
 	/* scan all menus for event number # */
 
+	_D (_D_WARN "event = %d, state = %d", event, state);
 	list_for_each (h, &menubar, next) {
 		m = list_entry (h, struct agi_menu, list);
 		list_for_each (v, &m->down, next) {	
@@ -547,6 +546,22 @@ void menu_set_item (int event, int state)
 			}
 		}
 	}
+}
+
+void menu_enable_all ()
+{
+	struct list_head *h, *v;
+	struct agi_menu *m = NULL;
+	struct agi_menu_option *d = NULL;
+
+	list_for_each (h, &menubar, next) {
+		m = list_entry (h, struct agi_menu, list);
+		list_for_each (v, &m->down, next) {	
+			d = list_entry (v, struct agi_menu_option, list);
+			d->enabled = TRUE;
+		}
+	}
+	
 }
 
 /* end of file: menu.c */

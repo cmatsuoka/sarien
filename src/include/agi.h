@@ -76,8 +76,8 @@ enum {
 	F_restore_just_ran,
 	F_status_selects_items,
 	F_menus_work,
-	F_output_mode			/* 15 */
-	/* FIXME: Add F16 used in restart.game */
+	F_output_mode,			/* 15 */
+	F_auto_restart
 };
 
 struct agi_event {

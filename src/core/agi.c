@@ -71,7 +71,7 @@ int agi_init ()
 
 	init_words ();
 	set_rnd_seed ();
-	init_menus ();
+	menu_init ();
 	init_pri_table ();
 
 	/* clear string buffer */
