@@ -17,6 +17,7 @@
 static int alleg_init_sound (SINT16 *);
 static void alleg_close_sound (void);
 static AUDIOSTREAM *stream;
+static SINT16 *audiobuffer;
 
 static struct sound_driver sound_alleg = {
 	"Allegro sound output",
@@ -24,26 +25,30 @@ static struct sound_driver sound_alleg = {
 	alleg_close_sound,
 };
 
+#define BUFFER_LEN 4096
 
-static void fill_audio (void *udata, int len)
+
+void fill_audio ()
 {
 	UINT32 p;
 	static UINT32 n = 0, s = 0;
 	UINT16 *buffer;
+	int len = BUFFER_LEN;
 
 	if((buffer = get_audio_stream_buffer(stream)) == NULL)
 		return;
 
-	memcpy (buffer, (UINT8 *)stream + s, p = n);
+	memcpy (buffer, (UINT8 *)audiobuffer + s, p = n);
 	for (n = 0, len -= p; n < len; p += n, len -= n) {
 		play_sound ();
 		n = mix_sound () << 1;
-		memcpy (buffer + p, stream, n);
+		memcpy (buffer + p, audiobuffer, n);
 	}
 	play_sound ();
 	n = mix_sound () << 1;
-	memcpy (buffer + p, stream, s = len);
+	memcpy (buffer + p, audiobuffer, s = len);
 	n -= s;
+
 	free_audio_stream_buffer(stream);
 }
 
@@ -58,8 +63,10 @@ static int alleg_init_sound (SINT16 *b)
 {
 	report ("Allegro sound driver written by claudio@helllabs.org.\n");
 
+	audiobuffer = b;
+
 	install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, NULL);
-	stream = play_audio_stream(4096, 16, 0, 22050, 255, 255);
+	stream = play_audio_stream(BUFFER_LEN, 16, 0, 22050, 255, 255);
 
 	report ("Allegro sound initialized.\n");
 

@@ -40,12 +40,14 @@ static struct gfx_driver gfx_allegro = {
 };
 
 extern struct gfx_driver *gfx;
+void fill_audio(void);
 
 static void gfx_timer (void)
 {
 	static UINT32 cticks = 0;
 
-	while (cticks == clock_ticks);
+	while (cticks == clock_ticks)
+		fill_audio();
 	cticks = clock_ticks;
 }
 
