@@ -57,7 +57,6 @@ void	shake_end	(void);
 void	save_screen	(void);
 void	restore_screen	(void);
 
-/* documented */
 int	init_video	(void);
 int	deinit_video	(void);
 void	schedule_update	(int, int, int, int);
@@ -75,6 +74,7 @@ int	test_button	(int, int, char *);
 void	draw_rectangle	(int, int, int, int, int);
 void	save_block	(int, int, int, int, UINT8 *);
 void	restore_block	(int, int, int, int, UINT8 *);
+void	init_palette	(UINT8 *);
 
 void	put_pixel	(int, int, int);	
 

@@ -104,6 +104,7 @@ struct gfx_driver gfx_win32 = {
 
 extern struct sarien_options opt;
 extern struct gfx_driver *gfx;
+extern UINT8 ega_palette[], new_palette[];
 
 static char *apptext = TITLE " " VERSION;
 static HDC  hdc;
@@ -268,7 +269,7 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 {
 	HDC hdc;
 	PAINTSTRUCT ps;
-	int h, w, key = 0, shift;
+	int h, w, key = 0, shift, old_res;
 	xyxy *p = (xyxy *)lParam;
 
 	switch (nMsg) {
@@ -280,7 +281,28 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			refresh_screen();
 			break;
 		case ITEM_OPTIONS_RES_HIGH:
+			opt.cgaemu = FALSE;
 			opt.hires = TRUE;
+			refresh_screen();
+			break;
+		case ITEM_OPTIONS_PAL_CGA:
+			opt.cgaemu = TRUE;
+			old_res = opt.hires;
+			opt.hires = FALSE;
+			refresh_screen();
+			break;
+		case ITEM_OPTIONS_PAL_EGA:
+			if (opt.cgaemu) opt.hires = old_res;
+			opt.cgaemu = FALSE;
+			init_palette (ega_palette);
+			set_palette (palette, 0, 32); 
+			refresh_screen();
+			break;
+		case ITEM_OPTIONS_PAL_NEW:
+			if (opt.cgaemu) opt.hires = old_res;
+			opt.cgaemu = FALSE;
+			init_palette (new_palette);
+			set_palette (palette, 0, 32); 
 			refresh_screen();
 			break;
 		case ITEM_OPTIONS_SIZE_SMALL:
@@ -627,7 +649,7 @@ static int init_vidmode ()
 	}
 
 	/* First create the palete */
-	set_palette (palette, 0, 16); 
+	set_palette (palette, 0, 32); 
 
 	/* Fill in the bitmap info header */
 	g_screen.binfo = (BITMAPINFO *)malloc(sizeof(*g_screen.binfo) +
@@ -771,15 +793,15 @@ static void win32_new_timer ()
 /* Primitive palette functions */
 static int set_palette (UINT8 *pal, int scol, int numcols)
 {
-	int          i;
-	HDC          hdc;
-	LOGPALETTE   *palette;
+	int i;
+	HDC hdc;
+	LOGPALETTE *palette;
 	PALETTEENTRY *entries;
 
 	hdc = GetDC(hwndMain);
 
 	if (GetDeviceCaps(hdc, PLANES) * GetDeviceCaps(hdc, BITSPIXEL) <= 8 ) {
-		palette = malloc(sizeof(*palette) + 16 * sizeof(PALETTEENTRY));
+		palette = malloc(sizeof(*palette) + 32 * sizeof(PALETTEENTRY));
 		if (NULL == palette) {
 			OutputDebugString("malloc failed for palette");
 			return err_Unk;
@@ -788,7 +810,7 @@ static int set_palette (UINT8 *pal, int scol, int numcols)
 		palette->palVersion = 0x300;
 		palette->palNumEntries = 32;
 
-		GetSystemPaletteEntries(hdc, 0, 16, palette->palPalEntry);
+		GetSystemPaletteEntries(hdc, 0, 32, palette->palPalEntry);
 		g_hPalette = CreatePalette(palette);
 		entries = (PALETTEENTRY *)malloc(32 * sizeof(PALETTEENTRY));
 

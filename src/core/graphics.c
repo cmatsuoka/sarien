@@ -456,6 +456,13 @@ int keypress ()
  * Public functions
  */
 
+/**
+ * Initialize the color palette
+ * This function initializes the color palette using the specified 16-color
+ * RGB palette and creates 16 extra palette entries with translucent colors
+ * for the interpreter console.
+ * @param p  A pointer to the 16-color RGB palette.
+ */
 void init_palette (UINT8 *p)
 {
 	int i;
