@@ -20,6 +20,10 @@
 #endif
 #endif
 
+#ifdef DMALLOC
+#include <dmalloc.h>
+#endif
+
 #if defined (NATIVE_WIN32)
 #define INLINE __forceinline
 #elif !defined (INLINE)

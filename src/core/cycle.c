@@ -127,26 +127,23 @@ void adj_direction (int entry, int h, int w)
 }
 
 
-static int check_boundaries (int em, int x, int y)
+static int check_borders (int em, int x, int y)
 {
-	int dir, v, i, e, w;
-	int cel_width;
-	struct agi_view_table *vt_obj;
+	struct agi_view_table *vt_obj = &view_table[em];
+	int dir, v, cel_width = VT_WIDTH(view_table[em]);
 
 	vt_obj = &view_table[em];
 	dir = vt_obj->direction;
-	e = (em == EGO_VIEW_TABLE);
-	cel_width = VT_WIDTH(view_table[em]);
 
 /* FIXME: this test shouldn't be here, but DDP demo intro in
  *        demopack 6 fails if non-ego objects hit the border
  */
-if (e) {
-	v = e ? V_border_touch_ego : V_border_touch_obj;
+if (em == EGO_VIEW_TABLE) {
+	v = em == EGO_VIEW_TABLE ? V_border_touch_ego : V_border_touch_obj;
 
 	if (x < 0 && (dir == 8 || dir == 7 || dir == 6)) {
 		_D (_D_WARN "left border: vt %d, x %d, dir %d", em, x, dir); 
-		if (!e)
+		if (em != EGO_VIEW_TABLE)
 			setvar (V_border_code, em);
 		setvar (v, 4);
 		return -1;
@@ -154,7 +151,7 @@ if (e) {
 
 	if (x > _WIDTH - cel_width && (dir == 2 || dir == 3 || dir == 4)) {
 		_D (_D_WARN "right border: vt %d, x %d, dir %d", em, x, dir); 
-		if (!e)
+		if (em != EGO_VIEW_TABLE)
 			setvar (V_border_code, em);
 		setvar (v, 2);
 		return -1;
@@ -162,7 +159,7 @@ if (e) {
 
 	if (y > _HEIGHT - 1 && (dir == 4 || dir == 5 || dir == 6)) {
 		_D (_D_WARN "bottom border: vt %d, x %d, dir %d", em, x, dir); 
-		if (!e)
+		if (em != EGO_VIEW_TABLE)
 			setvar (V_border_code, em);
 		setvar (v, 3);
 		return -1;
@@ -170,19 +167,23 @@ if (e) {
 
 	if (y < game.horizon && (dir == 1 || dir == 2 || dir == 8)) {
 		_D (_D_WARN "top border: vt %d, x %d, dir %d", em, x, dir); 
-		if (!e)
+		if (em != EGO_VIEW_TABLE)
 			setvar (V_border_code, em);
 		setvar (v, 1);
 		return -1;
 	}
 }
+	return 0;
+}
 
-	if (e) {
-		setflag (F_ego_water, FALSE);
+
+static int check_control_lines (int em, int x, int y)
+{
+	struct agi_view_table *vt_obj = &view_table[em];
+	int i, w, cel_width = VT_WIDTH(view_table[em]);
+
+	if (em == EGO_VIEW_TABLE)
 		setflag (F_ego_touched_p2, FALSE);
-	}
-
-	/* do control lines n shit in here */
 
 	w = 0;
 	for (i = x + cel_width - 1; i >= x; i--) {
@@ -196,22 +197,35 @@ if (e) {
 			}
 			break;
 		case 2:			/* trigger */
-			if (!e)
-				break;
-			setflag (3, TRUE);
-			vt_obj->x_pos = x;
-			vt_obj->y_pos = y;
-			_D (_D_CRIT "Trigger pressed!");
-			return -1;
-		case 3:			/* water */
-			if (!e)
-				break;
-			w++;
-			break;
+			if (em == EGO_VIEW_TABLE) {
+				setflag (3, TRUE);
+				vt_obj->x_pos = x;
+				vt_obj->y_pos = y;
+				_D (_D_CRIT "Trigger pressed!");
+				return -1;
+			}
 		}
 	}
 
-	if (e) {
+	return 0;
+}
+
+
+static int check_surface (int em, int x, int y)
+{
+	struct agi_view_table *vt_obj = &view_table[em];
+	int i, w, cel_width = VT_WIDTH(view_table[em]);
+
+	if (em == EGO_VIEW_TABLE)
+		setflag (F_ego_water, FALSE);
+
+	w = 0;
+	for (i = x + cel_width - 1; i >= x; i--) {
+		if (control_data[y * _WIDTH + i] == 3 && em == EGO_VIEW_TABLE)
+			w++;
+	}
+
+	if (em == EGO_VIEW_TABLE) {
 		/* Check if ego is completely on water */
 		if (w >= cel_width) {
 			_D (_D_WARN "Ego is completely on water");
@@ -248,7 +262,7 @@ if (e) {
 static void normal_motion (int em, int x, int y)
 {
 	struct agi_view_table *vt_obj;
-	int b;
+	int before, after;
 
 	if (VT_VIEW(view_table[em]).loop == NULL) {
 		_D(_D_CRIT "Attempt to access NULL view_table[%d].loop", em);
@@ -264,17 +278,17 @@ static void normal_motion (int em, int x, int y)
 
 	vt_obj = &view_table[em];
 
-	/* FIXME: horrid kludge to fix LSL1 honeymoon suite door.
-	 *        if ego is already crossing conditional control line,
-	 *        let it finish even if blocks are observed.
-	 */
-	b = check_boundaries (em, vt_obj->x_pos, vt_obj->y_pos);
+	before = check_control_lines (em, vt_obj->x_pos, vt_obj->y_pos);
 
 	x += vt_obj->x_pos;
 	y += vt_obj->y_pos;
 
-	if (b != -1 && check_boundaries (em, x, y) < 0) {
-		_D (_D_WARN "object %d bounded", em);
+	after = check_borders (em, x, y) ||
+		check_control_lines (em, x, y) ||
+		check_surface (em, x, y);
+
+	if (!before && after) {
+		_D (_D_WARN "object %d hit border", em);
 		return;
 	}
 
@@ -326,7 +340,9 @@ static void adj_pos (int em, int x2, int y2)
 	/* adjust the direction */
 	adj_direction (em, y2 - y1, x2 - x1);
 
-	check_boundaries (em, x1, y2);
+	check_borders (em, x1, y2);
+	check_control_lines (em, x1, y2);
+	check_surface (em, x1, y2);
 
 #define CLAMP_MAX(a,b,c) { if(((a)+=(c))>(b)) { (a)=(b); } }
 #define CLAMP_MIN(a,b,c) { if(((a)-=(c))<(b)) { (a)=(b); } }
