@@ -11,15 +11,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <devices/timer.h>
 #include <sys/time.h>
-
+#ifndef __DICE__
 #include <proto/intuition.h>
 #include <proto/graphics.h>
 #include <proto/exec.h>
 #include <proto/dos.h>
 #include <proto/gadtools.h>
+#endif
 #include <graphics/gfxbase.h>
 #include <graphics/rastport.h>
+#include <intuition/intuition.h>
 #include "amiga_keys.h"
 
 #include "sarien.h"
@@ -50,6 +53,9 @@ static unsigned int rgb_palette[32];
 static int __argc;
 static char **__argv;
 
+#ifdef __DICE__
+extern struct GfxBase *GfxBase;
+#endif
 
 #define KEY_QUEUE_SIZE 16
 static int key_queue[KEY_QUEUE_SIZE];
@@ -105,7 +111,8 @@ static void process_events ()
 	int goingup;
 	int key = 0;
 
-	while ((imsg = (struct IntuiMessage *)GT_GetIMsg(window->UserPort))) {
+	while ((imsg = (struct IntuiMessage *)GT_GetIMsg(window->UserPort)))
+	{
 		Class = imsg->Class;
 		Code = imsg->Code;
 		Qualifier = imsg->Qualifier;
@@ -138,16 +145,19 @@ static void process_events ()
 			break;
 
 		case IDCMP_VANILLAKEY:
-//			printf("IDCMP_VANILLAKEY %d %X  [%d,%d]\n",Code,Qualifier,Code & 0x07f,goingup);
 			if ((Code == 13) && (Qualifier == 0x8010))
 			{
-				// [alt + enter] = switch between fullscreen and window mode
+				/*
+				 * [alt + enter] = switch between
+				 *	fullscreen and window mode
+				 */
 				Amiga_deinit_vidmode();
 				opt.fullscreen = !opt.fullscreen;
 				Amiga_init_vidmode();
-				// re-draw the screen
+				/* re-draw the screen */
 printf("..................................................\n");
-				Amiga_blit_block(0,0, GFX_WIDTH,GFX_HEIGHT);
+				Amiga_blit_block (0, 0,
+					GFX_WIDTH * scale, GFX_HEIGHT * scale);
 printf("..................................................\n");
 			} else {
 				key = Code;
@@ -217,10 +227,12 @@ printf("..................................................\n");
 					key_control |= 1;
 					key = 0;
 					break;
-//				case XK_Control_R:
-//					key_control |= 2;
-//					key = 0;
-//					break;
+#if 0
+				case XK_Control_R:
+					key_control |= 2;
+					key = 0;
+					break;
+#endif
 				case XK_Shift_L:
 				case XK_Shift_R:
 					key = 0;
@@ -259,13 +271,15 @@ printf("..................................................\n");
 					break;
 #endif
 
+#if 0
 #ifdef USE_CONSOLE
-//case XK_Help:
-//	key = CONSOLE_ACTIVATE_KEY;
-//	break;
-//case XK_Help:
-//	key = CONSOLE_SWITCH_KEY;
-//	break;
+				case XK_Help:
+					key = CONSOLE_ACTIVATE_KEY;
+					break;
+				case XK_Help:
+					key = CONSOLE_SWITCH_KEY;
+					break;
+#endif
 #endif
 				}
 			} else
@@ -312,7 +326,7 @@ int init_machine (int argc, char **argv)
 	scale = opt.scale;
 
 	/* ximage will be used to hold the chunky gfx data */
-	ximage = (UBYTE *) malloc ((GFX_WIDTH * scale) * (GFX_HEIGHT * scale));
+	ximage = malloc ((GFX_WIDTH * scale) * (GFX_HEIGHT * scale));
 	if (!ximage) return err_Unk;
 
 	return err_OK;
@@ -350,7 +364,9 @@ static UINT16 set_palette (UINT8 *pal, UINT16 scol, UINT16 numcols)
 		else
 		{
 			if (GfxBase->LibNode.lib_Version >= 39)
-				rgb_palette[i] = ObtainBestPenA(screen->ViewPort.ColorMap, r, g, b, NULL);
+				rgb_palette[i] = ObtainBestPenA (
+					screen->ViewPort.ColorMap,
+					r, g, b, NULL);
 		}
 	}
 
@@ -416,7 +432,7 @@ static int Amiga_init_vidmode (void)
 			window = OpenWindowTags(NULL,
 				WA_InnerWidth,	GFX_WIDTH * scale,
 				WA_InnerHeight,	GFX_HEIGHT * scale,
-				WA_Title,	(ULONG) "Amiga Sarien v" TITLE " " VERSION,
+				WA_Title,	(ULONG)"Amiga Sarien v" VERSION,
 				WA_CloseGadget,	TRUE,
 				WA_DepthGadget,	TRUE,
 				WA_DragBar,	TRUE,
@@ -480,6 +496,8 @@ static int Amiga_init_vidmode (void)
 
 	set_palette (palette, 0, 32);
 
+	/* clear screen */
+	memset (ximage, rgb_palette[0], GFX_HEIGHT * scale * GFX_WIDTH * scale);
 	return err_OK;
 }
 
@@ -510,7 +528,10 @@ static int Amiga_deinit_vidmode (void)
 			int i;
 			for (i=0;i<16;i++)
 			{
-				if (rgb_palette[i] >= 0) ReleasePen(screen->ViewPort.ColorMap, rgb_palette[i]);
+				if (rgb_palette[i] >= 0) {
+					ReleasePen (screen->ViewPort.ColorMap,
+						rgb_palette[i]);
+				}
 				rgb_palette[i] = -1;
 			}
 		}
@@ -552,8 +573,8 @@ static void Amiga_blit_block(int x1, int y1, int x2, int y2)
 	if (scale > 1) {
 		x1 *= scale;
 		y1 *= scale;
-		x2 *= scale;
-		y2 *= scale;
+		x2 = (x2 + 1) * scale - 1;
+		y2 = (y2 + 1) * scale - 1;
 	}
 
 	if (GfxBase->LibNode.lib_Version >= 39)
@@ -649,16 +670,16 @@ static int Amiga_get_key (void)
 static void Amiga_new_timer ()
 {
 	struct timeval tv;
-	struct timezone tz;
+	/* struct timezone tz; */
 	static double msec = 0.0;
 	double m;
 	
-	gettimeofday (&tv, &tz);
+	gettimeofday (&tv, NULL);
 	m = 1000.0 * tv.tv_sec + tv.tv_usec / 1000.0;
 
 	while (m - msec < 42)
 	{
-		gettimeofday (&tv, &tz);
+		gettimeofday (&tv, NULL);
 		m = 1000.0 * tv.tv_sec + tv.tv_usec / 1000.0;
 	}
 	msec = m; 

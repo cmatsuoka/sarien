@@ -5,11 +5,14 @@
 **
 ** (C) Copyright 1999 Paul Hill
 **
+** $Id$
 */
 
+#ifndef __DICE__
 #include <proto/exec.h>
 #include <proto/timer.h>
 #include <proto/alib.h>
+#endif
 #include <devices/timer.h>
 #include <sys/time.h>
 #include <stdio.h>
@@ -28,7 +31,7 @@ int opentimer()
 		if ((TimerIO = (struct timerequest *) CreateExtIO(TimerMP,sizeof(struct timerequest)) ))
 		{
 			/* Open the device once */
-			if (!(OpenDevice( TIMERNAME, UNIT_VBLANK,(struct IORequest *) TimerIO, 0L)))
+			if (!(OpenDevice (TIMERNAME, UNIT_VBLANK,(struct IORequest *) TimerIO, 0L)))
 			{
 				TimerBase = (struct Device *)TimerIO->tr_node.io_Device;
 				rc = 1;
@@ -63,10 +66,12 @@ int gettimeofday(struct timeval *tp, struct timezone *tzp)
 	if (tp)
 	{
 		GetSysTime(tp);
-//	void GetSysTime( struct timeval * );
-//		TimerIO->tr_node.io_Command = TR_GETSYSTIME;
-//		DoIO((struct IORequest *) TimerIO);
-//		*tp = TimerIO->tr_time;
+#if 0
+	void GetSysTime( struct timeval * );
+		TimerIO->tr_node.io_Command = TR_GETSYSTIME;
+		DoIO((struct IORequest *) TimerIO);
+		*tp = TimerIO->tr_time;
+#endif
 
 		/* add the offset from unix to amigados time system (NEEDED???) */
 		tp->tv_sec += (8*365+2) * 24 * 3600;
