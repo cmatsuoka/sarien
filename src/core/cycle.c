@@ -231,15 +231,11 @@ int main_cycle ()
 	poll_timer ();		/* msdos driver -> does nothing */
 	update_timer ();
 
-#if 0
 	if (game.ver == 0) {
-		message_box ("Sarien didn't recognize this game and may "
-			"execute it with an incorrect interpreter version. "
-			"Please check the configuration file; if this game "
-			"is not listed, please contact the authors.");
+		message_box ("Warning: game CRC not listed, assuming "
+			"AGI version 2.917.");
 		game.ver = -1;
 	}
-#endif
 
 	key = do_poll_keyboard ();
 

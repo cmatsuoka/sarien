@@ -35,11 +35,6 @@ static void init_pri_table ()
 {
 	int i, p, y = 0;
 
-#if 0
-	if (*game.pri_table != 0xff)
-		return;
-#endif
-
 	for (p = 1; p < 15; p++) {
 		for (i = 0; i < 12; i++) {
 			game.pri_table[y++] = p < 4 ? 4 : p;
