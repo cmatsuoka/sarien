@@ -33,6 +33,13 @@ static void _set_cel (struct vt_entry *v, int n)
 static void _set_loop (struct vt_entry *v, int n)
 {
 	_D ("vt entry #%d, loop = %d", v->entry, n);
+
+	/* Added to avoid crash when leaving the arcade machine in MH1
+	 * -- not in AGI 2.917
+	 */
+	if (n >= v->num_loops)
+		n = 0;
+
 	v->current_loop = n;
 	v->loop_data = &game.views[v->current_view].loop[n];
 	v->num_cels = v->loop_data->num_cels;
