@@ -56,7 +56,7 @@ typedef struct {
 } xyxy;
 
 enum {
-	WM_PUT_BLOCK = WM_USER + 1,
+	WM_PUT_BLOCK = WM_USER + 1
 };
 static UINT16 g_err = err_OK;
 static HPALETTE g_hPalette = NULL;
@@ -294,44 +294,56 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			key = 0;
 			break;
 		case VK_UP:
+		case VK_NUMPAD8:
 			if (lParam & REPEATED_KEYMASK) 
 				return 0;
 			key = KEY_UP;
 			break;
 		case VK_LEFT:
+		case VK_NUMPAD4:
 			if (lParam & REPEATED_KEYMASK) 
 				return 0;
 			key = KEY_LEFT;
 			break;
 		case VK_DOWN:
+		case VK_NUMPAD2:
 			if (lParam & REPEATED_KEYMASK) 
 				return 0;
 			key = KEY_DOWN;
 			break;
 		case VK_RIGHT:
+		case VK_NUMPAD6:
 			if (lParam & REPEATED_KEYMASK) 
 				return 0;
 			key = KEY_RIGHT;
 			break;
 		case VK_HOME:
+		case VK_NUMPAD7:
 			if (lParam & REPEATED_KEYMASK) 
 				return 0;
 			key = KEY_UP_LEFT;
 			break;
 		case VK_PRIOR:
+		case VK_NUMPAD9:
 			if (lParam & REPEATED_KEYMASK) 
 				return 0;
 			key = KEY_UP_RIGHT;
 			break;
 		case VK_NEXT:
+		case VK_NUMPAD3:
 			if (lParam & REPEATED_KEYMASK) 
 				return 0;
 			key = KEY_DOWN_RIGHT;
 			break;
 		case VK_END:
+		case VK_NUMPAD1:
 			if (lParam & REPEATED_KEYMASK) 
 				return 0;
 			key = KEY_DOWN_LEFT;
+			break;
+		case VK_CLEAR:
+		case VK_NUMPAD5:
+			key = KEY_STATIONARY;
 			break;
 		case VK_RETURN:
 			key = KEY_ENTER;
