@@ -62,8 +62,8 @@ LINK32=link.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "..\BIN"
-# PROP Intermediate_Dir "..\BIN"
+# PROP Output_Dir "Debug"
+# PROP Intermediate_Dir "Debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
@@ -134,10 +134,6 @@ SOURCE=..\src\core\graphics.c
 # Begin Source File
 
 SOURCE=..\src\core\id.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\src\core\iff.c
 # End Source File
 # Begin Source File
 
@@ -295,10 +291,6 @@ SOURCE=..\src\include\graphics.h
 # Begin Source File
 
 SOURCE=..\src\include\id.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\src\include\iff.h
 # End Source File
 # Begin Source File
 
