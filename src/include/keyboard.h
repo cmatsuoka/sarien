@@ -15,9 +15,19 @@
 extern "C"{
 #endif
 
-#ifdef KEY_DOWN // QNX4 has a KEY_DOWN defined which we don't need to care about
+/* QNX4 has a KEY_DOWN defined which we don't need to care about */
 #undef KEY_DOWN
-#endif
+
+/* Allegro defines these */
+#undef KEY_BACKSPACE
+#undef KEY_ENTER
+#undef KEY_LEFT
+#undef KEY_RIGHT
+#undef KEY_UP
+#undef KEY_PGUP
+#undef KEY_PGDN
+#undef KEY_HOME
+#undef KEY_END
 
 #define KEY_BACKSPACE	0x08
 #define	KEY_ESCAPE	0x1B
@@ -54,7 +64,7 @@ extern	UINT8		scancode_table[];
 
 void	init_words	(void);
 void	clean_input	(void);
-int		do_poll_keyboard	(void);
+int	do_poll_keyboard	(void);
 void	clean_keyboard	(void);
 void	handle_keys	(int);
 void	handle_getstring(int);

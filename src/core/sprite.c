@@ -675,6 +675,7 @@ void erase_both ()
  */
 void blit_upd_sprites ()
 {
+	_D("blit updating");
 	blit_sprites (build_upd_blitlist ());
 }
 
@@ -688,6 +689,7 @@ void blit_upd_sprites ()
  */
 void blit_nonupd_sprites ()
 {
+	_D("blit non-updating");
 	blit_sprites (build_nonupd_blitlist ());
 }
 

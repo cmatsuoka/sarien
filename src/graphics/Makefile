@@ -4,8 +4,8 @@ XCFLAGS = -I../include
 OBJS	=
 DFILES	= Makefile
 CFILES	=
-DDIRS	= msdos sdl x11 svgalib win32 photon dive macos amiga script dc \
-	  directx cocoa
+DDIRS	= msdos sdl x11 svgalib allegro win32 photon dive macos amiga \
+	  script dc directx cocoa
 XDFILES =
 LIB	=
 

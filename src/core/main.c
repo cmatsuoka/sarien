@@ -251,4 +251,7 @@ bail_out:
 
 	return ec;
 }
+#ifdef HAVE_ALLEGRO
+END_OF_MAIN()
+#endif
 

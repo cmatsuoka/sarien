@@ -270,6 +270,8 @@ cmd(draw) {
 	if (vt.y_size <= 0 || vt.x_size <= 0)
 		return;
 
+	_D("draw entry %d", vt.entry);
+
 	vt.flags |= UPDATE;
 	fix_position (p0);
 	vt.x_pos2 = vt.x_pos;

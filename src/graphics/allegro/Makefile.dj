@@ -6,7 +6,7 @@
 
 include $(TOPDIR)/Rules.dj
 
-OBJS = djgpp.o
+OBJS = allegro.o
 
 all: driver.a
 
