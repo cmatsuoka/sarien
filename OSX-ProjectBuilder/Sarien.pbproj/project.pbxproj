@@ -340,6 +340,7 @@
 				F5742F820140638F01000001,
 				F5742F830140638F01000001,
 				F5F6248D01411A6201000001,
+				F5607D2A0144005201000001,
 			);
 			isa = PBXSourcesBuildPhase;
 			name = Sources;
@@ -400,6 +401,18 @@
 //F52
 //F53
 //F54
+		F5607D290144005201000001 = {
+			isa = PBXFileReference;
+			name = picview.c;
+			path = ../src/core/picview.c;
+			refType = 4;
+		};
+		F5607D2A0144005201000001 = {
+			fileRef = F5607D290144005201000001;
+			isa = PBXBuildFile;
+			settings = {
+			};
+		};
 		F5742F780140638F01000001 = {
 			isa = PBXFileReference;
 			path = SarienApplication.h;
@@ -557,6 +570,7 @@
 				F5C2E85B01403CD401000001,
 				F5C2E8A701403D1801000001,
 				F5F6248C01411A6201000001,
+				F5607D290144005201000001,
 			);
 			isa = PBXGroup;
 			name = "Sarien Sources";
@@ -565,218 +579,218 @@
 		F5C2E83801403CD401000001 = {
 			isa = PBXFileReference;
 			name = agi_v2.c;
-			path = "sarien/src/core/agi_v2.c";
-			refType = 3;
+			path = ../src/core/agi_v2.c;
+			refType = 4;
 		};
 		F5C2E83901403CD401000001 = {
 			isa = PBXFileReference;
 			name = agi_v3.c;
-			path = "sarien/src/core/agi_v3.c";
-			refType = 3;
+			path = ../src/core/agi_v3.c;
+			refType = 4;
 		};
 		F5C2E83A01403CD401000001 = {
 			isa = PBXFileReference;
 			name = agi_v4.c;
-			path = "sarien/src/core/agi_v4.c";
-			refType = 3;
+			path = ../src/core/agi_v4.c;
+			refType = 4;
 		};
 		F5C2E83B01403CD401000001 = {
 			isa = PBXFileReference;
 			name = agi.c;
-			path = "sarien/src/core/agi.c";
-			refType = 3;
+			path = ../src/core/agi.c;
+			refType = 4;
 		};
 		F5C2E83C01403CD401000001 = {
 			isa = PBXFileReference;
 			name = checks.c;
-			path = "sarien/src/core/checks.c";
-			refType = 3;
+			path = ../src/core/checks.c;
+			refType = 4;
 		};
 		F5C2E83D01403CD401000001 = {
 			isa = PBXFileReference;
 			name = cli.c;
-			path = "sarien/src/core/cli.c";
-			refType = 3;
+			path = ../src/core/cli.c;
+			refType = 4;
 		};
 		F5C2E83E01403CD401000001 = {
 			isa = PBXFileReference;
 			name = console.c;
-			path = "sarien/src/core/console.c";
-			refType = 3;
+			path = ../src/core/console.c;
+			refType = 4;
 		};
 		F5C2E83F01403CD401000001 = {
 			isa = PBXFileReference;
 			name = cycle.c;
-			path = "sarien/src/core/cycle.c";
-			refType = 3;
+			path = ../src/core/cycle.c;
+			refType = 4;
 		};
 		F5C2E84001403CD401000001 = {
 			isa = PBXFileReference;
 			name = font.c;
-			path = "sarien/src/core/font.c";
-			refType = 3;
+			path = ../src/core/font.c;
+			refType = 4;
 		};
 		F5C2E84101403CD401000001 = {
 			isa = PBXFileReference;
 			name = getopt.c;
-			path = "sarien/src/core/getopt.c";
-			refType = 3;
+			path = ../src/core/getopt.c;
+			refType = 4;
 		};
 		F5C2E84201403CD401000001 = {
 			isa = PBXFileReference;
 			name = getopt1.c;
-			path = "sarien/src/core/getopt1.c";
-			refType = 3;
+			path = ../src/core/getopt1.c;
+			refType = 4;
 		};
 		F5C2E84301403CD401000001 = {
 			isa = PBXFileReference;
 			name = global.c;
-			path = "sarien/src/core/global.c";
-			refType = 3;
+			path = ../src/core/global.c;
+			refType = 4;
 		};
 		F5C2E84401403CD401000001 = {
 			isa = PBXFileReference;
 			name = graphics.c;
-			path = "sarien/src/core/graphics.c";
-			refType = 3;
+			path = ../src/core/graphics.c;
+			refType = 4;
 		};
 		F5C2E84501403CD401000001 = {
 			isa = PBXFileReference;
 			name = id.c;
-			path = "sarien/src/core/id.c";
-			refType = 3;
+			path = ../src/core/id.c;
+			refType = 4;
 		};
 		F5C2E84601403CD401000001 = {
 			isa = PBXFileReference;
 			name = iff.c;
-			path = "sarien/src/core/iff.c";
-			refType = 3;
+			path = ../src/core/iff.c;
+			refType = 4;
 		};
 		F5C2E84701403CD401000001 = {
 			isa = PBXFileReference;
 			name = inv.c;
-			path = "sarien/src/core/inv.c";
-			refType = 3;
+			path = ../src/core/inv.c;
+			refType = 4;
 		};
 		F5C2E84801403CD401000001 = {
 			isa = PBXFileReference;
 			name = keyboard.c;
-			path = "sarien/src/core/keyboard.c";
-			refType = 3;
+			path = ../src/core/keyboard.c;
+			refType = 4;
 		};
 		F5C2E84901403CD401000001 = {
 			isa = PBXFileReference;
 			name = logic.c;
-			path = "sarien/src/core/logic.c";
-			refType = 3;
+			path = ../src/core/logic.c;
+			refType = 4;
 		};
 		F5C2E84A01403CD401000001 = {
 			isa = PBXFileReference;
 			name = lzw.c;
-			path = "sarien/src/core/lzw.c";
-			refType = 3;
+			path = ../src/core/lzw.c;
+			refType = 4;
 		};
 		F5C2E84B01403CD401000001 = {
 			isa = PBXFileReference;
 			name = main.c;
-			path = "sarien/src/core/main.c";
-			refType = 3;
+			path = ../src/core/main.c;
+			refType = 4;
 		};
 		F5C2E84C01403CD401000001 = {
 			isa = PBXFileReference;
 			name = menu.c;
-			path = "sarien/src/core/menu.c";
-			refType = 3;
+			path = ../src/core/menu.c;
+			refType = 4;
 		};
 		F5C2E84D01403CD401000001 = {
 			isa = PBXFileReference;
 			name = motion.c;
-			path = "sarien/src/core/motion.c";
-			refType = 3;
+			path = ../src/core/motion.c;
+			refType = 4;
 		};
 		F5C2E84E01403CD401000001 = {
 			isa = PBXFileReference;
 			name = objects.c;
-			path = "sarien/src/core/objects.c";
-			refType = 3;
+			path = ../src/core/objects.c;
+			refType = 4;
 		};
 		F5C2E84F01403CD401000001 = {
 			isa = PBXFileReference;
 			name = op_cmd.c;
-			path = "sarien/src/core/op_cmd.c";
-			refType = 3;
+			path = ../src/core/op_cmd.c;
+			refType = 4;
 		};
 		F5C2E85001403CD401000001 = {
 			isa = PBXFileReference;
 			name = op_dbg.c;
-			path = "sarien/src/core/op_dbg.c";
-			refType = 3;
+			path = ../src/core/op_dbg.c;
+			refType = 4;
 		};
 		F5C2E85101403CD401000001 = {
 			isa = PBXFileReference;
 			name = op_test.c;
-			path = "sarien/src/core/op_test.c";
-			refType = 3;
+			path = ../src/core/op_test.c;
+			refType = 4;
 		};
 		F5C2E85201403CD401000001 = {
 			isa = PBXFileReference;
 			name = patches.c;
-			path = "sarien/src/core/patches.c";
-			refType = 3;
+			path = ../src/core/patches.c;
+			refType = 4;
 		};
 		F5C2E85301403CD401000001 = {
 			isa = PBXFileReference;
 			name = picture.c;
-			path = "sarien/src/core/picture.c";
-			refType = 3;
+			path = ../src/core/picture.c;
+			refType = 4;
 		};
 		F5C2E85401403CD401000001 = {
 			isa = PBXFileReference;
 			name = rand.c;
-			path = "sarien/src/core/rand.c";
-			refType = 3;
+			path = ../src/core/rand.c;
+			refType = 4;
 		};
 		F5C2E85501403CD401000001 = {
 			isa = PBXFileReference;
 			name = savegame.c;
-			path = "sarien/src/core/savegame.c";
-			refType = 3;
+			path = ../src/core/savegame.c;
+			refType = 4;
 		};
 		F5C2E85601403CD401000001 = {
 			isa = PBXFileReference;
 			name = silent.c;
-			path = "sarien/src/core/silent.c";
-			refType = 3;
+			path = ../src/core/silent.c;
+			refType = 4;
 		};
 		F5C2E85701403CD401000001 = {
 			isa = PBXFileReference;
 			name = sound.c;
-			path = "sarien/src/core/sound.c";
-			refType = 3;
+			path = ../src/core/sound.c;
+			refType = 4;
 		};
 		F5C2E85801403CD401000001 = {
 			isa = PBXFileReference;
 			name = sprite.c;
-			path = "sarien/src/core/sprite.c";
-			refType = 3;
+			path = ../src/core/sprite.c;
+			refType = 4;
 		};
 		F5C2E85901403CD401000001 = {
 			isa = PBXFileReference;
 			name = text.c;
-			path = "sarien/src/core/text.c";
-			refType = 3;
+			path = ../src/core/text.c;
+			refType = 4;
 		};
 		F5C2E85A01403CD401000001 = {
 			isa = PBXFileReference;
 			name = view.c;
-			path = "sarien/src/core/view.c";
-			refType = 3;
+			path = ../src/core/view.c;
+			refType = 4;
 		};
 		F5C2E85B01403CD401000001 = {
 			isa = PBXFileReference;
 			name = words.c;
-			path = "sarien/src/core/words.c";
-			refType = 3;
+			path = ../src/core/words.c;
+			refType = 4;
 		};
 		F5C2E85C01403CD401000001 = {
 			children = (
@@ -807,116 +821,116 @@
 		F5C2E85D01403CD401000001 = {
 			isa = PBXFileReference;
 			name = agi.h;
-			path = "sarien/src/include/agi.h";
-			refType = 3;
+			path = ../src/include/agi.h;
+			refType = 4;
 		};
 		F5C2E85E01403CD401000001 = {
 			isa = PBXFileReference;
 			name = console.h;
-			path = "sarien/src/include/console.h";
-			refType = 3;
+			path = ../src/include/console.h;
+			refType = 4;
 		};
 		F5C2E85F01403CD401000001 = {
 			isa = PBXFileReference;
 			name = getopt.h;
-			path = "sarien/src/include/getopt.h";
-			refType = 3;
+			path = ../src/include/getopt.h;
+			refType = 4;
 		};
 		F5C2E86001403CD401000001 = {
 			isa = PBXFileReference;
 			name = graphics.h;
-			path = "sarien/src/include/graphics.h";
-			refType = 3;
+			path = ../src/include/graphics.h;
+			refType = 4;
 		};
 		F5C2E86101403CD401000001 = {
 			isa = PBXFileReference;
 			name = iff.h;
-			path = "sarien/src/include/iff.h";
-			refType = 3;
+			path = ../src/include/iff.h;
+			refType = 4;
 		};
 		F5C2E86201403CD401000001 = {
 			isa = PBXFileReference;
 			name = keyboard.h;
-			path = "sarien/src/include/keyboard.h";
-			refType = 3;
+			path = ../src/include/keyboard.h;
+			refType = 4;
 		};
 		F5C2E86301403CD401000001 = {
 			isa = PBXFileReference;
 			name = list.h;
-			path = "sarien/src/include/list.h";
-			refType = 3;
+			path = ../src/include/list.h;
+			refType = 4;
 		};
 		F5C2E86401403CD401000001 = {
 			isa = PBXFileReference;
 			name = logic.h;
-			path = "sarien/src/include/logic.h";
-			refType = 3;
+			path = ../src/include/logic.h;
+			refType = 4;
 		};
 		F5C2E86501403CD401000001 = {
 			isa = PBXFileReference;
 			name = lzw.h;
-			path = "sarien/src/include/lzw.h";
-			refType = 3;
+			path = ../src/include/lzw.h;
+			refType = 4;
 		};
 		F5C2E86601403CD401000001 = {
 			isa = PBXFileReference;
 			name = menu.h;
-			path = "sarien/src/include/menu.h";
-			refType = 3;
+			path = ../src/include/menu.h;
+			refType = 4;
 		};
 		F5C2E86701403CD401000001 = {
 			isa = PBXFileReference;
 			name = opcodes.h;
-			path = "sarien/src/include/opcodes.h";
-			refType = 3;
+			path = ../src/include/opcodes.h;
+			refType = 4;
 		};
 		F5C2E86801403CD401000001 = {
 			isa = PBXFileReference;
 			name = picture.h;
-			path = "sarien/src/include/picture.h";
-			refType = 3;
+			path = ../src/include/picture.h;
+			refType = 4;
 		};
 		F5C2E86901403CD401000001 = {
 			isa = PBXFileReference;
 			name = rand.h;
-			path = "sarien/src/include/rand.h";
-			refType = 3;
+			path = ../src/include/rand.h;
+			refType = 4;
 		};
 		F5C2E86A01403CD401000001 = {
 			isa = PBXFileReference;
 			name = sarien.h;
-			path = "sarien/src/include/sarien.h";
-			refType = 3;
+			path = ../src/include/sarien.h;
+			refType = 4;
 		};
 		F5C2E86B01403CD401000001 = {
 			isa = PBXFileReference;
 			name = savegame.h;
-			path = "sarien/src/include/savegame.h";
-			refType = 3;
+			path = ../src/include/savegame.h;
+			refType = 4;
 		};
 		F5C2E86C01403CD401000001 = {
 			isa = PBXFileReference;
 			name = sound.h;
-			path = "sarien/src/include/sound.h";
-			refType = 3;
+			path = ../src/include/sound.h;
+			refType = 4;
 		};
 		F5C2E86D01403CD401000001 = {
 			isa = PBXFileReference;
 			name = sprite.h;
-			path = "sarien/src/include/sprite.h";
-			refType = 3;
+			path = ../src/include/sprite.h;
+			refType = 4;
 		};
 		F5C2E86E01403CD401000001 = {
 			isa = PBXFileReference;
 			name = text.h;
-			path = "sarien/src/include/text.h";
-			refType = 3;
+			path = ../src/include/text.h;
+			refType = 4;
 		};
 		F5C2E86F01403CD401000001 = {
 			isa = PBXFileReference;
 			name = view.h;
-			path = "sarien/src/include/view.h";
-			refType = 3;
+			path = ../src/include/view.h;
+			refType = 4;
 		};
 		F5C2E88301403CD401000001 = {
 			fileRef = F5C2E83801403CD401000001;
@@ -1137,8 +1151,8 @@
 		F5C2E8A701403D1801000001 = {
 			isa = PBXFileReference;
 			name = fileglob.c;
-			path = "sarien/src/fileglob/unix/fileglob.c";
-			refType = 3;
+			path = ../src/filesys/unix/fileglob.c;
+			refType = 4;
 		};
 		F5C2E8A801403D1801000001 = {
 			fileRef = F5C2E8A701403D1801000001;
@@ -1163,8 +1177,8 @@
 		F5F6248C01411A6201000001 = {
 			isa = PBXFileReference;
 			name = dummy.c;
-			path = "sarien/src/sound/dummy/dummy.c";
-			refType = 3;
+			path = ../src/sound/dummy/dummy.c;
+			refType = 4;
 		};
 		F5F6248D01411A6201000001 = {
 			fileRef = F5F6248C01411A6201000001;
