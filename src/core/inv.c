@@ -140,10 +140,7 @@ void inventory ()
 				}
 			}
 
-			/* DF : FIXME : get_key() is not console aware */
-			/* switch(wait_key()) */
-
-			switch (get_key()) {
+			switch (wait_any_key ()) {
 			case KEY_ENTER:
 				report ("show_obj() -> %i\n", intobj[fsel]);
 				setvar (V_sel_item, intobj[fsel]);
@@ -206,9 +203,5 @@ void inventory ()
 	game.color_bg = old_bg;
 	print_line_prompt ();
 	flush_lines (game.line_user_input, 24);
-
-	if (getvar (V_sel_item) != 0xff) {
-		/* do something to display the selected object */
-	}
 }
 

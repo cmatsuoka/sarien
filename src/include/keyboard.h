@@ -52,6 +52,7 @@ int	handle_controller(int);
 void	get_string	(int, int, int, int);
 UINT16	agi_get_keypress(void);
 int	wait_key	(void);
+int	wait_any_key	(void);
 
 void print_line_prompt(void);
 

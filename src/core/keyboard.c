@@ -327,6 +327,22 @@ int wait_key ()
 }
 
 
+int wait_any_key ()
+{
+	int key;
+
+	_D (_D_WARN "waiting...");
+	while (42) {
+		poll_timer ();		/* msdos driver -> does nothing */
+		key = poll_keyboard ();
+		if (!console_keyhandler (key))
+				break;
+		console_cycle ();
+	}
+	return key;
+}
+
+
 /**
  * Print user input prompt.
  */
