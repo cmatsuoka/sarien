@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2003 Stuart George and Claudio Matsuoka
  *
  *  $Id$
  *
@@ -116,12 +116,7 @@ extern "C"{
 #  undef USE_IIGS_SOUND
 #endif
 
-#ifdef FANCY_BOX
-#  define	MSG_BOX_COLOUR	0x07		/* Grey */
-#else
-#  define	MSG_BOX_COLOUR	0x0f		/* White */
-#endif
-
+#define	MSG_BOX_COLOUR	0x0f		/* White */
 #define MSG_BOX_TEXT	0x00		/* Black */
 #define MSG_BOX_LINE	0x04		/* Red */
 #define STATUS_FG	0x00		/* Black */

@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2003 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -15,13 +15,8 @@
 extern "C"{
 #endif
 
-#ifdef FANCY_BOX
-#  define MENU_BG	0x07		/* Grey */
-#  define MENU_DISABLED	0x08		/* Grey */
-#else
-#  define MENU_BG	0x0f		/* White */
-#  define MENU_DISABLED	0x07		/* Grey */
-#endif
+#define MENU_BG		0x0f		/* White */
+#define MENU_DISABLED	0x07		/* Grey */
 
 #define MENU_FG		0x00		/* Black */
 #define MENU_LINE	0x00		/* Black */

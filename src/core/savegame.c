@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2003 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -34,6 +34,7 @@
 #include "text.h"
 #include "savegame.h"
 #include "keyboard.h"
+#include "menu.h"
 
 #if defined(__DICE__) || defined(WIN32)
 #  define MKDIR(a,b) mkdir(a)
@@ -675,7 +676,7 @@ press:
 	_D (_D_WARN "Button pressed: %d", rc);
 
 getout:
-	close_window ();
+	close_window();
 	return rc;
 #endif
 }
@@ -842,7 +843,10 @@ int loadgame_simple ()
 		home, game.crc, game.id, 0);
 #endif
 
+	erase_both();
 	stop_sound();
+	close_window();
+
 	if ((rc = load_game (path)) == err_OK) {
 		message_box ("Game restored.");
 		game.exit_all_logics = 1;
@@ -887,7 +891,9 @@ int loadgame_dialog ()
 	sprintf (path, "%s/" DATA_DIR "/%05X.%s/", home, game.crc, game.id);
 #endif
 
-	erase_both ();
+	erase_both();
+	stop_sound();
+
 	draw_window (hp, vp, GFX_WIDTH - hp, GFX_HEIGHT - vp);
 	print_text ("Select a game which you wish to\nrestore:",
 		0, hm + 1, vm + 1, w, MSG_BOX_TEXT, MSG_BOX_COLOUR);
@@ -908,7 +914,6 @@ int loadgame_dialog ()
 		home, game.crc, game.id, slot);
 #endif
 
-	stop_sound();
 	if ((rc = load_game (path)) == err_OK) {
 		message_box ("Game restored.");
 		game.exit_all_logics = 1;
