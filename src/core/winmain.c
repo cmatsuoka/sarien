@@ -8,21 +8,16 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
+#include <windows.h>
 #include <stdio.h>
-#include <string.h>
 #include "sarien.h"
 #include "agi.h"
 #include "text.h"
 #include "graphics.h"
 
 
-/* For the interactive picture viewer */
-UINT8	show_screen_mode = 'x';
-
 volatile UINT32 clock_ticks;
 volatile UINT32 clock_count;
-
-extern int optind;
 
 extern UINT8 *font, font_english[];
 
@@ -35,36 +30,39 @@ INLINE void _D (char *s, ...) { }
 #endif
 
 
-int main(int argc, char *argv[])
+static void open_file (HINSTANCE hThisInst, char *s)
 {
-	int ec;
+	OPENFILENAME OpenFile;	/* Structure for Open common dialog box */
+	
+	ZeroMemory (&OpenFile, sizeof(OPENFILENAME));
+	OpenFile.lStructSize = sizeof (OPENFILENAME);
+	OpenFile.hwndOwner = HWND_DESKTOP;
+	OpenFile.hInstance = hThisInst;
+	OpenFile.lpstrFile = s;
+	OpenFile.nMaxFile = MAX_PATH - 1;
+	OpenFile.lpstrTitle = TITLE " " VERSION " - FIXME: OpenFile hack";
+	OpenFile.Flags = OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
+	
+	GetOpenFileName(&OpenFile);
+}
 
-	/* we must do this before _ANYTHING_ else if using allegro!! */
-#ifdef HAVE_ALLEGRO
-	allegro_init ();
-#endif
 
-	printf(
-TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
-"Copyright (C) 1999-2001 Stuart George\n"
-"Portions Copyright (C) 1998 Lance Ewing, (C) 1999 Felipe Rosinha,\n"
-"(C) 1999-2001 Claudio Matsuoka, (C) 1999-2001 Igor Nesterov\n"
-#ifndef HAVE_GETOPT_LONG
-"Portions Copyright (C) 1989-1997 Free Software Foundation, Inc.\n"
-#endif
-"\n"
-"This program is free software; you can redistribute it and/or modify it\n"
-"under the terms of the GNU General Public License, version 2 or later,\n"
-"as published by the the Free Software Foundation.\n"
-"\n");
-
+int WINAPI WinMain(HINSTANCE hThisInst, HINSTANCE hPrevInst, LPSTR lpszArgs, int nWinMode)
+{
+	int ec = err_OK;
+	char *c, filename[MAX_PATH];
+	
 	game.clock_enabled = FALSE;
 	game.state = STATE_INIT;
 
-	if ((ec = parse_cli (argc, argv)) != err_OK)
-		goto bail_out;
+	for (c = GetCommandLine(); *c && *c != 0x20; c++);
 
-	init_machine (argc, argv);
+	if (*c)
+		strcpy (filename, ++c);
+	else
+		open_file (hThisInst, filename);
+
+	init_machine (1, 0);
 	game.gfx_mode = TRUE;
 	game.color_fg = 15;
 	game.color_bg = 0;
@@ -75,18 +73,15 @@ TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
 		ec = err_Unk;
 		goto bail_out;
 	}
-	report ("Enabling interpreter console\n");
 	console_init ();
 	report ("--- Starting console ---\n\n");
 	if (!opt.gfxhacks)
 		report ("Graphics driver hacks disabled (if any)\n");
 
-	if (agi_detect_game (argc > 1 ? argv[optind] :
-		get_current_directory ()) == err_OK)
+	if (	agi_detect_game (filename) == err_OK ||
+		agi_detect_game (get_current_directory ()) == err_OK)
 	{
 		game.state = STATE_LOADED;
-	} else if (argc > optind) {
-		report ("Could not open AGI game \"%s\".\n\n", argv[optind]);
 	}
 
 	init_sound ();
@@ -129,6 +124,7 @@ bail_out:
 		exit (ec);
 	}
 
+#if 0
 	printf ("Error %04i: ", ec);
 
 	switch (ec) {
@@ -155,6 +151,7 @@ bail_out:
 		break;
 	}
 	printf("\nUse parameter -h to list the command line options\n");
+#endif
 
 	deinit_machine ();
 

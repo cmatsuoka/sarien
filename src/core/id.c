@@ -294,7 +294,7 @@ int setup_v2_game (int ver, UINT32 crc)
 	case 0x2936:
 		break;
 	default:
-		printf("** Cannot setup for unknown version\n");
+		report ("** Cannot setup for unknown version\n");
 		ec = err_UnknownAGIVersion;
 		break;
 	}
@@ -307,7 +307,7 @@ int setup_v3_game(int ver, UINT32 crc)
 	int ec=err_OK;
 	
 	if (ver == 0) {
-		printf("Unknown v3 Sierra game: %08x\n\n", crc);
+		report ("Unknown v3 Sierra game: %08x\n\n", crc);
 		agi_set_release (ver = 0x3149);
 	}
 
@@ -322,7 +322,7 @@ int setup_v3_game(int ver, UINT32 crc)
 		logic_names_cmd[0xad].num_args = 0;	/* 173 : 0 args */
 		break;
 	default:
-		printf("Error: cannot setup for unknown version\n");
+		report ("Error: cannot setup for unknown version\n");
 		ec = err_UnknownAGIVersion;
 		break;
 	}

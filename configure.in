@@ -12,6 +12,7 @@ AC_PROG_MAKE_SET
 AC_SUBST(CONSOLE_DRIVER)
 AC_SUBST(SOUND_DRIVER)
 AC_SUBST(FILEIO_DRIVER)
+AC_SUBST(MAIN_FILE)
 
 AC_ARG_WITH(sdl,    [  --with-sdl              use the Simple DirectMedia Layer])
 AC_ARG_WITH(svgalib,[  --with-svgalib          use SVGAlib for graphics])
@@ -29,6 +30,8 @@ if test "${GCC-no}" = yes; then
 	CFLAGS="${CFLAGS} -Wall"
 fi
 
+MAIN_FILE="main"
+
 case "${target_os}" in
 beos*)
 	CFLAGS="$CFLAGS -I/boot/develop/tools/gnupro/include"
@@ -40,10 +43,12 @@ qnx*)
 	;;
 cygwin*|mingw*)
 	AC_CHECK_HEADERS(wingdi.h)
+	MAIN_FILE="winmain"
 	with_win32="yes"
 	;;
 palmos*)
 	CFLAGS="$CFLAGS -DPALMOS"
+	MAIN_FILE="palmos"
 	;;
 esac
 

@@ -54,9 +54,9 @@ enum {
 	WM_PUT_BLOCK = WM_USER + 1,
 };
 
-static HANDLE g_hThread;
+//static HANDLE g_hThread;
 static UINT16 g_err = err_OK;
-static HANDLE g_hExchEvent = NULL;
+//static HANDLE g_hExchEvent = NULL;
 static HPALETTE g_hPalette = NULL;
 static const char* g_szMainWndClass = "SarienWin";
 static int  scale = 1;
@@ -108,6 +108,9 @@ static struct gfx_driver GFX_WIN32 = {
 extern struct sarien_options opt;
 extern struct gfx_driver *gfx;
 
+static char *apptext = TITLE " " VERSION;
+static HDC  hDC;
+static WNDCLASSEX wndclass;
 
 LRESULT CALLBACK
 MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
@@ -123,7 +126,7 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 		free(p);
 		} break;
 	case WM_DESTROY:
-		fprintf (stderr, "Fatal: message WM_DESTROY caught\n" );
+		//fprintf (stderr, "Fatal: message WM_DESTROY caught\n" );
 		deinit_vidmode ();
 		exit (-1);
 		return 0;
@@ -145,7 +148,7 @@ MainWndProc (HWND hwnd, UINT nMsg, WPARAM wParam, LPARAM lParam)
 			DIB_RGB_COLORS,
 			SRCCOPY);
 
-		EndPaint( hwndMain, &ps );
+		EndPaint (hwndMain, &ps);
 		LeaveCriticalSection(&g_screen.cs);
 		return 0;
 
@@ -284,7 +287,7 @@ int init_machine (int argc, char **argv)
 
 	gfx = &GFX_WIN32;
 
-	scale = opt.scale;
+	//scale = opt.scale;
 
 	c_ticks = 0;
 	c_count = 0;
@@ -313,34 +316,45 @@ int deinit_machine ()
 
 static int init_vidmode ()
 {
-	unsigned id;
+	//unsigned id;
+	DWORD id;
 
+#if 0
 	fprintf (stderr,
 	"win32: Win32 DIB support by rosinha@dexter.damec.cefetpr.br\n");
+#endif
 
-	g_hExchEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	ResetEvent(g_hExchEvent);
+	//g_hExchEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	//ResetEvent(g_hExchEvent);
 
 #ifdef __CYGWIN__
-	g_hThread = (HANDLE)CreateThread(NULL, 0, GuiThreadProc, NULL, 0, &id);
+	GuiThreadProc (NULL);
+	//g_hThread = (HANDLE)CreateThread(NULL, 0, GuiThreadProc, NULL, 0, &id);
 #else
 	g_hThread = (HANDLE)_beginthreadex(NULL, 0, GuiThreadProc, NULL, 0, &id);
 #endif
-	if (g_hThread == INVALID_HANDLE_VALUE)
-		return err_Unk;
+	//if (g_hThread == INVALID_HANDLE_VALUE)
+		//return err_Unk;
 
-	WaitForSingleObject(g_hExchEvent, INFINITE);
-	ResetEvent(g_hExchEvent);
+	//WaitForSingleObject(g_hExchEvent, INFINITE);
+	//ResetEvent(g_hExchEvent);
 	return g_err;	
+}
+
+static void process_events ()
+{
+	MSG msg;
+
+	while (PeekMessage (&msg, NULL, 0, 0, PM_NOREMOVE)) {
+		GetMessage (&msg, NULL, 0, 0);
+		TranslateMessage (&msg);
+		DispatchMessage (&msg);
+	}
 }
 
 static unsigned int __stdcall GuiThreadProc(void *param)
 {
-	char *apptext = TITLE " " VERSION;
-	MSG msg;
 	int i;
-	HDC  hDC;
-	WNDCLASSEX wndclass;
 
 	memset (&wndclass, 0, sizeof(WNDCLASSEX));
 	wndclass.lpszClassName = g_szMainWndClass;
@@ -351,9 +365,13 @@ static unsigned int __stdcall GuiThreadProc(void *param)
 	wndclass.hIcon         = LoadIcon (NULL, IDI_APPLICATION);
 //	wndclass.hIconSm       = LoadIcon (NULL, IDI_APPLICATION);
 	wndclass.hCursor       = LoadCursor (NULL, IDC_ARROW);
-	wndclass.hbrBackground = (HBRUSH) GetStockObject (BLACK_BRUSH);
+	wndclass.hbrBackground = GetStockObject (BLACK_BRUSH);
 
-	RegisterClass(&wndclass);
+	if (!RegisterClassEx (&wndclass)) {
+		fprintf( stderr, "win32: can't register class\n");
+		g_err = err_Unk;
+		goto exx;
+	}
 
 	hwndMain = CreateWindow (
 		g_szMainWndClass,
@@ -412,26 +430,29 @@ static unsigned int __stdcall GuiThreadProc(void *param)
 		fprintf( stderr, "win32: can't create DIB section\n");
 		g_err = err_Unk;
 	} else {
-		ShowWindow (hwndMain, TRUE);
+		ShowWindow (hwndMain, TRUE);	// *****
 		UpdateWindow (hwndMain);
 		g_err = err_OK;
 	}
 
 exx:
-	SetEvent(g_hExchEvent);		/* notify main thread to continue */
+	//SetEvent(g_hExchEvent);	/* notify main thread to continue */
 
+#if 0
 	while (GetMessage (&msg, NULL, 0, 0)) {
 		TranslateMessage (&msg);
 		DispatchMessage  (&msg);
 	}
+#endif
+
 	return 0;	
 }
 
 static int deinit_vidmode (void)
 {
-	PostMessage(hwndMain, WM_QUIT, 0, 0);
-	CloseHandle(g_hThread);
-	DeleteObject( g_screen.screen_bmp );
+	PostMessage (hwndMain, WM_QUIT, 0, 0);
+	//CloseHandle (g_hThread);
+	DeleteObject (g_screen.screen_bmp);
 	return err_OK;
 }
 
@@ -447,7 +468,7 @@ static void win32_put_block (int x1, int y1, int x2, int y2) //th0
 	p->y1 = y1;
 	p->y2 = y2;
 
-	PostMessage(hwndMain, WM_PUT_BLOCK, 0, (LPARAM)p);
+	PostMessage (hwndMain, WM_PUT_BLOCK, 0, (LPARAM)p);
 }
 
 static void gui_put_block (int x1, int y1, int x2, int y2) //1
@@ -475,7 +496,7 @@ static void gui_put_block (int x1, int y1, int x2, int y2) //1
 
 	hDC = GetDC( hwndMain );
 
-	EnterCriticalSection(&g_screen.cs);
+	EnterCriticalSection (&g_screen.cs);
 	StretchDIBits(
 		hDC,
 		x1,
@@ -483,16 +504,16 @@ static void gui_put_block (int x1, int y1, int x2, int y2) //1
 		x2 - x1 + 1,
                 y2 - y1 + 1,
 		x1,
-                (GFX_HEIGHT * scale - 1) - y2,
+                GFX_HEIGHT * scale - y2,
 		x2 - x1 + 1,
-                (GFX_HEIGHT * scale - y1 - 1) - (GFX_HEIGHT * scale - y2 - 1) + 1,
+                y2 - y1 + 1,
 		g_screen.screen_pixels,
 		g_screen.binfo,
 		DIB_RGB_COLORS,
 		SRCCOPY);
-	LeaveCriticalSection(&g_screen.cs);
+	LeaveCriticalSection (&g_screen.cs);
 
-	ReleaseDC( hwndMain, hDC );
+	ReleaseDC (hwndMain, hDC);
 }
 
 /* put pixel routine */
@@ -546,6 +567,7 @@ static int win32_keypress (void)
 {
 	int b;
 
+	process_events ();
 	EnterCriticalSection(&g_key_queue.cs);
 	b = g_key_queue.start != g_key_queue.end;
 	LeaveCriticalSection(&g_key_queue.cs);
@@ -593,6 +615,7 @@ static void win32_new_timer ()
 
 	end_of_last_tick = GetTickCount();
 
+	process_events ();
 	
 	/* This is a highly indecent method to make it work, but it seems
 	 * to work better than the two previous versions. Urght. I hate

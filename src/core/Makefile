@@ -6,8 +6,8 @@ OBJS	= global.o agi_v2.o agi_v3.o agi_v4.o agi.o cli.o words.o objects.o \
 	  keyboard.o rand.o menu.o font.o lzw.o getopt.o getopt1.o savegame.o \
 	  sound.o silent.o iff.o console.o cycle.o inv.o text.o graphics.o \
 	  sprite.o checks.o motion.o
-XDEPS	= main.o
-DFILES	= Makefile $(OBJS:.o=.c) main.c id.c picview.c Makefile.wat Makefile.dj
+XDEPS	= $(MAIN_FILE).o
+DFILES	= Makefile $(OBJS:.o=.c) main.c winmain.c id.c Makefile.wat Makefile.dj
 CFILES	=
 DDIRS	=
 XLIBS	= -L../../lib -lagi
@@ -16,12 +16,10 @@ LIB	= ../../lib/libagi.a
 
 all: fixcr $(LIB) ../../bin/sarien # ../../bin/picview # currently broken
 
-../../bin/sarien: main.o ../../lib/libagi.a
-	$(LD) $(LDFLAGS) main.o id.o $(XLIBS) $(X11LIBS) $(LIBS)
+include ../../Rules
 
-../../bin/picview: picview.o ../../lib/libagi.a
-	$(LD) $(LDFLAGS) picview.o $(XLIBS) $(X11LIBS) $(LIBS)
-
+../../bin/sarien: $(MAIN_FILE).o ../../lib/libagi.a
+	$(LD) $(LDFLAGS) $(MAIN_FILE).o id.o $(XLIBS) $(X11LIBS) $(LIBS)
 
 fixcr:
 	@grep "\\\$$" picture.c>/dev/null; \
@@ -32,7 +30,6 @@ fixcr:
 	fi
 
 include ../../Version
-include ../../Rules
 
 include depend
 

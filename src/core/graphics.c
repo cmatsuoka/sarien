@@ -308,8 +308,10 @@ int keypress ()
  */
 int init_video ()
 {
+#if 0
 	fprintf (stderr, "Initializing graphics: resolution %dx%d (scale=%d)\n",
 		GFX_WIDTH, GFX_HEIGHT, opt.scale);
+#endif
 	init_console ();
 	return gfx->init_video_mode ();
 }
@@ -502,7 +504,7 @@ void restore_block (int x1, int y1, int x2, int y2, UINT8 *b)
 
 UINT8 *get_sarien_screen ()
 {
-	return &sarien_screen;
+	return &sarien_screen[0];
 }
 
 /* end: graphics.c */

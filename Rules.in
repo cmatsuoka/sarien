@@ -22,6 +22,7 @@ STRIP		= strip
 SOUND_DRIVER	= @SOUND_DRIVER@
 CONSOLE_DRIVER	= @CONSOLE_DRIVER@
 FILEIO_DRIVER	= @FILEIO_DRIVER@
+MAIN_FILE	= @MAIN_FILE@
 
 #
 # Ideally it should not be necessary to tweak parameters below this line
