@@ -1,0 +1,11 @@
+
+AGI2PDB v0.0.1
+by Stuart George <dfiber@mega-tokyo.com>
+
+This program will convert AGI v2 and v3 games int a PalmOS DB format
+which is more or less an 'v4' format for Sarien.
+
+The internal header format inside the .pdb file is not finalised
+and will change wildly over the comming months.
+
+This is a preliminary alpha version.
