@@ -116,7 +116,6 @@ cmd(get)		{ object_set_location (p0, EGO_OWNED); }
 cmd(get_f)		{ object_set_location (_v[p0], EGO_OWNED); }
 cmd(parse)		{ dictionary_words (agi_sprintf(game.strings[p0])); }
 cmd(set_text_attribute)	{ game.color_fg = p0; game.color_bg = p1; }
-cmd(shake_screen)	{ shake_screen (p0); }
 cmd(word_to_string)	{ strcpy (game.strings[p0], game.ego_words[p1].word); }
 cmd(open_dialogue)	{ _D ("p0 = %d", p0); game.has_window = TRUE; }
 cmd(close_dialogue)	{ _D ("p0 = %d", p0); game.has_window = FALSE; }
@@ -788,6 +787,20 @@ cmd(mouse_posn)	{
 	_v[p0] = WIN_TO_PIC_X(mouse.x);
 	_v[p1] = WIN_TO_PIC_Y(mouse.y);
 #endif
+}
+
+cmd(shake_screen) {
+//AGI Mouse 1.1 uses shake.screen values between 100 and 109 to set the palette
+	if (opt.agimouse) {
+		if (p0 < 100 && p0 > 109 ) {
+			shake_screen (p0);
+		}
+		else {
+			report ("not implemented: AGI Mouse palettes\n");
+		}
+	}
+	else
+		shake_screen (p0);
 }
 
 
