@@ -14,6 +14,8 @@ Tested ports:
  AIX 4   |  gcc  |   X11   |  dummy  |   yes   |    no   |    no   |
  IRIX    |MIPSpro|   X11   |   sgi   |   yes   |    no   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
+ BeOS 5  |  gcc  |   SDL   |   SDL   |   yes   |    ?    |   yes   |
+---------+-------+---------+---------+---------+---------+---------+
  QNX	 |       |  Photon |         |         |         |         |
 ---------+-------+---------+---------+---------+---------+---------+
  Windows |Mingw32|   DIB   |  dummy  |   yes   |    no   |    no   |
@@ -28,8 +30,6 @@ Untested, expected to work:
 
                   Graphics   Sound    Windowed  Fullscreen
          Compiler  Driver    Driver   Graphics  Graphics    Sound
----------+-------+---------+---------+---------+---------+---------+
- BeOS    |  gcc  |   SDL   |   SDL   |   yes   |    ?    |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
  FreeBSD |  gcc  |   X11   |   OSS   |   yes   |    no   |    no   |
  OpenBSD |  gcc  |   X11   |   BSD   |   yes   |    no   |    no   |

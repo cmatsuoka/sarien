@@ -71,25 +71,30 @@ else
 	if test ! -z "${ac_x_includes}"; then
 		CONSOLE_DRIVER="x11"
 		AC_PATH_XTRA
-		AC_CHECK_HEADERS(X11/extensions/XShm.h X11/extensions/xf86dga.h \
+		AC_CHECK_HEADERS(X11/extensions/XShm.h \
+			X11/extensions/xf86dga.h \
 			X11/extensions/xf86vmode.h)
+
 		if test "${ac_cv_header_X11_extensions_XShm_h}" = "yes" -o \
 			"${ac_cv_header_X11_extensions_xf86dga_h}" = "yes"; then
 			X_LIBS="${X_LIBS} -lXext -lX11"
 		else
 			X_LIBS="${X_LIBS} -lX11"
 		fi
+
 		if test "${ac_cv_header_X11_extensions_XShm_h}" = "yes"; then
 			CFLAGS="${CFLAGS} -DMITSHM"
 		fi
+
 		if test "${ac_cv_header_X11_extensions_xf86dga_h}" = "yes" -a \
-			"${ac_cv_header_X11_extensions_xf86vmode_h}" = "yes"; then
-			CFLAGS="${CFLAGS} -DXF86DGA"
-			X_LIBS="${X_LIBS} -lXxf86dga -lXxf86vm"
+			"${ac_cv_header_X11_extensions_xf86vmode_h}" = "yes";
+		then
+			AC_CHECK_LIB(Xxf86dga,XF86DGAGetVideo,
+			AC_CHECK_LIB(Xxf86vm,XF86VidModeSwitchToMode,
+			CFLAGS="${CFLAGS} -DXF86DGA"))
 		fi
 	fi
 fi
-AC_MSG_RESULT([using console driver: ${CONSOLE_DRIVER}])
 
 
 dnl ----------------------------------------------
@@ -172,8 +177,6 @@ if test "${SOUND_DRIVER}" != "dummy" -a "${SOUND_DRIVER}" != "win32"; then
 	])
 fi
 
-AC_MSG_RESULT([using sound driver: ${SOUND_DRIVER}])
-
 
 dnl ----------------------------------------------
 dnl Check for file globbing support
@@ -184,8 +187,6 @@ FILEIO_DRIVER=""
 AC_CHECK_FUNC(_dos_findfirst,[FILEIO_DRIVER="msdos"])
 AC_CHECK_FUNC(_findfirst,[FILEIO_DRIVER="win32"])
 AC_CHECK_FUNC(glob,[FILEIO_DRIVER="unix"])
-
-AC_MSG_RESULT([using file globbing method: ${FILEIO_DRIVER}])
 
 
 dnl ----------------------------------------------
@@ -211,6 +212,12 @@ AC_FUNC_MEMCMP
 dnl AC_TYPE_SIGNAL
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(vsnprintf gettimeofday glob getopt_long)
+
+AC_MSG_RESULT([----------------------------------------------------------])
+AC_MSG_RESULT([using console driver: ${CONSOLE_DRIVER}])
+AC_MSG_RESULT([using sound driver: ${SOUND_DRIVER}])
+AC_MSG_RESULT([using file globbing method: ${FILEIO_DRIVER}])
+AC_MSG_RESULT([----------------------------------------------------------])
 
 AC_OUTPUT(Rules)
 
