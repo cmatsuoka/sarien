@@ -48,7 +48,7 @@ AC_ARG_WITH(win32,  [  --with-win32            use Win32 console/sound drivers])
 AC_ARG_WITH(amiga,  [  --with-amiga            use Amiga console/sound drivers])
 
 if test "${GCC-no}" = yes; then
-	CFLAGS="${CFLAGS} -Wall -ansi -pedantic-errors"
+	CFLAGS="${CFLAGS} -Wall -ansi -pedantic"
 fi
 
 MAIN_FILE="main"

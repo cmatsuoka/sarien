@@ -22,10 +22,11 @@
 
 static void print_text2 (int l, char *msg, int foff, int xoff, int yoff, int len, int fg, int bg)
 {
-	char *m;
 	int x1, y1;
 	int maxx, minx, ofoff;
 	int update;
+	/* Note: Must be unsigned to use cyrillic characters!! */
+	unsigned char *m;
 
 	/* kludge! */
 	update = 1;

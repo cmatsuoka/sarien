@@ -212,9 +212,6 @@ void shake_screen (int n)
 }
 
 
-
-
-
 void put_text_character (int l, int x, int y, unsigned int c, int fg, int bg)
 {
 	int x1, y1, xx, yy, cc;
@@ -306,7 +303,6 @@ void draw_box (int x1, int y1, int x2, int y2, int colour1, int colour2)
 }
 
 
-
 void print_character (int x, int y, char c, int fg, int bg)
 {
 	x *= CHAR_COLS;
@@ -316,7 +312,6 @@ void print_character (int x, int y, char c, int fg, int bg)
 	/* CM: the extra pixel in y is for the underline cursor */
 	flush_block (x, y, x + CHAR_COLS - 1, y + CHAR_LINES); 
 }
-
 
 
 void put_block (int x1, int y1, int x2, int y2)
