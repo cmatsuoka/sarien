@@ -73,6 +73,8 @@ struct agi_game {
 #define ID_AMIGA	0x00000002
 	int game_flags;		/* game flags!! (important) */
 
+	UINT32 msg_box_ticks;	/* timed message box tick counter */
+
 	/* directory entries for resources */
 	struct agi_dir dir_logic[MAX_DIRS];
 	struct agi_dir dir_pic[MAX_DIRS];

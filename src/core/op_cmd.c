@@ -78,7 +78,6 @@ extern struct agi_logic logics[];
 extern struct agi_view views[];
 extern struct agi_view_table view_table[];
 
-extern UINT32 msg_box_ticks;
 
 void cmd_position (UINT8 entry, UINT8 x, UINT8 y)
 {
@@ -740,6 +739,8 @@ void cmd_config_screen (UINT8 mpl, UINT8 upl, UINT8 sl)
 }
 
 
+/* FIXME: should call function in gfx_agi.h
+ */
 void cmd_clear_lines (UINT8 sl, UINT8 el, UINT8 c)
 {
 	UINT16	x, y, z;
@@ -890,7 +891,6 @@ void cmd_print_at (UINT8 logic, UINT8 msg, SINT8 y, SINT8 x, SINT8 len)
 			msg_box_secs2 = getvar (V_window_reset);
 			_D (_D_WARN "msg_box_secs2 = %ld", msg_box_secs2);
 
-			//while (getvar (V_window_reset) > 0) {
 			do {
 				/* FR: The call to main cycle fills the
 				 * keyboard internal buffer!
@@ -904,8 +904,7 @@ void cmd_print_at (UINT8 logic, UINT8 msg, SINT8 y, SINT8 x, SINT8 len)
 					setvar (V_window_reset, 0);
 					break;
 				}
-			//}
-			} while (msg_box_ticks > 0);
+			} while (game.msg_box_ticks > 0);
 		} else {
 			_D (_D_WARN "f15==0, v21==0 ==> waitkey");
 			setvar (V_key, key = 0);

@@ -43,6 +43,27 @@ struct agi_loader agi_v3 = {
 };
 
 
+
+#include <dirent.h>
+
+int match (char *s)
+{
+    struct dirent **namelist;
+    int n;
+
+    n = scandir(".", &namelist, 0, alphasort);
+    if (n < 0)
+	return n;
+
+    while(n--) {
+        printf("%s\n", namelist[n]->d_name);
+        free(namelist[n]);
+    }
+    free(namelist);
+}
+
+
+
 int agi_v3_detect_game (char *gn)
 {
 	int ec = err_Unk;

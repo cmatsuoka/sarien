@@ -481,8 +481,6 @@ static void update_timer ()
 }
 
 
-UINT32 msg_box_ticks = 0;
-
 void main_cycle (int accept_key)
 {
 	poll_timer ();		/* msdos driver -> does nothing */
@@ -498,12 +496,12 @@ void main_cycle (int accept_key)
 	console_cycle ();
 
 	if (getvar (V_window_reset) > 0) {
-		msg_box_ticks = getvar (V_window_reset) * 10;
+		game.msg_box_ticks = getvar (V_window_reset) * 10;
 		setvar (V_window_reset, 0);
 	}
 
-	if (msg_box_ticks > 0)
-		msg_box_ticks--;
+	if (game.msg_box_ticks > 0)
+		game.msg_box_ticks--;
 }
 
 
