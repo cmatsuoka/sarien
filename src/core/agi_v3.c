@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2003 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -184,13 +184,13 @@ int agi_v3_unload_resource (int t, int n)
 {
 	switch (t) {
 	case rLOGIC:
-		unload_logic (n);
+		unload_logic(n);
 		break;
 	case rPICTURE:
-		unload_picture (n);
+		unload_picture(n);
 		break;
 	case rVIEW:
-		unload_view (n);
+		unload_view(n);
 		break;
 	case rSOUND:
 		unload_sound(n);

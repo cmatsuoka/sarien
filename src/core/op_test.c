@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2003 Stuart George and Claudio Matsuoka
  *  
  *  $Id$
  *
@@ -213,8 +213,8 @@ static UINT8 test_said (UINT8 nwords, UINT8 *cc)
 		default:
 			if (game.ego_words[c].id != z)
 				return FALSE;
-				break;
-			}
+			break;
+		}
 	}
 
 	/* The entry string should be entirely parsed, or last word = 9999 */

@@ -96,6 +96,7 @@ int find_word (char *word, int *flen)
 	UINT8* q = words + words_flen;
 	*flen = 0;
 
+	_D ("%s", word);
 	if (word[0] >= 'a' && word[0] <= 'z')
 		fchr = word[0] - 'a';
 	else

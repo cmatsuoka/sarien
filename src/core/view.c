@@ -1,5 +1,5 @@
 /*  Sarien - A Sierra AGI resource interpreter engine
- *  Copyright (C) 1999-2001 Stuart George and Claudio Matsuoka
+ *  Copyright (C) 1999-2003 Stuart George and Claudio Matsuoka
  *
  *  $Id$
  *
@@ -166,9 +166,10 @@ int decode_view (int n)
 
     			vc->data = v+cofs;
     			/* If mirror_loop is pointing to the current loop,
-    			   then this is the original. */
+    			 * then this is the original.
+			 */
     			if (vc->mirror_loop == loop)
-    				vc->mirror=0;
+    				vc->mirror = 0;
     		} /* cel */
 	} /* loop */
 
@@ -187,10 +188,8 @@ void unload_view (int n)
 		return;
 
 	/* free all the loops */
-	for (x = 0; x < game.views[n].num_loops; x++) {
-		if (game.views[n].loop[x].cel != NULL)
-			free (game.views[n].loop[x].cel);
-	}
+	for (x = 0; x < game.views[n].num_loops; x++)
+		free (game.views[n].loop[x].cel);
 
 	free (game.views[n].loop);
 	free (game.views[n].rdata);
