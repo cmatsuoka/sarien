@@ -86,11 +86,12 @@ volatile UINT32 c_count;
 
 static int	init_vidmode	(void);
 static int	deinit_vidmode	(void);
-static void	put_block	(int, int, int, int);
-static void	_put_pixel	(int, int, int);
-static int	keypress	(void);
-static int	get_key		(void);
-static void	new_timer	(void);
+static void	win32_put_block	(int, int, int, int);
+static void	win32_put_pixel	(int, int, int);
+static int	win32_keypress	(void);
+static int	win32_get_key		(void);
+static void	win32_new_timer	(void);
+
 static void	gui_put_block	(int, int, int, int);
 static int	set_palette	(UINT8 *, int, int);
 
@@ -100,11 +101,11 @@ static unsigned int __stdcall GuiThreadProc(void *);
 static struct gfx_driver GFX_WIN32 = {
 	init_vidmode,
 	deinit_vidmode,
-	put_block,
-	_put_pixel,
-	new_timer,
-	keypress,
-	get_key
+	win32_put_block,
+	win32_put_pixel,
+	win32_new_timer,
+	win32_keypress,
+	win32_get_key
 };
 
 extern struct sarien_options opt;
@@ -319,7 +320,12 @@ static int init_vidmode ()
 	"win32: Win32 DIB support by rosinha@dexter.damec.cefetpr.br\n");
 	g_hExchEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 	ResetEvent(g_hExchEvent);
+#ifdef __CYGWIN__
+	g_hThread = (HANDLE)CreateThread(NULL, 0,
+		(LPTHREAD_START_ROUTINE)GuiThreadProc, NULL, 0, (PDWORD)&id);
+#else
 	g_hThread = (HANDLE)_beginthreadex(NULL, 0, GuiThreadProc, NULL, 0, &id);
+#endif
 	if (g_hThread == INVALID_HANDLE_VALUE)
 		return err_Unk;
 	WaitForSingleObject(g_hExchEvent, INFINITE);
@@ -431,59 +437,8 @@ static int deinit_vidmode (void)
 	return err_OK;
 }
 
-#if 0
-/* Based on LAGII 0.1.5 by XoXus */
-static void shake_screen (int times)
-{
-#define MAG 4
-	int  i, alt;
-	RECT rcClient;
-
-	GetWindowRect( hwndMain, &rcClient );
-
-	alt = -MAG;
-	for (i = 0; i < (2 * times); i++) {
-		alt = -alt;
-
-		SetWindowPos(
-			hwndMain,
-			NULL,
-			rcClient.left + alt,
-			rcClient.top  + alt,
-			0,
-			0,
-			SWP_NOZORDER | SWP_NOSIZE );
-
-		/* Yikes! */
-		Sleep(25);
-
-		SetWindowPos(
-			hwndMain,
-			NULL,
-			rcClient.left - alt,
-			rcClient.top  - alt,
-			0,
-			0,
-			SWP_NOZORDER | SWP_NOSIZE );
-
-		/* Yikes! */
-		Sleep(25);
-	}
-
-	/* Return to original position */
-	SetWindowPos(
-		hwndMain,
-		NULL,
-		rcClient.left,
-		rcClient.top,
-		0,
-		0,
-		SWP_NOZORDER | SWP_NOSIZE );
-}
-#endif
-
 /* put a block onto the screen */
-void put_block (int x1, int y1, int x2, int y2) //th0
+static void win32_put_block (int x1, int y1, int x2, int y2) //th0
 {
 	xyxy *p = (xyxy*)malloc(sizeof(xyxy));
 	if (p == NULL) // no way
@@ -544,7 +499,7 @@ static void gui_put_block (int x1, int y1, int x2, int y2) //1
 
 /* put pixel routine */
 /* Some errors! Handle color depth */
-static void _put_pixel (int x, int y, int c)
+static void win32_put_pixel (int x, int y, int c)
 {
 	register int i, j;
         int offset;
@@ -570,7 +525,7 @@ static void _put_pixel (int x, int y, int c)
 
 }
  
-static int keypress (void)
+static int win32_keypress (void)
 {
 	int b;
 
@@ -581,25 +536,27 @@ static int keypress (void)
 	return b;
 }
 
-static int get_key (void)
+static int win32_get_key (void)
 {
 	int k;
 
-	while (!keypress()){
-		new_timer ();
+	while (!win32_keypress()){
+		win32_new_timer ();
 	}
 	key_dequeue(k);
 
 	return k;
 }
 
-static void new_timer ()
+static void win32_new_timer ()
 {
 	DWORD	now;
 	static DWORD end_of_last_tick = 0;
-//	LONGLONG        end;
-//	static LONGLONG start = 0;
-//	static int      msg_box_ticks = 0;
+#ifdef QUERYPERFORMANCE
+	LONGLONG        end;
+	static LONGLONG start = 0;
+	static int      msg_box_ticks = 0;
+#endif
 
 	/* This is the original code written by Felipe. It works but boosts
 	 * the system load to 100% when running
@@ -609,10 +566,14 @@ static void new_timer ()
 	if ((end_of_last_tick != 0) && ((now - end_of_last_tick) < TICK_IN_MSEC)){
 		Sleep(TICK_IN_MSEC - (now - end_of_last_tick));
 	}
-//	QueryPerformanceCounter( (LARGE_INTEGER*) &end );
-//	if (( g_update_freq > (end - start) )){
-//		Sleep((g_update_freq - (end - start))/ g_counts_per_msec);
-//	}
+
+#ifdef QUERYPERFORMANCE
+	QueryPerformanceCounter( (LARGE_INTEGER*) &end );
+	if (( g_update_freq > (end - start) )){
+		Sleep((g_update_freq - (end - start))/ g_counts_per_msec);
+	}
+#endif
+
 	end_of_last_tick = GetTickCount();
 
 	
