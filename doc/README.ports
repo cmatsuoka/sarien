@@ -49,3 +49,11 @@ In development:
  Linux   |  gcc  |XF86 DGA |OSS,ALSA |    no   |   yes   |   yes   |
 ---------+-------+---------+---------+---------+---------+---------+
 
+
+Planned:
+                  Graphics   Sound    Windowed  Fullscreen
+         Compiler  Driver    Driver   Graphics  Graphics    Sound
+---------+-------+---------+---------+---------+---------+---------+
+ PalmOS  |  gcc  |  palm   |  palm   |    no   |   yes   |   yes   |
+---------+-------+---------+---------+---------+---------+---------+
+
