@@ -40,7 +40,7 @@ struct sprite {
 /*
  * Sprite pool replaces dynamic allocation
  */
-#define ALLOC_DEBUG
+#undef ALLOC_DEBUG
 
 #ifdef USE_HIRES
 #  define POOL_SIZE 60000	/* 50000 isn't enough for Gold Rush mine */
