@@ -164,6 +164,7 @@ static void draw_menu_option_hilite (int h_menu, int v_menu)
 		(m->wincol + m->width + 1) * CHAR_COLS + 3,
 		(v_menu + 2) * CHAR_LINES + 9 + v_menu * 2,
 		MENU_BG, MENU_LINE, 0);
+
 	draw_text (d->text, 0, (m->wincol + 1) * CHAR_COLS,
 		(v_menu + 2) * CHAR_LINES + v_menu * 2, m->width + 2,
 		MENU_FG, MENU_BG);
@@ -246,8 +247,6 @@ void deinit_menus ()
 	struct agi_menu *m = NULL;
 	struct agi_menu_option *d = NULL;
 
-	/* scan all menus for event number # */
-
 	for (h = (&menubar)->prev; h != (&menubar); h = h2) {
 		m = list_entry (h, struct agi_menu, list);
 		h2 = h->prev;
@@ -323,7 +322,22 @@ void add_menu_item (char *s, int code)
 
 void submit_menu ()
 {
+	struct list_head *h, *h2;
+	struct agi_menu *m = NULL;
+
 	_D (_D_WARN "Submitting menu");
+
+	/* If a menu has no options, delete it */
+	for (h = (&menubar)->prev; h != (&menubar); h = h2) {
+		m = list_entry (h, struct agi_menu, list);
+		h2 = h->prev;
+		if ((&m->down)->prev == (&m->down)) {
+			list_del (h);
+			free (m->text);
+			free (m);
+			h_max_menu--;
+		}
+	}
 }
 
 int menu_keyhandler (int key)
