@@ -27,9 +27,15 @@ if test "${GCC-no}" = yes; then
 	CFLAGS="${CFLAGS} -Wall"
 fi
 
-case "${host_os}" in
+case "${target_os}" in
 beos*)
 	CFLAGS="$CFLAGS -I/boot/develop/tools/gnupro/include"
+	;;
+qnx*)
+	AC_CHECK_HEADERS(Pt.h Ph.h)
+	;;
+cygwin*)
+	AC_CHECK_HEADERS(wingdi.h)
 	;;
 esac
 
@@ -38,7 +44,7 @@ dnl Checks for header files.
 dnl ----------------------------------------------
 
 AC_HEADER_STDC
-AC_CHECK_HEADERS(getopt.h glob.h wingdi.h)
+AC_CHECK_HEADERS(getopt.h glob.h)
 
 
 dnl ----------------------------------------------
@@ -48,7 +54,10 @@ dnl ----------------------------------------------
 AC_CHECKING([for graphics support])
 CONSOLE_DRIVER="none"
 
-if test "${ac_cv_header_wingdi_h}" = "yes"; then
+if test "${ac_cv_header_Ph_h}" = "yes"; then
+	CONSOLE_DRIVER="ph"
+	dnl AC_CHECK_LIB(FIXME)
+elif test "${ac_cv_header_wingdi_h}" = "yes"; then
 	CONSOLE_DRIVER="win32"
 	AC_CHECK_LIB(cygwin, usleep)
 	LIBS="-lgdi32 ${LIBS}"

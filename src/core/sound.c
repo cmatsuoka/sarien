@@ -167,7 +167,7 @@ void decode_sound (int resnum)
 	struct sound_iigs_sample *smp;
 
 	_D ("(%d)", resnum);
-	type = lohi_getword ((UINT8 *)sounds[resnum].rdata);
+	type = lohi_getword (sounds[resnum].rdata);
 
 	if (type == AGI_SOUND_SAMPLE) {
 		/* Convert sample data to 16 bit signed format
@@ -239,8 +239,7 @@ void start_sound (int resnum, int flag)
 		_D (_D_WARN "AGI four-channel sound resource");
 
 		/* Initialize channel info */
-		for (i = 0; i < NUM_CHANNELS; i++)
-		{
+		for (i = 0; i < NUM_CHANNELS; i++) {
 			chn[i].flags = AGI_SOUND_LOOP;
 			if (env)
 				chn[i].flags |= AGI_SOUND_ENVELOPE;
@@ -484,8 +483,7 @@ UINT32 mix_sound (void)
 
 	memset (snd_buffer, 0, BUFFER_SIZE << 1);
 
-	for (c = 0; c < 3; c++)
-	{
+	for (c = 0; c < 3; c++) {
 		if (!chn[c].vol)
 			continue;
 

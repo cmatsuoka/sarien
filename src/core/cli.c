@@ -179,7 +179,6 @@ int parse_cli (int argc, char **argv)
 		case 'L':
 			opt.gamerun = gLIST_GAMES;
 			break;
-
 		case 'd':
 			opt.gamerun = gSHOW_WORDS;
 			break;
