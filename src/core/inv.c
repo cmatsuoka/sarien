@@ -126,7 +126,7 @@ void inventory ()
 					}
 
 					jlen = strlen (object_name(intobj[fsel]));
-					joffs = cy % 2 == 0 ? 0 : 40-jlen;
+					joffs = cy % 2 == 0 ? 1 : 39-jlen;
 
 					lx1 = joffs;
 					ly1 = cy;
