@@ -191,8 +191,16 @@ void shake_screen (int n)
 #if !defined (__TURBOC__) && !defined (__DICE__)
 #define MAG 3
 	int i;
-	UINT8 b[GFX_WIDTH * GFX_HEIGHT], c[GFX_WIDTH * GFX_HEIGHT];
-	
+	UINT8 *b, *c;
+
+	if ((b = (UINT8*)malloc(GFX_WIDTH*GFX_HEIGHT)) == NULL)
+		return;
+
+	if ((c = (UINT8*)malloc(GFX_WIDTH*GFX_HEIGHT)) == NULL) {
+		free (b);
+		return;
+	}
+
 	memset (c, 0, GFX_WIDTH * GFX_HEIGHT);
 	memcpy (b, sarien_screen, GFX_WIDTH * GFX_HEIGHT);
 	for (i = 0; i < (GFX_HEIGHT - MAG); i++)
@@ -207,6 +215,9 @@ void shake_screen (int n)
 		memcpy (sarien_screen, b, GFX_WIDTH * GFX_HEIGHT);
 		flush_block (0, 0, GFX_WIDTH - 1, GFX_HEIGHT - 1);
 	}
+
+	free (c);
+	free (b);
 #undef MAG
 #endif
 }
