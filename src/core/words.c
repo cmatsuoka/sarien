@@ -18,8 +18,8 @@
 #include "agi.h"
 #include "keyboard.h"		/* for clean_input() */
 
-UINT8 *words;			/* words in the game */
-UINT32 words_flen;		/* length of word memory */
+static UINT8 *words;		/* words in the game */
+static UINT32 words_flen;	/* length of word memory */
 
 char *strndup (char* src, int n) {
 
@@ -74,51 +74,60 @@ void unload_words ()
 
 
 /**
- *
- * Uses an algorithm hopefully like the one Sierra used.
- * Returns the ID of the word and the length in flen. Returns -1 if not found.
+ * Find a word in the dictionary
+ * Uses an algorithm hopefully like the one Sierra used. Returns the ID
+ * of the word and the length in flen. Returns -1 if not found.
  *
  * Thomas Åkesson, November 2001
  */
-int find_word (char *word, int* flen)
+int find_word (char *word, int *flen)
 {
-	#define chra 0x61
-	#define chrz 0x7A
-
-	int fchr, matchedchars = 0, id = -1;
-	int len = strlen(word);
+	int mchr = 0;	/* matched chars */
+	int len, fchr, id = -1;
 	UINT8* p = words;
+	UINT8* q = words + words_flen;
 	*flen = 0;
 
-	if (word[0] >= chra && word[0] <= chrz)
-		fchr = word[0] - chra;
+	if (word[0] >= 'a' && word[0] <= 'z')
+		fchr = word[0] - 'a';
 	else
 		return -1;
 
-	/* Get the offset to the first word beginning with the right character. */
-	p += hilo_getword (p + 2*fchr);
-	while (p[0] >= matchedchars) {
-		if (p[0] == matchedchars){
+	len = strlen (word);
+
+	/* Get the offset to the first word beginning with the
+	 * right character
+	 */
+	p += hilo_getword (p + 2 * fchr);
+
+	while (p[0] >= mchr) {
+		if (p[0] == mchr) {
 			p++;
 			/* Loop through all matching characters */
-			while ((p[0] ^ word[matchedchars]) == 0x7F && matchedchars < len) {
-				matchedchars++;
+			while ((p[0] ^ word[mchr]) == 0x7F && mchr < len) {
+				mchr++;
 				p++;
 			}
-			/* Check if this is the last character of the word and if it matches */
-			if ((p[0] ^ word[matchedchars]) == 0xFF && matchedchars < len) {
-				matchedchars++;
-				if (word[matchedchars] == 0 || word[matchedchars] == 0x20) {
+			/* Check if this is the last character of the word
+			 * and if it matches
+			 */
+			if ((p[0] ^ word[mchr]) == 0xFF && mchr < len) {
+				mchr++;
+				if (word[mchr] == 0 || word[mchr] == 0x20) {
 					id = hilo_getword (p+1);
-					*flen = matchedchars;
+					*flen = mchr;
 				}
 			}
 		}
+	 	if (p >= q)
+			return -1;	
+
 		/* Step to the next word */
 		while (p[0] < 0x80)
-				p++;
+			p++;
 		p += 3;
 	}
+
 	return id;
 }
 
