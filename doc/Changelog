@@ -3,7 +3,8 @@ Revision History
 ================
 
 0.8.0 (cvs)
-	- 
+	- new find_word algorithm
+	- sprites are RLE-encoded to reduce memory usage
 
 0.7.0 (20011122)
 	- added QNX native sound driver (untested)
