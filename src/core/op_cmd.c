@@ -72,6 +72,7 @@
 #define code	logics[lognum].data
 #define vt	view_table[entry]
 
+int open_dialogue = 0;		/* fix this properly too */
 static int window_nonblocking = 0;	/* Yuck! Remove it later! */
 
 extern struct agi_loader *loader;
@@ -975,12 +976,19 @@ void cmd_close_window ()
 
 void cmd_close_dialogue ()
 {
+	/* FIXME see open_dialogue */
+	open_dialogue=0;
 	report ("Not implemented: close.dialogue ()\n");
 }
 
 
 void cmd_open_dialogue ()
 {
+	/* FIXME
+	Cludge. Stops text input cursor from being show in the wrong
+	spot.
+	*/
+	open_dialogue=1;
 	report ("Not implemented: open.dialogue ()\n");
 }
 
