@@ -787,9 +787,9 @@ int decode_picture (int n, int clear)
 	fix_hires_picture ();
 #endif
 
-	if(clear)
+	if (clear)
 		clear_image_stack();
-	record_image_stack_call(ADD_PIC, n, clear, 0, 0, 0, 0, 0);
+	record_image_stack_call (ADD_PIC, n, clear, 0, 0, 0, 0, 0);
 
 	return err_OK;
 }
