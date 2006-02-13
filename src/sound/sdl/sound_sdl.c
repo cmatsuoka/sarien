@@ -14,6 +14,8 @@
 #include "sarien.h"
 #include "sound.h"
 
+#include <string.h>
+
 static int sdl_init_sound (SINT16 *);
 static void sdl_close_sound (void);
 static SINT16 *buffer;
@@ -31,20 +33,18 @@ static struct sound_driver sound_sdl = {
  */
 static void fill_audio (void *udata, UINT8 *stream, int len)
 {
-	Uint32 p;
+	Uint32 p = 0;
 	static Uint32 n = 0, s = 0;
 
 	/* _D (("(%p, %p, %d)", udata, stream, len)); */
 	memcpy (stream, (UINT8 *)buffer + s, p = n);
-	for (n = 0, len -= p; n < len; p += n, len -= n)
+	for (n = 0, len -= p; len > 0; p += n, len -= n)
 	{
 		play_sound ();
 		n = mix_sound () << 1;
-		memcpy (stream + p, buffer, n);
+		memcpy (stream + p, buffer, (len < n) ? len : n);
+		s = len;
 	}
-	play_sound ();
-	n = mix_sound () << 1;
-	memcpy (stream + p, buffer, s = len);
 	n -= s;
 }
 
