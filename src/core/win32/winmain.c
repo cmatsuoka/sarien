@@ -329,6 +329,7 @@ bail_out:
 	return ec;
 }
 
+#ifndef USE_SDL
 int init_machine (int argc, char **argv)
 {
 #ifdef USE_DIRECTX
@@ -344,5 +345,6 @@ int deinit_machine ()
 {
 	return err_OK;
 }
+#endif
 
 

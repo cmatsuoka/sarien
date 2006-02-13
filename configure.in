@@ -138,9 +138,6 @@ elif test "${ac_cv_header_Ph_h}" = "yes"; then
 	else
 		LIBS="${LIBS} -lph -lphrender"
 	fi
-elif test "${with_win32}" = "yes"; then
-	CONSOLE_DRIVER="win32"
-	LIBS="-lgdi32 -lcomdlg32"
 elif test "${with_cocoa}" = "yes"; then
 	CONSOLE_DRIVER="cocoa"
 	LDFLAGS="${LDFLAGS} -framework Cocoa"
@@ -153,7 +150,7 @@ elif test "${with_sdl}" = "yes"; then
 	fi
 
 	CONSOLE_DRIVER="sdl"
-	CFLAGS="`sdl-config --cflags` ${CFLAGS}"
+	CFLAGS="`sdl-config --cflags` -DUSE_SDL ${CFLAGS}"
 	if test "${ac_cv_prog_cc_cross}" = "yes"; then
 		LIBS="-lSDL ${LIBS}"
 	else
@@ -171,6 +168,9 @@ elif test "${with_sdl}" = "yes"; then
 	esac
 		
 	with_x="no"
+elif test "${with_win32}" = "yes"; then
+	CONSOLE_DRIVER="win32"
+	LIBS="-lgdi32 -lcomdlg32"
 elif test "${with_svgalib}" = "yes"; then
 	AC_CHECK_HEADERS(vga.h)
 	if test "${ac_cv_header_vga_h}" = "yes"; then
