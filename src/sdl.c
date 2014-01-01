@@ -31,10 +31,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include "SDL.h"
+#include <SDL/SDL.h>
 #include "sarien.h"
 #include "graphics.h"
 #include "keyboard.h"
+#include "sound.h"
 
 #include "scale2x.h"
 
@@ -68,11 +69,15 @@ static Uint32	timer_function	(Uint32);
 int		sdl_is_keypress	(void);
 int		sdl_get_keypress(void);
 
+static int sdl_init_sound (SINT16 *);
+static void sdl_close_sound (void);
+
 static volatile UINT32 tick_timer = 0;
+static SINT16 *buffer;
+
 
 
 #define TICK_SECONDS 20
-
 
 static struct gfx_driver gfx_sdl = {
 	init_vidmode,
@@ -82,6 +87,12 @@ static struct gfx_driver gfx_sdl = {
 	sdl_timer,
 	sdl_is_keypress,
 	sdl_get_keypress
+};
+
+static struct sound_driver snd_sdl = {
+	"SDL sound output",
+	sdl_init_sound,
+	sdl_close_sound,
 };
 
 extern struct gfx_driver *gfx;
@@ -456,6 +467,7 @@ static void process_events ()
 int init_machine (int argc, char **argv)
 {
 	gfx = &gfx_sdl;
+	snd = &snd_sdl;
 	scale = opt.scale;
 	clock_count = 0;
 	clock_ticks = 0;
@@ -473,8 +485,6 @@ int deinit_machine ()
 static int init_vidmode ()
 {
 	int i, mode;
-
-	fprintf (stderr, "sdl: SDL support by claudio@helllabs.org\n");
 
 	/* Initialize SDL */
 	if (SDL_Init (SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_TIMER) < 0) {
@@ -637,3 +647,60 @@ static void sdl_timer ()
 	process_events ();
 }
 
+
+
+/* SDL wants its buffer to be filled completely and we generate sound
+ * in smaller chunks. So we fill SDL's buffer and keep the remaining
+ * sound in the mixer buffer to be used in the next call.
+ */
+static void fill_audio (void *udata, UINT8 *stream, int len)
+{
+	Uint32 p = 0;
+	static Uint32 n = 0, s = 0;
+
+	/* _D (("(%p, %p, %d)", udata, stream, len)); */
+	memcpy (stream, (UINT8 *)buffer + s, p = n);
+	for (n = 0, len -= p; len > 0; p += n, len -= n)
+	{
+		play_sound ();
+		n = mix_sound () << 1;
+		memcpy (stream + p, buffer, (len < n) ? len : n);
+		s = len;
+	}
+	n -= s;
+}
+
+
+static int sdl_init_sound (SINT16 *b)
+{
+	SDL_AudioSpec a;
+
+	report ("SDL sound driver written by claudio@helllabs.org.\n");
+
+	buffer = b;
+
+	a.freq = 22050;
+	a.format = (AUDIO_S16);
+	a.channels = 1;
+	a.samples = 2048;
+	a.callback = fill_audio;
+	a.userdata = NULL;
+
+	if (SDL_OpenAudio (&a, NULL) < 0)
+	{
+		report ("%s\n", SDL_GetError());
+		return -1;
+	}
+
+	SDL_PauseAudio (0);
+
+	report ("SDL sound initialized.\n");
+
+	return 0;
+}
+
+
+static void sdl_close_sound ()
+{
+	SDL_CloseAudio();
+}

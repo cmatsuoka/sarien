@@ -4,7 +4,7 @@ SRC_OBJS	= global.o agi_v2.o agi_v3.o agi_v4.o agi.o cli.o words.o \
 		  op_dbg.o patches.o keyboard.o menu.o font.o lzw.o getopt.o \
 		  getopt1.o savegame.o sound.o silent.o console.o cycle.o \
 		  inv.o text.o graphics.o sprite.o checks.o motion.o rand.o \
-		  picview.o
+		  picview.o fileglob.o
 
 SRC_DFILES	= Makefile $(OBJS:.o=.c) main.c cli.c hirespic.c \
 		  agi.h getopt.h keyboard.h logic.h lzw.h menu.h opcodes.h \
@@ -14,7 +14,7 @@ SRC_DFILES	= Makefile $(OBJS:.o=.c) main.c cli.c hirespic.c \
 
 SRC_PATH	= src
 
-CLI_OBJS += $(addprefix $(SRC_PATH)/, main.o cli.o)
+CLI_OBJS += $(addprefix $(SRC_PATH)/, main.o cli.o path.o sdl.o)
 
 OBJS += $(addprefix $(SRC_PATH)/,$(SRC_OBJS))
 

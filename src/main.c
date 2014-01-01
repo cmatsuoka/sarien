@@ -144,25 +144,6 @@ int main (int argc, char *argv[])
 	}
 #endif
 
-#if !defined (__MSDOS__)
-	/* printf() breaks GCC 3.0 build */
-	fprintf (stdout,
-TITLE " " VERSION " - A Sierra AGI resource interpreter engine.\n"
-"Copyright (C) 1999-2003 Stuart George\n"
-"Portions Copyright (C) 1998 Lance Ewing, (C) 1999 Felipe Rosinha,\n"
-" (C) 1999-2003 Claudio Matsuoka, (C) 1999-2001 Igor Nesterov,\n"
-" (C) 2001,2002 Vasyl Tsvirkunov, (C) 2001,2002 Thomas Akesson\n"
-"Scale2x Copyright (C) 2001-2002 Andrea Mazzoleni\n"
-#ifndef HAVE_GETOPT_LONG
-"Portions Copyright (C) 1989-1997 Free Software Foundation, Inc.\n"
-#endif
-"\n"
-"This program is free software; you can redistribute it and/or modify it\n"
-"under the terms of the GNU General Public License, version 2 or later,\n"
-"as published by the the Free Software Foundation.\n"
-"\n");
-#endif
-
 	report ("Enabling interpreter console\n");
 	console_init ();
 	report ("--- Starting console ---\n\n");

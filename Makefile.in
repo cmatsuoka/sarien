@@ -57,7 +57,7 @@ src/$(LIB): $(OBJS)
 	$(RANLIB) $@
 
 src/$(BIN): $(CLI_OBJS) $(LIB)
-	@CMD='$(LD) $(LDFLAGS) -o $@ $(CLI_OBJS) -Lsrc -lagi'; \
+	@CMD='$(LD) $(LDFLAGS) -o $@ $(CLI_OBJS) $(LIBS) -Lsrc -lagi'; \
 	if [ "$(V)" -gt 0 ]; then echo $$CMD; else echo LD $@ ; fi; \
 	eval $$CMD
 

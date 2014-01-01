@@ -1,10 +1,10 @@
 VERSION		= 0.9.0
 
 CC		= gcc
-CFLAGS		= -c -g -O2 -DHAVE_POPEN=1 -DHAVE_MKSTEMP=1 -DHAVE_FNMATCH=1 -DVERSION='\\\"$(VERSION)\\\"'
+CFLAGS		= -c -g -O2 -DHAVE_POPEN=1 -DHAVE_MKSTEMP=1 -DHAVE_FNMATCH=1 -DHAVE_LIBSDL=1 -DVERSION='\\\"$(VERSION)\\\"'
 LD		= gcc
 LDFLAGS		= -o $@ 
-LIBS		= 
+LIBS		= -lSDL 
 RANLIB		= ranlib
 INSTALL		= /usr/bin/install -c
 DESTDIR		=
@@ -57,7 +57,7 @@ src/$(LIB): $(OBJS)
 	$(RANLIB) $@
 
 src/$(BIN): $(CLI_OBJS) $(LIB)
-	@CMD='$(LD) $(LDFLAGS) -o $@ $(CLI_OBJS) -Lsrc -lagi'; \
+	@CMD='$(LD) $(LDFLAGS) -o $@ $(CLI_OBJS) $(LIBS) -Lsrc -lagi'; \
 	if [ "$(V)" -gt 0 ]; then echo $$CMD; else echo LD $@ ; fi; \
 	eval $$CMD
 

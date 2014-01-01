@@ -325,8 +325,6 @@ int init_sound ()
 	snd_buffer = calloc (2, BUFFER_SIZE);
 #endif
 
-	__init_sound ();
-
 	env = FALSE;
 
 #ifdef USE_PCM_SOUND
