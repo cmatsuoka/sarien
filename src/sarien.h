@@ -100,7 +100,7 @@ extern "C"{
  * form starts search in compiler predefined order. So, #include
  * <portdefs.h> would be more correct. --Vasyl
  */
-#include <portdefs.h>
+#include "portdefs.h"
 
 
 #ifndef FALSE

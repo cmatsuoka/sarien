@@ -1,19 +1,19 @@
 VERSION		= 0.9.0
 
-CC		= gcc
-CFLAGS		= -c -g -O2 -DHAVE_POPEN=1 -DHAVE_MKSTEMP=1 -DHAVE_FNMATCH=1 -DVERSION='\\\"$(VERSION)\\\"'
-LD		= gcc
-LDFLAGS		= -o $@ 
-LIBS		= 
-RANLIB		= ranlib
-INSTALL		= /usr/bin/install -c
+CC		= @CC@
+CFLAGS		= -c @CFLAGS@ @DEFS@ -DVERSION='\\\"$(VERSION)\\\"'
+LD		= @CC@
+LDFLAGS		= -o $@ @LDFLAGS@
+LIBS		= @LIBS@
+RANLIB		= @RANLIB@
+INSTALL		= @INSTALL@
 DESTDIR		=
-prefix		= /usr/local
-exec_prefix 	= /usr/local
-datarootdir	= ${prefix}/share
-BINDIR		= ${exec_prefix}/bin
-LIBDIR		= ${exec_prefix}/lib
-MANDIR		= ${datarootdir}/man/man1
+prefix		= @prefix@
+exec_prefix 	= @prefix@
+datarootdir	= @datarootdir@
+BINDIR		= @bindir@
+LIBDIR		= @libdir@
+MANDIR		= @mandir@/man1
 SHELL		= /bin/sh
 
 DIST		= sarien-$(VERSION)

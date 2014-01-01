@@ -1,0 +1,10 @@
+AC_INIT
+0>confdefs.h
+AC_CANONICAL_HOST
+AC_PROG_CC
+AC_PROG_RANLIB
+AC_PROG_INSTALL
+AC_CHECK_FUNCS(popen mkstemp fnmatch strlcpy strlcat)
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT
+
