@@ -1,0 +1,45 @@
+# Binaries
+*.o
+*.lo
+*.so
+*.a
+*.obj
+*.exe
+*.dll
+*.pyc
+*.gco
+*.gcno
+*.gcda
+*.cov
+a.out
+lib/
+
+# VC++ files
+*.suo
+*.ncb
+
+# Compressed formats
+*.zip
+*.tar.gz
+*.bz2
+
+# Configuration
+config.log
+config.status
+configure
+autom4te.cache
+
+# Generated files
+depend
+doc/sarien.1
+
+# Other stuff and leftovers
+src/tests/test
+.svn
+*.orig
+*.rej
+tags
+*~
+commit-*
+*.swp
+*.patch
