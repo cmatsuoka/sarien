@@ -4,7 +4,7 @@ AC_CANONICAL_HOST
 AC_PROG_CC
 AC_PROG_RANLIB
 AC_PROG_INSTALL
-AC_CHECK_FUNCS(popen mkstemp fnmatch strlcpy strlcat)
+dnl AC_CHECK_FUNCS(strlcpy strlcat)
 AC_CHECK_LIB(SDL,SDL_Init)
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

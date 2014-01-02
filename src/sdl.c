@@ -23,10 +23,6 @@
  * Mouse support added by Ryan C. Gordon <icculus@clutteredmind.org>
  */
 
-/*
- * Scale2x Copyright (C) 2001-2002 Andrea Mazzoleni
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -95,8 +91,6 @@ static struct sound_driver snd_sdl = {
 
 extern struct gfx_driver *gfx;
 
-
-#define ASPECT_RATIO(x) ((x) * 6 / 5)
 
 /* ====================================================================*/
 
