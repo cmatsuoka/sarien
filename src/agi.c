@@ -21,12 +21,8 @@
 static struct agi_loader *loader;		/* loader */
 
 
-#ifndef PALMOS
 extern struct agi_loader agi_v2;
 extern struct agi_loader agi_v3;
-#else
-extern struct agi_loader agi_v4;
-#endif
 
 
 static void init_pri_table ()
@@ -158,11 +154,6 @@ int agi_detect_game (char *gn)
 {
 	int ec = err_OK;
 
-#ifdef DREAMCAST
-	strcpy(g_gamename, UNKNOWN_GAME);
-#endif
-
-#ifndef PALMOS
 	_D ("(gn = %s)", gn);
 	if (gn == NULL)		/* assume current directory */
 		gn = get_current_directory ();
@@ -170,17 +161,10 @@ int agi_detect_game (char *gn)
 	loader = &agi_v2;
 	ec = loader->detect_game (gn);
 
-#ifndef FAKE_PALMOS
 	if (ec != err_OK) {
 		loader = &agi_v3;
 		ec = loader->detect_game (gn);
 	}
-#endif
-
-#else /* PALMOS */
-	loader = &agi_v4;
-	ec = loader->detect_game(gn);
-#endif
 
 	return ec;
 }

@@ -8,8 +8,6 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#ifndef PALMOS
-
 #include <stdio.h>
 #include <string.h>
 #include "sarien.h"
@@ -320,5 +318,3 @@ static int agi_v2_load_words(char *fname)
 {
 	return load_words(fname);
 }
-
-#endif /* PALMOS */

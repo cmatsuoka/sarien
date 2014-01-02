@@ -8,12 +8,7 @@
  *  the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#ifndef PALMOS
 #include <time.h>
-#else
-#define time(x) (x)
-#endif
-
 #include "sarien.h"
 #include "rand.h"
 

@@ -15,13 +15,8 @@
 
 #include <stdio.h>
 #include <string.h>
-
-#if !defined(DREAMCAST) && !defined(__MPW__) && !defined(PALMOS)
-#  ifndef __DICE__
-#    include <sys/stat.h>
-#  endif
-#  include <sys/types.h>
-#endif
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #ifdef WIN32
 #  include <direct.h>
@@ -36,7 +31,7 @@
 #include "keyboard.h"
 #include "menu.h"
 
-#if defined(__DICE__) || defined(WIN32)
+#ifdef WIN32
 #  define MKDIR(a,b) mkdir(a)
 #else
 #  define MKDIR(a,b) mkdir(a,b)
@@ -125,8 +120,6 @@ void replay_image_stack_call(UINT8 type, SINT16 p1, SINT16 p2, SINT16 p3,
 
 static char* strSig = "Sarien:";
 
-#ifndef PALMOS
-
 static void write_uint8(FILE* f, SINT8 val)
 {
 	fwrite(&val, 1, 1, f);
@@ -208,10 +201,6 @@ int save_game (char* s, char* d)
 
 	if(!f)
 		return err_BadFileOpen;
-
-#ifdef DREAMCAST
-	write_vmu_header(f, d);
-#endif
 
 	write_bytes (f, strSig, 8);
 	write_string (f, d);
@@ -373,10 +362,6 @@ int load_game(char* s)
 
 	if(!f)
 		return err_BadFileOpen;
-
-#ifdef DREAMCAST
-	read_vmu_header(f);
-#endif
 
 	read_bytes(f, sig, 8);
 	if (strncmp (sig, strSig, 8)) {
@@ -593,13 +578,11 @@ int load_game(char* s)
 
 	return err_OK;
 }
-#endif /* PALMOS */
 
 #define NUM_SLOTS 12
 
 static int select_slot (char *path)
 {
-#ifndef PALMOS
 	int i, key, active = 0;
 	int rc = -1;
 	int hm = 2, vm = 3;			/* box margins */
@@ -609,18 +592,11 @@ static int select_slot (char *path)
 		char name[MAX_PATH];
 		FILE *f;
 		char sig[8];
-#ifdef DREAMCAST
-		sprintf(name, VMU_PATH, g_vmu_port, game.id, i);
-#else
 		sprintf (name, "%s/%08d.sav", path, i);
-#endif
 		f = fopen (name, "rb");
 		if (f == NULL) {
 			strcpy (desc[i], "          (empty slot)");
 		} else {
-#ifdef DREAMCAST
-			read_vmu_header(f);
-#endif
 			read_bytes (f, sig, 8);
 			if (strncmp (sig, strSig, 8)) {
 				strcpy (desc[i], "(corrupt file)");
@@ -678,28 +654,12 @@ press:
 getout:
 	close_window();
 	return rc;
-#endif
 }
 
 int savegame_simple ()
 {
 	char home[MAX_PATH], path[MAX_PATH];
 
-#ifdef DREAMCAST
-	uint8 addr, port, unit;
-
-	addr = maple_first_vmu();
-	if(addr) {
-		maple_create_port(addr, &port, &unit);
-		sprintf(g_vmu_port, "%c%d", port + 'a', unit);
-	} else {
-		message_box("No VMU found.");
-		return err_OK;
-	}
-
-	sprintf(path, VMU_PATH, g_vmu_port, game.id, slot);
-	fs_unlink(path);
-#else
 	if (get_app_dir (home, MAX_PATH) < 0) {
 		message_box ("Couldn't save game.");
 		return err_BadFileOpen;
@@ -711,7 +671,6 @@ int savegame_simple ()
 	MKDIR (path, 0711);
 	sprintf (path, "%s/" DATA_DIR "/%05X.%s/%08d.sav",
 		home, game.crc, game.id, 0);
-#endif
 
 	save_game (path, "Default savegame");
 
@@ -721,7 +680,6 @@ int savegame_simple ()
 
 int savegame_dialog ()
 {
-#ifndef PALMOS /* FIXME */
 	char home[MAX_PATH], path[MAX_PATH];
 	char *desc;
 	char *buttons[] = { "Do as I say!", "I regret", NULL }; 
@@ -734,18 +692,6 @@ int savegame_dialog ()
 	hp = hm * CHAR_COLS; vp = vm * CHAR_LINES;
 	w = (40 - 2 * hm) - 1;
 
-#ifdef DREAMCAST
-	uint8 addr, port, unit;
-
-	addr = maple_first_vmu();
-	if(addr) {
-		maple_create_port(addr, &port, &unit);
-		sprintf(g_vmu_port, "%c%d", port + 'a', unit);
-	} else {
-		message_box("No VMU found.");
-		return err_OK;
-	}
-#else
 	if (get_app_dir (home, MAX_PATH) < 0) {
 		message_box ("Couldn't save game.");
 		return err_BadFileOpen;
@@ -755,7 +701,6 @@ int savegame_dialog ()
 	MKDIR (path, 0755);
 	sprintf (path, "%s/" DATA_DIR "/%05X.%s/", home, game.crc, game.id);
 	MKDIR (path, 0711);
-#endif
 
 	erase_both ();
 
@@ -797,19 +742,13 @@ int savegame_dialog ()
 		return err_OK;
 	}
 
-#ifdef DREAMCAST
-	sprintf(path, VMU_PATH, g_vmu_port, game.id, slot);
-	fs_unlink(path);
-#else
 	sprintf (path, "%s/" DATA_DIR "/%05X.%s/%08d.sav",
 		home, game.crc, game.id, slot);
-#endif
 	_D (_D_WARN "file is [%s]", path);
 	
 	save_game (path, desc);
 
 	message_box ("Game saved.");
-#endif /* PALMOS */
 
 	return err_OK;
 }
@@ -820,20 +759,6 @@ int loadgame_simple ()
 	char home[MAX_PATH], path[MAX_PATH];
 	int rc = 0;
 
-#ifdef DREAMCAST
-	uint8 addr, port, unit;
-
-	addr = maple_first_vmu();
-	if (addr) {
-		maple_create_port (addr, &port, &unit);
-		sprintf (g_vmu_port, "%c%d", port + 'a', unit);
-	} else {
-		message_box("No VMU found.");
-		return err_OK;
-	}
-
-	sprintf(path, VMU_PATH, g_vmu_port, game.id, slot);
-#else	
 	if (get_app_dir (home, MAX_PATH) < 0) {
 		message_box ("Error loading game.");
 		return err_BadFileOpen;
@@ -841,7 +766,6 @@ int loadgame_simple ()
 
 	sprintf(path, "%s/" DATA_DIR "/%05X.%s/%08d.sav",
 		home, game.crc, game.id, 0);
-#endif
 
 	erase_both();
 	stop_sound();
@@ -861,7 +785,6 @@ int loadgame_simple ()
 
 int loadgame_dialog ()
 {
-#ifndef PALMOS
 	char home[MAX_PATH], path[MAX_PATH];
 	int rc, slot = 0;
 	int hm, vm, hp, vp;			/* box margins */
@@ -871,25 +794,12 @@ int loadgame_dialog ()
 	hp = hm * CHAR_COLS; vp = vm * CHAR_LINES;
 	w = (40 - 2 * hm) - 1;
 
-#ifdef DREAMCAST
-	uint8 addr, port, unit;
-
-	addr = maple_first_vmu();
-	if (addr) {
-		maple_create_port (addr, &port, &unit);
-		sprintf (g_vmu_port, "%c%d", port + 'a', unit);
-	} else {
-		message_box("No VMU found.");
-		return err_OK;
-	}
-#else
 	if (get_app_dir (home, MAX_PATH) < 0) {
 		message_box ("Error loading game.");
 		return err_BadFileOpen;
 	}
 
 	sprintf (path, "%s/" DATA_DIR "/%05X.%s/", home, game.crc, game.id);
-#endif
 
 	erase_both();
 	stop_sound();
@@ -907,12 +817,8 @@ int loadgame_dialog ()
 		return err_OK;
 	}
 
-#ifdef DREAMCAST
-	sprintf(path, VMU_PATH, g_vmu_port, game.id, slot);
-#else	
 	sprintf(path, "%s/" DATA_DIR "/%05X.%s/%08d.sav",
 		home, game.crc, game.id, slot);
-#endif
 
 	if ((rc = load_game (path)) == err_OK) {
 		message_box ("Game restored.");
@@ -923,7 +829,6 @@ int loadgame_dialog ()
 	}
 
 	return rc;
-#endif /* PALMOS */
 }
 
 /* end: savegame.c */

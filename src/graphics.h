@@ -15,22 +15,10 @@
 extern "C"{
 #endif
 
-#if defined PALMOS || defined FAKE_PALMOS
-
-#define GFX_WIDTH	160
-#define GFX_HEIGHT	160
-#define CHAR_COLS	4
-#define CHAR_LINES	6
-#define PIC_HEIGHT	(22 * CHAR_LINES)
-
-#else
-
 #define GFX_WIDTH	320
 #define GFX_HEIGHT	200
 #define CHAR_COLS	8
 #define CHAR_LINES	8
-
-#endif
 
 struct gfx_driver {
 	int	(*init_video_mode)(void);

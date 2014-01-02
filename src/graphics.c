@@ -13,15 +13,9 @@
 #include "sarien.h"
 #include "graphics.h"
 
-#if defined PALMOS || defined FAKE_PALMOS
-#  define DEV_X0(x) (x)
-#  define DEV_X1(x) (x)
-#  define DEV_Y(x) ((x) * PIC_HEIGHT / 168)
-#else
-#  define DEV_X0(x) ((x) << 1)
-#  define DEV_X1(x) (((x) << 1) + 1)
-#  define DEV_Y(x) (x)
-#endif
+#define DEV_X0(x) ((x) << 1)
+#define DEV_X1(x) (((x) << 1) + 1)
+#define DEV_Y(x) (x)
 
 #ifndef MAX_INT
 #  define MAX_INT (int)((unsigned)~0 >> 1)
@@ -33,30 +27,6 @@ static UINT8 *console_screen;
 #endif
 
 extern UINT8 cur_font[];
-
-/**
- * 16 color RGB palette (plus 16 transparent colors).
- * This array contains the 6-bit RGB values of the EGA palette exported
- * to the console drivers.
- */
-UINT8 ega_palette [16 * 3] = {
-	0x00, 0x00, 0x00,
-	0x00, 0x00, 0x2a,
-	0x00, 0x2a, 0x00,
-	0x00, 0x2a, 0x2a,
-	0x2a, 0x00, 0x00,
-	0x2a, 0x00, 0x2a,
-	0x2a, 0x15, 0x00,
-	0x2a, 0x2a, 0x2a,
-	0x15, 0x15, 0x15,
-	0x15, 0x15, 0x3f,
-	0x15, 0x3f, 0x15,
-	0x15, 0x3f, 0x3f,
-	0x3f, 0x15, 0x15,
-	0x3f, 0x15, 0x3f,
-	0x3f, 0x3f, 0x15,
-	0x3f, 0x3f, 0x3f
-};
 
 /**
  * 16 color amiga-ish palette.
@@ -82,25 +52,6 @@ UINT8 new_palette[16 * 3]= {
 
 UINT8 palette[32 * 3];
 
-
-static UINT16 cga_map[16] = {
-	0x0000,		/*  0 - black */
-	0x0d00,		/*  1 - blue */
-	0x0b00,		/*  2 - green */
-	0x0f00,		/*  3 - cyan */
-	0x000b,		/*  4 - red */
-	0x0b0d,		/*  5 - magenta */
-	0x000d,		/*  6 - brown */
-	0x0b0b,		/*  7 - gray */
-	0x0d0d,		/*  8 - dark gray */
-	0x0b0f,		/*  9 - light blue */
-	0x0b0d,		/* 10 - light green */
-	0x0f0d,		/* 11 - light cyan */
-	0x0f0d,		/* 12 - light red */
-	0x0f00,		/* 13 - light magenta */
-	0x0f0b,		/* 14 - yellow */
-	0x0f0f		/* 15 - white */
-};
 
 struct update_block {
 	int x1, y1;
@@ -255,11 +206,6 @@ void put_text_character (int l, int x, int y, unsigned int c, int fg, int bg)
 {
 	int x1, y1, xx, yy, cc;
 	UINT8 *p;
-
-#if defined PALMOS || defined FAKE_PALMOS
-	if (c & 0x80)
-		c = 1;
-#endif
 
 	p = cur_font + ((unsigned int)c * CHAR_LINES);
 	for (y1 = 0; y1 < CHAR_LINES; y1++) {
@@ -455,10 +401,7 @@ void init_palette (UINT8 *p)
  */
 int init_video ()
 {
-	if (opt.egapal)
-		init_palette (ega_palette);
-	else
-		init_palette (new_palette);
+	init_palette (new_palette);
 
 	init_console ();
 
@@ -506,34 +449,14 @@ int deinit_video ()
  */
 void put_pixels_a (int x, int y, int n, UINT8 *p)
 {
-
-#ifdef FAKE_PALMOS
-	for (; n--; p++, x ++) {
-		*(UINT8 *)&sarien_screen[x + DEV_Y(y) * GFX_WIDTH] = *p & 0x0f;
-	}
-#else
-
-	if (opt.cgaemu) {
-		for (x *= 2; n--; p++, x += 2) {
-			register UINT16 q = (cga_map[(*p & 0xf0) >> 4] << 4) |
-				cga_map[*p & 0x0f];
+	for (x *= 2; n--; p++, x += 2) {
+		register UINT16 q = ((UINT16)*p << 8) | *p;
 #ifdef USE_CONSOLE
-			if (debug.priority) q >>= 4;
+		if (debug.priority) q >>= 4;
 #endif
-			*(UINT16 *)&sarien_screen[x + y * GFX_WIDTH] =
-				q & 0x0f0f;
-		}
-	} else {
-		for (x *= 2; n--; p++, x += 2) {
-			register UINT16 q = ((UINT16)*p << 8) | *p;
-#ifdef USE_CONSOLE
-			if (debug.priority) q >>= 4;
-#endif
-			*(UINT16 *)&sarien_screen[x + y * GFX_WIDTH] = 
-				q & 0x0f0f;
-		}
+		*(UINT16 *)&sarien_screen[x + y * GFX_WIDTH] = 
+			q & 0x0f0f;
 	}
-#endif
 }
 
 #ifdef USE_HIRES

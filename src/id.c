@@ -8,8 +8,6 @@
  * the Free Software Foundation; see docs/COPYING for further details.
  */
 
-#ifndef PALMOS
-
 #include <stdio.h>
 #include <string.h>
 #include "sarien.h"
@@ -151,9 +149,7 @@ UINT32 match_crc (UINT32 crc, char *path, char *name, int len)
 
 			strncpy (name, t, len);
 			fclose (f);
-#ifdef DREAMCAST
-			strcpy(g_gamename, t);
-#endif
+
 			return ver;
 		}
 	}
@@ -273,31 +269,6 @@ int v3id_game ()
 	return ec;
 }
 
-
-#ifdef PALMOS
-
-int v4id_game (UINT32 ver)
-{
-	int ec = err_OK;
-
-	game.crc = 0;
-	game.ver = ver;
-	agi_set_release (ver);
-
-	switch ((ver>>12)&0xFF) {
-	case 2:
-		ec = setup_v2_game (ver, 0);
-		break;
-	case 3:
-		ec = setup_v3_game (ver, 0);
-		break;
-	}
-
-	return ec;
-}
-
-#endif
-
 /**
  *
  */
@@ -373,5 +344,3 @@ int setup_v3_game (int ver, UINT32 crc)
 
 	return ec;
 }
-
-#endif

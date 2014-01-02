@@ -36,7 +36,6 @@ static char *my_strndup (char* src, int n)
 
 int load_words (char *fname)
 {
-#ifndef PALMOS
 	FILE *fp = NULL;
 	UINT32 flen;
 	UINT8 *mem = NULL;
@@ -68,7 +67,6 @@ int load_words (char *fname)
 	words = mem;
 
 	return err_OK;
-#endif
 }
 
 

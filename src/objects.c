@@ -29,7 +29,6 @@ int alloc_objects (int n)
 
 int decode_objects (UINT8* mem, UINT32 flen)
 {
-#ifndef PALMOS
 	unsigned int i, so, padsize;
 
 	padsize = game.game_flags & ID_AMIGA ? 4 : 3;
@@ -83,14 +82,12 @@ int decode_objects (UINT8* mem, UINT32 flen)
     	}
 	report ("Reading objects: %d objects read.\n", game.num_objects);
 
-#endif
 	return err_OK;
 
 }
 
 int load_objects (char *fname)
 {
-#ifndef PALMOS
 	FILE *fp;
 	UINT32 flen;
 	UINT8 *mem;
@@ -120,7 +117,7 @@ int load_objects (char *fname)
 
 	decode_objects(mem, flen);
 	free(mem);
-#endif
+
 	return err_OK;
 }
 
