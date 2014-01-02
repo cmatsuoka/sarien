@@ -174,9 +174,6 @@ static UINT32 match_version (UINT32 crc)
 
 int v2id_game ()
 {
-#ifdef __MPW__
-	return err_OK;		/* FIXME! */
-#else
 	int y, ver;
 	UINT32 len, c, crc;
 	UINT8 *buff;
@@ -206,8 +203,8 @@ int v2id_game ()
 	game.ver = ver;
 	_D (_D_WARN "game.ver = 0x%x", game.ver);
 	agi_set_release (ver);
+
 	return setup_v2_game(ver, crc);
-#endif
 }
 
 /*

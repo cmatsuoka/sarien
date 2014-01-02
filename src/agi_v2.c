@@ -48,11 +48,8 @@ static int agi_v2_detect_game (char *gn)
 	}
 
 	agi_v2.int_version = 0x2917;		/* setup for 2.917 */
-#ifdef __MPW__
-	return err_OK;
-#else
+
 	return v2id_game ();
-#endif
 }
 
 
